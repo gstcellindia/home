@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SLI Premium Calculator</title>
+  <link href="https://gistcdn.githack.com/binutaxes/e523432e203b6d00419131187945e1f2/raw/917a882230837861bdc39d4c9dc17ee3dd023e58/Chat.css" rel="stylesheet">
+<script src="https://gistcdn.githack.com/binutaxes/2c6693a70b0eb092b779dba0bbed6bb6/raw/f10c482e52091eac02c4a4f4b0ada204fd063f7c/Chat.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0f2044;
+      --gold:   #c9a84c;
+      --gold-lt:#e8c97a;
+      --cream:  #faf7f2;
+      --white:  #ffffff;
+      --muted:  #6b7a99;
+      --border: #d9dde8;
+      --ro-bg:  #eef1f8;
+      --ro-text:#3a4a6b;
+      --shadow: 0 20px 60px rgba(15,32,68,.14);
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--cream);
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,.18) 0%, transparent 70%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(15,32,68,.04) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(15,32,68,.04) 40px);
+      font-family: 'DM Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .header .eyebrow {
+      display: inline-block;
+      letter-spacing: .2em;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(201,168,76,.12);
+      border: 1px solid rgba(201,168,76,.4);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 14px;
+    }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(26px, 5vw, 40px);
+      color: var(--navy);
+      line-height: 1.15;
+    }
+    .header h1 span { color: var(--gold); }
+    .header p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ── Tile ── */
+    .tile {
+      width: 100%;
+      max-width: 720px;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .tile-header {
+      background: var(--navy);
+      padding: 22px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .tile-header .icon {
+      width: 42px; height: 42px;
+      background: var(--gold);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .tile-header h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--white);
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .tile-header p {
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .tile-body {
+      padding: 28px 32px 32px;
+    }
+
+    /* Section dividers */
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 26px 0 14px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(201,168,76,.35);
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    /* ── Field row ── */
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(217,221,232,.5);
+      transition: background .15s;
+    }
+    .field-row:last-child { border-bottom: none; }
+    .field-row:hover { background: rgba(238,241,248,.35); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 8px; }
+
+    .field-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--gold-lt);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .field-num.readonly { background: var(--ro-bg); color: var(--muted); }
+
+    .field-label {
+      flex: 1;
+      font-size: 13.5px;
+      font-weight: 400;
+      color: #334;
+      line-height: 1.35;
+    }
+    .field-label em {
+      display: block;
+      font-style: normal;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .field-input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+      width: 180px;
+      flex-shrink: 0;
+    }
+    .field-input-wrap:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,.18);
+    }
+    .field-input-wrap.readonly-wrap {
+      background: var(--ro-bg);
+      border-color: transparent;
+    }
+    .rupee {
+      padding: 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      height: 40px;
+      display: flex; align-items: center;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+    .readonly-wrap .rupee { border-color: rgba(217,221,232,.6); }
+
+    input[type="number"] {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      padding: 0 12px 0 10px;
+      height: 40px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      color: var(--navy);
+      -moz-appearance: textfield;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[readonly] {
+      color: var(--ro-text);
+      cursor: default;
+      font-weight: 600;
+    }
+    input::placeholder { color: #bcc4d6; font-weight: 300; }
+
+    /* highlight computed */
+    .field-row.computed .field-label { color: var(--ro-text); }
+    .field-row.highlight .field-input-wrap {
+      background: linear-gradient(135deg, #fffbef 0%, #fff8e1 100%);
+      border-color: rgba(201,168,76,.5);
+    }
+    .field-row.highlight input[readonly] { color: #7a5800; }
+
+    /* ── Note ── */
+    .note {
+      width: 100%;
+      max-width: 720px;
+      margin-top: 20px;
+      background: linear-gradient(135deg, rgba(15,32,68,.04) 0%, rgba(201,168,76,.07) 100%);
+      border: 1px solid rgba(201,168,76,.3);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .note-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .note p {
+      font-size: 13px;
+      color: #3a3a50;
+      line-height: 1.65;
+    }
+    .note p strong { color: var(--navy); }
+
+    /* Reset btn */
+    .btn-row {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+    .btn-reset {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 22px;
+      background: var(--navy);
+      color: var(--gold-lt);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: background .2s, transform .1s;
+    }
+    .btn-reset:hover { background: #1a3366; transform: translateY(-1px); }
+    .btn-reset:active { transform: translateY(0); }
+
+    @media (max-width: 540px) {
+      .tile-body { padding: 20px 18px 24px; }
+      .field-input-wrap { width: 150px; }
+      .tile-header { padding: 18px 20px; }
+    }
+
+    /* ══════════════════════════════════════
+       SIDEBAR & LAYOUT ADDITIONS
+       ══════════════════════════════════════ */
+
+    /* Sidebar */
+    #site-sidebar {
+      position: fixed; top: 0; left: 0; height: 100vh; width: 240px;
+      background: linear-gradient(180deg, #0d2240 0%, #163660 100%);
+      display: flex; flex-direction: column;
+      box-shadow: 4px 0 20px rgba(13,34,64,0.18);
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+    #site-sidebar .sidebar-brand {
+      padding: 22px 20px 16px;
+      border-bottom: 1px solid rgba(200,146,42,0.3);
+    }
+    #site-sidebar .sidebar-brand a {
+      text-decoration: none; display: block;
+    }
+    #site-sidebar .sidebar-brand .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem; color: #e8b84b;
+      letter-spacing: 0.02em; line-height: 1.2;
+    }
+    #site-sidebar .sidebar-brand .brand-tagline {
+      font-size: 0.7rem; color: rgba(255,255,255,0.45);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px;
+    }
+    #site-sidebar nav { flex: 1; padding: 16px 0; }
+    #site-sidebar nav ul { list-style: none; }
+    #site-sidebar nav ul li a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; letter-spacing: 0.02em;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      font-family: 'DM Sans', sans-serif;
+    }
+    #site-sidebar nav ul li a:hover,
+    #site-sidebar nav ul li a.active {
+      color: #e8b84b;
+      background: rgba(200,146,42,0.1);
+      border-left-color: #c8922a;
+    }
+    #site-sidebar nav ul li a .nav-icon {
+      font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0;
+    }
+    #site-sidebar .sidebar-footer-note {
+      padding: 14px 20px;
+      border-top: 1px solid rgba(200,146,42,0.2);
+      font-size: 0.68rem; color: rgba(255,255,255,0.3);
+      text-align: center; letter-spacing: 0.04em;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Hamburger toggle */
+    #sidebar-toggle {
+      display: none;
+      position: fixed; top: 14px; left: 14px; z-index: 1100;
+      background: #0d2240; border: none; border-radius: 8px;
+      width: 42px; height: 42px; cursor: pointer;
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 5px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    }
+    #sidebar-toggle span {
+      display: block; width: 22px; height: 2px;
+      background: #e8b84b; border-radius: 2px; transition: all 0.3s;
+    }
+    #sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+    }
+
+    /* Push body content */
+    #site-main {
+      margin-left: 240px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 0;
+    }
+    /* Make note and btn-row stretch to tile width */
+    #site-main .note,
+    #site-main .btn-row {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* ── FOOTER ── */
+    #site-footer {
+      background: linear-gradient(135deg, #0d2240 0%, #163660 100%);
+      color: rgba(255,255,255,0.8);
+      padding: 40px 32px 24px;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+    #site-footer::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, #c8922a, #e8b84b, #c8922a, transparent);
+    }
+    #site-footer .footer-grid {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    }
+    #site-footer .footer-section h3 {
+      font-family: 'Playfair Display', serif;
+      color: #e8b84b; font-size: 1rem;
+      margin-bottom: 14px; letter-spacing: 0.04em;
+    }
+    #site-footer .footer-section p,
+    #site-footer .footer-section a {
+      font-size: 0.88rem; color: rgba(255,255,255,0.65);
+      line-height: 1.8; text-decoration: none; display: block;
+      font-family: 'DM Sans', sans-serif;
+    }
+    #site-footer .footer-section a:hover { color: #e8b84b; }
+    #site-footer .footer-section .contact-item {
+      display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px;
+    }
+    #site-footer .footer-section .contact-item .ci-icon {
+      color: #c8922a; font-size: 0.9rem; margin-top: 2px; flex-shrink: 0;
+    }
+    #site-footer .footer-bottom {
+      text-align: center; margin-top: 28px; padding-top: 16px;
+      border-top: 1px solid rgba(200,146,42,0.2);
+      font-size: 0.78rem; color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em; font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #site-sidebar { transform: translateX(-100%); }
+      #site-sidebar.open { transform: translateX(0); }
+      #site-main { margin-left: 0; padding-top: 70px; }
+      #sidebar-toggle { display: flex; }
+      #sidebar-overlay.show { display: block; }
+      #site-footer .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+    }
+    @media (min-width: 901px) {
+      #site-sidebar { transform: translateX(0) !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HAMBURGER TOGGLE (mobile) ══ -->
+  <button id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside id="site-sidebar">
+    <div class="sidebar-brand">
+      <a href="https://www.gstcell.com" target="_blank">
+        <div class="brand-name">GSTCell</div>
+        <div class="brand-tagline">Tax &amp; Finance Tools</div>
+      </a>
+    </div>
+    <nav>
+      <ul>
+        <li>
+          <a href="https://www.gstcell.com" target="_blank">
+            <span class="nav-icon">🏠</span> Home
+          </a>
+        </li>
+        <li>
+          <a href="https://www.gstcell.com/incometax-2026" target="_blank">
+            <span class="nav-icon">📋</span> Income Tax 2026<span style="color:red">(New)</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.gstcell.com/dearness-arrear-da-arrear-calculator" target="_blank">
+            <span class="nav-icon">🧮</span> DA Arrear Calculator
+          </a>
+        </li>
+ <li>
+        <a href="https://www.gstcell.com/earned-leave-calculator" target="_blank">
+          <span class="nav-icon">🧮</span> Earned Leave Calc..
+        </a>
+      </li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer-note">gstcell.com</div>
+  </aside>
+
+  <!-- ══ OVERLAY (mobile) ══ -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div id="site-main">
+
+    <div class="header">
+      <div class="eyebrow">www.gstcell.com</div>
+      <h1>SLI Premium <span>Calculator</span></h1>
+      <p>State Life Insurance — Policy Amount Estimator</p>
+    </div>
+
+    <div class="tile">
+      <div class="tile-header">
+        <div class="icon">🏛️</div>
+        <div>
+          <h2>Salary & Premium Details</h2>
+          <p>Enter editable fields · Computed values update automatically</p>
+        </div>
+      </div>
+
+      <div class="tile-body">
+
+        <div class="section-label">Salary Components</div>
+
+        <!-- 1 -->
+        <div class="field-row">
+          <div class="field-num">1</div>
+          <div class="field-label">Basic Pay</div>
+          <div class="field-input-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f1" placeholder="0.00" min="0" oninput="calculate()"/>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="field-row">
+          <div class="field-num">2</div>
+          <div class="field-label">Grade Pay</div>
+          <div class="field-input-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f2" placeholder="0.00" min="0" oninput="calculate()"/>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="field-row">
+          <div class="field-num">3</div>
+          <div class="field-label">Personal Pay</div>
+          <div class="field-input-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f3" placeholder="0.00" min="0" oninput="calculate()"/>
+          </div>
+        </div>
+
+        <div class="section-label">Allowances &amp; Totals</div>
+
+        <!-- 4 – readonly -->
+        <div class="field-row computed">
+          <div class="field-num readonly">4</div>
+          <div class="field-label">
+            Dearness Allowance
+            <em>35% of (Basic + Grade + Personal Pay)</em>
+          </div>
+          <div class="field-input-wrap readonly-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f4" readonly tabindex="-1"/>
+          </div>
+        </div>
+
+        <!-- 5 – readonly -->
+        <div class="field-row computed">
+          <div class="field-num readonly">5</div>
+          <div class="field-label">
+            Total Monthly Salary
+            <em>Sum of fields 1 – 4</em>
+          </div>
+          <div class="field-input-wrap readonly-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f5" readonly tabindex="-1"/>
+          </div>
+        </div>
+
+        <!-- 6 – readonly -->
+        <div class="field-row computed">
+          <div class="field-num readonly">6</div>
+          <div class="field-label">
+            1.5% of the Salary
+            <em>1.5% of Total Monthly Salary</em>
+          </div>
+          <div class="field-input-wrap readonly-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f6" readonly tabindex="-1"/>
+          </div>
+        </div>
+
+        <!-- 7 – readonly -->
+        <div class="field-row computed highlight">
+          <div class="field-num readonly">7</div>
+          <div class="field-label">
+            Total Premium Required
+            <em>Rounded up to nearest hundred</em>
+          </div>
+          <div class="field-input-wrap readonly-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f7" readonly tabindex="-1"/>
+          </div>
+        </div>
+
+        <div class="section-label">Existing Policy &amp; New Requirement</div>
+
+        <!-- 8 -->
+        <div class="field-row">
+          <div class="field-num">8</div>
+          <div class="field-label">
+            Existing Premium
+            <em>Current SLI premium being paid</em>
+          </div>
+          <div class="field-input-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f8" placeholder="0.00" min="0" oninput="calculate()"/>
+          </div>
+        </div>
+
+        <!-- 9 – readonly -->
+        <div class="field-row computed highlight">
+          <div class="field-num readonly">9</div>
+          <div class="field-label">
+            New Policy Amount
+            <em>Total Premium Required − Existing Premium</em>
+          </div>
+          <div class="field-input-wrap readonly-wrap">
+            <span class="rupee">₹</span>
+            <input type="number" id="f9" readonly tabindex="-1"/>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div class="note">
+      <span class="note-icon">📌</span>
+      <p>
+        <strong>Note:</strong> The SLI amount proposed above is the <strong>minimum amount required</strong>
+        with respect to the present salary. Considering the <strong>likely increase of salary in future</strong>,
+        a <strong>higher policy amount may be fixed</strong> to ensure adequate coverage and long-term
+        financial protection for the employee and their family.
+      </p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-reset" onclick="resetAll()">↺ Reset All Fields</button>
+    </div>
+
+
+
+
+<!-- ══ COMMUNITY CHAT SECTION ══ -->
+<div id="chat-section">
+  <div class="chat-tile">
+
+    <!-- Header -->
+    <div class="chat-tile-header">
+      <h2>
+        <span class="chat-header-icon">💬</span>
+        Let's discuss &#128512;
+      </h2>
+      <button class="chat-open-btn" onclick="openChatModal('main', null, null)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Post a Comment
+      </button>
+    </div>
+
+    <!-- Chat feed -->
+    <div class="chat-feed" id="chatFeed">
+      <div class="chat-loading">
+        <span class="chat-spinner"></span> Loading messages…
+      </div>
+    </div>
+
+    <!-- Live refresh bar -->
+    <div class="chat-refresh-bar">
+      <span><span class="chat-refresh-dot"></span> Live — refreshes every 15 seconds</span>
+      <span id="chatLastRefresh"></span>
+    </div>
+
+  </div>
+</div><!-- /#chat-section -->
+
+
+<!-- ══ CHAT POPUP MODAL ══ -->
+<div class="chat-modal-overlay" id="chatModal">
+  <div class="chat-modal">
+
+    <!-- Modal header -->
+    <div class="chat-modal-head">
+      <h3 id="chatModalTitle">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Post a Comment
+      </h3>
+      <button class="chat-modal-close" onclick="closeChatModal()">✕</button>
+    </div>
+
+    <!-- Modal body -->
+    <div class="chat-modal-body">
+
+      <!-- Context preview (shown when replying) -->
+      <div class="chat-modal-context" id="chatModalContext"></div>
+
+      <!-- Name field -->
+      <label class="chat-field-label">Your Name</label>
+      <input
+        type="text"
+        class="chat-name-input"
+        id="chatNameInput"
+        placeholder="Enter your name…"
+        maxlength="60"
+        autocomplete="name"
+      />
+
+      <!-- Message field -->
+      <label class="chat-field-label">Message</label>
+      <textarea
+        class="chat-text-area"
+        id="chatTextInput"
+        placeholder="Write your message here…"
+        maxlength="800"
+      ></textarea>
+
+      <!-- Action buttons -->
+      <div class="chat-modal-footer">
+        <button class="chat-cancel-btn" onclick="closeChatModal()">Cancel</button>
+        <button class="chat-post-btn" id="chatPostBtn" onclick="submitChat()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Post
+        </button>
+      </div>
+
+    </div><!-- /.chat-modal-body -->
+  </div><!-- /.chat-modal -->
+</div><!-- /.chat-modal-overlay -->
+
+
+
+
+
+
+  </div><!-- /#site-main -->
+
+  <!-- ══ FOOTER ══ -->
+  <footer id="site-footer">
+    <div class="footer-grid">
+      <div class="footer-section">
+        <h3>🏛️ About GSTCell</h3>
+        <p>GSTCell provides free, reliable tax, finance and other information for all citizens of India. Our tools are designed for accuracy and ease of use.</p>
+      </div>
+      <div class="footer-section">
+        <h3>📬 Contact Us</h3>
+        <div class="contact-item">
+          <span class="ci-icon">✉️</span>
+          <a href="mailto:gstcell.com@gmail.com">gstcell.com@gmail.com</a>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">📞</span>
+          <a href="tel:+919744012007">+91 9744012007</a>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">📍</span>
+          <span style="color:rgba(255,255,255,0.65);font-size:0.88rem;">Kachani, Thiruvananthapuram, Kerala</span>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">🌐</span>
+          <a href="https://www.gstcell.com" target="_blank">www.gstcell.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 GSTCell &nbsp;|&nbsp; All Rights Reserved &nbsp;|&nbsp;
+      <a href="https://www.gstcell.com" target="_blank" style="color:rgba(200,146,42,0.6);text-decoration:none;">www.gstcell.com</a>
+    </div>
+  </footer>
+
+<script>
+  // ── CONFIG Chat ────────────────────────────────────────────────────
+const CHAT_API       = 'https://script.google.com/macros/s/AKfycbxpFPBquDDyEr1djycWJLTFpTZZluMeQZk0-lVxVmtpxc9x49ggGcvvxVYL5OMHravg/exec';
+
+// ─────────────────────────────────────────────────────────────
+</script>
+  
+  <script>
+    /* ══ SIDEBAR TOGGLE ══ */
+    function toggleSidebar() {
+      document.getElementById('site-sidebar').classList.toggle('open');
+      document.getElementById('sidebar-overlay').classList.toggle('show');
+    }
+
+    /* ══ ORIGINAL CALCULATOR FUNCTIONS — UNCHANGED ══ */
+    function v(id) {
+      const val = parseFloat(document.getElementById(id).value);
+      return isNaN(val) ? 0 : val;
+    }
+
+    function set(id, val) {
+      document.getElementById(id).value = val === 0 ? '' : val.toFixed(2);
+    }
+
+    function calculate() {
+      const f1 = v('f1'), f2 = v('f2'), f3 = v('f3');
+      const base3 = f1 + f2 + f3;
+
+      const f4 = base3 * 0.35;
+      const f5 = base3 + f4;
+      const f6 = f5 * 0.015;
+      const f7 = Math.ceil(f6 / 100) * 100;   // round UP to nearest hundred
+      const f8 = v('f8');
+      const f9 = Math.max(0, f7 - f8);
+
+      set('f4', f4);
+      set('f5', f5);
+      set('f6', f6);
+      document.getElementById('f7').value = f7 === 0 ? '' : f7.toFixed(2);
+      document.getElementById('f9').value = f9 === 0 ? '' : f9.toFixed(2);
+    }
+
+    function resetAll() {
+      ['f1','f2','f3','f4','f5','f6','f7','f8','f9'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+  </script>
+</body>
+</html>
