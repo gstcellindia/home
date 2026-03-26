@@ -1,0 +1,661 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+img{
+  width: 300px;
+  height: 200px;
+}
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 30px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 40pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted rgb(0, 4, 224);
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 6px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+}
+table, td, th {
+					  font-size: 12pt;
+}
+img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+}
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+}
+img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+}
+img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+ 
+
+    <div class="paper" style="overflow-x:auto;"> 
+     
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br>കേരള സർക്കാർ
+          <br>Government of Kerala<br> 2018
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt="Swimming fish"></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2018-20
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold;">കേരള ഗസറ്റ്</SPAN><br>KERALA GAZETTE<BR><SPAN class="gzhead2"><SPAN style="font-weight: bold;">അസാധാരണം</SPAN><BR>EXTRAORDINARY</SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;">വാല്യം 7<BR> Vol. VII</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;">തിരുവനന്തപുരം<br> വെള്ളി<br><br>Thiruvananthapuram<br> Friday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2018 ജൂലൈ 27<BR>
+                      <ins>27<sup>th</sup> July 2018</ins><BR>
+                      1193 കർക്കടകം 11<BR>
+                        <ins>11<sup>th</sup> Karkadakam 1193 </ins><BR>
+                      1940 ശ്രാവണം 5<BR>
+                      5<sup>th</sup> Sravana 1940</TD>
+                    <td style="text-align: right;">നമ്പർ<br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">2026</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead">GOVERNMENT OF KERALA
+        <br><span style="font-weight: bold;">Taxes (B) Department</span>
+        <br>NOTIFICATION<br> 
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                G.O.(P) No.118/2018/TAXES.</TD>
+                <td style="text-align: right;">  Dated, Thiruvananthapuram, 27<sup>th</sup> July, 2018<br>
+                  11<sup>th</sup> Karkadakam,1193.</TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold">S.R.O. No.521/2018:— </span>In exercise of the powers conferred by sub-section (1) of section 11 of the Kerala State Goods and Services Tax Act, 2017 (20 of 2017), the Government of Kerala, on being satisfied that it is necessary in the public interest so to do, on the recommendations of the Council, hereby exempts the intra-state supplies of handicraft goods, the description of which is specified in column (3) of the Table below, falling under the tariff item, sub-heading, heading or Chapter, as specified in the corresponding entry in column (2), from so much state tax leviable thereon under section 9 of the Kerala State Goods and Services Tax Act, 2017 (20 of 2017) as is in excess of the rate specified in column (4) of the said Table.<br><br> Explanation.—For the purpose of this notification, the expression “handicraft goods” means “Goods predominantly made by hand even though some tools or machinery may also have been used in the process; such goods are graced with visual appeal in the nature of ornamentation or inlay work or some similar work of a substantial nature; possess distinctive features, which can be aesthetic, artistic, ethnic or culturally attached and are amply different from mechanically produced goods of similar utility”.</p>
+  <p class="parahead">Table<br> 
+  </p>
+
+  <table border="1px";>
+    <thead>
+      <tr>	
+        <th  width="5%">S.No.</Th>
+        <th  width="20%">Chapter, Heading, Subheading or Tariff item</Th>
+        <th  width="65%">Description of Goods</Th>
+        <th  width="20%">Rate</Th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>	
+        <td>1</TD>
+        <td>3406</TD>
+        <td>Handcrafted candles</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>2</TD>
+        <td>4202 22, 4202 29, 4202 3110, 4202 3190, 4202 32, 4202 39</TD>
+        <td>Handbags including pouches and purses; jewellery box</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>3</TD>
+        <td>4416, 4421 99 90</TD>
+        <td>Carved wood products, art ware/decorative articles of wood (including inlay work, casks, barrel, vats)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>4</TD>
+        <td><span class="tooltip" style="color: blue;">4414<span class="tooltiptext"> 4414 00 00 (as per orginal notification)</span></span><sup  style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1EkDyCLi6jlcQH8wFkduH9_FWAIQTWwqj" target="_blank"><span style="color:blue">20/2021-Central Tax (rate)</span></a> (<a href="https://docs.google.com/uc?id=1s2X6RlTpyApQKo6FXveNLMRuZaZ4YWNk" target="_blank"><span style="color:Rgb(6, 32, 182)">S.R.O. 1016/2021</span></a>)]</sup></TD>
+        <td>Wooden frames for painting, photographs, mirrors etc</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>5</TD>
+        <td>4420</TD>
+        <td>Statuettes & other ornaments of wood, wood marquetry & inlaid, jewellery box, wood lathe and lacquer work [including lathe and lacquer work, ambadi sisal craft]</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>6</TD>
+        <td>4503 90 90 4504 90</TD>
+        <td>Art ware of cork [including articles of sholapith]</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>7</TD>
+        <td>4601 and 4602</TD>
+        <td>Mats, matting and screens of vegetable material, basketwork, wickerwork and other articles of vegetable materials or other plaiting material, articles of loofah (including of bamboo, rattan, canes and other natural fibres, dry flowers (naturally dried), articles thereof, ringal, raambaan article, shola items, Kouna/chumthang (water reeds) crafts, articles of Water hyacinth, korai mat]</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>8</TD>
+        <td>4823</TD>
+        <td>Articles made of paper mache</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>9</TD>
+        <td>5607, 5609</TD>
+        <td>Coir articles</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>10</TD>
+        <td>5609 00 20, 5609 00 90</TD>
+        <td>Toran, Doorway Decoration made from cotton yarn or woollen yarn and aabhala (mirror) with or without hanging flaps.</TD>
+        <td>0.025</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>11</TD>
+        <td>57</TD>
+        <td>Handmade carpets and other handmade textile floor coverings (including namda/gabba)</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>12</TD>
+        <td>5804 30 00</TD>
+        <td>Handmade lace</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>13</TD>
+        <td>5805</TD>
+        <td>Hand-woven tapestries</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>14</TD>
+        <td>1427643</TD>
+        <td>Hand-made braids and ornamental trimming in the piece</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>15</TD>
+        <td>5810</TD>
+        <td>Hand embroidered articles</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>16</TD>
+        <td>6117, 6214</TD>
+        <td>Handmade/hand embroidered shawls of sale value not exceeding Rs. 1000 per piece</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>17</TD>
+        <td>6117, 6214</TD>
+        <td>Handmade/hand embroidered shawls of sale value exceeding Rs. 1000 per piece</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>18</TD>
+        <td>6802</TD>
+        <td>Carved stone products (e.g., statues, statuettes, figures of animals, writing sets, ashtray, candle stand)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>19</TD>
+        <td>6815 99 90</TD>
+        <td>Stone art ware, stone inlay work</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>20</TD>
+        <td>6912 00 10 6912 00 20</TD>
+        <td>Tableware and kitchenware of clay and terracotta, other clay articles</TD>
+        <td>0.06</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>21</TD>
+        <td>6913 90 00</TD>
+        <td>Statuettes & other ornamental ceramic articles (incl blue potteries)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>22</TD>
+        <td>7009 92 00</TD>
+        <td>Ornamental framed mirrors</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>23</TD>
+        <td>1869586</TD>
+        <td>Bangles, beads and small ware</TD>
+        <td>2.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>24</TD>
+        <td>7018 90 10</TD>
+        <td>Glass statues [other than those of crystal]</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>25</TD>
+        <td>7020 00 90</TD>
+        <td>Glass art ware [ incl. pots, jars, votive, cask, cake cover, tulip bottle, vase ]</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>26</TD>
+        <td>1904324</TD>
+        <td>Silver filigree work</TD>
+        <td>1.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>27</TD>
+        <td>7117</TD>
+        <td>Handmade imitation jewellery (including natural seeds, beads jewelry, cardamom garland)</TD>
+        <td>1.5 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>28</TD>
+        <td>7326 90 99</TD>
+        <td>Art ware of iron</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>29</TD>
+        <td><span class="tooltip" style="color: blue;">7419 80<span class="tooltiptext"> 7419 99 (as per orginal notification)</span></span><sup  style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1EkDyCLi6jlcQH8wFkduH9_FWAIQTWwqj" target="_blank"><span style="color:blue">20/2021-Central Tax (rate)</span></a> (<a href="https://docs.google.com/uc?id=1s2X6RlTpyApQKo6FXveNLMRuZaZ4YWNk" target="_blank"><span style="color:Rgb(6, 32, 182)">S.R.O. 1016/2021</span></a>)]</sup></TD>
+        <td>Art ware of brass, copper/ copper alloys, electro plated with nickel/silver</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>30</TD>
+        <td>7616 99 90</TD>
+        <td>Aluminium art ware</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>31</TD>
+        <td>8306</TD>
+        <td>Bells, gongs and like, non-electric, of base metal; statuettes, and other ornaments, of base metal; photograph, picture or similar frames, of base metal; mirrors of base metal; (including Bidriware, Panchloga artware, idol, Swamimalai bronze icons, dhokra jaali)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>32</TD>
+        <td>2741420</TD>
+        <td>Handcrafted lamps (including panchloga lamp)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>33</TD>
+        <td>9401 50, 9403 80</TD>
+        <td>Furniture of bamboo, rattan and cane</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>34</TD>
+        <td>9503</TD>
+        <td>Dolls or other toys made of wood or metal or textile material [incl wooden toys of sawantwadi, Channapatna toys, Thanjavur doll)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>35</TD>
+        <td>9504</TD>
+        <td>Ganjifa card</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>36</TD>
+        <td>9601</TD>
+        <td>Worked articles of ivory, bone, tortoise shell, horn, antlers, coral, mother of pearl, seashell other animal carving material</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>37</TD>
+        <td>9602</TD>
+        <td>Worked vegetable or mineral carving, articles thereof, articles of wax, of stearin, of natural gums or natural resins or of modelling pastes etc, (including articles of lac, shellac)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>38</TD>
+        <td>9701</TD>
+        <td>Hand paintings drawings and pastels (incl Mysore painting, Rajasthan painting, Tanjore painting, Palm leaf painting, basoli etc)</TD>
+        <td>6 %</TD>
+      </tr>	
+      <!--row-->	
+      <tr>	
+        <td>39</TD>
+        <td>9703</TD>
+        <td>Original sculptures and statuary, in metal, stone or any other material</TD>
+        <td>6 %</TD>
+      </tr>		
+    </tbody>
+  </table>
+      <p class="sropara">2.	This notification shall come into force on the 27<sup>th</sup> day of July, 2018.</p>
+  <p class="parasign">   By order of the Governor,<br>VENUGOPAL, P.,<br>Secretary to Government.<br>
+  </p> 
+  <p class="parahead">  Explanatory Note</p> 
+  <p class="sropara">does not form part of the notification, but is intended to indicate its general purport.)</p> 
+  <p class="sropara">The Government of Kerala, on recommendation of the Goods and Services Tax Council and on being satisfied that it is necessary in the public interest so to do, have decided to reduce the rate of tax of intra-state supplies of certain handicraft goods</p>
+  <p class="sropara">The notification is intended to achieve the above object.</p>  
+  </div>
+
+
+
+    
+</body>
+
+</html>
