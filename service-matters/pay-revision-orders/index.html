@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css">
+
+    <!----------------------Link for social media buttons----------------------->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <!----------------------Link for social media buttons end------------------->
+<style>
+
+html{
+font-size: 11px;
+background-color: rgb(255, 255, 255);
+}
+
+table{
+width:94%;
+}
+
+
+.page-button {
+    background-color: #f1f1f1;
+    color: black;
+    border: 1px solid #ccc;
+    margin: 0 2px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.page-button:hover {
+    background-color: #ddd;
+}
+
+.page-button.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+#pagination-top, #pagination-bottom, #pagination-top1, #pagination-bottom1, #pagination-top2, #pagination-bottom2{
+    position:absolute;
+    right:3%;
+}
+#pagination-bottom, #pagination-bottom1, #pagination-bottom2{
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+}
+table{
+    margin-top:4rem;
+    margin-bottom:0rem;
+}
+table, td, th {
+border: 1px solid rgb(205, 231, 231);
+border-collapse: collapse;
+font-size: 18px;
+text-align: justify;
+padding: 5px 5px 5px 5px;
+font-family: 'Times New Roman', Times, serif, meera;
+margin-left: 3%;
+margin-right: 3%;
+}
+
+.SRO{
+margin-left: 0%;
+margin-right: 0%;
+color: #ffffff;
+padding: 10px 10px 3px 150px;
+font-style: italic;
+font-family: 'Times New Roman', Times, serif;
+text-align: justify;
+font-size: 13px;
+text-shadow: 1px 1px 4px #000000;
+}
+
+.heading{
+background-color: rgb(255, 255, 255);
+margin-top:5rem;
+font-size: 2.5rem;
+font-family:'Times New Roman', serif;
+color: #FFFFFF;
+padding: 15px 0px 10px 10px;
+text-align: center;
+}
+
+.blank{
+background-color: rgb(255, 255, 255);
+margin:5px 0px 0px 0px;
+color: #080808;
+padding: 5px 10px;
+text-align: justify;
+}
+
+.light-table-filter, .select-table-filter, .select-table-filter1{
+font-size: 14pt;
+width: 8cm;
+border-radius: 10px;
+min-height: 1cm;
+padding: 0px 0px 0px 0px;
+border: 3px solid rgb(208, 243, 255);
+padding: 0px 7px 0px 5px;
+border-width: 2px;
+box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
+transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out effect */
+}
+.select-table-filter option {
+    background-color: white;
+}
+
+
+.light-table-filter, .select-table-filter1 {
+    margin: 7px 0px 0px auto;
+
+}
+.light-table-filter {
+    margin: 7px 0px 0px auto;
+    background-color: rgb(255, 255, 255);
+    border-radius: 15px;      
+}
+
+.select-table-filter, .select-table-filter1  {
+    margin: 7px 0px 0px 3%;
+    background: linear-gradient(to right, #8de4ff, #c3ecff);
+
+
+}
+.select-table-filter2{
+    overflow-x:auto; 
+    position:absolute;
+    display:inline-block;
+    right:30%;
+    background-color: #f1f1f1;
+    color: black;
+    border: 1px solid #ccc;
+    margin: 0 2px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+}
+
+.select-table-filter:hover, .light-table-filter:hover{
+box-shadow: 5px 6px 10px 5px rgba(0,0,0,0.3);
+}
+
+tr:nth-child(even){background-color: #f0fbff}
+tr:nth-child(odd){background-color: #ffffff}
+
+tr:hover{
+background-color: rgb(222, 255, 255);
+}
+
+input#searchBox {
+background-size:contain;
+background-repeat: no-repeat;
+/* Extra Styling */
+transition:0.6s;
+font-style: italic;
+}
+
+input#searchBox:focus::placeholder {
+color:rgb(232, 232, 232);
+}
+
+input#searchBox:hover::placeholder  {
+color:rgb(208, 208, 208);
+}
+
+#loadingMessage, #errorMessage {
+font-size: 13pt;
+margin-top: 3rem;
+margin-left: 2%;
+font-weight: bold;
+color:green;
+}
+
+.highlight {
+color: rgb(190, 0, 0);
+background-color: rgb(254, 255, 202);
+}
+
+.grid2{
+margin: 10px 0px 10px 50px;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+grid-gap: 2rem;
+align-items: center;
+}
+
+.grid2 > div {
+border: none;
+border-radius: 20px;
+width: 500px;
+height: 5rem;
+}
+
+a{
+text-decoration: none;
+}
+
+.headimage {
+background-image: url('https://lh3.googleusercontent.com/d/1sitChJR4HMammhoEKMSRATww76l0RR3-');
+background-repeat: no-repeat;
+background-attachment:local;
+background-size: cover;
+background-position: 100% 100%;
+height:25rem;
+margin-left: 0%;
+margin-right: 0%;
+}
+/*-----END------Image for other page*/
+
+.sitename{
+font-size: 60px; 
+font-family: Arial, Helvetica, sans-serif;
+color:white;
+padding: 40px 0% 10px 50px;
+font-weight: bold;
+text-shadow: 10px 0px 10px #000000;  
+}
+
+.sro{
+margin-left: 150px;
+font-size: 17px;
+font-family: 'Times New Roman', Times, serif;
+color: #ffffff;
+font-style: italic;
+text-shadow: 1px 1px 4px #000000;
+}
+.SRO:hover{
+box-shadow: 12px 6px 12px 6px rgba(0,0,0,0.3);
+}
+
+
+/*-------------------------------------Social Media Start-------------------------------------*/
+          .panel {
+          position: fixed;
+          top: 67%;
+          right: 0;
+          transform: translateY(-50%);
+          background-color: #a1a1a162;
+          padding: 10px;
+          border-radius: 8px 0 0 8px;
+          box-shadow: -2px 2px 5px rgba(0,0,0,0.5);
+          transition: right 0.3s ease-in-out;
+          }
+
+          .panel ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          }
+
+          .panel ul li {
+          margin: 10px 0;
+          }
+
+          .panel a {
+          text-decoration: none;
+          color: #fff;
+          font-size: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 10px;
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          }
+
+          .panel a:hover {
+          text-decoration: none;
+          color: #ffff00;
+          font-size: 24px;
+          }
+          .panel a.facebook { background-color: #4267B2; }
+          .panel a.whatsapp { background-color: #25D366; }
+          .panel a.gmail { background-color: #D93025; }
+          .panel a.instagram { background-color: #E4405F; }
+          .panel a.linkedin { background-color: #0077B5; }
+          .panel a.x { background-color: #000; }
+          .Sharesocial{font-weight: bold;
+          font-size: 10pt;
+          color:rgb(21, 97, 133);
+          }
+          #arrow {
+          position: fixed;
+          top: 66%;
+          right: 47px; /* Default position */
+          transform: translateY(-50%);
+          cursor: pointer;
+          width: 0;
+          height: 0;
+          border-style: solid;
+          border-radius: 2px;
+          border-width: 13px 0 13px 8px; /* Leftward triangle */
+          border-color: transparent transparent transparent #616161; /* Triangle color */
+          transition: right 0.3s ease-in-out, border-width 0.3s ease-in-out, border-color 0.3s ease-in-out;
+          }
+
+          #arrow.collapsed {
+          border-width: 15px 10px 15px 0; /* Rightward triangle */
+          border-color: transparent #444 transparent transparent; /* Triangle color */
+          right: 0px; /* Adjust position */
+          }
+
+
+          .collapsed {
+          right: -150px; /* Hide panel */
+          }
+          .hide-social{
+          display:none;
+          }
+
+@media (max-width: 800px) {
+          .panel {
+          position: static;
+          width: 100%;
+          border-radius: 0;
+          box-shadow: none;
+          padding: 10px 20px 0px 20px;
+          margin-top: 5rem;
+          background-color: #ffffff;
+          }
+          .Sharesocial{font-weight: bold;
+          display:none;
+          }
+          .panel ul {
+          display: flex;
+          justify-content: center;
+          }
+
+          .panel ul li {
+          margin: 0 10px;
+          }
+
+          #arrow {
+          display: none;
+          }
+          footer {
+          margin-top: 0px; /* Smaller spacing above the footer */}
+          .hide-social{
+          display:block;
+          }
+}
+/*-------------------------------------Social Media End-------------------------------------*/
+
+/*-------------------------------------NAV BAR STYLE START------------------------------------*/
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+.see-more, .loading-message {
+        cursor: pointer;
+        color: rgb(236, 255, 116);
+        font-style: italic;
+        text-decoration: underline;
+        font-size: 13pt;
+        margin-left: 10%;
+        text-decoration: none;
+        }/* nav bar change*/
+        .wrapper .nav-links >li:hover .menu-under{
+        background:blue;
+        border:0px;
+        text-decoration: underline;
+        }/* nav bar change*/
+
+.Act-rule-left{
+margin-left: -200px;
+}
+nav{
+position: relative;
+width: 100%;
+margin-top: -4rem;
+background: #242526;
+margin-bottom:1rem;
+}
+nav .wrapper{
+position: relative;
+max-width: 1300px;
+padding: 4px 30px 0px 30px;
+height: 46px;
+line-height: 45px;
+margin: auto;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.wrapper .logo{
+color: #44ff00;
+font-size: 16px;
+font-weight:bold;
+text-decoration: none;
+}
+.wrapper .logo {
+margin-top: -5px;
+}
+.wrapper .nav-links{
+display: inline-flex;
+}
+.nav-links li{
+list-style: none;
+}
+.nav-links li a{
+color: #f2f2f2;
+text-decoration: none;
+font-size: 16px;
+padding: 9px 10px;
+border-radius: 5px;
+transition: all 0.3s ease;
+}
+.nav-butt-on{
+background: #ff0101;
+border: 3px solid #ff0101;
+font-size: 16px;
+color:white; 
+border-radius: 25PX; 
+margin-left: 16px;
+padding: 07px 10px 7px 10px;
+}
+.nav-butt-on:hover{
+background: #242526;
+}
+.nav-links li a:hover, .binu-row .mega-links li a:hover{
+COLOR: #ff0101;
+border:.01px solid white;
+}
+.binu-row .mega-links1{
+margin-left: -20px;
+}
+
+.binu-row .mega-links1 li a:hover{
+COLOR: #d9d9d9;
+border:.01px solid white;
+}
+
+.nav-links li header a:hover {
+color: #ffffff;
+}
+.wrapper .nav-links >li:hover .menu-red{
+background:#ff0101;
+border:0px;
+}
+.wrapper .nav-links >li:hover .nav-butt-on{
+background:#242526;
+}
+.nav-links .mobile-item{
+display: none;
+}
+.nav-links .drop-menu, .drop-menu {
+position: absolute;
+border-top: 3px solid #ff0101;
+background: #242526;
+width: 155px;
+line-height: 30px;
+top: 85px;
+opacity: 0;
+visibility: hidden;
+box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+.drop-menu{
+z-index: 100;
+}
+.nav-links li:hover .drop-menu,
+.nav-links li:hover .mega-box{
+transition: all 300ms ease;
+transition-delay: 250ms;
+top: 40px;
+opacity: 1;
+visibility: visible;
+}
+.drop-menu li a{
+width: 100%;
+display: block;
+padding: 0 0 0 16px;
+border-radius: 0px;
+}
+.mega-box{
+position: absolute;
+left: 0;
+width: 100%;
+padding: 0px 30px;
+top: 85px;
+opacity: 0;
+visibility: hidden;
+z-index: 100;
+}
+
+.mega-short-box{
+width:800px; 
+margin-left: 300px;
+}
+
+.mega-short-2box{
+position:flex;
+width:300px; 
+margin-left: 570px;
+}
+.mega-short-3box{
+width:300px; 
+margin-left: 715px;
+}
+.mega-box .content{
+border-top: 3px solid #eb3007;
+background: #242526;
+padding: 0px 20px 10px 20px;
+display: flex;
+width: 100%;
+justify-content: space-between;
+box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+.mega-box .content .binu-row{
+width: calc(25% - 30px);
+line-height: 30px;
+}
+.content .binu-row img{
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+.content .binu-row header{
+margin-top: 10px;
+color: #ff0000;
+font-size: 16px;
+}
+.content .binu-row header > a{
+color: #ff0000;
+font-size: 16px;
+}
+.content .binu-row .mega-links{
+margin-left: -20px;
+border-left: 2px solid rgba(255,255,255,0.09);
+}
+.binu-row .mega-links li{
+padding: 0 20px;
+}
+.binu-row .mega-links li a{
+padding: 0px;
+padding: 0 20px;
+color: #d9d9d9;
+font-size: 16px;
+display: block;
+border-bottom:.01px solid rgb(45, 45, 45);
+}
+.binu-row .mega-links1 li a{
+padding: 0px;
+padding: 0 20px;
+color: #ff0101;
+font-size: 16px;
+display: block;
+border-bottom:.01px solid rgb(45, 45, 45);
+}
+.wrapper .btn{
+color: #fff;
+font-size: 16px;
+cursor: pointer;
+display: none;
+}
+.wrapper .btn.close-btn{
+position: absolute;
+right: 30px;
+top: 10px;
+color: red;
+font-weight: bold;
+}
+.drop-menu-margin{
+margin-left: 25PX;
+width:20;
+}
+nav input{
+display: none;
+}
+.body-text{
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 100%;
+text-align: center;
+padding: 0 30px;
+}
+.wrapper .btn{
+color: #fff;
+font-size: 16px;
+cursor: pointer;
+display: none;
+}
+/*-------------------------------------NAV BAR STYLE ENDS-------------------------------------*/
+/*--------------------------tab start----------------------------*/
+html{
+background-color: rgb(236, 241, 255);
+}
+.fusion, .fusion1, .fusion2 {
+display:none;
+}
+
+.show-fusion .fusion, .show-fusion1 .fusion1, .show-fusion2 .fusion2 {
+display:block;
+}
+
+
+.tableheading2, .tableheading1, .tableheading {
+position:absolute; margin-left:35%; padding-bottom:1px; margin-top: -5px; font-size:19pt; 
+color:#1a92e2;
+text-shadow: 2px 3px 5px #5fc7daad;
+}
+
+
+
+
+/*-----------------------------------------media @1500 starts-----------------------------------*/
+@media (max-width:1500px){
+        .mega-box .content .binu-row{
+        margin-bottom: 0px;
+        border-top: 0px solid rgba(255,255,255,0.08);
+        }
+
+        .select-table-filter2{
+        right:40%;}
+
+        .tableheading, .tableheading1, .tableheading2{
+        margin-left: 25%;
+        }
+        .grid2{
+            grid-gap: 0rem;
+            margin: 10px 0px 10px 0px;
+            margin-left:3%;
+        }
+        }
+/*-----------------------------------------media @1500 end--------------------------------------*/
+/*----------------------------------------Youtube video style @1450 start-----------------------*/
+@media screen and (max-width: 1450px) {
+
+.grid2{
+grid-template-columns: repeat(2, 1fr);
+}
+.light-table-filter {
+    margin: 7px 0px 0px 3%;
+}
+}
+/*----------------------------------------Youtube video style @1450 end-------------------------*/
+
+/*----------------------------------------Youtube video style @1290 start-----------------------*/
+@media screen and (max-width: 1290px) {
+
+.mega-short-2box{
+width:300px; 
+margin-left: 540px;
+}
+.mega-short-3box{
+width:300px; 
+margin-left: 680px;
+}
+.tableheading, .tableheading1, .tableheading2{
+          display:none;
+          }
+          .select-table-filter2{
+            left:3%;
+            right:auto;
+          }
+}
+/*----------------------------------------Youtube video style @1290 end-------------------------*/
+
+/*----------------------------------------Youtube video style @1250 start-----------------------*/
+@media screen and (max-width: 1250px) {
+        .info{
+        display:none;}
+        .clock{
+        display:none;}
+        .mega-short-2box{
+        width:300px; 
+        margin-left: 490px;
+        }
+        .mega-short-3box{
+        width:300px; 
+        margin-left: 630px;
+        }
+}
+/*----------------------------------------Youtube video style @1250 end-------------------------*/
+
+/*----------------------------------------Youtube video style @1200 Start-------------------------*/
+@media screen and (max-width: 1200px) {
+
+        .sitename{
+        font-size: 40px; 
+        }
+        .SRO{
+        padding: 10px 10px 3px 100px;
+        }
+        .mega-short-box{
+        margin-left: 215px;
+        }
+        .mega-short-2box{
+        width:300px; 
+        margin-left: 440px;
+        }
+        .mega-short-3box{
+        width:300px; 
+        margin-left: 580px;
+        }
+        
+
+}
+/*----------------------------------------Youtube video style @1200 end-------------------------*/
+
+/*------------------------------------------media @1150 end---------------------------------------*/
+@media screen and (max-width: 1050px) {
+          
+        .light-table-filter{
+        font-size: 12pt;
+        min-width: 8cm;
+        min-height: 1cm;
+        padding: 0px 0px 0px 5px;
+        margin: 7px 0px 10px 3%;
+        }
+        .select-table-filter, .select-table-filter1{
+        font-size: 12pt;
+        min-width: 8cm;
+        border-radius: 8px;
+        margin:7px 0px 0px 3%;
+        }
+        .grid2{
+        margin: 5px 0px 10px 0px;
+        grid-template-columns: repeat(1, 1fr);
+        }
+        .grid2 > div {
+        border: none;
+        width: 320px;
+        height: 5rem;
+        }
+        .heading{
+        font-size: 1.5rem;
+        }
+        table, td, th {
+        font-size: 13px;
+        }
+        .sro{
+        margin-left: 100px;
+        font-size: 13px;
+        }  
+        .sitename{
+        font-size: 30px; 
+        }
+        .mega-short-2box{
+        width:300px; 
+        margin-left: 400px;
+        }
+        .mega-short-3box{
+        width:300px; 
+        margin-left: 540px;
+        }
+     
+
+
+
+
+        .page-button {
+    background-color: #f1f1f1;
+    color: black;
+    border: 1px solid #ccc;
+    margin: 0 2px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+.select-table-filter2{
+    border: 1px solid #ccc;
+    margin: 0 2px;
+    padding: 5px 10px;
+
+}
+
+}
+
+/*-----------------------------------------media @1100 starts-------------------------------------*/
+@media (max-width:1100px){
+        .mega-short-box{
+        margin-left: 130px;
+        }
+        .mega-short-2box{
+        margin-left: 350px;
+        }
+        .mega-short-3box{
+        margin-left: 490px;
+        }
+   
+}
+/*-----------------------------------------media @1100 ends--------------------------------------*/
+
+/*----------------------------------------media @1050 starts------------------------------------*/
+@media (max-width:1050px){
+
+        .mega-short-2box{
+        margin-left: 300px;
+        }
+        .mega-short-3box{
+        margin-left: 440px;
+        }
+       
+       
+}
+/*------------------------------------------media @1050 end---------------------------------------*/
+
+/*-----------------------------------------media MIN @1020 starts-----------------------------------*/
+@media screen and (min-width: 1020px) {
+        .min-width-fix{
+        min-width: 30cm;
+        }
+        .vanishnav{
+        display:none
+        }/* nav bar change*/
+}
+/*-----------------------------------------media MIN @1020 ENDS-----------------------------------*/
+
+/*-------------------------------------NAV BAR STYLE @ 1020PX start-----------------------------*/
+@media screen and (max-width: 1020px) {
+          .wrapper .btn{
+          display: block;
+          }
+          .wrapper .nav-links{
+          border-top: 3px solid #eb3007;
+          border-right: 3px solid #848484;
+          border-left: 3px solid #848484;
+          margin-top:4.6rem;
+          Margin-left:0px;
+          position:absolute;
+          min-height: 70vh;
+          width: 100%;
+          max-width: 340px;
+          top: 0;
+          left: -100%;
+          background: #242526;
+          display: block;
+          padding: 30px 10px;
+          line-height: 30px;
+          overflow-y: auto;
+          box-shadow: 0px 16px 16px rgba(0,0,0,0.18);
+          transition: all 0.3s ease;
+          z-index: 100;
+          }
+          /* custom scroll bar */
+          ::-webkit-scrollbar {
+          width: 10px;
+          }
+          ::-webkit-scrollbar-track {
+          background: #242526;
+          }
+          ::-webkit-scrollbar-thumb {
+          background: #3A3B3C;
+          }
+          #menu-btn:checked ~ .nav-links{
+          left: 0%;
+          }
+          #menu-btn:checked ~ .btn.menu-btn{
+          display: none;
+          }
+          #close-btn:checked ~ .btn.menu-btn{
+          display: block;
+          }
+          .nav-links li{
+          margin: 16px 10px;
+          }
+          .nav-links li a{
+          padding: 0 20px;
+          display: block;
+          font-size: 16px;
+          }
+          .nav-links .drop-menu{
+          border-top: 0px solid #eb3007;
+          position: static;
+          opacity: 1;
+          top: 65px;
+          visibility: visible;
+          padding-left: 20px;
+          width: 100%;
+          max-height: 0px;
+          overflow: hidden;
+          box-shadow: none;
+          transition: all 0.3s ease;
+          }
+          .mega-box .content{
+
+          border-top: 0px solid #eb3007;
+          }
+          .binu-row .mega-links li a{
+          COLOR: #5dfdd8af;
+          width:280px;
+          }
+          #showDrop:checked ~ .drop-menu, #showDrop1:checked ~ .drop-menu, #showDrop2:checked ~ .drop-menu,
+          #showMega1:checked ~ .mega-box, #showMega2:checked ~ .mega-box, #showMega3:checked ~ .mega-box, #showMega4:checked ~ .mega-box, #showMega5:checked ~ .mega-box{
+          max-height: 100%;
+          }
+          .drop-menu-margin{
+          margin-left: 1PX;
+          WIDTH:120PX
+          }
+          .nav-links .desktop-item, .nav-links{
+          display: none;
+          }
+
+          .nav-links .mobile-item{
+          display: block;
+          color: #f2f2f2;
+          font-size: 16px;
+          padding-left: 10px;
+          cursor: pointer;
+          border-radius: 5px;
+          transition: all 0.3s ease;
+          }
+          .nav-butt-on{
+          margin-left: 10px;
+          }
+          .nav-links .mobile-item:hover{
+          background: #3A3B3C;
+          }
+          .drop-menu li{
+          margin: 0;
+
+          }
+          .drop-menu li a{
+          border-radius: 5px;
+          font-size: 16px;
+          color:red;
+          }
+          .drop-menu li a:hover{
+          color:rgb(255, 255, 255);
+          }
+          .mega-box{
+          position: static;
+          top: 65px;
+          opacity: 1;
+          visibility: visible;
+          padding: 0 20px;
+          max-height: 0px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          }
+          .mega-box .content{
+          box-shadow: none;
+          flex-direction: column;
+          padding: 00px 20px 0 20px;
+          }
+          .mega-box .content .binu-row{
+        width: 100%;
+        margin-bottom: 0px;
+        }/* nav bar change*/
+
+          .mega-box .content .binu-row:nth-child(1),
+          .mega-box .content .binu-row:nth-child(2){
+          border-top: 1px;
+          }
+          .content .binu-row .mega-links{
+          border-left: 0px;
+          padding-left: 16px;
+          width:380px;
+          max-height: 0px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          margin-left: -65px;
+          }
+          #sub-sub-menu1:checked ~ .sub-sub-link1, #sub-sub-menu2:checked ~ .sub-sub-link2, #sub-sub-menu3:checked ~ .sub-sub-link3, #sub-sub-menu3A:checked ~ .sub-sub-link3A, #sub-sub-menu4:checked ~ .sub-sub-link4, #sub-sub-menu5:checked ~ .sub-sub-link5, #sub-sub-menu6:checked ~ .sub-sub-link6, #sub-sub-menu7:checked ~ .sub-sub-link7, #sub-sub-menu8:checked ~ .sub-sub-link8, #sub-sub-menu9:checked ~ .sub-sub-link9, #sub-sub-menu10:checked ~ .sub-sub-link10, #sub-sub-menu11:checked ~ .sub-sub-link11, #sub-sub-menu12:checked ~ .sub-sub-link12, #sub-sub-menu13:checked ~ .sub-sub-link13, #sub-sub-menu14:checked ~ .sub-sub-link14, #sub-sub-menu15:checked ~ .sub-sub-link15, #sub-sub-menu16:checked ~ .sub-sub-link16, #sub-sub-menu17:checked ~ .sub-sub-link17, #sub-sub-menu18:checked ~ .sub-sub-link18, #sub-sub-menu19:checked ~ .sub-sub-link19, #sub-sub-menu20:checked ~ .sub-sub-link20, #sub-sub-menu21:checked ~ .sub-sub-link21, #sub-sub-menu22:checked ~ .sub-sub-link22, #sub-sub-menu23:checked ~ .sub-sub-link23, #sub-sub-menu24:checked ~ .sub-sub-link24, #sub-sub-menu25:checked ~ .sub-sub-link25, #sub-sub-menu26:checked ~ .sub-sub-link26, #sub-sub-menu27:checked ~ .sub-sub-link27, #sub-sub-menu28:checked ~ .sub-sub-link28, #sub-sub-menu29:checked ~ .sub-sub-link29, #sub-sub-menu30:checked ~ .sub-sub-link30, #sub-sub-menu31:checked ~ .sub-sub-link31, #sub-sub-menu32:checked ~ .sub-sub-link32, #sub-sub-menu33:checked ~ .sub-sub-link33, #sub-sub-menu34:checked ~ .sub-sub-link34, #sub-sub-menu34:checked ~ .sub-sub-link34, #sub-sub-menu35:checked ~ .sub-sub-link35, #sub-sub-menu36:checked ~ .sub-sub-link36, #sub-sub-menu37:checked ~ .sub-sub-link37, #sub-sub-menu38:checked ~ .sub-sub-link38, #sub-sub-menu39:checked ~ .sub-sub-link39, #sub-sub-menu40:checked ~ .sub-sub-link40, #sub-sub-menu41:checked ~ .sub-sub-link41, #sub-sub-menu42:checked ~ .sub-sub-link42, #sub-sub-menu43:checked ~ .sub-sub-link43, #sub-sub-menu44:checked ~ .sub-sub-link44, #sub-sub-menu45:checked ~ .sub-sub-link45, #sub-sub-menu46:checked ~ .sub-sub-link46, #sub-sub-menu47:checked ~ .sub-sub-link47, #sub-sub-menu48:checked ~ .sub-sub-link48, #sub-sub-menu49:checked ~ .sub-sub-link49, #sub-sub-menu50:checked ~ .sub-sub-link50, #sub-sub-menu51:checked ~ .sub-sub-link51, #sub-sub-menu52:checked ~ .sub-sub-link52, #sub-sub-menu53:checked ~ .sub-sub-link53, #sub-sub-menu54:checked ~ .sub-sub-link54, #sub-sub-menu55:checked ~ .sub-sub-link55, #sub-sub-menu56:checked ~ .sub-sub-link56, #sub-sub-menu57:checked ~ .sub-sub-link57, #sub-sub-menu58:checked ~ .sub-sub-link58, #sub-sub-menu59:checked ~ .sub-sub-link59, #sub-sub-menu60:checked ~ .sub-sub-link60, #sub-sub-menu61:checked ~ .sub-sub-link61, #sub-sub-menu62:checked ~ .sub-sub-link62, #sub-sub-menu63:checked ~ .sub-sub-link63, #sub-sub-menu64:checked ~ .sub-sub-link64, #sub-sub-menu65:checked ~ .sub-sub-link65, #sub-sub-menu66:checked ~ .sub-sub-link66, #sub-sub-menu67:checked ~ .sub-sub-link67, #sub-sub-menu68:checked ~ .sub-sub-link68 {
+          max-height: 100%;
+          }
+          .binu-row .mega-links li{
+          margin: 0;
+          width:380px;
+          }
+          .content .binu-row header, .content .binu-row header a{
+          font-size: 16px;
+          padding-left:6px;
+          margin-left:-20px;
+          }
+          .content .binu-row header a{
+          padding-left:10px;
+          }
+          .content .binu-row header:hover{
+          background: #3A3B3C;
+          }
+
+      
+          .select-table-filter-worksinchrome{
+          display:none
+          }
+         .content .binu-row .mega-links1{
+        border-left: 0px;
+        padding-left: 16px;
+        width:380px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-left: -60px;
+        margin-top: -12px;
+        margin-bottom: -30px;
+        }/*nav bar change*/
+        
+          .binu-row .mega-links1 li a{
+          border-style: hidden;
+          }
+          .mega-short-box{
+          margin-left: 10px;
+          }
+          .mega-short-2box{
+          width:300px; 
+          margin-left: 10px;
+          }
+          .mega-short-3box{
+          width:300px; 
+          margin-left: 10px;
+          }
+}
+nav input{
+display: none;
+}
+.body-text{
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 100%;
+text-align: center;
+padding: 0 30px;
+}
+
+/*-------------------------------------NAV BAR STYLE @ 1020PX end-------------------------------*/
+@media screen and (max-width: 800px) {
+
+            #pagination-top, #pagination-bottom {
+            display: none;
+            }
+            #rowsPerPageSelect {
+            display: none;
+            }
+            table, td, th {
+            margin-top:1rem;
+            }
+
+}
+/*---------------------------------------------Media @ 760PX end-------------------------------*/
+
+
+@media screen and (max-width: 760px) {
+            table, td, th {
+            font-size: 11px;
+            margin-left: 2%;
+            margin-right: 1%;
+            }
+
+            .sitename{
+            font-size: 20px; 
+            }
+            .SRO{
+            font-size: 10px;
+            padding: 10px 10px 3px 25px;
+            text-shadow: 1px 1px 1px #000000;
+            }
+
+            .light-table-filter{
+            margin: 7px 0px 10px 2%;
+            min-width:96%;
+            }
+
+            .select-table-filter, .select-table-filter2 {
+            margin:7px 0px 0px 2%;
+            min-width:96%;
+            
+            }
+
+}
+
+
+</style>
+
+
+<Title>
+  Pay_revision_orders
+</Title>
+
+<script nonce="ECIwX+IFRK0=">
+  /* Firefox needs this to prevent FOUT */
+</script>
+</head>
+
+<body>
+
+<div class="headimage">
+			<p class="sitename fus ion4">Pay revision orders</p>
+      <div class="SRO"; style="overflow-x:auto;">
+      <p>Pay revision orders issued by the Government.</p>
+      </div>
+</div>
+
+
+
+<!-------------------------------------Nav Start--------------------------------------->
+<!-- Created By CodingNepal - www.codingnepalweb.com -->
+<nav>
+  <div class="wrapper">
+    <div ><a href="https://www.gstcell.com"><span class="hide-home logo">&#127968; HOME</span></a></div>
+     
+          
+      <input type="radio" name="slider" id="menu-btn">
+      <input type="radio" name="slider" id="close-btn">
+      <ul class="nav-links">
+      <label for="close-btn" class="btn close-btn">&#x2715;</label>
+      
+        <li>
+        <a class="desktop-item menu-red" STYLE="margin-RIGHT: 10PX; color:white">&#9743;</a>
+        <input type="checkbox" name="main-menu" id="showDrop1">
+        <label for="showDrop1" class="mobile-item ">&#9743;</label>
+          <ul class="drop-menu" STYLE="margin-RIGHT: 20PX;">
+          <li><a href="https://www.gstcell.com/sgst-directory">DIRECTORY</a></li>
+          </ul>
+        </li>
+      
+        <li>
+          <a class="desktop-item menu-red" style="color:white">ACT & RULES &#9662;</a>
+          <input type="checkbox" name="main-menu" id="showMega1">
+          <label for="showMega1" class="mobile-item">ACT & RULES &#9662;</label>
+              <div class="mega-box">
+                  <div class="content">
+                      <div class="binu-row">
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu1">
+                          <header><label for="sub-sub-menu1">AIT & ST &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link1" id="AIT_ST">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+      
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu2">
+                          <header><label for="sub-sub-menu2">CST ACT & RULES &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link2" id="CST_ACT_RULES">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu3">
+                          <header><label for="sub-sub-menu3">ENTRY TAX ACT &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link3" id="ENTRY_TAX">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu4">
+                          <header> <label for="sub-sub-menu4">GST ACT, 2017 &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link4" id="GST_ACT">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                      </div>
+                      <div class="binu-row">
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu5">
+                          <header> <label for="sub-sub-menu5">KGST ACT & RULES &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link5" id="KGST_ACT_RULES">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu3A">
+                          <header><label for="sub-sub-menu3A">KML ACT &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link3A" id="KML_ACT">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu6">
+                          <header> <label for="sub-sub-menu6">KVAT ACT & RULES &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link6" id="KVAT_ACT">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+      
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu7">
+                          <header> <label for="sub-sub-menu7">LUXURY TAX &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link7" id="LUXURY_TAX">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+      
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu8">
+                          <header> <label for="sub-sub-menu8">SURCHARGE ACT &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link8" id="SURCHARGE">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                      </div>
+                      <div class="binu-row">
+                          <header><a href="https://docs.google.com/uc?id=1y6jKYVMAGUPWGdIGtEXOoL556mpn9Fsh" style="margin-left: -10px;">SOCIAL SECURITY CESS</a></header>
+      
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu9">
+                          <header> <label for="sub-sub-menu9">TAX ON LOTTERY ACT &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link9" id="LOTTERY">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu10">
+                          <header> <label for="sub-sub-menu10">KERALA FINANCE ACT &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link10" id="KERALA_FINANCE_ACT">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                      </div>
+                      <div class="binu-row">
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu11">
+                          <header> <label for="sub-sub-menu11">CENTRAL FINANCE ACT &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link11" id="CENTRAL_FINANCE_ACT">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+      
+                          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu12">
+                          <header> <label for="sub-sub-menu12">OTHER ACTS &#9662;</label></header>
+                                      <ul class="mega-links sub-sub-link12" id="OTHER_ACTS">
+                                          <li class="loading-message">Loading...</li>
+                                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                      </ul>
+                      </div>
+                  </div>
+              </div>
+          </li>
+      <li>
+            <a  class="desktop-item menu-red" style="color:white">NOTIFICATION &#9662;</a>
+            <input type="checkbox" name="main-menu" id="showMega2">
+            <label for="showMega2" class="mobile-item">NOTIFICATION &#9662;</label>
+            <div class="mega-box mega-short-2box">
+                <div class="content">
+                    <div class="binu-row" style="width:100%; margin-left: 0%;">
+                        <ul class="mega-links1">
+                           <li> <a href="https://www.gstcell.com/notification" target="_blank">NOTIFICATIONS</a>    </li>
+                        </ul>
+                        <ul class="mega-links1">
+                          <li> <a href="https://www.gstcell.com/rod" target="_blank">R.O.D</a>    </li>
+                       </ul>
+                       <ul class="mega-links1">
+                          <li class="vanishnav"> <a href="https://www.gstcell.com/rod" target="_blank">.</a>    </li>
+                       </ul>
+                    </div>
+                </div>
+            </div>
+      </li>
+      <li> <a href="https://www.gstcell.com/circular" class="desktop-item menu-under" style="color:white">CIRCULAR</a><input type="checkbox" name="main-menu" id="showMega5">
+      <a href="https://www.gstcell.com/circular" for="showMega5" class="mobile-item">CIRCULAR</a>
+          <div class="mega-box mega-short-3box">
+            
+          </div>
+      </li>
+      <li> <a  class="desktop-item menu-red" style="color:white">GST &#9662;</a><input type="checkbox" name="main-menu" id="showMega3">
+          <label for="showMega3" class="mobile-item">GST &#9662;</label>
+            <div class="mega-box mega-short-box" style="width:900px">
+              <div class="content">
+                  <div class="binu-row" style="min-width:300px; margin-left: 10px;">
+                  <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu15">
+                  <header> <label for="sub-sub-menu15"></label></header>
+                  <!-- <ul class="mega-links sub-sub-link15">
+                        <li> <a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank">KERALA</a>      </li>
+                  </ul>
+                  <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu14">
+                  <header> <label for="sub-sub-menu14">RCM &#9662;</label></header>
+                  <ul class="mega-links sub-sub-link14">
+                  <li> <a href="https://www.gstcell.com/rcm/goods" target="_blank">GOODS</a>    </li>
+                  <li> <a href="https://www.gstcell.com/rcm/service" target="_blank">SERVICES</a>    </li>
+                  </ul>-->
+                      <ul class="mega-links1"> 
+                          <li> <a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank">ADVANCE RULING</a>      </li>
+                      </ul>
+                      <ul class="mega-links1"> 
+                          <li> <a href="https://www.gstcell.com/notification" target="_blank">NOTIFICATIONS</a>      </li>
+                      </ul>
+                      <ul class="mega-links1">
+                          <li> <a href="https://www.gstcell.com/rcm" target="_blank">R.C.M</a>    </li>
+                      </ul>
+                      <ul class="mega-links1">
+                          <li> <a href="https://www.gstcell.com/rod" target="_blank">R.O.D</a>    </li>
+                      </ul>
+                      <ul class="mega-links1">
+                          <li> <a href="https://www.gstcell.com/notification" target="_blank">CIRCULAR</a>  </li>
+                       </ul>
+                  </div>
+                  <div class="binu-row" style="margin-left: 10px;">
+                    <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu17" >
+                    <header> <label for="sub-sub-menu17">GST ACT & RULES &#9662;</label></header>
+                                <ul class="mega-links sub-sub-link17" id="GST_ACT_1" style="width:280px">
+                                  <li class="loading-message">Loading...</li>
+                                  <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                              </ul>
+                  </div>
+                 
+                 
+                  <div class="binu-row" style="width:250px">
+                      <input type="radio" name="sub-menu-Act" id="sub-sub-menu18">
+                      <header> <label for="sub-sub-menu18"></label></header>
+                    
+                    </div>
+      
+      
+              </div>
+            </div>
+      </li>
+        <li>
+            <a  class="desktop-item menu-red" style="color:white">FINANCE BILL & ACT &#9662;</a>
+            <input type="checkbox" name="main-menu" id="showMega4">
+            <label for="showMega4" class="mobile-item">FINANCE BILL & ACT &#9662;</label>
+            <div class="mega-box">
+            <div class="content">
+      
+                <div class="binu-row">
+                  <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu25">
+                  <header> <label for="sub-sub-menu25">BUDGET SPEECH (ENG) &#9662;</label></header>
+                              <ul class="mega-links sub-sub-link25" id="K_BS_ENG">
+                                  <li class="loading-message">Loading...</li>
+                                <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                            </ul>
+                </div>
+            <div class="binu-row">
+                <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu19">
+                <header> <label for="sub-sub-menu19">BUDGET SPEECH (MAL) &#9662;</label></header>
+                              <ul class="mega-links sub-sub-link19" id="K_BS_MAL">
+                                  <li class="loading-message">Loading...</li>
+                                <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                            </ul>
+            </div>
+      
+            <div class="binu-row">
+                <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu20">
+                <header> <label for="sub-sub-menu20">KERALA FINANCE BILL &#9662;</label></header>
+                          <ul class="mega-links sub-sub-link20" id="KF_BILL">
+                              <li class="loading-message">Loading...</li>
+                            <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                        </ul>
+            </div>
+      
+            <div class="binu-row">
+                <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu21">
+                <header> <label for="sub-sub-menu21">KERALA FINANCE ACT &#9662;</label></header>
+                            <ul class="mega-links sub-sub-link21" id="KERALA_FINANCE_ACT_1">
+                              <li class="loading-message">Loading...</li>
+                              <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                          </ul>
+              <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu22">
+              <header> <label for="sub-sub-menu22">CENTRL BUDGET SPEECH &#9662;</label></header>
+                              <ul class="mega-links sub-sub-link22" id="CENTRAL_SPEECH">
+                                  <li class="loading-message">Loading...</li>
+                                  <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                              </ul>
+            </div>
+            <div class="binu-row">
+            <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu23">
+            <header> <label for="sub-sub-menu23">CENTRAL FINANCE BILL &#9662;</label></header>
+                              <ul class="mega-links sub-sub-link23" id="CF_BILL">
+                                  <li class="loading-message">Loading...</li>
+                                  <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                              </ul>
+            <input type="checkbox" name="sub-menu-Act"   id="sub-sub-menu24">
+              <header> <label for="sub-sub-menu24">CENTRAL FINANCE ACT &#9662;</label></header>
+                              <ul class="mega-links sub-sub-link24" id="CF_ACT">
+                                  <li class="loading-message">Loading...</li>
+                                  <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                              </ul>
+            </div>
+            </div>
+            </div>
+        </li>
+      <li>
+        <span class="desktop-item nav-butt-on" >&#128176; TAX RATE &#9662;</span>
+        <input type="checkbox" name="main-menu" id="showDrop2">
+        <label for="showDrop2" class="mobile-item nav-butt-on">&#128176; TAX RATE FINDER &#9662;</label>
+            <ul class="drop-menu drop-menu-margin">
+                <li><a href="https://www.gstcell.com/tax-rate-finder/gst-rate">GST</a></li>
+              <li><a href="https://www.gstcell.com/tax-rate-finder/gst-rate-of-services/ratechangequicksearch">GST rate change</a></li>
+              <li><a href="https://www.gstcell.com/tax-rate-finder/kgst-act">KGST</a></li>
+               
+            </ul>
+      </li>
+      
+      </ul>
+      <label for="menu-btn" class="btn menu-btn">&#x2630;</label>
+      </div>
+</nav>
+<!-------------------------------------Nav end----------------------------------------->
+  
+
+			
+			<!-- tabs -->
+
+<main class="grid2">
+        <div class="container2" style="z-index: 10; display:none;">
+            <select id="sheetSelect" class="select-table-filter" onchange="updateYearSelect()">
+                <option for="sheet1" value="sheet1">Circular issued by Kerala</option>
+            </select>
+        </div>
+                
+        <div class="container2" style="z-index: 10;">
+          <div style="overflow-x:auto;">
+              <select id="yearSelect" type="search" class="select-table-filter" style="overflow-x:auto">
+                  <option value="all">Select year</option>
+                  <!-- Options will be populated by JavaScript -->
+              </select>
+          </div>
+          </div>
+
+
+        <div class="container2" style="z-index: 10;">
+            <input type="text" id="searchBox" class="light-table-filter" autocomplete="off" placeholder="Search using keyword">
+        </div>
+        
+</main>
+    
+    
+<div style="margin-top: 15px;"> 
+        <div class="tableheading1" style="display: none;"><span class="fusion">Issued by the Kerala</span><span class="fusion1">Issued by the C.B.I.C</span><span class="fusion2">Instructions issued by State & Central</span></div>
+            <div id="loadingMessage">Loading data, please wait...</div>
+            <div id="errorMessage" style="display:none;">Error loading data. Please try again later.</div>
+        <div class="label" style="overflow-x:auto;">
+            <label for="mySelect" style="display:none">Choose an option:</label><select id="rowsPerPageSelect" type="search" class="select-table-filter2" >
+                <option value="30">30</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="200">250</option>
+                <option value="all">All</option>
+            </select>
+            <div id="pagination-top"></div>
+            <table id="TaxdataTable" align-self="center">
+                <!-- Data will be populated here -->
+            </table>
+            <div id="pagination-bottom"></div>
+        </div>
+</div>	
+
+<!-------------------------------------Social Media------------------------->
+<hr class="hide-social" style="border: 1px solid red; margin-top: 2rem;";>
+<h2 class="hide-social" style="margin-left: 5%; margin-bottom:-20px; color: rgb(0, 105, 112); font-weight: bold;">Share this page on </h2>
+<div id="social-media-panel" class="panel">
+  <ul>
+    <li class="Sharesocial">Share</li>
+    <li><a href="https://www.facebook.com/sharer/sharer.php?u=https://www.gstcell.com/service-matters/pay-revision-orders" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a></li>
+      <li><a href="https://api.whatsapp.com/send?text=https://www.gstcell.com/service-matters/pay-revision-orders" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a></li>
+      <li><a href="mailto:?subject=Check%20this%20out&body=https://www.gstcell.com/service-matters/pay-revision-orders" target="_blank" class="gmail"><i class="fas fa-envelope"></i></a></li>
+      <li><a href="https://www.instagram.com" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a></li>
+      <li><a href="https://www.linkedin.com/shareArticle?url=https://www.gstcell.com/service-matters/pay-revision-orders" target="_blank" class="linkedin"><i class="fab fa-linkedin-in"></i></a></li>
+      <li><a href="https://twitter.com/intent/tweet?url=https://www.gstcell.com/service-matters/pay-revision-orders" target="_blank" class="x"><span>X</span></a></li>
+  </ul>
+</div>
+<div id="arrow"></div>
+<!-------------------------------------Social Media------------------------->
+
+</body>
+
+
+<!--tax-->		
+<script>
+		const selectElement = (element) => document.querySelector(element);
+		
+		selectElement('.menu-icons'). addEventListener('click',()=>{
+		selectElement('nav'). classList.toggle('active')
+		});
+</script>
+<!--tax-->
+
+
+<!-------------------------------------facebook script starts-------------------------->
+  <script>
+      function share_fb() {
+      var window_location_encoded = "https://www.gstcell.com/instruction-of-cct";
+      var share_link = "https://www.facebook.com/sharer/sharer.php?u="+window_location_encoded;
+      window.open(share_link,'_blank');
+      }
+  </script>
+<!-------------------------------------facebook script Endss-------------------------->
+
+
+<!-------------------------------------Whatsapp script starts-------------------------->
+  <script>   
+      function openWhatsApp() {  
+      window.open('whatsapp://send?text= https://www.gstcell.com/instruction-of-cct');  
+      }  
+  </script>
+<!-------------------------------------Whatsapp script script ends--------------------->
+
+
+<!-------------------------------------ISSUED BY STATE------------------------------->
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+    const searchBox = document.getElementById('searchBox');
+    const yearSelect = document.getElementById('yearSelect');
+    const dataTable = document.getElementById('TaxdataTable');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const paginationTop = document.getElementById('pagination-top');
+    const paginationBottom = document.getElementById('pagination-bottom');
+    const rowsPerPageSelect = document.getElementById('rowsPerPageSelect');
+    const sheetSelect = document.getElementById('sheetSelect');
+
+    const sheetIds = {
+        'sheet1': '1Dy5zDJPz2fGYHnMiZVfXy6NE16YlT_LKD2V2qp3FdVY',
+        'sheet2': '1Dy5zDJPz2fGYHnMiZVfXy6NE16YlT_LKD2V2qp3FdVY'
+    };
+    const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
+
+    let currentPage = 1;
+    let rowsPerPage = parseInt(rowsPerPageSelect.value) || 30;
+    let allRows = [];
+
+    function fetchData(sheetId) {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
+        
+        // Show the loading message
+        loadingMessage.style.display = 'block';
+        errorMessage.style.display = 'none';
+        dataTable.innerHTML = ''; // Clear the table
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                loadingMessage.style.display = 'none';
+                allRows = data.values.slice(1); // Skip the header row
+                initializeRowsPerPage();
+                filterAndDisplay();
+            })
+            .catch(error => {
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    function filterAndDisplay() {
+        const keyword = searchBox.value.toLowerCase();
+        const selectedYear = yearSelect.value;
+        const filteredData = allRows.filter(row =>
+            (selectedYear === 'all' || row[5] === selectedYear) &&
+            (row.some((cell, index) => index !== 6 && index !== 9 && index !== 11 && index !== 14 && index !== 16 && index !== 19 && index !== 23 && index !== 26 && index !== 29 && index !== 32 && index !== 34 && index !== 36 && index !== 38 && index !== 40 && index !== 42 && index < 45 && cell.toLowerCase().includes(keyword)))
+            );
+        displayData(filteredData, keyword);
+    }
+
+    
+
+    function initializeRowsPerPage() {
+        const screenWidth = window.innerWidth;
+        if (screenWidth <= 800) {
+            rowsPerPageSelect.value = 'all';
+            rowsPerPage = allRows.length;
+        } else {
+            rowsPerPageSelect.value = '30';
+            rowsPerPage = 30;
+        }
+        filterAndDisplay(); // Ensure the display is updated with new rowsPerPage
+    }
+
+    searchBox.addEventListener('input', filterAndDisplay);
+    yearSelect.addEventListener('change', filterAndDisplay);
+    rowsPerPageSelect.addEventListener('change', function() {
+        rowsPerPage = rowsPerPageSelect.value === 'all' ? allRows.length : parseInt(rowsPerPageSelect.value) || 10;
+        currentPage = 1; // Reset to the first page
+        filterAndDisplay();
+    });
+
+    sheetSelect.addEventListener('change', function() {
+        currentPage = 1; // Reset to the first page
+        const selectedSheet = sheetSelect.value;
+        fetchData(sheetIds[selectedSheet]);
+    });
+
+    function displayData(rows, keyword = '') {
+        const startRow = (currentPage - 1) * rowsPerPage;
+        const endRow = rowsPerPage === 'all' ? rows.length : startRow + rowsPerPage;
+        const paginatedRows = rows.slice(startRow, endRow);
+
+        dataTable.innerHTML = '<tr style="background-color:rgb(222, 255, 255)"><th style="width:14%;">DOCUMENT NO.</th><th style="width:7%;">DATE</th><th style="width:55%;">DESCRIPTION</th><th style="width:14%;">REMARKS</th></tr>';
+        paginatedRows.forEach(row => {
+            const highlightedRow = row.map((cell, index) =>
+                keyword && index <= 45 ? cell.replace(new RegExp(keyword, 'gi'), match => `<span class="highlight">${match}</span>`) : cell
+            );
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+   
+
+
+                <td style="text-align: center;">
+                    <span style="text-transform: None; ${(row[4] && row[4] !== 'undefined') ? 'display:none;' : ''}">${highlightedRow[0]}</span>
+                    <span style="color:red; text-transform: None; ${(row[4] && row[4] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[4]}</span>
+ 
+                    </td>
+ 
+                 <td>
+                     ${(row[1] && row[1] !== 'undefined')
+                     ? `<span style="${(row[1] && row[1] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[1]}</span>` 
+                     : ''}
+                 </td>
+ 
+                 <td>   ${(row[6] && row[6] !== 'undefined')
+                     ? ` <a href="${row[6]}" target="_blank" style="color:blue; text-transform: None;"><B>${highlightedRow[2]} </b> ${highlightedRow[3]}</a> <span style="color:red; ${(row[20] && row[20] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[20]}</span>` 
+                     : `</span><span style="${(row[3] && row[2] !== 'undefined') ? '' : 'display:none;'}"><b>${highlightedRow[2]} </b> ${highlightedRow[3]}</span>`}
+ 
+                     ${(row[9] && row[9] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[7]} </span><a href="${row[9]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[8]}</a>` 
+                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[7] && row[7] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[7]}`}</span>
+ 
+                     ${(row[14] && row[14] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None; font-style: italic">${highlightedRow[12]} </span><a href="${row[14]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[13]}</a>` 
+                     : `<span style="color:red; text-transform: None; ${(row[12] && row[12] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[12]}`}</span>
+
+                       ${(row[23] && row[23] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[21]} </span><a href="${row[23]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[22]}</a>` 
+                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[21] && row[21] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[21]}`}</span>
+                   
+                     ${(row[29] && row[29] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[27]} </span><a href="${row[29]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[28]}</a>` 
+                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[27] && row[27] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[27]}`}</span>
+                
+                    ${(row[34] && row[34] !== 'undefined')
+                     ? `<a href="${row[34]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[33]}</a>` 
+                     : ''}
+
+                     ${(row[36] && row[36] !== 'undefined')
+                     ? `, <a href="${row[36]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[35]}</a>` 
+                     : ''}
+                     
+                      ${(row[38] && row[38] !== 'undefined')
+                     ? `, <a href="${row[38]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[37]}</a>` 
+                     : ''}
+
+                      ${(row[40] && row[40] !== 'undefined')
+                     ? `, <a href="${row[40]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[39]}</a>` 
+                     : ''}
+
+                      ${(row[42] && row[42] !== 'undefined')
+                     ? `, <a href="${row[42]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[41]}</a>` 
+                     : ''}
+
+                      ${(row[44] && row[44] !== 'undefined')
+                     ? `,<a href="${row[44]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[33]}</a>` 
+                     : ''}
+
+                                                           
+                   
+                   </td>
+                <td> ${(row[16] && row[16] !== 'undefined')
+                     ? `<a href="${row[16]}" target="_blank" style="color:blue; text-transform: None;">${highlightedRow[15]}</a>` 
+                     : `<span style="text-transform: None; ${(row[15] && row[15] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[15]}`}</span>
+ 
+                     ${(row[19] && row[19] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[17]} </span><a href="${row[19]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[18]}</a>` 
+                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[17] && row[17] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[17]}`}</span>
+ 
+                     ${(row[26] && row[26] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[24]} </span><a href="${row[26]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[25]}</a>` 
+                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[24] && row[24] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[24]}`}</span>
+ 
+                     ${(row[32] && row[32] !== 'undefined')
+                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[30]} </span><a href="${row[32]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[31]}</a>` 
+                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[30] && row[30] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[30]}`}</span>
+                 </td>
+            `;
+            dataTable.appendChild(tr);
+        });
+
+        displayPagination(rows.length);
+    }
+
+    function displayPagination(totalRows) {
+        paginationTop.innerHTML = '';
+        paginationBottom.innerHTML = '';
+        const totalPages = rowsPerPage === 'all' ? 1 : Math.ceil(totalRows / rowsPerPage);
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+        let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+        startPage = Math.max(1, endPage - maxButtons + 1);
+
+        const createPageButton = (text, targetPage) => {
+            const btn = document.createElement('button');
+            btn.innerText = text;
+            btn.classList.add('page-button');
+            if (targetPage === currentPage) btn.classList.add('active');
+            btn.addEventListener('click', () => {
+                currentPage = targetPage;
+                filterAndDisplay(); // Update data based on new page
+            });
+            return btn;
+        };
+
+        const appendPaginationButtons = (paginationElement) => {
+            // First button
+            if (currentPage > 1) {
+                const firstBtn = createPageButton('First', 1);
+                paginationElement.appendChild(firstBtn);
+            }
+
+            // Previous button
+            if (currentPage > 1) {
+                const prevBtn = createPageButton('Prev', currentPage - 1);
+                paginationElement.appendChild(prevBtn);
+            }
+
+            // Page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const btn = createPageButton(i, i);
+                paginationElement.appendChild(btn);
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                const nextBtn = createPageButton('Next', currentPage + 1);
+                paginationElement.appendChild(nextBtn);
+            }
+
+            // Last button
+            if (currentPage < totalPages) {
+                const lastBtn = createPageButton('Last', totalPages);
+                paginationElement.appendChild(lastBtn);
+            }
+        };
+
+        appendPaginationButtons(paginationTop);
+        appendPaginationButtons(paginationBottom);
+    }
+
+    // Fetch initial data for the default sheet and initialize rows per page
+    fetchData(sheetIds[sheetSelect.value]);
+});
+
+    </script>
+<!------------------------------------ISSUED BY STATE -------------------------->
+<script>
+    const sheetSelect = document.getElementById('sheetSelect');
+    const content = document.querySelector('.tableheading1');
+
+    sheetSelect.addEventListener('change', function() {
+        content.classList.remove('show-fusion', 'show-fusion1', 'show-fusion2');
+
+        if (this.value === 'sheet1') {
+            content.classList.add('show-fusion');
+        } else if (this.value === 'sheet2') {
+            content.classList.add('show-fusion1');
+        } else if (this.value === 'sheet3') {
+            content.classList.add('show-fusion2');
+        }
+    });
+
+    // Trigger change event on page load to apply initial style
+    sheetSelect.dispatchEvent(new Event('change'));
+</script>
+
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+  const spreadsheetId = '1TYxpb5DpOvThUvMwiGDVICPVOdFMJinON7epWUYhtY0'; // Replace with your Google Sheets ID
+const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs'; // Replace with your Google Sheets API key
+
+// Fetch data from the specified Google Sheets range
+function fetchSheetData(range, callback) {
+    gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: spreadsheetId,
+        range: range,
+    }).then((response) => {
+        const data = response.result.values;
+        callback(data);
+    });
+}
+
+// Populate the yearSelect dropdown with data from Google Sheets
+function populateSelect(data) {
+    const yearSelect = document.getElementById('yearSelect');
+    yearSelect.innerHTML = '';
+
+    data.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item[0]; // Assuming value is in the first column
+        option.text = item[1];  // Assuming text is in the second column
+        yearSelect.appendChild(option);
+    });
+}
+
+// Update the yearSelect dropdown based on the selected sheet
+function updateYearSelect() {
+    const sheetSelect = document.getElementById('sheetSelect').value;
+    const yearSelect = document.getElementById('yearSelect');
+
+    // Set default value to "Select year" before loading data
+    yearSelect.innerHTML = '';
+    const allOption = document.createElement('option');
+    allOption.value = 'all';
+    allOption.text = 'Select year';
+    yearSelect.appendChild(allOption);
+    yearSelect.value = 'all';
+
+    let range = 'Sheet1!A1:B50';
+
+    switch (sheetSelect) {
+        case 'sheet2':
+        case 'sheet3':
+        case 'sheet4':
+            range = 'Sheet1!A1:B50';
+            break;
+        case 'sheet5':
+            range = 'Sheet1!E1:F50';
+            break;
+    }
+
+    fetchSheetData(range, populateSelect);
+}
+
+// Initialize the Google API client
+function initClient() {
+    gapi.client.init({
+        apiKey: apiKey,
+        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+    }).then(() => {
+        updateYearSelect(); // Populate default data on page load
+    });
+}
+
+// Load the Google API client
+gapi.load('client', initClient);
+
+</script>
+
+  <!--------------------------------------------------------NAV Bar Script---------------------------------------------------------------->
+
+  <script>
+    const sheetId = '1fUwgZ4dZw6Voub9OUFUSU92xhrRthvb8cN5QFFRzWV8';
+      const apiKey1 = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
+      const range = 'Sheet2!A:C';  // Adjust the range based on your Google Sheet
+    
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey1}`;
+  
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const rows = data.values;
+        if (rows.length > 0) {
+          const linksMap = {};
+  
+          // Group links by type
+          rows.slice(1).forEach(row => {
+            const type = row[0];
+            const linkName = row[1];
+            const linkUrl = row[2];
+            
+            if (!linksMap[type]) {
+              linksMap[type] = [];
+            }
+            
+            linksMap[type].push({ name: linkName, url: linkUrl });
+          });
+  
+          // Create HTML structure for each type and insert into corresponding ul
+          for (const type in linksMap) {
+            const ulElement = document.getElementById(type);
+            if (ulElement) {
+              let content = '';
+              const links = linksMap[type];
+              const initialLoad = Math.min(10, links.length);
+  
+              // Load initial 10 or fewer links
+              for (let i = 0; i < initialLoad; i++) {
+                content += `<li><a href="${links[i].url}" target="_blank">${links[i].name}</a></li>`;
+              }
+  
+              // If more than 10 links, add "See more" button
+              if (links.length > 10) {
+                content += `<li class="see-more" onclick="showMore('${type}')">See more</li>`;
+  
+                // Add hidden links
+                for (let i = 10; i < links.length; i++) {
+                  content += `<li class="hidden ${type}" style="display:none;"><a href="${links[i].url}" target="_blank">${links[i].name}</a></li>`;
+                }
+              }
+  
+              ulElement.innerHTML = content;
+            }
+          }
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error))
+      .finally(() => {
+        // Hide the loading message after data is loaded
+        const loadingMessages = document.querySelectorAll('.loading-message');
+        loadingMessages.forEach(message => {
+          message.style.display = 'none';
+        });
+      });
+  
+    function showMore(type) {
+      const hiddenLinks = document.querySelectorAll(`.hidden.${type}`);
+      hiddenLinks.forEach(link => {
+        link.style.display = 'list-item';
+      });
+      document.querySelector(`.see-more[onclick="showMore('${type}')"]`).style.display = 'none';
+    
+    }
+  </script>
+<!--------------------------------------------------------NAV Bar Script---------------------------------------------------------------->
+<!-------------------------------------------------------Social Media---------------------------------------------------------------->
+<script>
+  const panel = document.getElementById('social-media-panel');
+const arrow = document.getElementById('arrow');
+
+let panelVisible = true;
+
+arrow.addEventListener('click', () => {
+if (panelVisible) {
+   panel.classList.add('collapsed');
+   arrow.classList.add('collapsed');
+   panelVisible = false;
+} else {
+   panel.classList.remove('collapsed');
+   arrow.classList.remove('collapsed');
+   panelVisible = true;
+}
+});
+
+
+</script>
+<!-------------------------------------------------------Social Media---------------------------------------------------------------->
+</html>
