@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="google-adsense-account" content="ca-pub-6346584862129842">
+<title>DA Arrear Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://gistcdn.githack.com/binutaxes/e523432e203b6d00419131187945e1f2/raw/917a882230837861bdc39d4c9dc17ee3dd023e58/Chat.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://gistcdn.githack.com/binutaxes/2c6693a70b0eb092b779dba0bbed6bb6/raw/f10c482e52091eac02c4a4f4b0ada204fd063f7c/Chat.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ALL STYLES SCOPED UNDER #da-calc — safe to embed anywhere
+   ═══════════════════════════════════════════════════════════ */
+
+#da-calc {
+  --dac-navy:      #0d2240;
+  --dac-navy-mid:  #163660;
+  --dac-gold:      #c8922a;
+  --dac-gold-lt:   #e8b84b;
+  --dac-cream:     #faf7f2;
+  --dac-white:     #ffffff;
+  --dac-slate:     #4a5568;
+  --dac-slate-lt:  #718096;
+  --dac-border:    #ddd5c8;
+  --dac-success:   #2d6a4f;
+  --dac-danger:    #c0392b;
+  --dac-row-even:  #f5f0e8;
+  --dac-row-hover: #ede6d6;
+  --dac-shadow:    0 4px 24px rgba(13,34,64,0.10);
+  --dac-shadow-lg: 0 8px 40px rgba(13,34,64,0.16);
+
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--dac-cream);
+  color: var(--dac-navy);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(200,146,42,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(13,34,64,0.06) 0%, transparent 50%);
+  box-sizing: border-box;
+}
+
+#da-calc *, #da-calc *::before, #da-calc *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── HEADER ── */
+#da-calc .dac-header {
+  background: linear-gradient(135deg, var(--dac-navy) 0%, var(--dac-navy-mid) 100%);
+  padding: 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--dac-shadow-lg);
+}
+#da-calc .dac-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    90deg, transparent, transparent 60px,
+    rgba(200,146,42,0.04) 60px, rgba(200,146,42,0.04) 61px
+  );
+}
+#da-calc .dac-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--dac-gold), var(--dac-gold-lt), var(--dac-gold), transparent);
+}
+#da-calc .dac-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  color: var(--dac-white);
+  letter-spacing: 0.02em;
+  position: relative;
+  margin: 0; padding: 0;
+}
+#da-calc .dac-header p {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* ── CONTAINER ── */
+#da-calc .dac-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+/* ── TILES ── */
+#da-calc .dac-tile {
+  background: var(--dac-white);
+  border-radius: 12px;
+  box-shadow: var(--dac-shadow);
+  margin-bottom: 28px;
+  overflow: hidden;
+  border: 1px solid var(--dac-border);
+  animation: dac-fadeUp 0.4s ease both;
+}
+@keyframes dac-fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#da-calc .dac-tile-header {
+  background: linear-gradient(135deg, var(--dac-navy) 0%, var(--dac-navy-mid) 100%);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 10px;
+}
+#da-calc .dac-tile-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--dac-white);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0; padding: 0;
+}
+#da-calc .dac-tile-header .dac-icon {
+  width: 28px; height: 28px;
+  background: rgba(200,146,42,0.25);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+#da-calc .dac-tile-body { padding: 24px; }
+
+/* ── FORM ROWS ── */
+#da-calc .dac-form-row-1 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+  margin-bottom: 16px;
+}
+/* ── PROMOTION CHECKBOX TOGGLE ── */
+#da-calc .dac-promotion-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  user-select: none;
+  width: fit-content;
+}
+#da-calc .dac-promotion-toggle input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border: 2px solid var(--dac-gold);
+  border-radius: 5px;
+  background: var(--dac-cream);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+}
+#da-calc .dac-promotion-toggle input[type="checkbox"]:checked {
+  background: var(--dac-gold);
+  border-color: var(--dac-gold);
+}
+#da-calc .dac-promotion-toggle input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px; top: 2px;
+  width: 6px; height: 10px;
+  border: 2px solid #fff;
+  border-top: none; border-left: none;
+  transform: rotate(45deg);
+}
+#da-calc .dac-promotion-toggle .dac-toggle-label {
+  font-size: 0.8rem; font-weight: 700;
+  color: var(--dac-gold);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+#da-calc .dac-promotion-toggle:hover .dac-toggle-label {
+  color: var(--dac-gold-lt);
+}
+
+#da-calc .dac-form-row-1b {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1.5px dashed var(--dac-gold);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(200,146,42,0.04), rgba(200,146,42,0.02));
+  position: relative;
+  animation: dac-slideDown 0.25s ease both;
+}
+@keyframes dac-slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#da-calc .dac-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding-top: 14px;
+  border-top: 1.5px dashed var(--dac-border);
+  position: relative;
+}
+#da-calc .dac-form-row-2::before {
+  content: '📅  Arrear Period';
+  position: absolute; top: -10px; left: 0;
+  background: var(--dac-cream);
+  padding: 0 10px 0 0;
+  margin-top: 25px;
+  font-size: 0.72rem; font-weight: 700; color: var(--dac-gold);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+/* ── FORM GROUPS ── */
+#da-calc .dac-form-group {
+  display: flex; flex-direction: column; gap: 6px;
+}
+#da-calc .dac-form-group label {
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--dac-slate);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  display: block;
+}
+#da-calc .dac-form-group select,
+#da-calc .dac-form-group input[type="number"] {
+  padding: 9px 12px;
+  border: 1.5px solid var(--dac-border);
+  border-radius: 7px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.92rem;
+  color: var(--dac-navy);
+  background: var(--dac-cream);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  line-height: 1.4;
+}
+#da-calc .dac-form-group select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230d2240' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+#da-calc .dac-form-group select:focus,
+#da-calc .dac-form-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--dac-gold);
+  box-shadow: 0 0 0 3px rgba(200,146,42,0.15);
+  background-color: var(--dac-white);
+}
+#da-calc .dac-form-group .dac-hint {
+  font-weight: 400;
+  color: var(--dac-slate-lt);
+  font-size: 0.75rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Pension ₹ prefix input */
+#da-calc .dac-pension-wrap { position: relative; }
+#da-calc .dac-pension-wrap::before {
+  content: '₹';
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--dac-gold); font-weight: 700; font-size: 0.95rem;
+  pointer-events: none; z-index: 1;
+}
+#da-calc .dac-pension-wrap input {
+  padding-left: 26px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.02em;
+}
+
+#da-calc .dac-month-year-group { display: flex; gap: 8px; }
+#da-calc .dac-month-year-group select { flex: 1; }
+
+/* ── BUTTONS ── */
+#da-calc .dac-btn-row {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px;
+}
+#da-calc .dac-btn {
+  padding: 10px 22px;
+  border: none; border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+  display: inline-flex; align-items: center; gap: 7px;
+  text-decoration: none;
+  line-height: 1;
+}
+#da-calc .dac-btn-primary {
+  background: linear-gradient(135deg, var(--dac-navy), var(--dac-navy-mid));
+  color: var(--dac-white);
+  box-shadow: 0 3px 10px rgba(13,34,64,0.3);
+}
+#da-calc .dac-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(13,34,64,0.4);
+}
+#da-calc .dac-btn-secondary {
+  background: var(--dac-cream);
+  color: var(--dac-slate);
+  border: 1.5px solid var(--dac-border);
+}
+#da-calc .dac-btn-secondary:hover { background: var(--dac-border); }
+#da-calc .dac-btn-gold {
+  background: linear-gradient(135deg, var(--dac-gold), var(--dac-gold-lt));
+  color: var(--dac-white);
+  box-shadow: 0 3px 10px rgba(200,146,42,0.35);
+}
+#da-calc .dac-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(200,146,42,0.45);
+}
+#da-calc .dac-btn-success {
+  background: linear-gradient(135deg, #2d6a4f, #40916c);
+  color: white;
+  box-shadow: 0 3px 10px rgba(45,106,79,0.3);
+}
+#da-calc .dac-btn-success:hover { transform: translateY(-1px); }
+#da-calc .dac-btn-danger {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: white;
+  box-shadow: 0 3px 10px rgba(192,57,43,0.3);
+}
+#da-calc .dac-btn-danger:hover { transform: translateY(-1px); }
+#da-calc .dac-btn-sm {
+  padding: 5px 12px; font-size: 0.82rem; border-radius: 5px;
+}
+
+/* ── TABLE ── */
+#da-calc .dac-table-wrap { overflow-x: auto; }
+#da-calc .dac-table {
+  width: 100%; border-collapse: collapse; font-size: 0.88rem;
+}
+#da-calc .dac-table thead tr {
+  background: linear-gradient(135deg, var(--dac-navy), var(--dac-navy-mid));
+}
+#da-calc .dac-table thead th {
+  padding: 12px 14px;
+  color: var(--dac-white);
+  font-weight: 600; text-align: center; white-space: nowrap;
+  font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase;
+  border: none;
+}
+#da-calc .dac-table thead th:first-child { text-align: left; }
+#da-calc .dac-table .dac-year-header td {
+  background: linear-gradient(90deg, var(--dac-gold), var(--dac-gold-lt));
+  color: var(--dac-white); font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; padding: 9px 14px;
+  text-align: center; letter-spacing: 0.08em;
+}
+#da-calc .dac-table tbody tr {
+  border-bottom: 1px solid #ede8df;
+  transition: background 0.15s;
+}
+#da-calc .dac-table tbody tr:nth-child(even):not(.dac-year-header) {
+  background: var(--dac-row-even);
+}
+#da-calc .dac-table tbody tr:hover:not(.dac-year-header) {
+  background: var(--dac-row-hover);
+}
+#da-calc .dac-table tbody td {
+  padding: 10px 14px; text-align: center; color: var(--dac-navy);
+}
+#da-calc .dac-table tbody td:first-child {
+  text-align: left; font-weight: 500;
+}
+#da-calc .dac-td-mono {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.84rem;
+}
+#da-calc .dac-amount-cell {
+  font-family: 'JetBrains Mono', monospace; font-weight: 500;
+}
+#da-calc .dac-arrear-cell {
+  font-family: 'JetBrains Mono', monospace; font-weight: 600;
+  color: var(--dac-success);
+}
+#da-calc .dac-arrear-neg { color: var(--dac-danger); }
+#da-calc .dac-table tfoot tr { background: var(--dac-navy); }
+#da-calc .dac-table tfoot td {
+  padding: 11px 14px; color: var(--dac-white); font-weight: 700;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+}
+#da-calc .dac-table tfoot td:first-child { text-align: left; }
+#da-calc input[type="number"].dac-pay-edit {
+  width: 110px; padding: 4px 8px;
+  border: 1.5px solid var(--dac-gold); border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+  background: #fffbf0; text-align: right;
+}
+/* ── SLS BUTTON & ROW ── */
+#da-calc .dac-btn-sls {
+  background: linear-gradient(135deg, #1a5276, #2471a3);
+  color: #fff;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 4px 10px; border-radius: 5px;
+  border: none; cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(26,82,118,0.3);
+  font-family: 'Source Sans 3', sans-serif;
+}
+#da-calc .dac-btn-sls:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(26,82,118,0.45);
+}
+#da-calc .dac-btn-sls-del {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: #fff;
+  font-size: 1rem; font-weight: 700; line-height: 1;
+  padding: 3px 9px; border-radius: 5px;
+  border: none; cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(192,57,43,0.3);
+  font-family: 'Source Sans 3', sans-serif;
+}
+#da-calc .dac-btn-sls-del:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(192,57,43,0.45);
+}
+#da-calc .dac-sls-row { background: #eaf4fb !important; }
+#da-calc .dac-sls-row:hover { background: #d5eaf6 !important; }
+#da-calc .dac-sls-row td:first-child {
+  color: #c0392b; font-weight: 700; letter-spacing: 0.05em;
+}
+
+/* ── SUMMARY CARDS ── */
+#da-calc .dac-result-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 20px;
+}
+#da-calc .dac-summary-card {
+  background: linear-gradient(135deg, var(--dac-navy), var(--dac-navy-mid));
+  border-radius: 10px; padding: 16px; text-align: center; color: white;
+}
+#da-calc .dac-summary-card .dac-s-label {
+  font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.08em; opacity: 0.7; margin-bottom: 6px;
+}
+#da-calc .dac-summary-card .dac-s-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 600; color: var(--dac-gold-lt);
+}
+
+/* ── MODAL ── */
+#da-calc .dac-modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(13,34,64,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#da-calc .dac-modal-overlay.dac-active { display: flex; }
+#da-calc .dac-modal {
+  background: var(--dac-white);
+  border-radius: 14px;
+  box-shadow: var(--dac-shadow-lg);
+  max-width: 700px; width: 100%; max-height: 88vh;
+  display: flex; flex-direction: column;
+  animation: dac-modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  overflow: hidden;
+}
+@keyframes dac-modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+#da-calc .dac-modal-header {
+  background: linear-gradient(135deg, var(--dac-navy), var(--dac-navy-mid));
+  padding: 18px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+#da-calc .dac-modal-header h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--dac-white); font-size: 1.15rem;
+  margin: 0; padding: 0;
+}
+#da-calc .dac-modal-close {
+  background: rgba(255,255,255,0.15); border: none;
+  width: 32px; height: 32px; border-radius: 50%;
+  color: white; cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s; flex-shrink: 0;
+}
+#da-calc .dac-modal-close:hover { background: rgba(255,255,255,0.3); }
+#da-calc .dac-modal-body { padding: 20px; overflow-y: auto; }
+#da-calc .dac-modal-table {
+  width: 100%; border-collapse: collapse; font-size: 0.88rem;
+}
+#da-calc .dac-modal-table th {
+  background: var(--dac-navy); color: white;
+  padding: 10px 12px; text-align: center;
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+}
+#da-calc .dac-modal-table td {
+  padding: 9px 12px; text-align: center;
+  border-bottom: 1px solid var(--dac-border);
+}
+#da-calc .dac-modal-table tr:nth-child(even) td { background: var(--dac-row-even); }
+#da-calc .dac-modal-table tr:hover td { background: var(--dac-row-hover); }
+#da-calc .dac-badge-due {
+  background: #e8f5e9; color: #2d6a4f;
+  padding: 2px 8px; border-radius: 10px; font-weight: 600;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+  display: inline-block;
+}
+#da-calc .dac-badge-drawn {
+  background: #fff3e0; color: #e65100;
+  padding: 2px 8px; border-radius: 10px; font-weight: 600;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+  display: inline-block;
+}
+
+/* ── TOAST ── */
+#da-calc .dac-toast {
+  position: fixed; top: 20px; right: 20px; z-index: 100000;
+  background: var(--dac-navy); color: white;
+  padding: 14px 20px; border-radius: 10px;
+  box-shadow: var(--dac-shadow-lg); font-size: 0.9rem;
+  max-width: 380px; display: none;
+}
+#da-calc .dac-toast.dac-show {
+  display: flex; align-items: center; gap: 10px;
+  animation: dac-toastIn 0.3s ease both;
+}
+#da-calc .dac-toast.dac-error   { background: var(--dac-danger); }
+#da-calc .dac-toast.dac-warning { background: var(--dac-gold); }
+@keyframes dac-toastIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── MISC ── */
+#da-calc .dac-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--dac-border), transparent);
+  margin: 6px 0 16px;
+}
+#da-calc #dac-resultsSection { display: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  #da-calc .dac-form-row-1   { grid-template-columns: 1fr; }
+  #da-calc .dac-form-row-1b  { grid-template-columns: 1fr; }
+  #da-calc .dac-form-row-2   { grid-template-columns: 1fr; }
+  #da-calc .dac-btn-row      { flex-direction: column; }
+  #da-calc .dac-btn          { width: 100%; justify-content: center; }
+  #da-calc .dac-month-year-group { flex-direction: column; }
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  #da-calc .dac-form-row-1 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── MULTIPLE PROMOTIONS ── */
+#da-calc .dac-promotion-list { display: flex; flex-direction: column; gap: 10px; }
+#da-calc .dac-promotion-entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  padding: 12px 14px;
+  border: 1.5px dashed var(--dac-gold);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(200,146,42,0.04), rgba(200,146,42,0.02));
+  animation: dac-slideDown 0.25s ease both;
+  position: relative;
+}
+#da-calc .dac-promo-entry-label {
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--dac-gold); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 4px;
+}
+#da-calc .dac-btn-remove-promo {
+  padding: 8px 10px;
+  background: rgba(192,57,43,0.1);
+  border: 1.5px solid rgba(192,57,43,0.3);
+  border-radius: 7px;
+  color: var(--dac-danger);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  line-height: 1;
+  align-self: flex-end;
+  margin-bottom: 0;
+  height: 38px;
+  display: flex; align-items: center; justify-content: center;
+}
+#da-calc .dac-btn-remove-promo:hover {
+  background: rgba(192,57,43,0.2);
+  border-color: var(--dac-danger);
+}
+#da-calc .dac-add-promo-row {
+  display: flex; justify-content: flex-start;
+  margin-top: 6px;
+}
+#da-calc .dac-btn-add-promo {
+  padding: 7px 16px;
+  background: rgba(200,146,42,0.1);
+  border: 1.5px dashed var(--dac-gold);
+  border-radius: 7px;
+  color: var(--dac-gold);
+  cursor: pointer;
+  font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+#da-calc .dac-btn-add-promo:hover {
+  background: rgba(200,146,42,0.18);
+  border-style: solid;
+}
+@media (max-width: 700px) {
+  #da-calc .dac-promotion-entry {
+    grid-template-columns: 1fr 1fr;
+  }
+  #da-calc .dac-promotion-entry .dac-form-group:last-of-type {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── SITE LAYOUT ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans 3', sans-serif; background: #f0ece4; }
+
+/* Sidebar */
+#site-sidebar {
+  position: fixed; top: 0; left: 0; height: 100vh; width: 240px;
+  background: linear-gradient(180deg, #0d2240 0%, #163660 100%);
+  display: flex; flex-direction: column;
+  box-shadow: 4px 0 20px rgba(13,34,64,0.18);
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+#site-sidebar .sidebar-brand {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid rgba(200,146,42,0.3);
+}
+#site-sidebar .sidebar-brand a {
+  text-decoration: none;
+  display: block;
+}
+#site-sidebar .sidebar-brand .brand-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  color: #e8b84b;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+#site-sidebar .sidebar-brand .brand-tagline {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+#site-sidebar nav { flex: 1; padding: 16px 0; }
+#site-sidebar nav ul { list-style: none; }
+#site-sidebar nav ul li a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+#site-sidebar nav ul li a:hover,
+#site-sidebar nav ul li a.active {
+  color: #e8b84b;
+  background: rgba(200,146,42,0.1);
+  border-left-color: #c8922a;
+}
+#site-sidebar nav ul li a .nav-icon {
+  font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0;
+}
+#site-sidebar .sidebar-footer-note {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(200,146,42,0.2);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* Hamburger toggle */
+#sidebar-toggle {
+  display: none;
+  position: fixed; top: 14px; left: 14px; z-index: 1100;
+  background: #0d2240;
+  border: none; border-radius: 8px;
+  width: 42px; height: 42px;
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+#sidebar-toggle span {
+  display: block; width: 22px; height: 2px;
+  background: #e8b84b; border-radius: 2px;
+  transition: all 0.3s;
+}
+#sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 999;
+}
+
+/* Main content area */
+#site-main {
+  margin-left: 240px;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+#site-main #da-calc {
+  flex: 1;
+}
+
+/* ── FOOTER ── */
+#site-footer {
+  background: linear-gradient(135deg, #0d2240 0%, #163660 100%);
+  color: rgba(255,255,255,0.8);
+  padding: 40px 32px 24px;
+  position: relative;
+  overflow: hidden;
+  margin-left: 0;
+}
+#site-footer::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, #c8922a, #e8b84b, #c8922a, transparent);
+}
+#site-footer .footer-grid {
+  max-width: 900px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+#site-footer .footer-section h3 {
+  font-family: 'Playfair Display', serif;
+  color: #e8b84b;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+#site-footer .footer-section p,
+#site-footer .footer-section a {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.8;
+  text-decoration: none;
+  display: block;
+}
+#site-footer .footer-section a:hover { color: #e8b84b; }
+#site-footer .footer-section .contact-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 6px;
+}
+#site-footer .footer-section .contact-item .ci-icon {
+  color: #c8922a; font-size: 0.9rem; margin-top: 2px; flex-shrink: 0;
+}
+#site-footer .footer-bottom {
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(200,146,42,0.2);
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.04em;
+}
+
+/* ── RESPONSIVE SIDEBAR ── */
+@media (max-width: 900px) {
+  #site-sidebar {
+    transform: translateX(-100%);
+  }
+  #site-sidebar.open {
+    transform: translateX(0);
+  }
+  #site-main {
+    margin-left: 0;
+  }
+  #sidebar-toggle {
+    display: flex;
+  }
+  #sidebar-overlay.show {
+    display: block;
+  }
+  #site-footer .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  #da-calc .dac-header {
+    padding-left: 64px;
+  }
+}
+@media (min-width: 901px) {
+  #site-sidebar { transform: translateX(0) !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HAMBURGER TOGGLE (mobile) ══ -->
+<button id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ══ SIDEBAR ══ -->
+<aside id="site-sidebar">
+  <div class="sidebar-brand">
+    <a href="https://www.gstcell.com" target="_blank">
+      <div class="brand-name">GSTCell</div>
+      <div class="brand-tagline">Tax &amp; Finance Tools</div>
+    </a>
+  </div>
+  <nav>
+    <ul>
+      <li>
+        <a href="https://www.gstcell.com" target="_blank">
+          <span class="nav-icon">🏠</span> Home
+        </a>
+      </li>
+      <li>
+        <a href="https://www.gstcell.com/incometax" target="_blank">
+          <span class="nav-icon">📋</span> Income Tax 2025
+        </a>
+      </li>
+            <li>
+        <a href="https://www.gstcell.com/incometax-2026" target="_blank">
+          <span class="nav-icon">📋</span> Income Tax 2026<span style="color: red;">(New)</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.gstcell.com/sli-calculator" target="_blank">
+          <span class="nav-icon">🧮</span> SLI Calculator
+        </a>
+      </li>
+ <li>
+        <a href="https://www.gstcell.com/earned-leave-calculator" target="_blank">
+          <span class="nav-icon">🧮</span> Earned Leave Calc..
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer-note">gstcell.com</div>
+</aside>
+
+<!-- ══ OVERLAY (mobile) ══ -->
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div id="site-main">
+
+<!-- ═══════════════════════════════════════════════════
+     ROOT WRAPPER — all IDs/classes prefixed with dac-
+     ═══════════════════════════════════════════════════ -->
+<div id="da-calc">
+
+  <!-- HEADER -->
+  <div class="dac-header">
+    <h1>🏛️ DA Arrear Calculator</h1>
+    <p>Dearness Allowance Computation — State Government Employees &amp; Pensioners</p>
+  </div>
+
+  <div class="dac-container">
+
+    <!-- ══════════ PERSONAL DETAILS TILE ══════════ -->
+    <div class="dac-tile">
+      <div class="dac-tile-header">
+        <div class="dac-icon">👤</div>
+        <h2>Personal Details</h2>
+      </div>
+      <div class="dac-tile-body">
+
+        <!-- ROW 1: Category + Pay/Pension + Increment -->
+        <div class="dac-form-row-1">
+
+          <div class="dac-form-group">
+            <label>Category</label>
+            <select id="dac-category" onchange="dacOnCategoryChange()">
+              <option value="">— Select Category —</option>
+              <option value="employee">Employees</option>
+              <option value="pensioner">Pensioner</option>
+            </select>
+          </div>
+
+          <!-- Employee: Basic Pay dropdown -->
+          <div class="dac-form-group" id="dac-grpBasicPay">
+            <label>Basic Pay as on <span style="color:red">01/04/2026</span></label>
+            <select id="dac-basicPay"><option value="">— Select Pay —</option></select>
+          </div>
+
+          <!-- Pensioner: Basic Pension free entry -->
+          <div class="dac-form-group" id="dac-grpBasicPension" style="display:none">
+            <label>Basic Pension</label>
+            <div class="dac-pension-wrap">
+              <input type="number" id="dac-basicPension" placeholder="Enter amount" min="1" step="1" />
+            </div>
+          </div>
+
+          <!-- Employee only: Increment Month -->
+          <div class="dac-form-group" id="dac-grpIncrement">
+            <label>Increment Month</label>
+            <select id="dac-incrementMonth">
+              <option value="">— Select Month —</option>
+              <option value="1">January</option><option value="2">February</option>
+              <option value="3">March</option><option value="4">April</option>
+              <option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option>
+              <option value="9">September</option><option value="10">October</option>
+              <option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+
+        </div><!-- /dac-form-row-1 -->
+
+        <!-- ROW 1b: Promotion checkbox toggle — Employee only -->
+        <div id="dac-grpPromotion">
+
+          <label class="dac-promotion-toggle">
+            <input type="checkbox" id="dac-promotionCheck" onchange="dacTogglePromotion()" />
+            <span class="dac-toggle-label">🔄 Has Promotion / Pay Change during arrear period?</span>
+          </label>
+
+          <div id="dac-promotionFields" style="display:none; animation: dac-slideDown 0.25s ease both;">
+
+            <!-- Dynamic list of promotion entries -->
+            <div class="dac-promotion-list" id="dac-promotionList"></div>
+
+            <!-- Add More button -->
+            <div class="dac-add-promo-row">
+              <button type="button" class="dac-btn-add-promo" onclick="dacAddPromotion()">
+                ＋ Add Another Promotion
+              </button>
+            </div>
+
+          </div><!-- /dac-promotionFields -->
+
+        </div><!-- /dac-grpPromotion -->
+
+        <!-- ROW 2: Arrear Period -->
+        <div class="dac-form-row-2">
+          <div class="dac-form-group">
+            <label>Arrear From</label>
+            <div class="dac-month-year-group">
+              <select id="dac-arrearFromMonth"></select>
+              <select id="dac-arrearFromYear"></select>
+            </div>
+          </div>
+          <div class="dac-form-group">
+            <label>Arrear To</label>
+            <div class="dac-month-year-group">
+              <select id="dac-arrearToMonth"></select>
+              <select id="dac-arrearToYear"></select>
+            </div>
+          </div>
+        </div><!-- /dac-form-row-2 -->
+
+        <div class="dac-separator"></div>
+        <div class="dac-btn-row">
+          <button class="dac-btn dac-btn-primary"   onclick="dacCalculate()">⚡ Calculate</button>
+          <button class="dac-btn dac-btn-secondary" onclick="dacClearForm()">✕ Clear</button>
+          <button class="dac-btn dac-btn-gold"      onclick="dacOpenModal()">📊 DA Rates</button>
+        </div>
+
+      </div><!-- /dac-tile-body -->
+    </div><!-- /dac-tile -->
+
+    <!-- ══════════ RESULTS TILE ══════════ -->
+    <div id="dac-resultsSection">
+      <div class="dac-tile" style="animation-delay:0.1s">
+        <div class="dac-tile-header">
+          <div class="dac-icon">📋</div>
+          <h2 id="dac-resultsTitle">DA Arrear Statement</h2>
+        </div>
+        <div class="dac-tile-body">
+          <div class="dac-result-summary" id="dac-summaryCards"></div>
+          <div class="dac-table-wrap">
+            <table class="dac-table" id="dac-arrearTable">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th id="dac-thPay">Basic Pay (₹)</th>
+                  <th>Due DA %</th>
+                  <th>DA Due (₹)</th>
+                  <th>Drawn DA %</th>
+                  <th>DA Drawn (₹)</th>
+                  <th>Arrear (₹)</th>
+                  <th>Edit</th>
+                  <th id="dac-thSLS">SLS</th>
+                </tr>
+              </thead>
+              <tbody id="dac-tableBody"></tbody>
+              <tfoot  id="dac-tableFoot"></tfoot>
+            </table>
+          </div>
+          <div class="dac-btn-row" style="margin-top:20px">
+            <button class="dac-btn dac-btn-success" onclick="dacDownloadPDF()">⬇ Download PDF</button>
+            <button class="dac-btn dac-btn-danger"  onclick="dacDownloadExcel()">⬇ Download Excel</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /dac-resultsSection -->
+
+  </div><!-- /dac-container -->
+
+  <!-- DA RATE MODAL -->
+  <div class="dac-modal-overlay" id="dac-daModal">
+    <div class="dac-modal">
+      <div class="dac-modal-header">
+        <h3>📊 DA Rate Chart</h3>
+        <button class="dac-modal-close" onclick="dacCloseModal()">✕</button>
+      </div>
+      <div class="dac-modal-body">
+        <h4 style="font-family:'Playfair Display',serif;color:var(--dac-navy);font-size:1rem;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--dac-gold);">🏛️ For State Employees</h4>
+        <table class="dac-modal-table" style="margin-bottom:24px;">
+          <thead><tr><th>From</th><th>To</th><th>Due DA %</th><th>Drawn DA %</th></tr></thead>
+          <tbody id="dac-daRateBody"></tbody>
+        </table>
+        <h4 style="font-family:'Playfair Display',serif;color:var(--dac-navy);font-size:1rem;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--dac-gold);">🏦 Changes for Pensioners</h4>
+        <p style="font-size:0.8rem;color:var(--dac-slate-lt);margin-bottom:10px;">The following months have different drawn DA rates for pensioners:</p>
+        <table class="dac-modal-table">
+          <thead><tr><th>From</th><th>To</th><th>Due DA %</th><th>Drawn DA %</th></tr></thead>
+          <tbody id="dac-daRateBodyPen"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="dac-toast" id="dac-toast"></div>
+
+</div><!-- /#da-calc -->
+
+
+
+
+
+
+<!-- ══ COMMUNITY CHAT SECTION ══ -->
+<div id="chat-section">
+  <div class="chat-tile">
+
+    <!-- Header -->
+    <div class="chat-tile-header">
+      <h2>
+        <span class="chat-header-icon">💬</span>
+        Let's discuss &#128512;
+      </h2>
+      <button class="chat-open-btn" onclick="openChatModal('main', null, null)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Post a Comment
+      </button>
+    </div>
+
+    <!-- Chat feed -->
+    <div class="chat-feed" id="chatFeed">
+      <div class="chat-loading">
+        <span class="chat-spinner"></span> Loading messages…
+      </div>
+    </div>
+
+    <!-- Live refresh bar -->
+    <div class="chat-refresh-bar">
+      <span><span class="chat-refresh-dot"></span> Live — refreshes every 15 seconds</span>
+      <span id="chatLastRefresh"></span>
+    </div>
+
+  </div>
+</div><!-- /#chat-section -->
+
+
+<!-- ══ CHAT POPUP MODAL ══ -->
+<div class="chat-modal-overlay" id="chatModal">
+  <div class="chat-modal">
+
+    <!-- Modal header -->
+    <div class="chat-modal-head">
+      <h3 id="chatModalTitle">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Post a Comment
+      </h3>
+      <button class="chat-modal-close" onclick="closeChatModal()">✕</button>
+    </div>
+
+    <!-- Modal body -->
+    <div class="chat-modal-body">
+
+      <!-- Context preview (shown when replying) -->
+      <div class="chat-modal-context" id="chatModalContext"></div>
+
+      <!-- Name field -->
+      <label class="chat-field-label">Your Name</label>
+      <input
+        type="text"
+        class="chat-name-input"
+        id="chatNameInput"
+        placeholder="Enter your name…"
+        maxlength="60"
+        autocomplete="name"
+      />
+
+      <!-- Message field -->
+      <label class="chat-field-label">Message</label>
+      <textarea
+        class="chat-text-area"
+        id="chatTextInput"
+        placeholder="Write your message here…"
+        maxlength="800"
+      ></textarea>
+
+      <!-- Action buttons -->
+      <div class="chat-modal-footer">
+        <button class="chat-cancel-btn" onclick="closeChatModal()">Cancel</button>
+        <button class="chat-post-btn" id="chatPostBtn" onclick="submitChat()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Post
+        </button>
+      </div>
+
+    </div><!-- /.chat-modal-body -->
+  </div><!-- /.chat-modal -->
+</div><!-- /.chat-modal-overlay -->
+
+
+
+
+
+<!-- ══ FOOTER ══ -->
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div class="footer-section">
+      <h3>🏛️ About GSTCell</h3>
+      <p>GSTCell provides free and reliable tax,  finance and other information to all citizens of India. Our tools are designed for ease of use.</p>
+    </div>
+    <div class="footer-section">
+      <h3>📬 Contact Us</h3>
+      <div class="contact-item">
+        <span class="ci-icon">✉️</span>
+        <span ><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1b7c686f787e7777357874765b7c767a727735787476">[email&#160;protected]</a></span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">📞</span>
+        <a href="tel:+919744012007">+91 9744012007</a>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">📍</span>
+        <span style="color:rgba(255,255,255,0.65);font-size:0.88rem;">Kachani, Thiruvananthapuram, Kerala</span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">🌐</span>
+        <a href="https://www.gstcell.com" target="_blank">www.gstcell.com</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 GSTCell &nbsp;|&nbsp; All Rights Reserved &nbsp;|&nbsp;
+    <a href="https://www.gstcell.com" target="_blank" style="color:rgba(200,146,42,0.6);text-decoration:none;">www.gstcell.com</a>
+  </div>
+</footer>
+
+</div><!-- /#site-main -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── CONFIG Chat ────────────────────────────────────────────────────
+const CHAT_API       = 'https://script.google.com/macros/s/AKfycbzZ_lwMoyo10ATEY12Wrw7UCw7ni8p_jTOfajwB4xK3OOxEKw9G-jwsmecWKrGzbxt9/exec';
+
+// ─────────────────────────────────────────────────────────────
+</script>
+<script>
+/* ══ SIDEBAR TOGGLE ══ */
+function toggleSidebar() {
+  const sidebar = document.getElementById('site-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+</script>
+
+<script>
+/* ═══════════ DATA ═══════════ */
+const PAY_OPTIONS = [
+  23000,23700,24400,25100,25800,26500,27200,27900,28700,29500,
+  30300,31100,32000,32900,33800,34700,35600,36500,37400,38300,
+  39300,40300,41300,42300,43400,44500,45600,46700,47800,49000,
+  50200,51400,52600,53900,55200,56500,57900,59300,60700,62200,
+  63700,65200,66800,68400,70000,71800,73600,75400,77200,79000,
+  81000,83000,85000,87000,89000,91200,93400,95600,97800,100300,
+  102800,105300,107800,110300,112800,115300,118100,120900,123700,126500,
+  129300,132100,134900,137700,140500,143600,146700,149800,153200,156600,
+  160000,163400,166800
+];
+
+const DA_RATES = [
+  {from:'01/01/2021',to:'30/06/2021', due:9, drawn:7},
+  {from:'01/07/2021',to:'31/12/2021', due:12,drawn:7},
+  {from:'01/01/2022',to:'30/06/2022', due:15,drawn:7},
+  {from:'01/07/2022',to:'31/12/2022', due:18,drawn:7},
+  {from:'01/01/2023',to:'30/06/2023', due:22,drawn:7},
+  {from:'01/07/2023',to:'31/12/2023', due:25,drawn:7},
+  {from:'01/01/2024',to:'31/03/2024', due:28,drawn:7},
+  {from:'01/04/2024',to:'30/06/2024', due:28,drawn:9},
+  {from:'01/07/2024',to:'30/09/2024', due:31,drawn:9},
+  {from:'01/10/2024',to:'31/12/2024', due:31,drawn:12},
+  {from:'01/01/2025',to:'31/03/2025', due:33,drawn:12},
+  {from:'01/04/2025',to:'30/06/2025', due:33,drawn:15},
+  {from:'01/07/2025',to:'31/07/2025', due:35,drawn:15},
+  {from:'01/08/2025',to:'30/09/2025', due:35,drawn:18},
+  {from:'01/10/2025',to:'31/12/2025', due:35,drawn:22},
+  {from:'01/01/2026',to:'31/01/2026', due:35,drawn:22},
+  {from:'01/02/2026',to:'28/02/2026', due:35,drawn:25},
+  {from:'01/03/2026',to:'Ongoing',    due:35,drawn:35}
+];
+
+const MONTH_RATES_EMP = {};
+const MONTH_RATES_PEN = {};
+(function(){
+  const empData=[
+    [2021,1,9,7],[2021,2,9,7],[2021,3,9,7],[2021,4,9,7],[2021,5,9,7],[2021,6,9,7],
+    [2021,7,12,7],[2021,8,12,7],[2021,9,12,7],[2021,10,12,7],[2021,11,12,7],[2021,12,12,7],
+    [2022,1,15,7],[2022,2,15,7],[2022,3,15,7],[2022,4,15,7],[2022,5,15,7],[2022,6,15,7],
+    [2022,7,18,7],[2022,8,18,7],[2022,9,18,7],[2022,10,18,7],[2022,11,18,7],[2022,12,18,7],
+    [2023,1,22,7],[2023,2,22,7],[2023,3,22,7],[2023,4,22,7],[2023,5,22,7],[2023,6,22,7],
+    [2023,7,25,7],[2023,8,25,7],[2023,9,25,7],[2023,10,25,7],[2023,11,25,7],[2023,12,25,7],
+    [2024,1,28,7],[2024,2,28,7],[2024,3,28,7],[2024,4,28,9],[2024,5,28,9],[2024,6,28,9],
+    [2024,7,31,9],[2024,8,31,9],[2024,9,31,9],[2024,10,31,12],[2024,11,31,12],[2024,12,31,12],
+    [2025,1,33,12],[2025,2,33,12],[2025,3,33,12],[2025,4,33,15],[2025,5,33,15],[2025,6,33,15],
+    [2025,7,35,15],[2025,8,35,18],[2025,9,35,18],[2025,10,35,22],[2025,11,35,22],[2025,12,35,22],
+    [2026,1,35,22],[2026,2,35,25],[2026,3,35,35]
+  ];
+  const penData=[
+    [2021,1,9,7],[2021,2,9,7],[2021,3,9,7],[2021,4,9,7],[2021,5,9,7],[2021,6,9,7],
+    [2021,7,12,7],[2021,8,12,7],[2021,9,12,7],[2021,10,12,7],[2021,11,12,7],[2021,12,12,7],
+    [2022,1,15,7],[2022,2,15,7],[2022,3,15,7],[2022,4,15,7],[2022,5,15,7],[2022,6,15,7],
+    [2022,7,18,7],[2022,8,18,7],[2022,9,18,7],[2022,10,18,7],[2022,11,18,7],[2022,12,18,7],
+    [2023,1,22,7],[2023,2,22,7],[2023,3,22,7],[2023,4,22,7],[2023,5,22,7],[2023,6,22,7],
+    [2023,7,25,7],[2023,8,25,7],[2023,9,25,7],[2023,10,25,7],[2023,11,25,7],[2023,12,25,7],
+    [2024,1,28,7],[2024,2,28,7],[2024,3,28,7],[2024,4,28,9],[2024,5,28,9],[2024,6,28,9],
+    [2024,7,31,9],[2024,8,31,9],[2024,9,31,9],[2024,10,31,9],[2024,11,31,12],[2024,12,31,12],
+    [2025,1,33,12],[2025,2,33,12],[2025,3,33,12],[2025,4,33,15],[2025,5,33,15],[2025,6,33,15],
+    [2025,7,35,15],[2025,8,35,15],[2025,9,35,18],[2025,10,35,18],[2025,11,35,22],[2025,12,35,22],
+    [2026,1,35,22],[2026,2,35,22],[2026,3,35,25]
+  ];
+  function fill(tbl, rows){ rows.forEach(([y,m,due,drawn])=>{ if(!tbl[y]) tbl[y]={}; tbl[y][m]={due,drawn}; }); }
+  fill(MONTH_RATES_EMP, empData);
+  fill(MONTH_RATES_PEN, penData);
+})();
+
+const MONTHS_LONG  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* helper: get element within #da-calc */
+const $ = id => document.getElementById(id);
+
+/* ═══════════ PROMOTION COUNTER ═══════════ */
+let dacPromoCounter = 0;
+
+/* ═══════════ INIT ═══════════ */
+function dacInit() {
+  // Pay option selects (only basicPay now; payBefore is per-promotion)
+  const sel = $('dac-basicPay');
+  PAY_OPTIONS.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = '₹' + p.toLocaleString('en-IN');
+    sel.appendChild(o);
+  });
+
+  // Month/year for arrear from/to (Jan 2021 – Mar 2026)
+  const years = [2021,2022,2023,2024,2025,2026];
+  ['dac-arrearFromMonth','dac-arrearToMonth'].forEach(id => {
+    const sel = $(id);
+    MONTHS_LONG.forEach((m,i) => {
+      const o = document.createElement('option');
+      o.value = i+1; o.textContent = m; sel.appendChild(o);
+    });
+  });
+  ['dac-arrearFromYear','dac-arrearToYear'].forEach(id => {
+    const sel = $(id);
+    years.forEach(y => {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y; sel.appendChild(o);
+    });
+  });
+
+  // Defaults
+  $('dac-arrearFromMonth').value = 1;
+  $('dac-arrearFromYear').value  = 2021;
+  $('dac-arrearToMonth').value   = 3;
+  $('dac-arrearToYear').value    = 2026;
+
+  dacBuildModalTable();
+
+  // Modal close on overlay click
+  $('dac-daModal').addEventListener('click', e => {
+    if(e.target === $('dac-daModal')) dacCloseModal();
+  });
+}
+
+/* ═══════════ MULTI-PROMOTION MANAGEMENT ═══════════ */
+function dacAddPromotion() {
+  const id = ++dacPromoCounter;
+  const years = [2021,2022,2023,2024,2025,2026];
+  const list = $('dac-promotionList');
+
+  // Build month options HTML
+  const monthOpts = MONTHS_LONG.map((m,i) =>
+    `<option value="${i+1}">${m}</option>`
+  ).join('');
+  const yearOpts = years.map(y =>
+    `<option value="${y}">${y}</option>`
+  ).join('');
+  const payOpts = PAY_OPTIONS.map(p =>
+    `<option value="${p}">₹${p.toLocaleString('en-IN')}</option>`
+  ).join('');
+
+  const entry = document.createElement('div');
+  entry.className = 'dac-promotion-entry';
+  entry.id = `dac-promo-entry-${id}`;
+  entry.innerHTML = `
+    <div class="dac-form-group">
+      <label>
+        <span class="dac-promo-entry-label">🔄 Promotion #${id}</span>
+        Promotion / Pay Change Month &amp; Year
+      </label>
+      <div class="dac-month-year-group">
+        <select id="dac-promoMonth-${id}">
+          <option value="">— Month —</option>${monthOpts}
+        </select>
+        <select id="dac-promoYear-${id}">
+          <option value="">— Year —</option>${yearOpts}
+        </select>
+      </div>
+    </div>
+    <div class="dac-form-group">
+      <label>
+        Basic Pay Before Promotion / Change
+        <span class="dac-hint">(pay in the month prior to promotion)</span>
+      </label>
+      <select id="dac-promoPayBefore-${id}">
+        <option value="">— Select Pay (Optional) —</option>${payOpts}
+      </select>
+    </div>
+    <button type="button" class="dac-btn-remove-promo" onclick="dacRemovePromotion(${id})" title="Remove this promotion" style="${id===1?'visibility:hidden;pointer-events:none;':''}">✕</button>
+  `;
+  list.appendChild(entry);
+}
+
+function dacRemovePromotion(id) {
+  const entry = $(`dac-promo-entry-${id}`);
+  if(entry) entry.remove();
+}
+
+function dacGetPromotions() {
+  const entries = document.querySelectorAll('#dac-promotionList .dac-promotion-entry');
+  const result = [];
+  entries.forEach(entry => {
+    const idMatch = entry.id.match(/dac-promo-entry-(\d+)/);
+    if(!idMatch) return;
+    const id = idMatch[1];
+    const m         = parseInt(document.getElementById(`dac-promoMonth-${id}`)?.value);
+    const y         = parseInt(document.getElementById(`dac-promoYear-${id}`)?.value);
+    const payBefore = document.getElementById(`dac-promoPayBefore-${id}`)?.value;
+    if(m && y) {
+      result.push({ m, y, payBefore: payBefore ? parseInt(payBefore) : null });
+    }
+  });
+  result.sort((a,b) => a.y*12+a.m - (b.y*12+b.m));
+  return result;
+}
+
+const DA_RATES_PEN_DIFF = [
+  {from:'01/10/2024',to:'30/10/2024', due:31, drawn:9},
+  {from:'01/08/2025',to:'31/08/2025', due:35, drawn:15},
+  {from:'01/10/2025',to:'30/10/2025', due:35, drawn:18},
+  {from:'01/02/2026',to:'28/02/2026', due:35, drawn:22},
+  {from:'01/03/2026',to:'31/03/2026', due:35, drawn:25}
+];
+
+function dacBuildModalTable() {
+  const tbody = $('dac-daRateBody');
+  DA_RATES.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.from}</td><td>${r.to}</td>
+      <td><span class="dac-badge-due">${r.due}%</span></td>
+      <td><span class="dac-badge-drawn">${r.drawn}%</span></td>`;
+    tbody.appendChild(tr);
+  });
+  const tbodyPen = $('dac-daRateBodyPen');
+  DA_RATES_PEN_DIFF.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.from}</td><td>${r.to}</td>
+      <td><span class="dac-badge-due">${r.due}%</span></td>
+      <td><span class="dac-badge-drawn">${r.drawn}%</span></td>`;
+    tbodyPen.appendChild(tr);
+  });
+}
+
+/* ═══════════ CATEGORY SWITCH ═══════════ */
+function dacOnCategoryChange() {
+  const cat = $('dac-category').value;
+  const isPensioner = cat === 'pensioner';
+  $('dac-grpBasicPay').style.display     = isPensioner ? 'none' : '';
+  $('dac-grpBasicPension').style.display = isPensioner ? ''     : 'none';
+  $('dac-grpIncrement').style.display    = isPensioner ? 'none' : '';
+  $('dac-grpPromotion').style.display    = isPensioner ? 'none' : '';
+  if (isPensioner) {
+    $('dac-promotionCheck').checked        = false;
+    $('dac-promotionFields').style.display = 'none';
+  }
+  $('dac-thPay').textContent = isPensioner ? 'Basic Pension (₹)' : 'Basic Pay (₹)';
+  $('dac-arrearToMonth').value = isPensioner ? 3 : 2;
+  $('dac-resultsSection').style.display = 'none';
+}
+
+/* ═══════════ PROMOTION TOGGLE ═══════════ */
+function dacTogglePromotion() {
+  const checked = $('dac-promotionCheck').checked;
+  const fields  = $('dac-promotionFields');
+  if (checked) {
+    fields.style.display = 'block';
+    // Add first promotion entry if list is empty
+    if($('dac-promotionList').children.length === 0) {
+      dacAddPromotion();
+    }
+  } else {
+    fields.style.display = 'none';
+    // Clear all entries
+    $('dac-promotionList').innerHTML = '';
+    dacPromoCounter = 0;
+  }
+}
+
+/* ═══════════ MODAL ═══════════ */
+function dacOpenModal()  { $('dac-daModal').classList.add('dac-active'); }
+function dacCloseModal() { $('dac-daModal').classList.remove('dac-active'); }
+
+/* ═══════════ TOAST ═══════════ */
+function dacShowToast(msg, type='error') {
+  const t = $('dac-toast');
+  t.textContent = (type==='error'?'⚠ ':type==='warning'?'ℹ ':'✓ ') + msg;
+  t.className = 'dac-toast dac-show dac-' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = 'dac-toast'; }, 4500);
+}
+
+/* ═══════════ CLEAR ═══════════ */
+function dacClearForm() {
+  ['dac-category','dac-basicPay','dac-incrementMonth'].forEach(id => $(id).value = '');
+  $('dac-basicPension').value    = '';
+  $('dac-arrearFromMonth').value = 1;
+  $('dac-arrearFromYear').value  = 2021;
+  $('dac-arrearToMonth').value   = 3;
+  $('dac-arrearToYear').value    = 2026;
+  $('dac-grpBasicPay').style.display     = '';
+  $('dac-grpBasicPension').style.display = 'none';
+  $('dac-grpIncrement').style.display    = '';
+  $('dac-grpPromotion').style.display    = '';
+  $('dac-promotionCheck').checked        = false;
+  $('dac-promotionFields').style.display = 'none';
+  $('dac-promotionList').innerHTML       = '';
+  dacPromoCounter = 0;
+  $('dac-thPay').textContent = 'Basic Pay (₹)';
+  $('dac-resultsSection').style.display  = 'none';
+}
+
+/* ═══════════ PAY HELPERS ═══════════ */
+function dacPayIndex(pay) { return PAY_OPTIONS.indexOf(Number(pay)); }
+
+function dacBuildPaySchedule(basePay2026, incrementMonth, arrearFrom, arrearTo, payChangeMY, payBeforeVal) {
+  const baseIdx = dacPayIndex(basePay2026);
+  if(baseIdx < 0) return null;
+  const incM = parseInt(incrementMonth);
+  const {y:fy,m:fm}=arrearFrom, {y:ty,m:tm}=arrearTo;
+  const months=[];
+  let y=fy,m=fm;
+  while(y<ty||(y===ty&&m<=tm)){months.push({y,m});m++;if(m>12){m=1;y++;}}
+  function getTier(y,m,incM){return m>=incM?y:y-1;}
+  const lastTier=getTier(2026,4,incM);
+  function tierPay(tier){
+    const ti=baseIdx-(lastTier-tier);
+    return PAY_OPTIONS[Math.max(0,Math.min(PAY_OPTIONS.length-1,ti))];
+  }
+  const payMap={};
+  months.forEach(({y,m})=>{
+    let pay;
+    if(payChangeMY&&payBeforeVal){
+      const {y:pcy,m:pcm}=payChangeMY;
+      if(y*12+m<pcy*12+pcm){
+        const pbIdx=dacPayIndex(payBeforeVal);
+        if(pbIdx>=0){
+          const pbTier=getTier(pcy,pcm,incM);
+          const myTier=getTier(y,m,incM);
+          const ti=pbIdx-(pbTier-myTier);
+          pay=PAY_OPTIONS[Math.max(0,Math.min(PAY_OPTIONS.length-1,ti))];
+        } else {pay=tierPay(getTier(y,m,incM));}
+      } else {pay=tierPay(getTier(y,m,incM));}
+    } else {pay=tierPay(getTier(y,m,incM));}
+    payMap[`${y}-${m}`]=pay;
+  });
+  return{months,payMap};
+}
+
+/* Multi-promotion aware pay schedule builder */
+function dacBuildPayScheduleMulti(basePay2026, incrementMonth, arrearFrom, arrearTo, promotions) {
+  const baseIdx = dacPayIndex(basePay2026);
+  if(baseIdx < 0) return null;
+  const incM = parseInt(incrementMonth);
+  const {y:fy,m:fm}=arrearFrom, {y:ty,m:tm}=arrearTo;
+  const months=[];
+  let y=fy,m=fm;
+  while(y<ty||(y===ty&&m<=tm)){months.push({y,m});m++;if(m>12){m=1;y++;}}
+
+  function getTier(y,m){ return m>=incM ? y : y-1; }
+  const lastTier = getTier(2026, 4);
+
+  function baseTierPay(y, m) {
+    const ti = baseIdx - (lastTier - getTier(y, m));
+    return PAY_OPTIONS[Math.max(0, Math.min(PAY_OPTIONS.length-1, ti))];
+  }
+
+  // Derive pay for month (y,m) using a known pay reference at (refY, refM)
+  function payFromRef(refPayVal, refY, refM, y, m) {
+    const refIdx = dacPayIndex(refPayVal);
+    if(refIdx < 0) return baseTierPay(y, m);
+    const ti = refIdx - (getTier(refY, refM) - getTier(y, m));
+    return PAY_OPTIONS[Math.max(0, Math.min(PAY_OPTIONS.length-1, ti))];
+  }
+
+  const payMap={};
+  months.forEach(({y,m}) => {
+    const absMonth = y*12+m;
+    let pay;
+
+    if(!promotions || promotions.length === 0) {
+      pay = baseTierPay(y, m);
+    } else {
+      // Segments (promotions sorted ascending by date):
+      //   Segment 0 : arrearFrom  → promo[0] date - 1   → anchor: promo[0].payBefore (month before promo[0])
+      //   Segment 1 : promo[0]    → promo[1] date - 1   → anchor: promo[1].payBefore (month before promo[1])
+      //   ...
+      //   Segment N : promo[N-1]  → arrearTo             → baseTierPay (main pay field)
+      //
+      // For a given month, find which segment it's in:
+      //   segIdx = number of promotions whose effective date <= absMonth
+      //   segIdx === promotions.length  → last segment → baseTierPay
+      //   segIdx < promotions.length    → use promotions[segIdx].payBefore as anchor
+
+      let segIdx = 0;
+      for(let i=0; i<promotions.length; i++) {
+        if(promotions[i].y*12+promotions[i].m <= absMonth) segIdx++;
+        else break;
+      }
+
+      if(segIdx === promotions.length) {
+        // After all promotions — use main basic pay
+        pay = baseTierPay(y, m);
+      } else {
+        // Before or between promotions — anchor is promotions[segIdx].payBefore
+        const promo = promotions[segIdx];
+        if(promo.payBefore !== null) {
+          // payBefore is the pay in the month just BEFORE the promotion effective month
+          let refM = promo.m - 1, refY = promo.y;
+          if(refM < 1){ refM = 12; refY--; }
+          pay = payFromRef(promo.payBefore, refY, refM, y, m);
+        } else {
+          // No payBefore given — fall back to base schedule
+          pay = baseTierPay(y, m);
+        }
+      }
+    }
+
+    payMap[`${y}-${m}`] = pay;
+  });
+  return{months, payMap};
+}
+
+/* ═══════════ CALCULATE ═══════════ */
+let dacTableData = [];
+
+function dacCalculate() {
+  const cat  = $('dac-category').value;
+  const fromM = parseInt($('dac-arrearFromMonth').value);
+  const fromY = parseInt($('dac-arrearFromYear').value);
+  const toM   = parseInt($('dac-arrearToMonth').value);
+  const toY   = parseInt($('dac-arrearToYear').value);
+  if(!cat)  { dacShowToast('Please select a Category.'); return; }
+  if(fromY*12+fromM > toY*12+toM) { dacShowToast('Arrear From must be before Arrear To.'); return; }
+  cat==='pensioner' ? dacCalcPensioner(fromM,fromY,toM,toY) : dacCalcEmployee(fromM,fromY,toM,toY);
+}
+
+function dacCalcPensioner(fromM,fromY,toM,toY) {
+  const pension = parseFloat($('dac-basicPension').value);
+  if(!pension||pension<=0){ dacShowToast('Please enter a valid Basic Pension amount.'); return; }
+  const months=[];
+  let y=fromY,m=fromM;
+  while(y<toY||(y===toY&&m<=toM)){months.push({y,m});m++;if(m>12){m=1;y++;}}
+  dacTableData=months.map(({y,m})=>{
+    const ry=y>2026||(y===2026&&m>3)?2026:y, rm=y>2026||(y===2026&&m>3)?3:m;
+    const rates=MONTH_RATES_PEN[ry]?.[rm];
+    const dueRate=rates?.due??0, drawnRate=rates?.drawn??0;
+    const daDue=Math.round(pension*dueRate/100), daDrawn=Math.round(pension*drawnRate/100);
+    return{y,m,pay:pension,dueRate,drawnRate,daDue,daDrawn,arrear:daDue-daDrawn};
+  });
+  $('dac-thPay').textContent='Basic Pension (₹)';
+  dacRenderTable('Pensioner DA Arrear Statement');
+  dacShowResults();
+}
+
+function dacCalcEmployee(fromM,fromY,toM,toY) {
+  const basicPay=parseInt($('dac-basicPay').value);
+  const incMonth=$('dac-incrementMonth').value;
+  if(!basicPay){ dacShowToast('Please select a Basic Pay.'); return; }
+  if(!incMonth){ dacShowToast('Please select an Increment Month.'); return; }
+  if(dacPayIndex(basicPay)<0){ dacShowToast('The salary does not match with the pay fixed.'); return; }
+
+  // Collect promotions if checkbox is on
+  let promotions = [];
+  if($('dac-promotionCheck').checked) {
+    promotions = dacGetPromotions();
+    for(let p of promotions) {
+      if(p.payBefore!==null && dacPayIndex(p.payBefore)<0){ dacShowToast('Promotion pay (before) does not match the pay fixed.'); return; }
+    }
+  }
+
+  const schedule=dacBuildPayScheduleMulti(basicPay,incMonth,{y:fromY,m:fromM},{y:toY,m:toM},promotions);
+  if(!schedule){ dacShowToast('Error building pay schedule.'); return; }
+  dacTableData=schedule.months.map(({y,m})=>{
+    const pay=schedule.payMap[`${y}-${m}`];
+    const rates=MONTH_RATES_EMP[y]?.[m];
+    const dueRate=rates?.due??0, drawnRate=rates?.drawn??0;
+    const daDue=Math.round(pay*dueRate/100), daDrawn=Math.round(pay*drawnRate/100);
+    return{y,m,pay,dueRate,drawnRate,daDue,daDrawn,arrear:daDue-daDrawn};
+  });
+  $('dac-thPay').textContent='Basic Pay (₹)';
+  dacRenderTable('Employee DA Arrear Statement');
+  dacShowResults();
+}
+
+function dacShowResults() {
+  $('dac-resultsSection').style.display='block';
+  $('dac-resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ═══════════ RENDER TABLE ═══════════ */
+const dacFmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const dacPct = n => n + '%';
+
+function dacRenderTable(title) {
+  if(title) $('dac-resultsTitle').textContent=title;
+  const isPensioner = $('dac-category').value === 'pensioner';
+  $('dac-thSLS').style.display = isPensioner ? 'none' : '';
+  const tbody=$('dac-tableBody'), tfoot=$('dac-tableFoot');
+  tbody.innerHTML='';
+  let totDue=0,totDrawn=0,totArr=0,lastYear=null;
+  dacTableData.forEach((row,i)=>{
+    if(!row.isSLS && row.y!==lastYear){
+      lastYear=row.y;
+      const yr=document.createElement('tr');
+      yr.className='dac-year-header';
+      yr.innerHTML=`<td colspan="${isPensioner ? 8 : 9}">📅 ${row.y}</td>`;
+      tbody.appendChild(yr);
+    }
+    const arrClass=row.arrear<0?'dac-arrear-cell dac-arrear-neg':'dac-arrear-cell';
+    const tr=document.createElement('tr');
+    tr.id=`dac-row-${i}`;
+    if(row.isSLS) tr.className='dac-sls-row';
+    const monthLabel = row.isSLS
+      ? `<strong style="color:#c0392b;letter-spacing:0.05em">SLS</strong>`
+      : `<strong>${MONTHS_SHORT[row.m-1]}</strong>`;
+    const slsCell = isPensioner ? '' : `<td>${row.isSLS
+      ? `<button class="dac-btn-sls-del" onclick="dacDeleteSLSRow(${i})" title="Remove SLS row">−</button>`
+      : `<button class="dac-btn-sls" onclick="dacAddSLSRow(${i})">SLS</button>`}</td>`;
+    tr.innerHTML=`
+      <td>${monthLabel}</td>
+      <td class="dac-amount-cell" id="dac-pay-display-${i}">${dacFmt(row.pay)}</td>
+      <td class="dac-td-mono">${dacPct(row.dueRate)}</td>
+      <td class="dac-amount-cell">${dacFmt(row.daDue)}</td>
+      <td class="dac-td-mono">${dacPct(row.drawnRate)}</td>
+      <td class="dac-amount-cell">${dacFmt(row.daDrawn)}</td>
+      <td class="${arrClass}">${dacFmt(row.arrear)}</td>
+      <td><button class="dac-btn dac-btn-gold dac-btn-sm" onclick="dacEditRow(${i})">✏️</button></td>
+      ${slsCell}`;
+    tbody.appendChild(tr);
+    totDue+=row.daDue; totDrawn+=row.daDrawn; totArr+=row.arrear;
+  });
+  tfoot.innerHTML=`<tr>
+    <td colspan="3">TOTAL</td>
+    <td>${dacFmt(totDue)}</td><td></td>
+    <td>${dacFmt(totDrawn)}</td>
+    <td>${dacFmt(totArr)}</td><td></td>${isPensioner ? '' : '<td></td>'}
+  </tr>`;
+  $('dac-summaryCards').innerHTML=`
+    <div class="dac-summary-card"><div class="dac-s-label">Total DA Due</div><div class="dac-s-value">${dacFmt(totDue)}</div></div>
+    <div class="dac-summary-card"><div class="dac-s-label">Total DA Drawn</div><div class="dac-s-value">${dacFmt(totDrawn)}</div></div>
+    <div class="dac-summary-card"><div class="dac-s-label">Total Arrear</div><div class="dac-s-value">${dacFmt(totArr)}</div></div>
+    <div class="dac-summary-card"><div class="dac-s-label">Months</div><div class="dac-s-value">${dacTableData.length}</div></div>`;
+}
+
+/* ═══════════ ADD SLS ROW ═══════════ */
+function dacAddSLSRow(i) {
+  const srcRow = dacTableData[i];
+  const slsRow = Object.assign({}, srcRow, { isSLS: true });
+  dacTableData.splice(i + 1, 0, slsRow);
+  dacRenderTable();
+}
+
+/* ═══════════ DELETE SLS ROW ═══════════ */
+function dacDeleteSLSRow(i) {
+  if(dacTableData[i] && dacTableData[i].isSLS) {
+    dacTableData.splice(i, 1);
+    dacRenderTable();
+  }
+}
+
+/* ═══════════ EDIT ROW ═══════════ */
+function dacEditRow(i) {
+  const row=dacTableData[i];
+  const payCell=$(`dac-pay-display-${i}`);
+  const btn=document.querySelector(`#dac-row-${i} button`);
+  if(btn.textContent.trim()==='✏️'){
+    payCell.innerHTML=`<input type="number" class="dac-pay-edit" id="dac-pay-input-${i}" value="${row.pay}" />`;
+    btn.textContent='✔'; btn.className='dac-btn dac-btn-success dac-btn-sm';
+    $(`dac-pay-input-${i}`).focus();
+  } else {
+    const newPay=parseFloat($(`dac-pay-input-${i}`).value);
+    if(isNaN(newPay)||newPay<=0){ dacShowToast('Invalid pay value.'); return; }
+    dacTableData[i].pay=newPay;
+    dacTableData[i].daDue=Math.round(newPay*row.dueRate/100);
+    dacTableData[i].daDrawn=Math.round(newPay*row.drawnRate/100);
+    dacTableData[i].arrear=dacTableData[i].daDue-dacTableData[i].daDrawn;
+    dacRenderTable();
+  }
+}
+
+/* ═══════════ DOWNLOADS ═══════════ */
+function dacGetPayLabel(){
+  return $('dac-category').value==='pensioner'?'Basic Pension':'Basic Pay';
+}
+
+function dacDownloadPDF() {
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+  const title=$('dac-resultsTitle').textContent;
+  doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  doc.text(title,40,40);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(`Generated: ${new Date().toLocaleDateString('en-IN')}`,40,58);
+  const payLabel=dacGetPayLabel();
+  const fmtPDF=n=>'Rs.'+Math.round(n).toLocaleString('en-IN');
+  const head=[[' Month','Year',payLabel,'Due DA %','DA Due','Drawn DA %','DA Drawn','Arrear']];
+  const body=dacTableData.map(r=>[
+    r.isSLS ? 'SLS' : MONTHS_SHORT[r.m-1],r.y,fmtPDF(r.pay),
+    r.dueRate+'%',fmtPDF(r.daDue),
+    r.drawnRate+'%',fmtPDF(r.daDrawn),fmtPDF(r.arrear)
+  ]);
+  const tD=dacTableData.reduce((s,r)=>s+r.daDue,0);
+  const tW=dacTableData.reduce((s,r)=>s+r.daDrawn,0);
+  const tA=dacTableData.reduce((s,r)=>s+r.arrear,0);
+  body.push(['TOTAL','','','',fmtPDF(tD),'',fmtPDF(tW),fmtPDF(tA)]);
+  doc.autoTable({
+    head,body,startY:70,
+    styles:{fontSize:9,cellPadding:5},
+    headStyles:{fillColor:[13,34,64],textColor:255,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:[245,240,232]},
+    didDrawPage:function(){
+      const pw=doc.internal.pageSize.getWidth();
+      const ph=doc.internal.pageSize.getHeight();
+      const pg=doc.internal.getCurrentPageInfo().pageNumber;
+      const total=doc.internal.getNumberOfPages();
+      doc.setFontSize(8); doc.setTextColor(180,180,180); doc.setFont('helvetica','normal');
+      doc.text('- www.gstcell.com',40,ph-12);
+      doc.text(`Page ${pg} of ${total}`,pw-60,ph-12);
+      doc.setTextColor(0,0,0);
+    }
+  });
+  doc.save('DA_Arrear_Statement.pdf');
+}
+
+function dacDownloadExcel() {
+  const payLabel=dacGetPayLabel();
+  const ws_data=[[' Month','Year',payLabel,'Due DA %','DA Due','Drawn DA %','DA Drawn','Arrear']];
+  dacTableData.forEach(r=>ws_data.push([
+    r.isSLS ? 'SLS' : MONTHS_SHORT[r.m-1],r.y,Math.round(r.pay),
+    r.dueRate+'%',r.daDue,r.drawnRate+'%',r.daDrawn,r.arrear
+  ]));
+  const tD=dacTableData.reduce((s,r)=>s+r.daDue,0);
+  const tW=dacTableData.reduce((s,r)=>s+r.daDrawn,0);
+  const tA=dacTableData.reduce((s,r)=>s+r.arrear,0);
+  ws_data.push(['TOTAL','','','',tD,'',tW,tA]);
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(ws_data);
+  ws['!cols']=[10,8,14,10,12,12,12,12].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,ws,'DA Arrear');
+  XLSX.writeFile(wb,'DA_Arrear_Statement.xlsx');
+}
+
+/* ═══════════ EXPOSE GLOBALS (called from HTML onclick) ═══════════ */
+window.dacOnCategoryChange = dacOnCategoryChange;
+window.dacTogglePromotion  = dacTogglePromotion;
+window.dacAddPromotion     = dacAddPromotion;
+window.dacRemovePromotion  = dacRemovePromotion;
+window.dacOpenModal        = dacOpenModal;
+window.dacCloseModal       = dacCloseModal;
+window.dacCalculate        = dacCalculate;
+window.dacClearForm        = dacClearForm;
+window.dacEditRow          = dacEditRow;
+window.dacAddSLSRow        = dacAddSLSRow;
+window.dacDeleteSLSRow     = dacDeleteSLSRow;
+
+document.addEventListener('DOMContentLoaded', dacInit);
+</script>
+</body>
+</html>
