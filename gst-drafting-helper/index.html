@@ -1,0 +1,3434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GST ASMT-10 Generator</title>
+  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <style>
+  body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+
+tr.active-row td {
+  background-color: #a8d4f5 !important;
+}
+
+
+    .hidden { display: none !important; }
+.tile, .tile input{
+    background-color: #95c8ff;
+    border-color: #95c8ff;
+cursor: default;
+}
+
+.tile input{
+    box-shadow: none; /* remove default shadow */ 
+    outline: none; /* remove default focus outline */
+    border-radius: 5px;
+    font-size: 12pt;
+    padding:5px;
+}
+
+.tile input:focus{
+border-color: #95c8ff; /* highlight border on focus */ 
+box-shadow: none; /* ensure no glow/shadow */
+}
+.tile {
+
+  color: white;
+  padding: 20px;
+  margin: 10px auto;
+  border-radius: 10px;
+  width: 80%;
+
+  display: grid;                /* enable grid layout */
+  grid-template-columns: 1fr 1fr; /* two equal columns */
+  gap: 10px;                    /* spacing between items */
+}
+.tile1 {
+  display: flex;          /* enable flexbox */
+  flex-direction: column; /* stack items vertically */
+  align-items: flex-end;  /* align items to the right */
+  color: white; 
+  margin: 0 auto;
+  width: 80%;
+}
+
+.tile1 button{
+  background-color: #95c8ff;
+  border-radius: 5px;
+  padding:4px auto;
+}
+
+.tile1 button:hover{
+  background-color: #4fa3fc;
+  border-radius: 5px;
+  padding:5px auto;
+}
+
+tr.active-row td {
+  background-color: #b0d4f7 !important;
+}
+/* Two-column layout on desktop */
+@media (min-width: 992px) {
+  .tile {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+   .titles{
+display: flex; justify-content: center; /* horizontal center */ 
+align-items: center; /* vertical center */
+color:#145099;
+   }
+
+
+
+.deletesymbol{
+  border-radius: 13px;
+  padding: 1px 5px;
+  color: white;
+  background-color: red;
+  border-color: red;
+  font-size: 12pt;
+  font-weight: bold;
+}
+.deletesymbol:hover {
+  background-color: white;
+  color: red;
+  font-weight: bold;
+}
+    .table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* allows wrapping on small screens */
+  width:80%;
+  margin-left: 10%;
+}
+
+.left-controls {
+  flex: 1;
+  text-align: left;
+}
+
+.right-controls {
+  display: flex;
+  gap: 15px; /* spacing between page-size and pagination controls */
+  flex: 1;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin-left: 10%;
+    }
+    table, th, td {
+      background-color: #f0f7ff;
+  border: 1px solid #95c8ff;
+    }
+
+    #searchBox{
+  border: 1px solid #95c8ff;
+  border-radius: 5px;
+  padding: 5px;
+
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    .hidden1 { display: none !important; }
+    #statusModal { 
+      position: fixed; top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.5); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 11000; 
+    } 
+    #statusBox { 
+      background: #fff; padding: 20px; border-radius: 6px; 
+      text-align: center; min-width: 200px; font-weight: bold; 
+    }
+
+/* Centered login tile */
+/* ========== UNIFIED THEME ========== */
+:root {
+  --primary: #1a6fc4;
+  --primary-dark: #145099;
+  --primary-light: #4a90e2;
+  --success: #3da766;
+  --danger: #a73d3d;
+  --bg-gradient: linear-gradient(135deg, #e8f0fe, #dceeff);
+  --box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  --border-radius: 12px;
+  --input-radius: 8px;
+}
+
+/* ========== LOGIN PAGE ========== */
+#loginPage {
+  background: linear-gradient(145deg, #1e82e5, #145099);
+  color: white;
+  padding: 35px 30px;
+  border-radius: var(--border-radius);
+  width: 25%;
+  min-width: 300px;
+  margin-left: 37%;
+  margin-top: 10%;
+  box-shadow: var(--box-shadow);
+  text-align: center;
+}
+
+#loginPage h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+#loginPage input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 14px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.92);
+  color: #222;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+#loginPage input:focus {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.4);
+}
+/* Piano key effect button */
+#loginPage button, #tilePopup1 button,  #tilePopup2 button {
+  padding: 13px;
+  margin-top: 10px;
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 16px;
+  font-weight: bold;
+  background: linear-gradient(to bottom, #50c878, #3da766);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  width: 100%;
+}
+#loginPage button {
+  width: 100%;}
+/* Piano key press effect */
+#loginPage button:active, #tilePopup1 button:active, #tilePopup2 button:active {
+  transform: translateY(4px);
+  box-shadow: inset 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* Hover glow */
+#loginPage button:hover, #tilePopup1 button:hover, #tilePopup2 button:hover {
+    box-shadow: 0 6px 14px rgba(0,0,0,0.28);
+  transform: translateY(-1px);
+}
+
+/* Signup button with different color */
+#loginPage button:nth-of-type(2) {
+  background: linear-gradient(to bottom, #50c878, #3da766);
+}
+
+#tilePopup1 button:nth-of-type(2), #tilePopup2 button:nth-of-type(4), #tilePopup3 button:nth-of-type(2), #popupBox button:nth-of-type(2) {
+  background: linear-gradient(to bottom, #c85050, #a73d3d);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #loginPage {
+    padding: 25px;
+    width: 88%;
+    margin: 3px 3px;
+  }
+  #loginPage h2 {
+    font-size: 20px;
+  }
+  table, td, th{
+    font-size: 10px;
+  }
+   table {width: 96%;
+      margin-left: 1%;
+    }
+    #popupBox, #popupBox1, #popupBox2 { display: grid; grid-template-columns: 1fr 1fr; /* two equal columns */ gap: 20px; /* spacing between columns */ } 
+    #popupBox h3, #popupBox1 h3, #popupBox2 h3 { grid-column: span 2; /* title spans both columns */ } #popupBox button { grid-column: span 2; /* buttons span both columns */ margin-top: 10px; } 
+}
+
+@media (max-width: 480px) {
+  #loginPage {
+    padding: 20px;
+    max-width: 95%;
+  }
+  #loginPage input, #loginPage button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 600px) {
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+     width:100%;
+  margin-left: 0%
+  }
+  .left-controls, .right-controls {
+    text-align: center;
+    justify-content: center;
+    margin-top: 8px;
+  }
+      .tile { width: 100%; 
+      }
+    }
+    /* Flex row for buttons */
+.button-row {
+  display: flex;
+  gap: 10px; /* spacing between buttons */
+  margin-top: 12px;
+}
+
+.button-row button {
+  flex: 1; /* make both buttons equal width */
+}
+
+
+#tilePopup, #tilePopup1, #tilePopup2, #tilePopup3 {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 30, 60, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+#popupBox {
+  background: var(--bg-gradient);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 600px;
+  border-top: 4px solid var(--primary);
+}
+
+#popupBox1, #popupBox2, #popupBox3 {
+  background: var(--bg-gradient);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 400px;
+  border-top: 4px solid var(--primary);
+}
+#popupBox h3, #popupBox1 h2, #popupBox1 h3, #popupBox2 h3, #popupBox3 h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--primary);
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+#popupBox label, #popupBox1 label, #popupBox2 label, #popupBox3 label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #2a3a5c;
+  font-size: 13px;
+}
+
+#popupBox input, #popupBox1 input, #popupBox2 input, #popupBox3 input, #popupBox3 select {
+  margin-top: 5px;
+  padding: 10px 12px;
+  border-radius: var(--input-radius);
+  border: 1.5px solid #b0c8e8;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  color: #222;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#popupBox input:focus, #popupBox1 input:focus, #popupBox2 input:focus, #popupBox3 input:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+}
+
+/* ========== POPUP BUTTONS ========== */
+#popupBox button, #popupBox1 button, #popupBox2 button, #popupBox3 button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  margin-top: 8px;
+  width: 100%;
+}
+
+#popupBox button:hover, #popupBox1 button:hover, #popupBox2 button:hover, #popupBox3 button:hover {
+  box-shadow: 0 5px 12px rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+}
+
+#popupBox button:active, #popupBox1 button:active, #popupBox2 button:active, #popupBox3 button:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+}
+/* Cancel buttons — red theme */
+#tilePopup1 button:last-of-type,
+#tilePopup2 button:last-of-type {
+  background: linear-gradient(to bottom, #e05555, var(--danger));
+}
+
+/* ========== PASSWORD CONTAINER ========== */
+.password-container {
+  position: relative;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.password-container input {
+  padding-right: 36px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.password-container .toggle-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6a8ab0;
+  font-size: 15px;
+}
+
+/* ========== LOGOUT BUTTON ========== */
+.logout {
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: box-shadow 0.2s, color 0.2s;
+}
+.logout:hover {
+  color: #ffd700;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+/* Forgot password link wrapper */
+.forgotWrapper {
+  text-align: right;   /* Align to the right side of the tile */
+  margin-top: 10px;
+}
+
+/* Forgot password link style */
+.forgotLink {
+  font-size: 14px;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.forgotLink:hover {
+  color: #ffd700; /* golden highlight on hover */
+}
+
+.horizontal-info-bar {
+  display: flex;
+  /* Changed from space-around to space-between */
+  justify-content: space-between; 
+  align-items: center;
+  background-color: #f0f7ff;
+  border: 1px solid #95c8ff;
+  border-radius: 8px;
+  padding: 5px 10px; /* Added horizontal padding so text doesn't touch the border */
+  margin: 0px 10%;
+  width: 80%;
+  box-sizing: border-box;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  gap: 8px;
+  font-family: Arial, sans-serif;
+}
+
+.info-label {
+  font-weight: bold;
+  color: #1a6fc4;
+}
+
+.info-value {
+  color: #333;
+  min-width: 50px;
+}
+.add-record-bar {
+  display: flex;
+  justify-content: flex-end;
+  width: 80%;
+  margin: 8px 10% 0 10%;
+}
+
+.btn-add-record {
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+  border: none;
+  border-radius: var(--input-radius);
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.btn-add-record:hover {
+  box-shadow: 0 5px 12px rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+}
+
+                /* ========== ASMT-10 STYLES ========== */
+                .notice-selector-row {
+                  display: flex; align-items: center; gap: 12px;
+                  width: 80%; margin: 12px 10% 0 10%;
+                }
+                .notice-selector-row label {
+                  font-weight: 600; color: var(--primary-dark);
+                  font-size: 13px; white-space: nowrap;
+                }
+                .notice-selector-row select {
+                  padding: 7px 12px; border: 1.5px solid #95c8ff;
+                  border-radius: var(--input-radius); font-size: 13px;
+                  background: #f0f7ff; color: #1a3a5c; outline: none;
+                  cursor: pointer; transition: border-color 0.2s;
+                }
+                .notice-selector-row select:focus {
+                  border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(74,144,226,0.12);
+                }
+                .notice-selector-row .add-label {
+                  font-weight: 700; color: var(--primary); font-size: 14px;
+                  padding: 6px 14px; background: #fafcff; border-radius: 6px;
+                  cursor: default; letter-spacing: 0.5px;
+                }
+
+                .asmt-tile {
+                  background: linear-gradient(135deg, #f0f7ff, #e4efff);
+                  border: 1.5px solid #95c8ff; border-radius: var(--border-radius);
+                  box-shadow: var(--box-shadow); padding: 22px 26px;
+                  width: 80%; margin: 12px 10%; box-sizing: border-box;
+                }
+                .asmt-tile-title {
+                  font-size: 15px; font-weight: 700; color: var(--primary-dark);
+                  margin-bottom: 18px; padding-bottom: 8px;
+                  border-bottom: 2px solid #95c8ff; letter-spacing: 0.5px;
+                }
+
+                .asmt-row {
+                  display: flex; align-items: center; gap: 12px;
+                  margin-bottom: 12px; flex-wrap: wrap;
+                }
+                .asmt-row label {
+                  font-weight: 600; color: #2a3a5c; font-size: 13px;
+                  white-space: nowrap; min-width: 90px;
+                }
+                .asmt-row input[type="text"] {
+                  padding: 7px 11px; border: 1.5px solid #b0c8e8;
+                  border-radius: var(--input-radius); font-size: 13px;
+                  background: #fff; color: #222; outline: none; flex: 1;
+                  min-width: 130px; transition: border-color 0.2s, box-shadow 0.2s;
+                }
+                /* ✅ Narrower date fields */
+                .asmt-row input[type="date"] {
+                  padding: 7px 8px; border: 1.5px solid #b0c8e8;
+                  border-radius: var(--input-radius); font-size: 13px;
+                  background: #fff; color: #222; outline: none;
+                  width: 160px; max-width: 160px; min-width: 140px;
+                  flex: unset; transition: border-color 0.2s, box-shadow 0.2s;
+                }
+                .asmt-row input:focus {
+                  border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(74,144,226,0.13);
+                }
+
+                .grounds-wrapper { margin-top: 10px; }
+
+                .ground-card {
+                  background: #fff; border: 1.5px solid #95c8ff;
+                  border-radius: 10px; margin-bottom: 14px; overflow: hidden;
+                  box-shadow: 0 2px 8px rgba(26,111,196,0.07);
+                }
+                .ground-card-header {
+                  display: flex; justify-content: space-between; align-items: center;
+                  background: linear-gradient(90deg, #1a6fc4, #4a90e2);
+                  color: white; padding: 9px 16px; font-weight: 700; font-size: 13px;
+                }
+                .ground-card-header .btn-remove {
+                  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5);
+                  color: white; border-radius: 5px; padding: 3px 10px;
+                  font-size: 12px; cursor: pointer; transition: background 0.2s;
+                }
+                .ground-card-header .btn-remove:hover { background: rgba(220,50,50,0.7); }
+
+                .ground-card-body { padding: 14px 16px; }
+                .ground-card-body label {
+                  display: block; font-weight: 600; font-size: 12px;
+                  color: #2a3a5c; margin-bottom: 4px; margin-top: 10px;
+                }
+                .ground-card-body select,
+                .ground-card-body textarea {
+                  width: 100%; padding: 8px 10px; border: 1.5px solid #b0c8e8;
+                  border-radius: 6px; font-size: 13px; background: #f8fbff;
+                  color: #222; outline: none; box-sizing: border-box; transition: border-color 0.2s;
+                }
+                .ground-card-body textarea { resize: vertical; line-height: 1.5; }
+                .ground-card-body select:focus, .ground-card-body textarea:focus {
+                  border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(74,144,226,0.12);
+                }
+
+                .table-section { margin-top: 12px; }
+
+                .ground-table {
+                  width: 100%; border-collapse: collapse;
+                  font-size: 12px; margin: 0; background: #f0f7ff;
+                }
+                .ground-table th, .ground-table td {
+                  border: 1px solid #95c8ff; padding: 5px 7px;
+                  text-align: center; background: #f0f7ff;
+                }
+                .ground-table th {
+                  background: #dceeff; font-weight: 700; color: #145099; font-size: 11px;
+                }
+                .ground-table .edit-cell { background: #fff; padding: 2px; }
+                .ground-table .edit-cell input {
+                  width: 100%; border: none; outline: none; text-align: center;
+                  font-size: 12px; padding: 4px 2px; background: transparent; box-sizing: border-box;
+                }
+                .ground-table .row-total-cell { background: #e8f4e8; font-weight: 700; color: #2a6a2a; }
+                .ground-table .col-total-row td { background: #dce8f5; font-weight: 700; color: #145099; }
+
+                .btn-add-ground {
+                  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+                  color: white; border: none; border-radius: 6px;
+                  padding: 8px 18px; font-size: 13px; font-weight: 600;
+                  cursor: pointer; margin-top: 4px;
+                  transition: transform 0.1s, box-shadow 0.2s;
+                  box-shadow: 0 3px 8px rgba(0,0,0,0.13);
+                }
+                .btn-add-ground:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(0,0,0,0.18); }
+                .btn-add-ground:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+                .asmt-save-row {
+                  display: flex; gap: 14px; margin-top: 18px;
+                  flex-wrap: wrap; align-items: center;
+                }
+                .btn-asmt-save {
+                  background: linear-gradient(to bottom, #50c878, #3da766);
+                  color: white; border: none; border-radius: var(--input-radius);
+                  padding: 10px 28px; font-size: 14px; font-weight: 700;
+                  cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+                  transition: transform 0.1s, box-shadow 0.2s;
+                }
+                .btn-asmt-save:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(0,0,0,0.22); }
+
+                .btn-asmt-download {
+                  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+                  color: white; border: none; border-radius: var(--input-radius);
+                  padding: 10px 22px; font-size: 14px; font-weight: 700;
+                  cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+                  transition: transform 0.1s, box-shadow 0.2s;
+                  display: none;
+                }
+                .btn-asmt-download.visible { display: inline-block; }
+                .btn-asmt-download:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(0,0,0,0.22); }
+
+                @media (max-width: 600px) {
+                  .asmt-tile { width: 96%; margin: 10px 2%; }
+                  .notice-selector-row { width: 96%; margin: 10px 2% 0 2%; }
+                  .asmt-row { flex-direction: column; align-items: flex-start; }
+                }
+@media (max-width: 600px) {
+  .add-record-bar {
+    width: 96%;
+    margin: 8px 2% 0 2%;
+  }
+}
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .horizontal-info-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 96%;
+    margin-left: 2%;
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  #loginPage {
+    width: 88%;
+    margin: 20px auto;
+    margin-top: 8%;
+  }
+
+  #popupBox, #popupBox1, #popupBox2 {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  #loginPage {
+    padding: 20px;
+    max-width: 95%;
+    margin: 10px auto;
+  }
+}
+
+
+    #status { margin-top: 8px; font-size: 0.78rem; color: #475569; text-align: center; min-height: 16px; }
+  </style>
+</head>
+<body>
+
+  
+  <!-- Login Page -->
+<!-- Login Page -->
+<div id="loginPage">
+  <h2>Login</h2>
+  <input type="text" id="userId" autocomplete="off" placeholder="Registered e-mail"><br>
+  <input type="password" id="password" autocomplete="off" placeholder="Password"><br>
+  
+  <button onclick="login()" style="width:100%; margin-top:12px;">Login</button>
+    <div style="margin-top: 18px; font-size: 14px; color: #e0eeff; text-align: center;">
+    Don't have an account yet? 
+    <a onclick="showSignup()" style="color: #ffd700; text-decoration: underline; cursor: pointer; font-weight: bold;">Sign Up</a>
+  </div>
+  <div class="forgotWrapper">
+    <a class="forgotLink" onclick="showForgot()">Forgot Password?</a>
+  </div>
+
+
+</div>
+
+
+
+<div id="statusModal" class="hidden1"> 
+  <div id="statusBox"> <p id="statusText">Please wait...</p> 
+  </div> 
+</div>
+ <div id="secondaryPage" class="hidden">
+
+    <div style="position: fixed; top: 10px; right: 15px; z-index: 99999;">
+      <button onclick="showLoginPage()" class="logout">⏻</button>
+    </div>
+
+    <div class="titles"><h2>Welcome</h2></div>
+    
+   <div id="tileData" class="tile">
+  <input type="text" readonly id="colC">
+  <input type="text" readonly id="colD">
+  <input type="text" readonly id="colF">
+  <input type="text" readonly id="colE">
+  <input type="text" readonly id="colG">
+  <input type="text" readonly id="colH">
+  
+</div>
+  <div class="tile1"><button style="width: 2cm;" onclick="openTileEditor()">Edit</button></div>
+
+
+<div id="tilePopup" class="hidden1">
+  <div id="popupBox">
+    <h3>Edit Personal Information</h3>
+    <label>Name: * <input type="text" id="editColC" readonly style="background: var(--bg-gradient);" autocomplete="off"></label>
+    <label>Designation: * <input type="text" id="editColD" autocomplete="off"></label>
+    <label>PEN: <input type="text" id="editColF" autocomplete="off"></label>
+    <label>Office Address: * <input type="text" id="editColE" autocomplete="off"></label>
+   <label>Phone: * 
+  <div style="display:flex; gap:6px; align-items:center;">
+    <input type="text" id="editColG" readonly style="background: var(--bg-gradient); flex:1; min-width:0;" autocomplete="off">
+    <button type="button" onclick="openPhoneChangeRequest()" 
+      style="width:113px; min-width:113px; height:38px; font-size:12px; white-space:nowrap; flex-shrink:0; padding:0;">
+      ✏️ Change
+    </button>
+  </div>
+</label>
+    <label>e-mail: * <input type="text" id="editColH" readonly style="background: var(--bg-gradient);" autocomplete="off"></label>
+    <br>
+
+    <!-- ADD THIS CHECKBOX -->
+    <label style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-bottom:10px; white-space:nowrap;">
+      <input type="checkbox" id="coreFieldAmend" onchange="toggleCoreFields()" style="margin:0; width:16px; height:16px; flex-shrink:0; cursor:pointer;">
+      <span style="font-size:14px; line-height:1;">Amend Core Field (Name &amp; e-mail)</span>
+    </label>
+
+    <button onclick="submitTileEdit()">Update</button>
+    <button onclick="cancelTileEditor()">Cancel</button>
+  </div>
+</div>
+<!-- Phone Change Request Popup -->
+<div id="phoneChangePopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:30px; max-width:350px; width:90%; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <h3>Change Phone Number Request</h3>
+    <p style="margin:10px 0; font-size:14px;">
+      You are requesting to change the phone number linked to your account:<br>
+      <strong id="displayCurrentPhone"></strong>
+    </p>
+
+    <!-- ✅ NEW — New phone number input -->
+    <div style="text-align:left; margin:12px 0;">
+      <label style="font-size:13px; font-weight:bold;">New Phone Number: *</label>
+      <input type="text" id="newPhoneNumber" placeholder="Enter new phone number"
+        style="width:100%; padding:8px; margin-top:5px; border:1px solid #ccc; border-radius:6px; font-size:14px; box-sizing:border-box;" 
+        autocomplete="off" maxlength="10">
+    </div>
+
+    <p style="font-size:13px; color:#555;">
+      An email will be sent to the admin requesting this change. 
+      Your phone number will be updated after admin approval.
+    </p>
+    <br>
+    <button onclick="sendPhoneChangeRequest()">Send Request</button>
+    <button onclick="closePhoneChangePopup()">Cancel</button>
+  </div>
+</div>
+
+
+    <div class="titles"> <h3>Records</h3></div>
+
+<!-- Controls container -->
+<div class="table-controls">
+  <div class="left-controls">
+    <input type="text" id="searchBox" autocomplete="off" placeholder="Search..." onkeyup="searchTable()">
+  </div>
+  <div class="right-controls">
+    <div class="page-size">
+      <label for="pageSize">Records per page:</label>
+      <select id="pageSize" onchange="changePageSize()">
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+      </select>
+    </div>
+    <div id="paginationControls"></div>
+  </div>
+</div>
+
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th style="width:8%">Select</th>
+          <th style="width:5%">Delete</th>
+          <th style="width:15%">GSTIN</th>
+          <th style="width:40%;">Name & Address</th>
+          <th style="width:10%;">Year</th>
+          <th style="width:12%">Phone</th>
+          <th style="width:10%"></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <!-- Add Record Button -->
+<div class="add-record-bar" id="add-record-bar">
+  <button id="clearButton" class="btn-add-record" style="margin-right: 10px; display:none" onclick="clearForm()">Clear</button><button class="btn-add-record" onclick="openAddRecord()">Add Record</button>
+</div>
+
+
+<!-- Add Record Popup -->
+<div id="tilePopup3" class="hidden1">
+  <div id="popupBox3">
+    <h3>Add New Record</h3>
+    <p style="font-size: 10px; font-style: italic;"></p>
+<label>GSTIN
+  <input type="text" id="data1" autocomplete="off" placeholder="GSTIN">
+</label>
+<label>Name
+  <input type="text" id="data2" autocomplete="off" placeholder="Name">
+</label>
+<label>Address
+  <input type="text" id="data3" autocomplete="off" placeholder="Address">
+</label>
+<label>Year
+  <select id="data4">
+    <option value="2025-26">2025-26</option>
+    <option value="2024-25">2024-25</option>
+    <option value="2023-24">2023-24</option>
+    <option value="2022-23">2022-23</option>
+    <option value="2021-22">2021-22</option>
+    <option value="2020-21">2020-21</option>
+  </select>
+</label>
+<label>Phone
+  <input type="text" id="data5" autocomplete="off" placeholder="Phone">
+</label>
+<label style="display: none;">Data 6
+  <input type="text" id="data6" autocomplete="off" placeholder="Data 6">
+</label>
+
+      
+    <button id="saveDataBtn" onclick="saveData()">Save</button>
+    <button onclick="closeAddRecord()">Cancel</button>
+  </div>
+</div>
+    <div id="statusMessage" style="margin-top:10px; font-weight:bold; color:blue; text-align: center;"></div>
+
+
+<div id="realtimeDisplay" class="horizontal-info-bar">
+      
+  <div class="info-item">
+    <span class="info-label">Selected GSTIN:</span>
+    <span id="displayGSTIN" class="info-value"></span>
+  </div>
+  <div class="info-item">
+    <span class="info-label">Name:</span>
+    <span id="displayName" class="info-value"></span>
+  </div>
+  <div class="info-item">
+    <span class="info-label">Year:</span>
+    <span id="displayPhone" class="info-value"></span>
+  </div>
+</div>
+
+
+                      <!-- ===== NOTICE TYPE SELECTOR (after realtimeDisplay) ===== -->
+                      <div class="notice-selector-row">
+                        <span class="add-label">Add</span>
+                        <select id="noticeTypeSelect" onchange="handleNoticeType()">
+                          <option value="">-- Select Notice Type --</option>
+                          <option value="asmt10">ASMT 10</option>
+                          <option value="drc01">DRC-01</option>
+                          <option value="drc07">DRC-07</option>
+                        </select>
+                        
+                      </div>
+
+                      <!-- ===== ASMT-10 TILE — hidden by default ===== -->
+                      <div id="asmt10Tile" class="asmt-tile hidden">
+                        <div class="asmt-tile-title">ASMT-10 — Notice for Scrutiny of Returns</div>
+
+                        <!-- Row: Date -->
+                        <div class="asmt-row">
+                          <label for="data7">Date</label>
+                          <input type="date" id="data7">
+                        </div>
+
+                        <!-- Row: Ref.1 -->
+                        <div class="asmt-row">
+                          <label for="data8">Ref. 1</label>
+                          <input type="text" id="data8" placeholder="Reference No. 1">
+                        </div>
+
+                        <!-- Row: Ref.2 on its own line -->
+                        <div class="asmt-row">
+                          <label for="data9">Ref. 2</label>
+                          <input type="text" id="data9" placeholder="Reference No. 2">
+                        </div>
+
+                        <!-- Row: Period From / Period To -->
+                        <div class="asmt-row">
+                          <label for="data10">Period From</label>
+                          <input type="date" id="data10">
+                          <label for="data11" style="margin-left:10px;">Period To</label>
+                          <input type="date" id="data11">
+                        </div>
+
+                        <!-- Grounds -->
+                        <div class="grounds-wrapper" id="groundsWrapper"></div>
+
+                        <!-- Add Ground button -->
+                        <button class="btn-add-ground" id="btnAddGround" onclick="addGround()">+ Add Ground</button>
+
+                        <!-- Reply/Closing Date -->
+                        <div class="asmt-row" style="margin-top:18px; padding-top:14px; border-top:1.5px dashed #95c8ff;">
+                          <label for="data51">Reply Date</label>
+                          <input type="date" id="data51">
+                        </div>
+
+                        <!-- Save + Download buttons -->
+                        <div class="asmt-save-row" id="dataEntry">
+                          <button class="btn-asmt-save" onclick="saveAsmt10()">💾 Update</button>
+                          <button class="btn-asmt-download" id="btnWord" onclick="downloadWord()">⬇ Download Word</button>
+                          <button class="btn-asmt-download" id="btnPdf" onclick="downloadPDF()">⬇ Download PDF</button>
+                        </div>
+                        <div id="status"></div>
+                      </div><!-- end #asmt10Tile -->
+
+
+
+
+  </div>
+  <!-- Signup Popup -->
+<div id="tilePopup1" class="hidden">
+  <div id="popupBox1">
+    <h2>Signup</h2>
+    <input type="text" id="field1" placeholder="Name *"><br>
+    <input type="tel" id="field2" placeholder="Mobile *"><br>
+    <input type="text" id="field3" placeholder="e-mail *"><br>
+    <div class="password-container">
+      <input type="password" id="pwd1" placeholder="Password *">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd1', this)"></i>
+    </div>
+    
+    <div class="password-container">
+      <input type="password" id="pwd2" placeholder="Confirm Password *">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd2', this)"></i>
+    </div>
+    
+    <input type="text" id="field4" placeholder="Field4" style="display: none;">
+    <input type="text" id="field5" placeholder="Field5" style="display: none;">
+    <input type="text" id="field6" placeholder="Field6" style="display: none;">
+    <button onclick="signup()">Register</button>
+    <button onclick="closeSignup()">Cancel</button>
+  </div>
+</div>
+
+<div id="tilePopup2" class="hidden" >
+  <div id="popupBox2">
+    <h3>Forgot Password</h3>
+    <p style="font-style: italic;font-family: 'Times New Roman', Times, serif; color: #217ce4;">Enter the registered Mobile No. and email</p>
+    <input type="tel" id="field2Mobile" autocomplete="off" placeholder="Mobile"><br>
+    <input type="email" id="field3email" autocomplete="off" placeholder="e-mail"><br>
+
+    <!-- OTP field initially hidden -->
+    <input type="text" id="otp" autocomplete="off" placeholder="OTP" style="display:none;"><br>
+
+    <!-- Password fields initially hidden -->
+    <div class="password-container" style="display:none;" id="pwdSection">
+      <input type="password" id="pwd1Reset" placeholder="Password">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd1Reset', this)"></i><br>
+      <input type="password" id="pwd2Reset" placeholder="Confirm Password">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd2Reset', this)"></i>
+    </div>
+
+    <!-- Buttons -->
+    <button id="btnSend" onclick="sendOTP()">Get OTP</button>
+    <button id="btnVerify" onclick="verifyOTP()" style="display:none;">Validate</button>
+    <button id="btnUpdate" onclick="updatePassword()" style="display:none;">Update</button>
+    <button onclick="closeForgot()">Cancel</button>
+  </div>
+</div>
+
+
+<script>
+const BANNER_URL = "https://lh3.googleusercontent.com/d/1GYV1-6GENqIWpi2JuZEKXKEHfe8SkmBO";
+ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwM5eg7UARjaIv5QWCkx1DDyPUzNLK30VH15OhTSiCgS51ustr8BoKE9F_WByFsy5KUpQ/exec";  //Database
+    const SCRIPT_2URL = "https://script.google.com/macros/s/AKfycbzx-uHE46WoaZwChkBUcN5wGg4K1OzSDgzN9ts_jH4bP0MC-jJZVaURJxnjN7qKFi9PtA/exec"; //password
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzU1P7M0BeCz92jatvULKfXd9wvPFKHTwDJC_CoFAmcWPiuc40Fmy8FQo5PQ-nyWQanig/exec"; //OTP
+
+    
+    let selectedRowIndex = null;
+    let loggedInUserId = null;
+    let loggedInPassword = null;
+
+function showStatus(message){
+  document.getElementById("statusText").innerText = message || "Please wait...";
+  document.getElementById("statusModal").classList.remove("hidden1");
+}
+
+
+function hideStatus(){
+  document.getElementById("statusModal").classList.add("hidden1");
+}
+function login() {
+  let userId = document.getElementById("userId").value;
+  let password = document.getElementById("password").value;
+  if (!userId || !password) { alert("Login credentials are missing"); return; }
+
+  showStatus("Logging in...");
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({ action: "login", userId, password })
+  })
+  .then(res => res.json())
+  .then(result => {
+    hideStatus();
+    if (result.success) {
+      loggedInUserId = userId;
+      loggedInPassword = password;
+      document.getElementById("loginPage").classList.add("hidden");
+      document.getElementById("secondaryPage").classList.remove("hidden");
+      document.getElementById("colC").value = result.tileData.colC || "";
+      document.getElementById("colC").value = result.tileData.colC || "";
+      document.getElementById("colD").value = result.tileData.colD || "";
+      document.getElementById("colE").value = result.tileData.colE || "";
+      document.getElementById("colF").value = result.tileData.colF || "";
+      document.getElementById("colG").value = result.tileData.colG || "";
+      document.getElementById("colH").value = result.tileData.colH || "";
+      populateTable(result.tableData);
+
+      // Auto-open tile editor if profile fields are empty
+      var isEmpty =
+        !result.tileData.colC &&
+        !result.tileData.colD &&
+        !result.tileData.colE &&
+        !result.tileData.colF &&
+        !result.tileData.colG;
+      if (isEmpty) {
+        document.getElementById("editColC").value = "";
+        document.getElementById("editColD").value = "";
+        document.getElementById("editColE").value = "";
+        document.getElementById("editColF").value = "";
+        document.getElementById("editColG").value = "";
+        document.getElementById("editColH").value = "";
+        document.getElementById("tilePopup").classList.remove("hidden1");
+      } else {
+        document.getElementById("editColC").value = result.tileData.colC || "";
+        document.getElementById("editColD").value = result.tileData.colD || "";
+        document.getElementById("editColE").value = result.tileData.colE || "";
+        document.getElementById("editColF").value = result.tileData.colF || "";
+        document.getElementById("editColG").value = result.tileData.colG || "";
+        document.getElementById("editColH").value = result.tileData.colH || "";
+      }
+    } else {
+      alert("Invalid credentials");
+      location.reload();
+    }
+  })
+  .catch(err => {
+    hideStatus();
+    if (!navigator.onLine) {
+      alert("Network not available. Please check your internet connection and try again.");
+    } else {
+      alert("Login error. Please try again.");
+    }
+    console.error(err);
+  });
+}
+    
+  function showSignup(){
+    document.getElementById("tilePopup1").classList.remove("hidden");
+  }
+  function closeSignup(){
+    document.getElementById("tilePopup1").classList.add("hidden");
+  }
+
+    function showForgot(){
+    document.getElementById("tilePopup2").classList.remove("hidden");
+  }
+  function closeForgot(){
+  // ✅ Clear all fields
+  document.getElementById("field2Mobile").value = "";
+  document.getElementById("field3email").value = "";
+  document.getElementById("otp").value = "";
+  document.getElementById("pwd1Reset").value = "";
+  document.getElementById("pwd2Reset").value = "";
+
+  // Reset eye icons back to open eye
+  document.querySelectorAll("#popupBox2 .toggle-eye").forEach(icon => {
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye");
+  });
+
+  // Reset password fields back to type="password"
+  document.getElementById("pwd1Reset").type = "password";
+  document.getElementById("pwd2Reset").type = "password";
+
+  // Hide sections
+  document.getElementById("btnSend").style.display = "inline-block";
+  document.getElementById("tilePopup2").classList.add("hidden");
+  document.getElementById("pwdSection").style.display = "none";
+  document.getElementById("btnUpdate").style.display = "none";
+  document.getElementById("btnVerify").style.display = "none";
+  document.getElementById("otp").style.display = "none";
+}
+
+    
+  function signup(){
+      let f1 = document.getElementById("field1").value;
+      let f2 = document.getElementById("field2").value;
+      let p1 = document.getElementById("pwd1").value;
+      let p2 = document.getElementById("pwd2").value;
+      if(!f1 || !p1|| !p2){ alert("Mandatory field cannot be kept blank"); return; }
+      if(f2.length > 10){ alert("Mobile number shall not exceed 10 digits"); return; }
+      if(p1.length < 6){ alert("Password should have minimum 6 characters"); return; } // ✅ added
+      if(p1 !== p2){ alert("Passwords do not match"); return; }
+      let data = [f1, f2, document.getElementById("field3").value, p1, p2];
+
+              showStatus("Signing Up...");
+      fetch(SCRIPT_2URL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "signup",
+          data: JSON.stringify(data)
+        })
+      })
+      .then(res => res.json())
+      .then(result => {
+        hideStatus();
+        if(result.success){
+          alert("Signup successful");
+          document.getElementById("tilePopup1").classList.add("hidden");
+        } else {
+          alert(result.message || "Signup failed");
+        }
+      });
+    }
+
+
+
+function togglePassword(fieldId, icon) {
+  const field = document.getElementById(fieldId);
+  if (field.type === "password") {
+    field.type = "text";
+    icon.classList.remove("fa-eye");
+    icon.classList.add("fa-eye-slash"); // closed eye
+  } else {
+    field.type = "password";
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye"); // open eye
+  }
+}
+
+
+
+
+    
+let tableData = [];       // store all rows
+let currentPage = 1;      // track current page
+let recordsPerPage = 5;   // default page size
+let filteredData = null;
+
+function populateTable(data){
+  tableData = data;       // save full dataset
+  currentPage = 1;        // reset to first page
+  renderTable();
+}
+
+function renderTable() {
+  let tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+
+  let baseData = filteredData !== null ? filteredData : tableData;
+
+  // ✅ Filter out rows where ALL data columns are empty/null
+  let cleanData = baseData.filter(row =>
+    row.colI || row.colJ || row.colK || row.colL || row.colM || row.colN
+  );
+
+  let reversedData = [...cleanData].reverse();
+
+  let start = (currentPage - 1) * recordsPerPage;
+  let end = start + recordsPerPage;
+  let pageData = reversedData.slice(start, end);
+
+  // ✅ If no meaningful data exists at all, show message once
+  if (pageData.length === 0) {
+    let tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="7" style="text-align:center; padding: 20px;">
+                      No records are added yet. Please add a record by clicking the "Add Record" option.
+                    </td>`;
+    tbody.appendChild(tr);
+    renderPaginationControls(0);
+    return;
+  }
+
+  pageData.forEach(function(row) {
+    let tr = document.createElement("tr");
+
+    let deleteButtonHTML = "";
+    let fullReversedData = [...cleanData].reverse();
+    let trueLastRowId = fullReversedData[fullReversedData.length - 1]?.id;
+
+    if (row.id === trueLastRowId) {
+      if (filteredData !== null && filteredData.length === 1) {
+        deleteButtonHTML = `<button class="deletesymbol" onclick="deleteRow(${row.id})"><i class="fa fa-trash-o"></i></button>`;
+      } else {
+        deleteButtonHTML = "";
+      }
+    } else {
+      deleteButtonHTML = `<button class="deletesymbol" onclick="deleteRow(${row.id})"><i class="fa fa-trash-o"></i></button>`;
+    }
+
+    tr.innerHTML = `
+      <td><button onclick="selectRow(${row.id})">Select <i class="fa fa-pencil"></i></button></td>
+      <td>${deleteButtonHTML}</td>
+      <td>${row.colI || ""}</td>
+      <td style="text-align:justify">${row.colJ || ""}${row.colJ && row.colK ? ", " : ""}${row.colK || ""}</td>
+      <td>${row.colL || ""}</td>
+      <td>${row.colM || ""}</td>
+      <td>${row.colN || ""}</td>`;
+
+    tbody.appendChild(tr);
+  });
+
+  renderPaginationControls(cleanData.length); // ✅ use cleanData length for pagination
+}
+
+
+
+function renderPaginationControls(totalRecords){
+  let totalPages = Math.ceil(totalRecords / recordsPerPage);
+  let controls = "";
+
+  // First button
+  if(currentPage > 1){
+    controls += `<button onclick="goToPage(1)">First</button> `;
+    controls += `<button onclick="goToPage(${currentPage-1})">Prev</button> `;
+  }
+
+  controls += ` Page ${currentPage} of ${totalPages} `;
+
+  // Next and Last buttons
+  if(currentPage < totalPages){
+    controls += ` <button onclick="goToPage(${currentPage+1})">Next</button>`;
+    controls += ` <button onclick="goToPage(${totalPages})">Last</button>`;
+  }
+
+  document.getElementById("paginationControls").innerHTML = controls;
+}
+
+
+
+function goToPage(page){
+  currentPage = page;
+  renderTable();
+}
+
+function changePageSize(){
+  recordsPerPage = parseInt(document.getElementById("pageSize").value, 10);
+  currentPage = 1; // reset to first page
+  renderTable();
+}
+
+    
+function searchTable() {
+  let input = document.getElementById("searchBox").value.toLowerCase();
+
+  if(input){
+    filteredData = tableData.filter(row => {
+      let text = Object.values(row).join(" ").toLowerCase();
+      return text.includes(input);
+    });
+  } else {
+    filteredData = null; // reset when search box is empty
+  }
+
+  currentPage = 1; // reset to first page
+  renderTable();
+
+  // Highlight matches in the rendered table
+  let rows = document.querySelectorAll("#dataTable tbody tr");
+  rows.forEach(row => {
+    row.querySelectorAll("td").forEach(cell => {
+      let cellText = cell.textContent;
+      let lowerText = cellText.toLowerCase();
+      if(input && lowerText.includes(input)){
+        // Replace matching text with highlighted span
+        let regex = new RegExp(`(${input})`, "gi");
+        cell.innerHTML = cellText.replace(regex, `<span class="highlight">$1</span>`);
+      }
+    });
+  });
+
+  // Re-apply active row highlight after search re-render
+  if (selectedRowIndex !== null) {
+    document.querySelectorAll("#dataTable tbody tr").forEach(function(r) {
+      var btn = r.querySelector("button");
+      if (btn && btn.getAttribute("onclick") === "selectRow(" + selectedRowIndex + ")") {
+        r.classList.add("active-row");
+      }
+    });
+  }
+}
+
+
+function selectRow(rowIndex) {
+  showStatus("Loading row...");
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({ action: "getRowDetails", rowIndex })
+  })
+  .then(res => res.json())
+  .then(result => {
+    hideStatus();
+if(result.success) {
+        let details = result.details;
+
+        // Store details globally so ASMT tile can use them when shown
+        window.lastLoadedDetails = details;
+
+        // Populate data1–data11 and data51 (always in DOM)
+       var dateIds = ["data7", "data10", "data11", "data51"];
+        for(let i=0; i<11; i++) {
+          let el = document.getElementById("data"+(i+1));
+          if(!el) continue;
+          if(dateIds.indexOf(el.id) !== -1) {
+            el.value = formatDateForInput(details[i]);
+          } else {
+            el.value = details[i] || "";
+          }
+        }
+      selectedRowIndex = rowIndex;
+      document.querySelector("#dataEntry button").style.display = "inline-block";
+      document.querySelectorAll("#add-record-bar button")[1].innerText = "Update";
+      document.querySelectorAll("#popupBox3 button")[0].innerText = "Update";
+      document.querySelectorAll("#popupBox3 h3")[0].innerText = "Update Record";
+      document.querySelectorAll("#popupBox3 p")[0].innerText = "Press clear button to Add new record";
+      
+      // ✅ SYNC THE HORIZONTAL BAR IMMEDIATELY
+      syncRealtimeFields(); 
+      
+      // ✅ SHOW THE CLEAR BUTTON 
+      document.getElementById("clearButton").style.display = "inline-block";
+
+      // Highlight selected row
+      document.querySelectorAll("#dataTable tbody tr").forEach(function(r) { r.classList.remove("active-row"); });
+      document.querySelectorAll("#dataTable tbody tr").forEach(function(r) {
+        var btn = r.querySelector("button");
+        if (btn && btn.getAttribute("onclick") === "selectRow(" + rowIndex + ")") {
+          r.classList.add("active-row");
+        }
+      });
+
+      populateAsmtFields(details);
+    }
+  })
+  .catch(err => { 
+    hideStatus(); 
+    alert("Error loading row"); 
+    console.error(err); 
+  });
+}
+
+function populateAsmtFields(details) {
+  if (!details) return;
+
+  // data7–data11 always in DOM — populate directly
+var asmtDateIds = ["data7", "data10", "data11"];
+  for (var i = 6; i < 11; i++) {
+    var el = document.getElementById("data" + (i + 1));
+    if (!el) continue;
+    if (asmtDateIds.indexOf(el.id) !== -1) {
+      el.value = formatDateForInput(details[i]);
+    } else {
+      el.value = details[i] || "";
+    }
+  }
+
+  
+  // Use setTimeout to wait for DOM to be ready after tile becomes visible
+setTimeout(function() {
+    // Auto-create grounds based on saved data before populating
+    var groundSelectors = ["data12", "data25", "data38", "data52"];
+    groundSelectors.forEach(function(selId, idx) {
+      var savedVal = details[idx === 0 ? 11 : idx === 1 ? 24 : idx === 2 ? 37 : 51];
+      if (savedVal && !document.getElementById("ground_" + (idx + 1))) {
+        var wrapper = document.getElementById("groundsWrapper");
+        if (wrapper) {
+          wrapper.appendChild(createGround(idx, idx === 0));
+          groundCount = idx + 1;
+        }
+      }
+    });
+
+    var btn = document.getElementById("btnAddGround");
+    if (btn) btn.disabled = (groundCount >= 4);
+
+    for (var i = 11; i < 67; i++) {
+      var el = document.getElementById("data" + (i + 1));
+      if (el) el.value = details[i] || "";
+    }
+
+// Also populate data51 (reply date)
+// Also populate data51 (reply date)
+    var d51 = document.getElementById("data51");
+    if (d51) d51.value = formatDateForInput(details[50]);
+
+    // Populate 16(4) description fields (indices 51,52,53)
+    var bi1 = document.getElementById("dataBI1"); if (bi1) bi1.value = details[100] || "";
+    var bj1 = document.getElementById("dataBJ1"); if (bj1) bj1.value = details[101] || "";
+    var bk1 = document.getElementById("dataBK1"); if (bk1) bk1.value = details[102] || "";
+
+// Clear others tables before repopulating to avoid stale data from previous record
+    ["othersTable_1","othersTable_2","othersTable_3","othersTable_4"].forEach(function(tid) {
+      ["_c0","_c1","_c2","_c3"].forEach(function(s) {
+        var el = document.getElementById(tid + s); if (el) el.value = "";
+      });
+      var tot = document.getElementById(tid + "_tot"); if (tot) tot.innerText = "0";
+      var ct1 = document.getElementById(tid + "_ct1"); if (ct1) ct1.innerText = "0";
+      var ct2 = document.getElementById(tid + "_ct2"); if (ct2) ct2.innerText = "0";
+      var ct3 = document.getElementById(tid + "_ct3"); if (ct3) ct3.innerText = "0";
+      var ct4 = document.getElementById(tid + "_ct4"); if (ct4) ct4.innerText = "0";
+    });
+
+    deserializeLimitTable("limitTable_1", details[103]);
+    deserializeLimitTable("limitTable_2", details[104]);
+    deserializeLimitTable("limitTable_3", details[105]);
+    deserializeLimitTable("limitTable_4", details[106]);
+    deserializeOthersTable("othersTable_1", details[107]);
+    deserializeOthersTable("othersTable_2", details[108]);
+    deserializeOthersTable("othersTable_3", details[109]);
+    deserializeOthersTable("othersTable_4", details[110]);
+
+    // Trigger mismatch select change for Ground 1 so correct table shows
+    var sel1 = document.getElementById("data12");
+    if (sel1 && sel1.value) {
+      sel1.dataset.prevVal = sel1.value;
+      handleMismatchChange(sel1, "ground_1");
+    }
+    // Ground 2 if exists
+    var sel2 = document.getElementById("data25");
+    if (sel2 && sel2.value) {
+      sel2.dataset.prevVal = sel2.value;
+      handleMismatchChange(sel2, "ground_2");
+    }
+    // Ground 3 if exists
+    var sel3 = document.getElementById("data38");
+    if (sel3 && sel3.value) {
+      sel3.dataset.prevVal = sel3.value;
+      handleMismatchChange(sel3, "ground_3");
+    }
+    // Ground 4 if exists
+    var sel4 = document.getElementById("data52");
+    if (sel4 && sel4.value) {
+      sel4.dataset.prevVal = sel4.value;
+      handleMismatchChange(sel4, "ground_4");
+    }
+  }, 300);
+}
+    
+function saveData(callback){
+  let data = [];
+  for(let i=1; i<=267; i++){
+    let el = document.getElementById("data"+i);
+    data.push(el && typeof el.value !== "undefined" ? el.value : "");
+  }
+  // Serialize 16(4) description fields → BI(52), BJ(53), BK(54)
+  // col BI = data index 52 (0-based), sheet col BI = col 61 = offset 52 from col I
+// data66–data100 reserved for future expansion
+data[100] = document.getElementById("dataBI1") ? document.getElementById("dataBI1").value : "";
+data[101] = document.getElementById("dataBJ1") ? document.getElementById("dataBJ1").value : "";
+data[102] = document.getElementById("dataBK1") ? document.getElementById("dataBK1").value : "";
+data[103] = serializeLimitTable("limitTable_1");
+data[104] = serializeLimitTable("limitTable_2");
+data[105] = serializeLimitTable("limitTable_3");
+data[106] = serializeLimitTable("limitTable_4");
+data[107] = serializeOthersTable("othersTable_1");
+data[108] = serializeOthersTable("othersTable_2");
+data[109] = serializeOthersTable("othersTable_3");
+data[110] = serializeOthersTable("othersTable_4");
+
+  if(selectedRowIndex !== null){
+    // --- update logic ---
+    showStatus("Updating...");
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "updateRow",
+        rowIndex: selectedRowIndex,
+        data: JSON.stringify(data)
+      })
+    })
+    .then(res => res.json())
+    .then(result => {
+      if(result.success){
+        showStatus("Row updated successfully");
+        refreshTable(() => {
+          hideStatus();
+          if (typeof callback === "function") callback();
+        });
+      } else {
+        showStatus("Update failed");
+        hideStatus();
+      }
+    })
+    .catch(err => { showStatus("Error during update"); console.error(err); hideStatus(); });
+  } else {
+    // --- new entry logic ---
+    showStatus("Saving...");
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "saveData",
+        data: JSON.stringify(data),
+        userId: loggedInUserId,
+        password: loggedInPassword
+      })
+    })
+    .then(res => res.json())
+    .then(result => {
+      if(result.success){
+        showStatus("Data saved successfully");
+        refreshTable(() => {
+          hideStatus();
+          if (typeof callback === "function") callback();
+        });
+
+        // Switch button to Update mode after saving
+        selectedRowIndex = result.newRowId; // backend should return new row id
+      } else {
+        showStatus("Save failed: " + result.message);
+        hideStatus();
+      }
+    })
+    .catch(err => { showStatus("Error during save"); console.error(err); hideStatus(); });
+  }
+}
+
+
+
+function refreshTable(callback){
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "login",
+      userId: loggedInUserId,
+      password: loggedInPassword
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if(result.success){
+      populateTable(result.tableData);
+    }
+    if(typeof callback === "function"){
+      callback(); // run callback after table update
+    }
+  })
+  .catch(err => {
+    console.error("Error refreshing table", err);
+    if(typeof callback === "function"){
+      callback();
+    }
+  });
+}
+
+
+function deleteRow(rowIndex){
+  if(confirm("Do you really want to delete this row?")){
+    showStatus("Deleting...");
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "deleteRow",
+        rowIndex: rowIndex
+      })
+    })
+    .then(res => res.json())
+    .then(result => {
+      if(result.success){
+        showStatus("Row deleted successfully");
+        refreshTable(() => {
+          hideStatus(); // hide only after refresh
+        });
+      } else {
+        showStatus("Delete failed: " + result.message);
+        hideStatus();
+      }
+    })
+    .catch(err => {
+      showStatus("Error during delete");
+      console.error(err);
+      hideStatus();
+    });
+  }
+}
+
+
+function clearForm() {
+  for(let i=1; i<=267; i++) {
+    let el = document.getElementById("data"+i);
+    if(el) el.value = "";
+  }
+
+  // Clear 16(4) description fields
+  ["dataBI1","dataBJ1","dataBK1"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  // Clear and reset limit tables
+  ["limitTable_1","limitTable_2","limitTable_3","limitTable_4"].forEach(function(tableId) {
+    var tbody = document.getElementById(tableId + "_tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    for (var r = 1; r <= 10; r++) {
+      tbody.insertAdjacentHTML("beforeend", buildLimitRow(tableId, r));
+    }
+    updateLimitTotals(tableId);
+  });
+
+  // Clear others tables
+  ["othersTable_1","othersTable_2","othersTable_3","othersTable_4"].forEach(function(tid) {
+    ["_c0","_c1","_c2","_c3"].forEach(function(s) {
+      var el = document.getElementById(tid + s); if (el) el.value = "";
+    });
+    var tot = document.getElementById(tid + "_tot"); if (tot) tot.innerText = "0";
+    updateOthersTotals(tid);
+  });
+
+ selectedRowIndex = null;
+  document.querySelectorAll("#dataTable tbody tr").forEach(function(r) { r.classList.remove("active-row"); });
+  document.getElementById("btnWord").style.display = "none"
+  document.getElementById("btnPdf").style.display = "none"
+  document.querySelector("#dataEntry button").style.display = "none";
+  document.querySelectorAll("#add-record-bar button")[1].innerText = "Add Record";
+  document.querySelectorAll("#popupBox3 button")[0].innerText = "Add Record";
+  document.querySelectorAll("#popupBox3 h3")[0].innerText = "Add New Record";
+  document.querySelectorAll("#popupBox3 p")[0].innerText = "";
+  
+  // ✅ RESET THE HORIZONTAL BAR
+  syncRealtimeFields();
+  // ✅ HIDE THE CLEAR BUTTON 
+  document.getElementById("clearButton").style.display = "none";
+}
+
+
+
+function openTileEditor(){
+  document.getElementById("editColC").value = document.getElementById("colC").value;
+  document.getElementById("editColD").value = document.getElementById("colD").value;
+  document.getElementById("editColE").value = document.getElementById("colE").value;
+  document.getElementById("editColF").value = document.getElementById("colF").value;
+  document.getElementById("editColG").value = document.getElementById("colG").value;
+  document.getElementById("editColH").value = document.getElementById("colH").value;
+  document.getElementById("tilePopup").classList.remove("hidden1");
+}
+
+function closeTileEditor(){
+  // ✅ Just close the popup — login redirect is handled by cancelTileEditor
+  document.getElementById("tilePopup").classList.add("hidden1");
+}
+
+function cancelTileEditor(){
+  // ✅ Called only from Cancel button — redirect to login if mandatory fields empty
+  var c = document.getElementById("editColC").value.trim();
+  var d = document.getElementById("editColD").value.trim();
+  var e = document.getElementById("editColE").value.trim();
+  var g = document.getElementById("editColG").value.trim();
+
+  document.getElementById("tilePopup").classList.add("hidden1");
+
+  if (!c || !d || !e || !g) {
+    showLoginPage();
+  }
+}
+
+function submitTileEdit(){
+  var c = document.getElementById("editColC").value.trim();
+  var d = document.getElementById("editColD").value.trim();
+  var e = document.getElementById("editColE").value.trim();
+  var f = document.getElementById("editColF").value.trim();
+  var g = document.getElementById("editColG").value.trim();
+
+  if (!c || !d || !e || !g) {
+    alert("Mandatory fields cannot be empty");
+    return;
+  }
+
+  let updatedData = {
+    colC: document.getElementById("editColC").value,
+    colD: document.getElementById("editColD").value,
+    colE: document.getElementById("editColE").value,
+    colF: document.getElementById("editColF").value,
+    colG: document.getElementById("editColG").value,
+    colH: document.getElementById("editColH").value
+  };
+
+  // Show updating message
+  showStatus("Updating...");
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "updateTileData",
+      userId: loggedInUserId,
+      password: loggedInPassword,
+      tileContent: JSON.stringify(updatedData)
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if(result.success){
+      // Update visible inputs
+      document.getElementById("colC").value = updatedData.colC;
+      document.getElementById("colD").value = updatedData.colD;
+      document.getElementById("colE").value = updatedData.colE;
+      document.getElementById("colF").value = updatedData.colF;
+      document.getElementById("colG").value = updatedData.colG;
+      document.getElementById("colH").value = updatedData.colH;
+
+      // Close popup
+      closeTileEditor();
+
+      // Show success message, then hide
+      showStatus("Tile data updated successfully");
+      setTimeout(hideStatus, 2000);
+    } else {
+      showStatus("Update failed");
+      setTimeout(hideStatus, 2000);
+    }
+  })
+  .catch(err => {
+    console.error("Error updating tile data", err);
+    showStatus("Error updating tile data");
+    setTimeout(hideStatus, 2000);
+  });
+}
+
+// ✅ AFTER — use SCRIPT_2URL for checkUser, scriptURL only for OTP
+async function sendOTP() {
+  const phone = document.getElementById("field2Mobile").value;
+  const email = document.getElementById("field3email").value;
+  if (!phone) { alert("Please enter your phone number"); return; }
+  if (!email) { alert("Please enter your email"); return; }
+
+  showStatus("Checking records...");
+  try {
+    const checkResponse = await fetch(SCRIPT_2URL, {  // ✅ SCRIPT_2URL has checkUser
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        action: "checkUser",
+        phone: phone,
+        email: email
+      })
+    });
+    const checkResult = await checkResponse.json();
+
+    if (!checkResult.success) {
+      alert(checkResult.message);
+      hideStatus();
+      return;
+    }
+
+    // ✅ Only reaches here if checkUser passed — now send OTP via scriptURL
+    showStatus("Sending OTP...");
+    const response = await fetch(scriptURL, {         // ✅ scriptURL has sendOTP
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ action: "send", email: email })
+    });
+    const text = await response.text();
+    alert(text);
+
+    if (text.includes("OTP sent")) {
+      document.getElementById("otp").style.display = "block";
+      document.getElementById("btnVerify").style.display = "inline-block";
+      document.getElementById("btnSend").style.display = "none";
+    }
+
+  } catch (err) {
+    alert("Error sending OTP: " + err.message);
+  } finally {
+    hideStatus();
+  }
+}
+
+    async function verifyOTP() {
+      const email = document.getElementById("field3email").value;
+      const otp = document.getElementById("otp").value;
+      if (!otp) { alert("Please enter OTP"); return; }
+      showStatus("Verifying OTP...");
+      try {
+        const response = await fetch(scriptURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ action: "verify", email: email, otp: otp })
+        });
+        const text = await response.text();
+        alert(text);
+
+        if (text.includes("success")) {
+      document.getElementById("pwdSection").style.display = "block";
+      document.getElementById("btnUpdate").style.display = "inline-block";
+      document.getElementById("btnVerify").style.display = "none";
+      document.getElementById("otp").style.display = "none"; // ✅ hide OTP field after verify
+    }
+
+      } catch (err) {
+        alert("Error verifying OTP: " + err.message);
+      } finally {
+        hideStatus();
+      }
+    }
+
+
+
+
+async function updatePassword() {
+  const phone = document.getElementById("field2Mobile").value;
+  const email = document.getElementById("field3email").value;
+  const p1 = document.getElementById("pwd1Reset").value;
+  const p2 = document.getElementById("pwd2Reset").value;
+
+  if (!p1 || !p2) { alert("Please enter new password"); return; }
+  if (p1.length < 6) { alert("Password should have minimum 6 characters"); return; }
+  if (p1 !== p2) { alert("Passwords do not match"); return; }
+
+  showStatus("Updating password...");
+  try {
+    const response = await fetch(SCRIPT_2URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        action: "updatePassword",
+        phone: phone,
+        email: email,
+        pwd1: p1,
+        pwd2: p2
+      })
+    });
+    const text = await response.text();
+    alert(text);
+ // ✅ Close popup only if update was successful
+ if (text.includes("successfully")) {
+      closeForgot();
+    }
+  } catch (err) {
+    alert("Error updating password");
+    console.error(err);
+  } finally {
+    hideStatus();
+  }
+}
+
+function showLoginPage() {
+  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("secondaryPage").classList.add("hidden");
+
+  // ✅ Reset login credentials
+  loggedInUserId = null;
+  loggedInPassword = null;
+
+  // ✅ Clear login fields
+  document.getElementById("userId").value = "";
+  document.getElementById("password").value = "";
+}
+
+// Function to sync inputs with the display bar
+function syncRealtimeFields() {
+  // Get values from the input fields
+  const d1 = document.getElementById('data1').value || "";
+  const d2 = document.getElementById('data2').value || "";
+  const d3 = document.getElementById('data3').value || "";
+  const d4 = document.getElementById('data4').value || "";
+
+  // 1. GSTIN shows Data1
+  document.getElementById('displayGSTIN').innerText = d1;
+
+  // 2. Name shows Data2 and Data3 separated by comma and space
+  // Logic: only add ", " if BOTH fields have content to avoid leading/trailing commas
+  const combinedName = d2 && d3 ? d2 + ", " + d3 : d2 + d3;
+  document.getElementById('displayName').innerText = combinedName;
+
+  // 3. Phone shows Data4
+  document.getElementById('displayPhone').innerText = d4;
+}
+
+// Update listeners to include data4
+['data1', 'data2', 'data3', 'data4'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', syncRealtimeFields);
+  }
+});
+
+
+function openAddRecord() {
+  // Clear all fields before opening
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById("newData" + i);
+    if (el) el.value = "";
+  }
+  document.getElementById("tilePopup3").classList.remove("hidden1");
+}
+
+function closeAddRecord() {
+  // Hide the popup
+  document.getElementById("tilePopup3").classList.add("hidden1");
+
+}
+
+
+
+/* ============================================================
+   ASMT-10 LOGIC
+   ============================================================ */
+
+// ✅ Show/hide ASMT-10 tile based on selector — hidden by default
+function handleNoticeType() {
+  var gstin = document.getElementById("displayGSTIN").innerText.trim();
+  var name  = document.getElementById("displayName").innerText.trim();
+  var year  = document.getElementById("displayPhone").innerText.trim();
+
+  if (!gstin && !name && !year) {
+    alert("Please select a record from the Record table to proceed.");
+    document.getElementById("noticeTypeSelect").value = "";
+    return;
+  }
+
+  var val  = document.getElementById("noticeTypeSelect").value;
+  var tile = document.getElementById("asmt10Tile");
+  if (val === "asmt10") {
+    tile.classList.remove("hidden");
+    setTimeout(function() {
+      if (window.lastLoadedDetails) {
+        populateAsmtFields(window.lastLoadedDetails);
+      }
+    }, 100);
+  } else {
+    tile.classList.add("hidden");
+  }
+}
+
+
+// Ground config — IDs per spec
+const groundConfig = [
+  {
+    num: 1, selectId: "data12", textId: "data13",
+    t1Ids: ["data14","data15","data16","data17","data18","data19"],
+    t2Ids: ["data19","data20","data21","data22","data23","data24"],
+    limitTextId: "dataBI1", limitTableId: "limitTable_1",
+    limitDescId: "dataBIDesc1", limitDataId: "dataBO1",
+    othersTableId: "othersTable_1", othersDataId: "dataBO1"
+  },
+  {
+    num: 2, selectId: "data25", textId: "data26",
+    t1Ids: ["data27","data28","data29","data30","data31","data32"],
+    t2Ids: ["data33","data34","data35","data36","data37"],
+    limitTextId: "dataBJ1", limitTableId: "limitTable_2",
+    limitDescId: "dataBJDesc1", limitDataId: "dataBM1",
+    othersTableId: "othersTable_2", othersDataId: "dataBP1"
+  },
+  {
+    num: 3, selectId: "data38", textId: "data39",
+    t1Ids: ["data40","data41","data42","data43","data44","data45"],
+    t2Ids: ["data46","data47","data48","data49","data50"],
+    limitTextId: "dataBK1", limitTableId: "limitTable_3",
+    limitDescId: "dataBKDesc1", limitDataId: "dataBN1",
+    othersTableId: "othersTable_3", othersDataId: "dataBQ1"
+  },
+  {
+    num: 4, selectId: "data52", textId: "data53",
+    t1Ids: ["data54","data55","data56","data57","data58","data59"],
+    t2Ids: ["data60","data61","data62","data63","data64"],
+    limitTextId: "dataBL1", limitTableId: "limitTable_4",
+    limitDescId: "dataBLDesc1", limitDataId: "dataBR1",
+    othersTableId: "othersTable_4", othersDataId: "dataBS1"
+  }
+];
+
+let groundCount = 0;
+
+// Build Table 1: 5 cols (Particular|IGST|CGST|SGST|Total), rows: CGST/SGST/IGST/Total
+function buildTable1(t1Ids, tableId) {
+  const cols = ["Particular","IGST","CGST","SGST","Total"];
+  const rowLabels = ["CGST","SGST"];
+  const editMap = {};
+  let idx = 0;
+  for (let ri = 0; ri <= 1; ri++) {
+    for (let ci = 1; ci <= 3; ci++) {
+      editMap[`${ri}_${ci}`] = t1Ids[idx++];
+    }
+  }
+  let html = `<table class="ground-table" id="${tableId}">`;
+  html += `<tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  rowLabels.forEach((rLabel, ri) => {
+    html += `<tr><td style="background:#dceeff;font-weight:700;color:#145099">${rLabel}</td>`;
+    for (let ci = 1; ci <= 4; ci++) {
+      const key = `${ri}_${ci}`;
+      if (editMap[key]) {
+        html += `<td class="edit-cell"><input type="text" id="${editMap[key]}" data-table="${tableId}" data-row="${ri}" data-col="${ci}" oninput="updateTable1Totals('${tableId}')"></td>`;
+      } else if (ci === 4) {
+        html += `<td class="row-total-cell" id="${tableId}_rt_${ri}">0</td>`;
+      } else {
+        html += `<td style="background:#f8fbff"></td>`;
+      }
+    }
+    html += `</tr>`;
+  });
+  // Difference row (row0 - row1)
+  html += `<tr class="col-total-row"><td style="background:#dceeff;font-weight:700;color:#145099">Difference</td>`;
+  for (let ci = 1; ci <= 4; ci++) {
+    html += `<td id="${tableId}_ct_${ci}">0</td>`;
+  }
+  html += `</tr></table>`;
+  return html;
+}
+
+// Build Table 2: 5 cols (A|B|C|D|E), 3 rows (header + empty + editable)
+function buildTable2(t2Ids, tableId) {
+  const cols = ["Turnover as per GSTR 3B","Outward supply as per TDS details","Difference between GSTR 3B and TDS data (2) - (1)","SGST on differential value","CGST on differential value"];
+  let html = `<table class="ground-table" id="${tableId}">`;
+  html += `<tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  var rowLabels2 = ["(1)", "(2)", "(3)", "(5)", "(6)"];
+html += "<tr>" + rowLabels2.map(function(label) {
+  return "<td style='background:#dceeff;font-weight:700;color:#145099;font-size:11px;'>" + label + "</td>";
+}).join("") + "</tr>";
+  html += `<tr>`;
+  cols.forEach((_, ci) => {
+    const id = t2Ids[ci] || `${tableId}_t2_${ci}`;
+    if (ci === 2) {
+      html += `<td class="edit-cell"><input type="text" id="${id}" data-table="${tableId}" data-row="2" data-col="${ci}" readonly style="background:#f0f7ff;color:#145099;font-weight:bold;"></td>`;
+    } else {
+      html += `<td class="edit-cell"><input type="text" id="${id}" data-table="${tableId}" data-row="2" data-col="${ci}" oninput="updateTable2Diff('${tableId}', '${t2Ids[0]}', '${t2Ids[1]}', '${t2Ids[2]}'); updateTable2Totals('${tableId}')"></td>`;
+    }
+  });
+  html += `</tr>`;
+  html += `<tr class="col-total-row">${cols.map((_,ci)=>`<td id="${tableId}_t2ct_${ci}">0</td>`).join("")}</tr>`;
+  html += `</table>`;
+  return html;
+}
+
+
+function buildLimitTable(tableId) {
+  var html = "<table class='ground-table' id='" + tableId + "' style='width:100%'>";
+html += "<thead><tr>";
+  html += "<th>Sl.No</th><th>Tax Period</th><th>Date of filing</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th>";
+  html += "</tr></thead>";
+  html += "<tbody id='" + tableId + "_tbody'>";
+  // 10 default data rows (rows 1-10, plus header=1, total=1 = 12 total)
+  for (var r = 1; r <= 10; r++) {
+    html += buildLimitRow(tableId, r);
+  }
+  html += "</tbody>";
+  html += "<tfoot>";
+  // Add row button row
+  html += "<tr><td colspan='6' style='text-align:right;padding:4px;background:#e8f0fe'>";
+  html += "<button type='button' onclick=\"addLimitRow('" + tableId + "')\" style='font-size:11px;padding:3px 10px;background:linear-gradient(to bottom,#4a90e2,#1a6fc4);color:white;border:none;border-radius:4px;cursor:pointer'>+ Add Row</button>";
+  html += "</td></tr>";
+  // Total row
+html += "<tr class='col-total-row'>";
+  html += "<td colspan='3' style='background:#dce8f5;font-weight:700;color:#145099'>Total</td>";
+  html += "<td id='" + tableId + "_tot_2'>0</td>";
+  html += "<td id='" + tableId + "_tot_3'>0</td>";
+  html += "<td id='" + tableId + "_tot_4'>0</td>";
+  html += "<td id='" + tableId + "_tot_5'>0</td>";
+  html += "</tr>";
+  html += "</tfoot>";
+  html += "</table>";
+  return html;
+}
+
+function buildLimitRow(tableId, rowNum) {
+  return "<tr id='" + tableId + "_row_" + rowNum + "'>"
+    + "<td style='background:#f0f7ff;font-size:11px'>" + rowNum + "</td>"
+    + "<td class='edit-cell'><input type='text' placeholder='Month and Year' style='width:100%;border:none;outline:none;font-size:11px;padding:3px'></td>"
+    + "<td class='edit-cell'><input type='text' placeholder='DD/MM/YYYY' style='width:100%;border:none;outline:none;font-size:11px;padding:3px'></td>"
+    + "<td class='edit-cell'><input type='text' oninput=\"updateLimitTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px;text-align:right'></td>"
+    + "<td class='edit-cell'><input type='text' oninput=\"updateLimitTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px;text-align:right'></td>"
+    + "<td class='edit-cell'><input type='text' oninput=\"updateLimitTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px;text-align:right'></td>"
+    + "<td class='row-total-cell' id='" + tableId + "_rowt_" + rowNum + "'>0</td>"
+    + "</tr>";
+}
+
+function addLimitRow(tableId) {
+  var tbody = document.getElementById(tableId + "_tbody");
+  if (!tbody) return;
+  var newRowNum = tbody.rows.length + 1;
+  // Insert before last row of tbody (just append since total is in tfoot)
+  tbody.insertAdjacentHTML("beforeend", buildLimitRow(tableId, newRowNum));
+}
+
+function updateLimitTotals(tableId) {
+  var table = document.getElementById(tableId);
+  if (!table) return;
+  var tbody = document.getElementById(tableId + "_tbody");
+  if (!tbody) return;
+  var rows = tbody.rows;
+  var colTots = [0, 0, 0, 0];
+  for (var r = 0; r < rows.length; r++) {
+    var inputs = rows[r].querySelectorAll("input");
+    // inputs[0]=description, inputs[1]=sub description, inputs[2]=amt1, inputs[3]=amt2, inputs[4]=amt3
+    var v1 = parseFloat(inputs[2] ? inputs[2].value : 0) || 0;
+    var v2 = parseFloat(inputs[3] ? inputs[3].value : 0) || 0;
+    var v3 = parseFloat(inputs[4] ? inputs[4].value : 0) || 0;
+    var rowTot = v1 + v2 + v3;
+    colTots[0] += v1; colTots[1] += v2; colTots[2] += v3; colTots[3] += rowTot;
+    var rowNum = r + 1;
+    var rowTotEl = document.getElementById(tableId + "_rowt_" + rowNum);
+    if (rowTotEl) rowTotEl.innerText = rowTot;
+  }
+  var t2 = document.getElementById(tableId + "_tot_2"); if (t2) t2.innerText = colTots[0];
+  var t3 = document.getElementById(tableId + "_tot_3"); if (t3) t3.innerText = colTots[1];
+  var t4 = document.getElementById(tableId + "_tot_4"); if (t4) t4.innerText = colTots[2];
+  var t5 = document.getElementById(tableId + "_tot_5"); if (t5) t5.innerText = colTots[3];
+}
+
+// Serialize limit table to "col1|col2|col3|col4|col5||col1|col2..." format
+// Serialize limit table to "col1|col2|col3|col4|col5//col1|col2..." format
+function serializeLimitTable(tableId) {
+  var tbody = document.getElementById(tableId + "_tbody");
+  if (!tbody) return "";
+  var rows = tbody.rows;
+  var parts = [];
+  for (var r = 0; r < rows.length; r++) {
+    var inputs = rows[r].querySelectorAll("input");
+    var desc    = inputs[0] ? inputs[0].value : "";
+    var subdesc = inputs[1] ? inputs[1].value : "";
+    var amt1    = inputs[2] ? inputs[2].value : "";
+    var amt2    = inputs[3] ? inputs[3].value : "";
+    var amt3    = inputs[4] ? inputs[4].value : "";
+    var rowTotEl = document.getElementById(tableId + "_rowt_" + (r+1));
+    var tot = rowTotEl ? rowTotEl.innerText : "0";
+    parts.push(desc + "|" + subdesc + "|" + amt1 + "|" + amt2 + "|" + amt3 + "|" + tot);
+  }
+  return parts.join("//");
+}
+
+// Deserialize and populate limit table from saved string
+function deserializeLimitTable(tableId, dataStr) {
+  var tbody = document.getElementById(tableId + "_tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  var rows = (dataStr && dataStr.trim()) ? (dataStr.indexOf("//") !== -1 ? dataStr.split("//") : dataStr.split("||")) : [];
+  var totalRows = Math.max(rows.length, 10);
+  for (var r = 0; r < totalRows; r++) {
+    tbody.insertAdjacentHTML("beforeend", buildLimitRow(tableId, r + 1));
+    var newRow = tbody.rows[r];
+    var inputs = newRow.querySelectorAll("input");
+    if (r < rows.length) {
+      var cols = rows[r].split("|");
+      if (inputs[0]) inputs[0].value = cols[0] || "";
+      if (inputs[1]) inputs[1].value = cols[1] || "";
+      if (inputs[2]) inputs[2].value = cols[2] || "";
+      if (inputs[3]) inputs[3].value = cols[3] || "";
+      if (inputs[4]) inputs[4].value = cols[4] || "";
+      var rowTotEl = document.getElementById(tableId + "_rowt_" + (r + 1));
+      if (rowTotEl) rowTotEl.innerText = cols[5] || "0";
+    }
+  }
+  updateLimitTotals(tableId);
+}
+
+
+
+function buildOthersTable(tableId) {
+  var html = "<table class='ground-table' id='" + tableId + "' style='width:100%'>";
+  html += "<thead><tr>";
+  html += "<th>Discrepancy</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th>";
+  html += "</tr></thead>";
+  html += "<tbody>";
+  html += "<tr id='" + tableId + "_datarow'>";
+  html += "<td class='edit-cell'><input type='text' id='" + tableId + "_c0' oninput=\"updateOthersTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px'></td>";
+  html += "<td class='edit-cell'><input type='text' id='" + tableId + "_c1' oninput=\"updateOthersTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px;text-align:right'></td>";
+  html += "<td class='edit-cell'><input type='text' id='" + tableId + "_c2' oninput=\"updateOthersTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px;text-align:right'></td>";
+  html += "<td class='edit-cell'><input type='text' id='" + tableId + "_c3' oninput=\"updateOthersTotals('" + tableId + "')\" style='width:100%;border:none;outline:none;font-size:11px;padding:3px;text-align:right'></td>";
+  html += "<td class='row-total-cell' id='" + tableId + "_tot'>0</td>";
+  html += "</tr>";
+  html += "</tbody>";
+  html += "<tfoot><tr class='col-total-row'>";
+  html += "<td style='background:#dce8f5;font-weight:700;color:#145099'>Total</td>";
+  html += "<td id='" + tableId + "_ct1'>0</td>";
+  html += "<td id='" + tableId + "_ct2'>0</td>";
+  html += "<td id='" + tableId + "_ct3'>0</td>";
+  html += "<td id='" + tableId + "_ct4'>0</td>";
+  html += "</tr></tfoot>";
+  html += "</table>";
+  return html;
+}
+
+function updateOthersTotals(tableId) {
+  var v1 = parseFloat(document.getElementById(tableId + "_c1") ? document.getElementById(tableId + "_c1").value : 0) || 0;
+  var v2 = parseFloat(document.getElementById(tableId + "_c2") ? document.getElementById(tableId + "_c2").value : 0) || 0;
+  var v3 = parseFloat(document.getElementById(tableId + "_c3") ? document.getElementById(tableId + "_c3").value : 0) || 0;
+  var tot = v1 + v2 + v3;
+  var totEl = document.getElementById(tableId + "_tot"); if (totEl) totEl.innerText = tot;
+  var ct1 = document.getElementById(tableId + "_ct1"); if (ct1) ct1.innerText = v1;
+  var ct2 = document.getElementById(tableId + "_ct2"); if (ct2) ct2.innerText = v2;
+  var ct3 = document.getElementById(tableId + "_ct3"); if (ct3) ct3.innerText = v3;
+  var ct4 = document.getElementById(tableId + "_ct4"); if (ct4) ct4.innerText = tot;
+}   
+
+function serializeOthersTable(tableId) {
+  var c0 = document.getElementById(tableId + "_c0") ? document.getElementById(tableId + "_c0").value : "";
+  var c1 = document.getElementById(tableId + "_c1") ? document.getElementById(tableId + "_c1").value : "";
+  var c2 = document.getElementById(tableId + "_c2") ? document.getElementById(tableId + "_c2").value : "";
+  var c3 = document.getElementById(tableId + "_c3") ? document.getElementById(tableId + "_c3").value : "";
+  var tot = document.getElementById(tableId + "_tot") ? document.getElementById(tableId + "_tot").innerText : "0";
+  return c0 + "|" + c1 + "|" + c2 + "|" + c3 + "|" + tot;
+}
+
+function deserializeOthersTable(tableId, dataStr) {
+  if (!dataStr) return;
+  var cols = dataStr.split("|");
+  var c0 = document.getElementById(tableId + "_c0"); if (c0) c0.value = cols[0] || "";
+  var c1 = document.getElementById(tableId + "_c1"); if (c1) c1.value = cols[1] || "";
+  var c2 = document.getElementById(tableId + "_c2"); if (c2) c2.value = cols[2] || "";
+  var c3 = document.getElementById(tableId + "_c3"); if (c3) c3.value = cols[3] || "";
+  var tot = document.getElementById(tableId + "_tot"); if (tot) tot.innerText = cols[4] || "0";
+  updateOthersTotals(tableId);
+}
+
+function updateTable1Totals(tableId) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const inputs = table.querySelectorAll(`input[data-table="${tableId}"]`);
+  const rowTotals = {};
+  const colVals = {};
+  inputs.forEach(inp => {
+    const ri = parseInt(inp.dataset.row);
+    const ci = parseInt(inp.dataset.col);
+    const val = parseFloat(inp.value) || 0;
+    rowTotals[ri] = (rowTotals[ri] || 0) + val;
+    if (!colVals[ci]) colVals[ci] = {};
+    colVals[ci][ri] = val;
+  });
+  // Update row totals
+  Object.keys(rowTotals).forEach(ri => {
+    const el = document.getElementById(`${tableId}_rt_${ri}`);
+    if (el) el.innerText = rowTotals[ri];
+  });
+  // Difference row: row0 - row1 per column
+  for (let ci = 1; ci <= 3; ci++) {
+    const v0 = (colVals[ci] && colVals[ci][0]) || 0;
+    const v1 = (colVals[ci] && colVals[ci][1]) || 0;
+    const el = document.getElementById(`${tableId}_ct_${ci}`);
+    if (el) el.innerText = v0 - v1;
+  }
+  // Difference of row totals
+  const diffTotal = (rowTotals[0] || 0) - (rowTotals[1] || 0);
+  const gtEl = document.getElementById(`${tableId}_ct_4`);
+  if (gtEl) gtEl.innerText = diffTotal;
+}
+
+function updateTable2Totals(tableId) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const inputs = table.querySelectorAll(`input[data-table="${tableId}"]`);
+  const colTotals = {};
+  inputs.forEach(inp => {
+    const ci = parseInt(inp.dataset.col);
+    const val = parseFloat(inp.value) || 0;
+    colTotals[ci] = (colTotals[ci] || 0) + val;
+  });
+  Object.keys(colTotals).forEach(ci => {
+    const el = document.getElementById(`${tableId}_t2ct_${ci}`);
+    if (el) el.innerText = colTotals[ci];
+  });
+}
+
+function handleMismatchChange(selectEl, groundDivId) {
+  var newVal = selectEl.value;
+  var cfg = groundConfig.find(function(g) { return g.selectId === selectEl.id; });
+  if (!cfg) return;
+
+  // Check if any existing table has data
+  var t1 = document.getElementById(groundDivId + "_t1");
+  var t2 = document.getElementById(groundDivId + "_t2");
+  var t3 = document.getElementById(groundDivId + "_t3");
+  var t4 = document.getElementById(groundDivId + "_t4");
+
+  var hasData = false;
+
+  // Check Table 1 inputs
+  if (t1 && t1.style.display !== "none") {
+    t1.querySelectorAll("input").forEach(function(inp) {
+      if (inp.value.trim()) hasData = true;
+    });
+  }
+  // Check Table 2 inputs
+  if (t2 && t2.style.display !== "none") {
+    t2.querySelectorAll("input").forEach(function(inp) {
+      if (inp.value.trim()) hasData = true;
+    });
+  }
+  // Check Table 3 inputs
+  if (t3 && t3.style.display !== "none") {
+    t3.querySelectorAll("input").forEach(function(inp) {
+      if (inp.value.trim()) hasData = true;
+    });
+  }
+  // Check Table 4 (Others) inputs
+  var t4 = document.getElementById(groundDivId + "_t4");
+  if (t4 && t4.style.display !== "none") {
+    t4.querySelectorAll("input").forEach(function(inp) {
+      if (inp.value.trim()) hasData = true;
+    });
+  }
+// Check textarea
+  var textarea = document.getElementById(cfg.textId);
+  if (textarea && textarea.value.trim()) hasData = true;
+
+  var prevVal = selectEl.dataset.prevVal || "";
+
+  var colCName = document.getElementById("data2") ? document.getElementById("data2").value.trim() : "";
+  var fromDate = document.getElementById("data10") ? formatDate(document.getElementById("data10").value.trim()) : "";
+  var toDate = document.getElementById("data11") ? formatDate(document.getElementById("data11").value.trim()) : "";
+  var year = document.getElementById("data4") ? document.getElementById("data4").value.trim() : "";
+  var itcDeadline = "";
+  if      (year === "2021-22") itcDeadline = "30/10/2022";
+  else if (year === "2022-23") itcDeadline = "30/11/2023";
+  else if (year === "2023-24") itcDeadline = "30/11/2024";
+  else if (year === "2024-25") itcDeadline = "30/11/2025";
+  else if (year === "2025-26") itcDeadline = "30/11/2026";
+  else                         itcDeadline = ".......";
+  var prefill = {
+    "2a3b":   "On verification of the GSTR-3B filed by " + colCName + " and the details of the GSTR-2A auto populated from the Form GSTR-1 filed by the suppliers in respect of " + colCName + ", it is noticed that total input tax credit availed by " + colCName + " as per the GSTR-3B is greater than the input tax available in the GSTR-2A as detailed below.",
+    "tds":    "On verification of the GSTR-3B filed by " + colCName + " and the details of the TDS data auto populated from the Form GSTR-7 filed by the recipient of the goods or services supplied by " + colCName + ", it was noticed that turnover of the outward supply of an amount mentioned in column (3) of the table below made by " + colCName + " has not been included in the GSTR-3B returns for the year " + year + ". Consequently, the GSTR-3B filed by " + colCName + " for the year " + year + " was found to be incorrect and incomplete, which would result in short payment of tax by not including the turnover as stated above. This constitutes a violation of the provisions under sub-section (1) of Section 39 of the CGST/KSGST Act, 2017. The differential value, CGST and SGST ascertained is as detailed below.",
+    "others": "On scrutiny of returns under Section 61 of the CGST Act / KSGST Act 2017 in respect of " + colCName + " for the tax period of " + fromDate+ " to  " + toDate+ " , it is observed that",
+    "16_4":   "The due date for availing input tax credit for the year " + year + " was " + itcDeadline + ". On scrutiny of returns under Section 61 of the CGST Act / KSGST Act 2017 in respect of " + colCName + " for the tax period of " + fromDate+ " to  " + toDate+ " , it is observed that " + colCName + " have availed ITC through  GSTR-3B after the due date of availment of ITC by violating the provisions of  section 16 (4) of the CGST Act / KSGST Act 2017 and rules made thereunder as detailed below:"
+  };
+
+  if (hasData && prevVal !== "" && prevVal !== newVal) {
+    var confirmed = confirm("Do you want to clear the existing data in the selected Ground?");
+    if (!confirmed) {
+      selectEl.value = prevVal;
+      return;
+    }
+    // Clear all table inputs
+    if (t1) t1.querySelectorAll("input").forEach(function(inp) { inp.value = ""; });
+    if (t2) t2.querySelectorAll("input").forEach(function(inp) { inp.value = ""; });
+    if (t4) t4.querySelectorAll("input").forEach(function(inp) { inp.value = ""; });
+    updateOthersTotals(cfg.othersTableId);
+    // Reset limit table to empty rows
+    var limitTableId = cfg.limitTableId;
+    var tbody = document.getElementById(limitTableId + "_tbody");
+    if (tbody) {
+      tbody.innerHTML = "";
+      for (var r = 1; r <= 10; r++) {
+        tbody.insertAdjacentHTML("beforeend", buildLimitRow(limitTableId, r));
+      }
+      updateLimitTotals(limitTableId);
+    }
+    // Clear textarea and prefill with new selection
+    if (textarea) textarea.value = prefill[newVal] || "";
+  }
+
+  // Apply prefill only if textarea is empty (for fresh selection)
+  if (textarea && prefill[newVal] && !textarea.value.trim()) textarea.value = prefill[newVal];
+
+  // Store current value as previous for next change
+  selectEl.dataset.prevVal = newVal;
+
+  // Show/hide tables
+  if (t1) t1.style.display = (newVal === "2a3b")   ? "block" : "none";
+  if (t2) t2.style.display = (newVal === "tds")    ? "block" : "none";
+  if (t3) t3.style.display = (newVal === "16_4")   ? "block" : "none";
+  if (t4) t4.style.display = (newVal === "others") ? "block" : "none";
+}
+
+function createGround(configIndex, isDefault) {
+  const cfg = groundConfig[configIndex];
+  const gid = `ground_${cfg.num}`;
+  const t1Id = `${gid}_table1`;
+  const t2Id = `${gid}_table2`;
+  const div = document.createElement("div");
+  div.className = "ground-card";
+  div.id = gid;
+  div.innerHTML = `
+    <div class="ground-card-header">
+      <strong>Ground ${cfg.num}</strong>
+      ${!isDefault ? `<button class="btn-remove" onclick="removeGround('${gid}')">✕ Remove</button>` : ""}
+    </div>
+    <div class="ground-card-body">
+      <label>Mismatch Type</label>
+<select id="${cfg.selectId}" onchange="handleMismatchChange(this, '${gid}')">
+        <option value="">-- Select Mismatch Reason --</option>
+        <option value="2a3b">2A and 3B difference</option>
+        <option value="tds">TDS difference</option>
+        <option value="16_4">16 (4) limitation</option>
+        <option value="others">Others</option>
+        
+      </select>
+      <label>Describe the discrepancy</label>
+      <textarea id="${cfg.textId}" rows="3" placeholder="Description will appear based on selection..."></textarea>
+      <div class="table-section" id="${gid}_t1" style="display:none;">
+        <p style="font-size:10px;margin-bottom:4px;color:var(--primary-dark)">TABLE I: Mismatch Details</p>
+        ${buildTable1(cfg.t1Ids, t1Id)}
+      </div>
+      <div class="table-section" id="${gid}_t2" style="display:none;">
+        <p style="font-size:10px;margin-bottom:4px;color:var(--primary-dark)">TABLE II: TDS Details</p>
+        ${buildTable2(cfg.t2Ids, t2Id)}
+      </div>
+      <div class="table-section" id="${gid}_t3" style="display:none;">
+        <p style="font-size:10px;margin-bottom:4px;color:var(--primary-dark)">TABLE III: 16(4) Limitation Details</p>
+        ${buildLimitTable(cfg.limitTableId)}
+      </div>
+      <div class="table-section" id="${gid}_t4" style="display:none;">
+        <p style="font-size:10px;margin-bottom:4px;color:var(--primary-dark)">Others Details</p>
+        ${buildOthersTable(cfg.othersTableId)}
+      </div>
+    </div>`;
+  return div;
+}
+
+function addGround() {
+  if (groundCount >= 4) return;
+  const wrapper = document.getElementById("groundsWrapper");
+  const existing = Array.from(wrapper.children).map(c => c.id);
+  let nextIdx = -1;
+  for (let i = 0; i < 4; i++) {
+    if (!existing.includes(`ground_${i+1}`)) { nextIdx = i; break; }
+  }
+  if (nextIdx === -1) return;
+  groundCount++;
+  wrapper.appendChild(createGround(nextIdx, false));
+  const btn = document.getElementById("btnAddGround");
+  if (btn) btn.disabled = (groundCount >= 4);
+}
+
+function removeGround(gid) {
+  const el = document.getElementById(gid);
+  if (el) el.remove();
+  groundCount--;
+  const btn = document.getElementById("btnAddGround");
+  if (btn) btn.disabled = false;
+}
+
+// Init Ground 1 on page load
+document.addEventListener("DOMContentLoaded", () => {
+  groundCount = 1;
+  const wrapper = document.getElementById("groundsWrapper");
+  if (wrapper) wrapper.appendChild(createGround(0, true));
+});
+
+function saveAsmt10() {
+  saveData(function() {
+    document.getElementById("btnWord").classList.add("visible");
+    document.getElementById("btnPdf").classList.add("visible");
+      document.getElementById("btnWord").style.display = "block"
+  document.getElementById("btnPdf").style.display = "block"
+  });
+}
+
+
+
+
+
+function formatDateForInput(val) {
+  if (!val) return "";
+  if (typeof val === "string" && val.match(/^\d{4}-\d{2}-\d{2}$/)) return val;
+  var d = new Date(val);
+  if (isNaN(d.getTime())) return "";
+  var month = ("0" + (d.getMonth() + 1)).slice(-2);
+  var day = ("0" + d.getDate()).slice(-2);
+  return d.getFullYear() + "-" + month + "-" + day;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function vals() {
+  return {
+    f1: document.getElementById('colC').value.trim() || '[Name]',
+    f2: document.getElementById('colD').value.trim() || '[Designation]',
+    f3: document.getElementById('data7').value.trim() || '[Date/Time]',
+    f4: document.getElementById('colE').value.trim() || '[Amount]',
+    f5: document.getElementById('colG').value.trim() || '[Payment Date]',
+    f6: document.getElementById('data2').value.trim() || '[Name]',
+    f7: document.getElementById('data3').value.trim() || '[Address]',
+    f8: document.getElementById('data1').value.trim() || '[Tin]',
+    f9: document.getElementById('data4').value.trim() || '[Tin]',
+  };
+}
+
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
+
+async function fetchBuf(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.arrayBuffer();
+}
+
+function blobToDataURL(blob) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+}
+
+function formatDate(val) {
+  if (!val) return "";
+  var d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  var day = d.getUTCDate();
+  var suffix = day === 1 || day === 21 || day === 31 ? "st"
+             : day === 2 || day === 22 ? "nd"
+             : day === 3 || day === 23 ? "rd" : "th";
+  var months = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+  return day + suffix + " " + months[d.getUTCMonth()] + ", " + d.getUTCFullYear();
+}
+
+function formatDateDMY(val) {
+  if (!val) return "";
+  var d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  var day = ("0" + d.getUTCDate()).slice(-2);
+  var month = ("0" + (d.getUTCMonth() + 1)).slice(-2);
+  return day + "-" + month + "-" + d.getUTCFullYear();
+}
+
+function triggerDownload(blob, name) {
+  const u = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1000);
+}
+
+// ── Ground data extraction ──────────────────────────────────────────────────
+
+function buildGroundData() {
+  var grounds = [
+    { selectId:"data12", textId:"data13", t1TableId:"ground_1_table1", t2TableId:"ground_1_table2", t3TableId:"limitTable_1", othersTableId:"othersTable_1" },
+    { selectId:"data25", textId:"data26", t1TableId:"ground_2_table1", t2TableId:"ground_2_table2", t3TableId:"limitTable_2", othersTableId:"othersTable_2" },
+    { selectId:"data38", textId:"data39", t1TableId:"ground_3_table1", t2TableId:"ground_3_table2", t3TableId:"limitTable_3", othersTableId:"othersTable_3" },
+    { selectId:"data52", textId:"data53", t1TableId:"ground_4_table1", t2TableId:"ground_4_table2", t3TableId:"limitTable_4", othersTableId:"othersTable_4" }
+  ];
+  var active = [];
+  grounds.forEach(function(g) {
+    var sel = document.getElementById(g.selectId);
+    var txt = document.getElementById(g.textId);
+    if (!sel || !sel.value || !txt || !txt.value.trim()) return;
+    var mtype = sel.value;
+    var tableData = null;
+    if      (mtype === "2a3b")   tableData = extractTable1(g.t1TableId);
+    else if (mtype === "tds")    tableData = extractTable2(g.t2TableId);
+    else if (mtype === "16_4")   tableData = extractLimitTable(g.t3TableId);
+    else if (mtype === "others") tableData = extractOthersTable(g.othersTableId);
+    active.push({ text: txt.value.trim(), mtype: mtype, tableData: tableData });
+  });
+  return active;
+}
+
+function extractTable1(tableId) {
+  var table = document.getElementById(tableId);
+  if (!table) return null;
+  var cols = ["Particular","IGST","CGST","SGST","Total"];
+  var rowLabels = ["CGST","SGST"];
+  var rows = [];
+ rowLabels.forEach(function(label, ri) {
+    var cells = [label];
+    var hasValue = false;
+    for (var ci = 1; ci <= 3; ci++) {
+      var inp = table.querySelector("input[data-row='" + ri + "'][data-col='" + ci + "']");
+      var val = inp ? inp.value.trim() : "";
+      if (val) hasValue = true;
+      cells.push(val || "");
+    }
+    var totEl = document.getElementById(tableId + "_rt_" + ri);
+    cells.push(totEl ? totEl.innerText : "0");
+    if (hasValue) rows.push(cells);
+  });
+  if (rows.length === 0) return null;
+  var diffRow = ["Difference"];
+  for (var ci = 1; ci <= 4; ci++) {
+    var totEl = document.getElementById(tableId + "_ct_" + ci);
+    diffRow.push(totEl ? totEl.innerText : "0");
+  }
+  return { heading:"Mismatch Details (2A vs 3B)", cols:cols, rows:rows, totRow:diffRow };
+}
+
+function extractTable2(tableId) {
+  var table = document.getElementById(tableId);
+  if (!table) return null;
+  var cols = ["A","B","C","D","E"];
+  var tbody = table.querySelector("tbody") || table;
+  var allRows = tbody.querySelectorAll("tr");
+  var dataRows = [];
+  allRows.forEach(function(tr) {
+    var inputs = tr.querySelectorAll("input");
+    if (inputs.length === 0) return;
+    var hasValue = false;
+    var cells = [];
+    inputs.forEach(function(inp) { if (inp.value.trim()) hasValue = true; cells.push(inp.value.trim() || ""); });
+    if (hasValue) dataRows.push(cells);
+  });
+  if (dataRows.length === 0) return null;
+  var totRow = [];
+  for (var ci = 0; ci < 5; ci++) {
+    var totEl = document.getElementById(tableId + "_t2ct_" + ci);
+    totRow.push(totEl ? totEl.innerText : "0");
+  }
+  return { heading:"TDS Details", cols:cols, rows:dataRows, totRow:totRow };
+}
+
+function extractLimitTable(tableId) {
+  var tbody = document.getElementById(tableId + "_tbody");
+  if (!tbody) return null;
+  var cols = ["Sl.No","Description","Date","CGST","SGST","IGST","Total"];
+  var rows = [];
+  var allRows = tbody.rows;
+  for (var r = 0; r < allRows.length; r++) {
+    var inputs = allRows[r].querySelectorAll("input");
+    var hasValue = false;
+    var cells = [String(r + 1)];
+    inputs.forEach(function(inp) { if (inp.value.trim()) hasValue = true; cells.push(inp.value.trim() || ""); });
+    var totEl = document.getElementById(tableId + "_rowt_" + (r + 1));
+    cells.push(totEl ? totEl.innerText : "0");
+    if (hasValue) rows.push(cells);
+  }
+  if (rows.length === 0) return null;
+  var totRow = ["","","Total"];
+  ["_tot_2","_tot_3","_tot_4","_tot_5"].forEach(function(s) {
+    var el = document.getElementById(tableId + s);
+    totRow.push(el ? el.innerText : "0");
+  });
+  return { heading:"16(4) Limitation Details", cols:cols, rows:rows, totRow:totRow };
+}
+
+
+
+
+function extractOthersTable(tableId) {
+  var c0 = document.getElementById(tableId + "_c0");
+  var c1 = document.getElementById(tableId + "_c1");
+  var c2 = document.getElementById(tableId + "_c2");
+  var c3 = document.getElementById(tableId + "_c3");
+  var tot = document.getElementById(tableId + "_tot");
+  var hasValue = (c0 && c0.value.trim()) || (c1 && c1.value.trim()) ||
+                 (c2 && c2.value.trim()) || (c3 && c3.value.trim());
+  if (!hasValue) return null;
+  var cols = ["Discrepancy","CGST","SGST","IGST","Total"];
+  var row = [
+    c0 ? c0.value.trim() : "",
+    c1 ? c1.value.trim() : "",
+    c2 ? c2.value.trim() : "",
+    c3 ? c3.value.trim() : "",
+    tot ? tot.innerText : "0"
+  ];
+  var totRow = ["Total", c1 ? c1.value.trim() : "0", c2 ? c2.value.trim() : "0",
+                c3 ? c3.value.trim() : "0", tot ? tot.innerText : "0"];
+  return { heading:"Others Descrepancy Details", cols:cols, rows:[row], totRow:totRow };
+}
+// ── WORD ────────────────────────────────────────────────────────────────────
+
+function buildSummaryData() {
+  var grounds = [
+    { selectId:"data12", t1TableId:"ground_1_table1", t2TableId:"ground_1_table2", t3TableId:"limitTable_1", othersTableId:"othersTable_1" },
+    { selectId:"data25", t1TableId:"ground_2_table1", t2TableId:"ground_2_table2", t3TableId:"limitTable_2", othersTableId:"othersTable_2" },
+    { selectId:"data38", t1TableId:"ground_3_table1", t2TableId:"ground_3_table2", t3TableId:"limitTable_3", othersTableId:"othersTable_3" },
+    { selectId:"data52", t1TableId:"ground_4_table1", t2TableId:"ground_4_table2", t3TableId:"limitTable_4", othersTableId:"othersTable_4" }
+  ];
+
+  var rows = [];
+  var grandTotals = [0, 0, 0, 0];
+
+  grounds.forEach(function(g, idx) {
+    var sel = document.getElementById(g.selectId);
+    if (!sel || !sel.value) return;
+    var mtype = sel.value;
+    var amt1 = 0, amt2 = 0, amt3 = 0, total = 0;
+    var label = "Discrepancy " + (rows.length + 1);
+
+    if (mtype === "2a3b") {
+      var table = document.getElementById(g.t1TableId);
+      if (table) {
+        for (var ci = 1; ci <= 3; ci++) {
+          var totEl = document.getElementById(g.t1TableId + "_ct_" + ci);
+          var val = totEl ? (parseFloat(totEl.innerText) || 0) : 0;
+          if (ci === 1) amt1 = val;
+          else if (ci === 2) amt2 = val;
+          else if (ci === 3) amt3 = val;
+        }
+        total = amt1 + amt2 + amt3;
+      }
+    } else if (mtype === "tds") {
+      for (var ci = 0; ci < 5; ci++) {
+        var totEl = document.getElementById(g.t2TableId + "_t2ct_" + ci);
+        var val = totEl ? (parseFloat(totEl.innerText) || 0) : 0;
+        if (ci === 1) amt1 = val;
+        else if (ci === 2) amt2 = val;
+        else if (ci === 3) amt3 = val;
+      }
+      total = amt1 + amt2 + amt3;
+    } else if (mtype === "16_4") {
+      var t2El = document.getElementById(g.t3TableId + "_tot_2");
+      var t3El = document.getElementById(g.t3TableId + "_tot_3");
+      var t4El = document.getElementById(g.t3TableId + "_tot_4");
+      var t5El = document.getElementById(g.t3TableId + "_tot_5");
+      amt1  = t2El ? (parseFloat(t2El.innerText) || 0) : 0;
+      amt2  = t3El ? (parseFloat(t3El.innerText) || 0) : 0;
+      amt3  = t4El ? (parseFloat(t4El.innerText) || 0) : 0;
+      total = t5El ? (parseFloat(t5El.innerText) || 0) : 0;
+    } else if (mtype === "others") {
+      var c1El = document.getElementById(g.othersTableId + "_c1");
+      var c2El = document.getElementById(g.othersTableId + "_c2");
+      var c3El = document.getElementById(g.othersTableId + "_c3");
+      var tEl  = document.getElementById(g.othersTableId + "_tot");
+      amt1  = c1El ? (parseFloat(c1El.value) || 0) : 0;
+      amt2  = c2El ? (parseFloat(c2El.value) || 0) : 0;
+      amt3  = c3El ? (parseFloat(c3El.value) || 0) : 0;
+      total = tEl  ? (parseFloat(tEl.innerText) || 0) : 0;
+    }
+
+    rows.push([label, String(amt1), String(amt2), String(amt3), String(total)]);
+    grandTotals[0] += amt1;
+    grandTotals[1] += amt2;
+    grandTotals[2] += amt3;
+    grandTotals[3] += total;
+  });
+
+  if (rows.length < 2) return null; // only show summary for multiple grounds
+
+  var totRow = ["Total", String(grandTotals[0]), String(grandTotals[1]), String(grandTotals[2]), String(grandTotals[3])];
+  return {
+    cols: ["Discrepancy", "CGST", "SGST", "IGST", "Total"],
+    rows: rows,
+    totRow: totRow
+  };
+}
+
+
+
+
+async function downloadWord() {
+  const btn = document.getElementById('btnWord');
+  btn.disabled = true; setStatus('⏳ Building Word doc...');
+  try {
+    const v = vals();
+    if (!window.docx) throw new Error("docx not loaded yet, retry.");
+    const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType,
+            Table, TableRow, TableCell, WidthType, BorderStyle } = window.docx;
+    const ch = [];
+
+    // Banner
+    try {
+      const buf = await fetchBuf(BANNER_URL);
+      ch.push(new Paragraph({
+        spacing: { after: 160 },
+        children: [new ImageRun({ type:"jpg", data:buf,
+          transformation:{ width:604, height:Math.round(604*0.12) },
+          altText:{ title:"Banner", description:"Banner", name:"Banner" } })]
+      }));
+    } catch(e) { console.warn("Banner skipped:", e.message); }
+
+    // GST header
+    ch.push(
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ after:0 },
+        children:[new TextRun({ text:"Form GST ASMT\u201310", font:"Times New Roman", size:24, bold:true })] }),
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ after:160 },
+        children:[new TextRun({ text:"[See rule 99(1)]", font:"Times New Roman", size:24 })] }),
+      new Paragraph({ border:{ bottom:{ style:"single", size:6, color:"000000", space:1 } }, spacing:{ after:160 }, children:[] }),
+      new Paragraph({
+        spacing:{ after:280 },
+        tabStops:[{ type:"right", position:9026 }],
+        children:[
+          new TextRun({ text:"Ref No. ", font:"Times New Roman", size:24 }),
+          new TextRun({ text:v.f8, font:"Times New Roman", size:24 }),
+          new TextRun({ text:"/", font:"Times New Roman", size:24 }),
+          new TextRun({ text:v.f9, font:"Times New Roman", size:24 }),
+          new TextRun({ text:"\tDated: ", font:"Times New Roman", size:24 }),
+          new TextRun({ text:formatDateDMY(v.f3), font:"Times New Roman", size:24 }),
+        ]
+      }),
+    );
+
+    // To block
+    const indentTwips = 720;
+    ch.push(
+      new Paragraph({ spacing:{ line:360, after:0 },
+        children:[new TextRun({ text:"To", font:"Times New Roman", size:24 })] }),
+      new Paragraph({ spacing:{ line:360, after:0 }, indent:{ left:indentTwips },
+        children:[new TextRun({ text:v.f6, font:"Times New Roman", size:24 })] }),
+      new Paragraph({ spacing:{ line:360, after:0 }, indent:{ left:indentTwips },
+        children:[new TextRun({ text:v.f7, font:"Times New Roman", size:24 })] }),
+      new Paragraph({ spacing:{ line:360, after:280 }, indent:{ left:indentTwips },
+        children:[new TextRun({ text:"GSTIN: " + v.f8, font:"Times New Roman", size:24 })] }),
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ line:360, after:0 },
+        children:[new TextRun({ text:"Notice for intimating discrepancies in the return after scrutiny", font:"Times New Roman", size:24, bold:true })] }),
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ line:360, after:280 },
+        children:[new TextRun({ text:"(Section 61 (1) of the CGST Act 2017/KSGST Act, 2017 read with rule 99 (1) of the CGST/KGST Rules 2017)", font:"Times New Roman", size:24 })] }),
+    );
+
+    // Para 1
+    ch.push(new Paragraph({
+      alignment:AlignmentType.JUSTIFIED, spacing:{ line:360, after:160 },
+      indent:{ left:360, hanging:360 },
+      numbering:{ reference:"mainList", level:0 },
+      children:[
+        new TextRun({ text:"This is to inform that during scrutiny of the return for the tax period from ", font:"Times New Roman", size:24 }),
+        new TextRun({ text:formatDate(document.getElementById("data10") ? document.getElementById("data10").value : "") || "[data10]", font:"Times New Roman", size:24, bold:true }),
+        new TextRun({ text:" to ", font:"Times New Roman", size:24 }),
+        new TextRun({ text:formatDate(document.getElementById("data11") ? document.getElementById("data11").value : "") || "[data11]", font:"Times New Roman", size:24, bold:true }),
+        new TextRun({ text:", the following discrepancies have been noticed.", font:"Times New Roman", size:24 }),
+      ]
+    }));
+
+    // Discrepancy paragraphs + tables
+    var groundData = buildGroundData();
+
+   function makeWordTable(tdata, tableWidth) {
+      var border = { style:BorderStyle.SINGLE, size:4, color:"000000" };
+      var borders = { top:border, bottom:border, left:border, right:border };
+      var colCount = tdata.cols.length;
+      var totalWidth = tableWidth || 9026;
+      var colW = Math.floor(totalWidth / colCount);
+
+      function makeRow(cells, isHeader) {
+        return new TableRow({
+          children: cells.map(function(c) {
+            return new TableCell({
+              borders: borders,
+              width: { size:colW, type:WidthType.DXA },
+              margins: { top:60, bottom:60, left:100, right:100 },
+              children: [new Paragraph({
+                indent:{ left:0 },
+                children:[new TextRun({ text:String(c || ""), font:"Times New Roman", size:20, bold:isHeader })]
+              })]
+            });
+          })
+        });
+      }
+
+      var tableRows = [];
+      tableRows.push(makeRow(tdata.cols, true));
+      tdata.rows.forEach(function(r) { tableRows.push(makeRow(r, false)); });
+      tableRows.push(makeRow(tdata.totRow, true));
+      return new Table({ width:{ size:totalWidth, type:WidthType.DXA }, columnWidths:Array(colCount).fill(colW), rows:tableRows });
+    }
+
+   if (groundData.length === 1) {
+      ch.push(new Paragraph({
+        alignment:AlignmentType.JUSTIFIED, spacing:{ line:360, after:160 },
+        indent:{ left:360, hanging:360 },
+        numbering:{ reference:"mainList", level:0 },
+        children:[new TextRun({ text:groundData[0].text, font:"Times New Roman", size:24 })]
+      }));
+      if (groundData[0].tableData) {
+        ch.push(new Paragraph({ spacing:{ after:80 }, indent:{ left:360 },
+          children:[new TextRun({ text:groundData[0].tableData.heading, font:"Times New Roman", size:22, bold:true })] }));
+        ch.push(makeWordTable(groundData[0].tableData));
+        ch.push(new Paragraph({ spacing:{ after:160 }, children:[] }));
+      }
+    } else {
+      groundData.forEach(function(g, idx) {
+        ch.push(
+          new Paragraph({ alignment:AlignmentType.JUSTIFIED, spacing:{ line:360, after:80 },
+            indent:{ left:360, hanging:360 },
+            numbering:{ reference:"mainList", level:0 },
+            children:[new TextRun({ text:"Discrepancy " + (idx+1) + ": " + g.text, font:"Times New Roman", size:24 })] })
+        );
+        if (g.tableData) {
+          ch.push(new Paragraph({ spacing:{ after:80 }, indent:{ left:360 },
+            children:[new TextRun({ text:g.tableData.heading, font:"Times New Roman", size:22, bold:true })] }));
+          ch.push(makeWordTable(g.tableData));
+          ch.push(new Paragraph({ spacing:{ after:160 }, children:[] }));
+        }
+      });
+    }
+// Summary table
+    var summaryData = buildSummaryData();
+    if (summaryData) {
+      ch.push(new Paragraph({ spacing:{ after:80 },
+        children:[new TextRun({ text:"Summary of Discrepancies", font:"Times New Roman", size:24, bold:true })] }));
+      ch.push(makeWordTable(summaryData, 8666));
+      ch.push(new Paragraph({ spacing:{ after:160 }, children:[] }));
+    }
+
+    // Closing paragraph
+    var data51Val = document.getElementById("data51") ? document.getElementById("data51").value : "";
+    var data51Formatted = formatDate(data51Val) || "[date]";
+    ch.push(new Paragraph({
+      alignment: AlignmentType.JUSTIFIED, spacing:{ line:360, after:160 },
+      indent:{ left:360, hanging:360 },
+      numbering:{ reference:"mainList", level:0 },
+      children:[
+        new TextRun({ text:"You are hereby instructed to pay the balance tax along with applicable interest as per the rules, or to provide an explanation for the aforesaid discrepancies on or before ", font:"Times New Roman", size:24 }),
+        new TextRun({ text:data51Formatted, font:"Times New Roman", size:24, bold:true }),
+        new TextRun({ text:". In the event that neither the payment of tax with interest is made nor any explanation is received by the Proper Officer on or before the said date, it shall be presumed that you have nothing further to state in the matter, and proceedings in accordance with law may be initiated against you without any further reference.", font:"Times New Roman", size:24 }),
+      ]
+    }));
+// Signature block (centered in right half)
+    const halfIndent = 4513;
+    ch.push(
+      new Paragraph({ spacing:{ after:0 }, children:[] }),
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ after:0 }, indent:{ left:halfIndent },
+        children:[new TextRun({ text:v.f1, font:"Times New Roman", size:24 })] }),
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ after:0 }, indent:{ left:halfIndent },
+        children:[new TextRun({ text:v.f2, font:"Times New Roman", size:24 })] }),
+      new Paragraph({ alignment:AlignmentType.CENTER, spacing:{ after:0 }, indent:{ left:halfIndent },
+        children:[new TextRun({ text:v.f4, font:"Times New Roman", size:24 })] }),
+    );
+    const doc = new Document({
+      numbering:{ config:[{ reference:"mainList", levels:[{
+        level:0, format:"decimal", text:"%1.", alignment:AlignmentType.LEFT,
+        style:{ paragraph:{ indent:{ left:360, hanging:360 } } }
+      }] }] },
+      sections:[{ properties:{ page:{ size:{ width:11906, height:16838 }, margin:{ top:1440, right:1440, bottom:1440, left:1440 } } }, children:ch }]
+    });
+    triggerDownload(await Packer.toBlob(doc), 'GST_ASMT10.docx');
+    setStatus('✅ Word downloaded!');
+  } catch(err) { console.error(err); setStatus('❌ ' + err.message); }
+  finally { btn.disabled = false; }
+}
+
+// ── PDF ─────────────────────────────────────────────────────────────────────
+async function downloadPDF() {
+  const btn = document.getElementById('btnPdf');
+  btn.disabled = true; setStatus('⏳ Building PDF...');
+  try {
+    const v = vals();
+    if (!window.jspdf) throw new Error("jsPDF not loaded yet.");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const mL = 25.4, contentW = pw - mL * 2;
+    let y = 20;
+
+    // Banner
+    try {
+      const res = await fetch(BANNER_URL);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const dataURL = await blobToDataURL(await res.blob());
+      const bh = contentW * 0.12;
+      doc.addImage(dataURL, 'JPEG', mL, 15, contentW, bh);
+      y = 15 + bh + 8;
+    } catch(e) { console.warn("PDF banner skipped:", e.message); }
+
+    // GST header
+    doc.setFontSize(12);
+    doc.setFont('times','bold');
+    doc.text('Form GST ASMT\u201310', pw/2, y, { align:'center' }); y += 7;
+    doc.setFont('times','normal');
+    doc.text('[See rule 99(1)]', pw/2, y, { align:'center' }); y += 5;
+    doc.setLineWidth(0.4);
+    doc.line(mL, y, mL + contentW, y); y += 7;
+    doc.setFont('times','normal'); doc.setFontSize(12);
+    doc.text('Ref No. ' + v.f8 + '/' + v.f9, mL, y);
+    doc.text('Dated: ' + formatDateDMY(v.f3), mL + contentW, y, { align:'right' });
+    y += 10;
+
+    // To block
+    const indent = mL + 14;
+    doc.setFont('times','normal'); doc.setFontSize(12);
+    doc.text('To', mL, y); y += 7;
+    doc.text(v.f6, indent, y); y += 7;
+    doc.text(v.f7, indent, y); y += 7;
+    doc.text('GSTIN: ' + v.f8, indent, y); y += 10;
+    doc.setFont('times','bold');
+    const line1 = 'Notice for intimating discrepancies in the return after scrutiny';
+    const wrapped1 = doc.splitTextToSize(line1, contentW);
+    doc.text(wrapped1, pw/2, y, { align:'center' }); y += wrapped1.length * 7;
+    doc.setFont('times','normal');
+    const line2 = '(Section 61 (1) of the CGST Act 2017/KSGST Act, 2017 read with rule 99 (1) of the CGST/KGST Rules 2017)';
+    const wrapped2 = doc.splitTextToSize(line2, contentW);
+    doc.text(wrapped2, pw/2, y, { align:'center' }); y += wrapped2.length * 7 + 5;
+
+    // Para 1
+    doc.setFont('times','normal'); doc.setFontSize(12);
+    const data10 = formatDate(document.getElementById("data10") && document.getElementById("data10").value) || "[data10]";
+    const data11 = formatDate(document.getElementById("data11") && document.getElementById("data11").value) || "[data11]";
+    const paraIndent = mL + 7;
+    const paraW = contentW - 7;
+    var paraNum = 1;
+    doc.text(paraNum + ".", mL, y);
+    const para1Text = "This is to inform that during scrutiny of the return for the tax period from " + data10 + " to " + data11 + ", the following discrepancies have been noticed.";
+    const wrappedPara1 = doc.splitTextToSize(para1Text, paraW);
+    doc.text(wrappedPara1, paraIndent, y, { align:"justify", maxWidth:paraW });
+    y += wrappedPara1.length * 7 + 2;
+
+    // Discrepancy paragraphs + tables
+    var groundData = buildGroundData();
+    doc.setFontSize(12);
+
+    function checkPage(neededY) {
+      if (neededY > ph - 20) { doc.addPage(); return 20; }
+      return neededY;
+    }
+
+function drawPdfTable(tdata, startY, tableX) {
+      var cx0 = (tableX !== undefined) ? tableX : paraIndent;
+      var tableW = (tableX !== undefined) ? (mL + contentW - tableX) : paraW;
+      var cy = startY;
+      var allRows = [tdata.cols].concat(tdata.rows).concat([tdata.totRow]);
+      var colCount = tdata.cols.length;
+      var colW = tableW / colCount;
+      var rowH = 6;
+      var cellPad = 1.5;
+      allRows.forEach(function(row, ri) {
+        var isHeader = (ri === 0 || ri === allRows.length - 1);
+        if (cy + rowH > ph - 20) { doc.addPage(); cy = 20; }
+        doc.setFont('times', isHeader ? 'bold' : 'normal');
+        doc.setFontSize(9);
+        row.forEach(function(cell, ci) {
+          var cx = cx0 + ci * colW;
+          doc.rect(cx, cy, colW, rowH);
+          doc.text(String(cell || ""), cx + cellPad, cy + rowH - cellPad, { maxWidth: colW - cellPad * 2 });
+        });
+        cy += rowH;
+      });
+      return cy;
+    }
+
+    if (groundData.length === 1) {
+      paraNum++;
+      doc.setFont('times','normal'); doc.setFontSize(12);
+      doc.text(paraNum + ".", mL, y);
+      var wrappedG = doc.splitTextToSize(groundData[0].text, paraW);
+      doc.text(wrappedG, paraIndent, y, { align:"justify", maxWidth:paraW });
+      y += wrappedG.length * 7 + 2;
+      if (groundData[0].tableData) {
+        y = checkPage(y + 1);
+        doc.setFont('times','bold'); doc.setFontSize(10);
+        doc.text(groundData[0].tableData.heading, paraIndent, y); y += 6;
+        y = drawPdfTable(groundData[0].tableData, y) + 5;
+      }
+    } else {
+      groundData.forEach(function(g, idx) {
+        y = checkPage(y + 1);
+        paraNum++;
+        doc.setFont('times','normal'); doc.setFontSize(12);
+        doc.text(paraNum + ".", mL, y);
+        var discText = "Discrepancy " + (idx+1) + ": " + g.text;
+        var wrappedG = doc.splitTextToSize(discText, paraW);
+        doc.text(wrappedG, paraIndent, y, { align:"justify", maxWidth:paraW });
+        y += wrappedG.length * 7 + 2;
+        if (g.tableData) {
+          y = checkPage(y + 1);
+          doc.setFont('times','bold'); doc.setFontSize(10);
+          doc.text(g.tableData.heading, paraIndent, y); y += 6;
+          y = drawPdfTable(g.tableData, y) + 5;
+        }
+      });
+    }
+    doc.setFontSize(12);
+
+    // Summary table
+    var summaryData = buildSummaryData();
+    if (summaryData) {
+      y = checkPage(y + 7);
+      doc.setFont('times','bold'); doc.setFontSize(12);
+      doc.text("Summary of Discrepancies", paraIndent, y); y += 7;
+      y = drawPdfTable(summaryData, y, paraIndent) + 5;
+      doc.setFontSize(12);
+    }
+
+    // Closing paragraph
+    var data51Val = document.getElementById("data51") ? document.getElementById("data51").value : "";
+    var data51Formatted = formatDate(data51Val) || "[date]";
+    paraNum++;
+    y = checkPage(y + 7);
+    doc.setFont('times','normal'); doc.setFontSize(12);
+    doc.text(paraNum + ".", mL, y);
+    var closingText = "You are hereby instructed to pay the balance tax along with applicable interest as per the rules, or to provide an explanation for the aforesaid discrepancies on or before " + data51Formatted + ". In the event that neither the payment of tax with interest is made nor any explanation is received by the Proper Officer on or before the said date, it shall be presumed that you have nothing further to state in the matter, and proceedings in accordance with law may be initiated against you without any further reference.";
+    var wrappedClosing = doc.splitTextToSize(closingText, paraW);
+    doc.text(wrappedClosing, paraIndent, y, { align:"justify", maxWidth:paraW });
+    y += wrappedClosing.length * 7 + 2;
+
+    // Signature block (centered in right half)
+    y += 0;
+    var rightStart = mL + contentW / 2;
+    var rightCenter = rightStart + (contentW / 2) / 2;
+    var rightW = contentW / 2;
+    doc.setFont('times','normal'); doc.setFontSize(12);
+    var wrappedSig1 = doc.splitTextToSize(v.f1, rightW);
+    var wrappedSig2 = doc.splitTextToSize(v.f2, rightW);
+    var wrappedSig3 = doc.splitTextToSize(v.f4, rightW);
+    y = checkPage(y + 7);
+    doc.text(wrappedSig1, rightCenter, y, { align:'center', maxWidth:rightW }); y += wrappedSig1.length * 7;
+    doc.text(wrappedSig2, rightCenter, y, { align:'center', maxWidth:rightW }); y += wrappedSig2.length * 7;
+    doc.text(wrappedSig3, rightCenter, y, { align:'center', maxWidth:rightW }); y += wrappedSig3.length * 7;
+
+
+    doc.save('GST_ASMT10.pdf');
+    setStatus('✅ PDF downloaded!');
+  } catch(err) { console.error(err); setStatus('❌ ' + err.message); }
+  finally { btn.disabled = false; }
+}
+
+function renderMixed(doc, segs, x, y, maxW, lh) {
+  const toks = [];
+  for (const s of segs) for (const p of s.text.split(/(\s+)/)) if (p) toks.push({ text:p, bold:s.bold });
+  let line = [], lw = 0, cy = y;
+  const meas = t => { doc.setFont('times', t.bold?'bold':'normal'); return doc.getTextWidth(t.text); };
+  const flush = () => { let cx=x; for (const t of line) { doc.setFont('times',t.bold?'bold':'normal'); doc.text(t.text,cx,cy); cx+=meas(t); } cy+=lh; line=[]; lw=0; };
+  for (const t of toks) { const tw=meas(t); if (lw+tw>maxW && line.length) flush(); line.push(t); lw+=tw; }
+  if (line.length) flush();
+}
+
+
+// Remove highlight from any previously selected row
+document.querySelectorAll("#dataTable tbody tr.active-row")
+  .forEach(r => r.classList.remove("active-row"));
+
+// Highlight the clicked row — find it by matching edit button's onclick
+document.querySelectorAll("#dataTable tbody tr").forEach(function(r) {
+  var btn = r.querySelector("button[onclick]");
+  if (btn && btn.getAttribute("onclick") === "selectRow(" + rowIndex + ")") {
+    r.classList.add("active-row");
+  }
+});
+
+
+document.querySelectorAll("#dataTable tbody tr.active-row")
+  .forEach(r => r.classList.remove("active-row"));
+
+
+
+  function updateTable2Diff(tableId, idA, idB, idC) {
+  var a = parseFloat(document.getElementById(idA) ? document.getElementById(idA).value : 0) || 0;
+  var b = parseFloat(document.getElementById(idB) ? document.getElementById(idB).value : 0) || 0;
+  var cEl = document.getElementById(idC);
+  if (cEl) cEl.value = b - a;
+}
+
+
+
+// ADD THIS NEW FUNCTION
+function toggleCoreFields() {
+  const checked = document.getElementById("coreFieldAmend").checked;
+  const nameField = document.getElementById("editColC");
+  const emailField = document.getElementById("editColH");
+  const bg = "var(--bg-gradient)";
+
+  if (checked) {
+    nameField.removeAttribute("readonly");
+    nameField.style.background = "";
+    emailField.removeAttribute("readonly");
+    emailField.style.background = "";
+  } else {
+    nameField.setAttribute("readonly", true);
+    nameField.style.background = bg;
+    emailField.setAttribute("readonly", true);
+    emailField.style.background = bg;
+  }
+}
+
+// REPLACE your existing submitTileEdit() with this
+function submitTileEdit() {
+  var c = document.getElementById("editColC").value.trim();
+  var d = document.getElementById("editColD").value.trim();
+  var e = document.getElementById("editColE").value.trim();
+  var f = document.getElementById("editColF").value.trim();
+  var g = document.getElementById("editColG").value.trim();
+  var h = document.getElementById("editColH").value.trim();
+  var coreAmend = document.getElementById("coreFieldAmend").checked;
+
+  if (!c || !d || !e || !g) {
+    alert("Mandatory fields cannot be empty");
+    return;
+  }
+
+  if (coreAmend && !h) {
+    alert("e-mail cannot be empty for Core Field Amendment");
+    return;
+  }
+
+  let updatedData = {
+    colC: c,
+    colD: d,
+    colE: e,
+    colF: f,
+    colG: g,
+    colH: h
+  };
+
+  showStatus("Updating...");
+
+  // PRIMARY UPDATE — Designation, PEN, Office Address via SCRIPT_URL
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "updateTileData",
+      userId: loggedInUserId,
+      password: loggedInPassword,
+      tileContent: JSON.stringify(updatedData)
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    
+
+    if (!result.success) {
+      showStatus("Update failed");
+      setTimeout(hideStatus, 2000);
+      return;
+    }
+
+    // If core field amendment checkbox is checked, also update Name & e-mail via SCRIPT_2URL
+    if (coreAmend) {
+      fetch(SCRIPT_2URL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "updateCoreFields",
+          phone: g,          // Column C (phone) used to identify the row
+          newName: c,        // Column B (Name)
+          newEmail: h        // Column D (e-mail)
+        })
+      })
+      .then(res => res.json())
+      .then(coreResult => {
+        if (coreResult.success) {
+          applyUIUpdates(updatedData);
+          showStatus("All fields updated successfully");
+
+          // ✅ Reset core amendment checkbox and lock fields back to readonly
+          document.getElementById("coreFieldAmend").checked = false;
+          var nameField  = document.getElementById("editColC");
+          var emailField = document.getElementById("editColH");
+          nameField.setAttribute("readonly", true);
+          nameField.style.background = "var(--bg-gradient)";
+          emailField.setAttribute("readonly", true);
+          emailField.style.background = "var(--bg-gradient)";
+
+        } else {
+          showStatus("Main data updated but Core Field Amendment failed");
+        }
+        setTimeout(hideStatus, 2000);
+      })
+      .catch(err => {
+        console.error("Error updating core fields", err);
+        showStatus("Main data updated but Core Field Amendment error");
+        setTimeout(hideStatus, 2000);
+      });
+
+    } else {
+      applyUIUpdates(updatedData);
+      showStatus("Tile data updated successfully");
+      setTimeout(hideStatus, 2000);
+    }
+  })
+  .catch(err => {
+    console.error("Error updating tile data", err);
+    showStatus("Error updating tile data");
+    setTimeout(hideStatus, 2000);
+  });
+}
+
+// ADD THIS HELPER to avoid repeating UI update code
+function applyUIUpdates(data) {
+  document.getElementById("colC").value = data.colC;
+  document.getElementById("colD").value = data.colD;
+  document.getElementById("colE").value = data.colE;
+  document.getElementById("colF").value = data.colF;
+  document.getElementById("colG").value = data.colG;
+  document.getElementById("colH").value = data.colH;
+  closeTileEditor();
+}
+
+
+
+// Open phone change confirmation popup
+function openPhoneChangeRequest() {
+  var phone = document.getElementById("editColG").value.trim();
+  var name  = document.getElementById("editColC").value.trim();
+
+  if (!phone) { alert("Phone number not found."); return; }
+
+  document.getElementById("displayCurrentPhone").textContent = phone;
+  document.getElementById("phoneChangePopup")._requestData = { phone, name };
+
+  document.getElementById("phoneChangePopup").style.display = "flex";
+}
+
+function closePhoneChangePopup() {
+  document.getElementById("phoneChangePopup").style.display = "none";
+}
+
+function openPhoneChangeRequest() {
+  var phone = document.getElementById("editColG").value.trim();
+  var name  = document.getElementById("editColC").value.trim();
+
+  if (!phone) { alert("Phone number not found."); return; }
+
+  document.getElementById("displayCurrentPhone").textContent = phone;
+  document.getElementById("newPhoneNumber").value = ""; // ✅ Clear previous input
+  document.getElementById("phoneChangePopup")._requestData = { phone, name };
+
+  document.getElementById("phoneChangePopup").style.display = "flex";
+}
+
+function closePhoneChangePopup() {
+  document.getElementById("newPhoneNumber").value = ""; // ✅ Clear on close
+  document.getElementById("phoneChangePopup").style.display = "none";
+}
+
+function sendPhoneChangeRequest() {
+  var data     = document.getElementById("phoneChangePopup")._requestData || {};
+  var phone    = data.phone || document.getElementById("editColG").value.trim();
+  var name     = data.name  || document.getElementById("editColC").value.trim();
+  var email    = document.getElementById("editColH").value.trim();
+  var newPhone = document.getElementById("newPhoneNumber").value.trim(); // ✅ NEW
+
+  // ✅ Validate new phone number
+  if (!newPhone) {
+    alert("Please enter the new phone number.");
+    return;
+  }
+  if (!/^\d{10}$/.test(newPhone)) {
+    alert("Please enter a valid 10-digit phone number.");
+    return;
+  }
+
+  var sendBtn = document.querySelector("#phoneChangePopup button");
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Sending...";
+
+  fetch(SCRIPT_2URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "phoneChangeRequest",
+      userName: name,
+      userPhone: phone,
+      newPhone: newPhone,        // ✅ NEW — send new phone to script
+      userEmail: email,
+      adminEmail: "gstcell.com@gmail.com"
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    closePhoneChangePopup();
+    if (result.success) {
+      alert("Your request to change phone number has been sent to the admin. Please check after some time for the change.");
+    } else {
+      alert("Failed to send request. Please try again later.");
+    }
+  })
+  .catch(err => {
+    console.error("Phone change request error:", err);
+    closePhoneChangePopup();
+    alert("Error sending request: " + err.message);
+  })
+  .finally(() => {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Send Request";
+  });
+}
+</script>
+</body>
+</html>
