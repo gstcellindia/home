@@ -1,0 +1,3761 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+        <Meta name="viewport" content="width=device-width, intial-scale=1.0, maximum-scale=1.0,minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css">
+  <!--/inforackstylesheet-->
+  <link rel="stylesheet" href="https://drive.google.com/uc?id=130PXIcbemA0gkhLY2CznUYF4kY_O0n9G">
+  <!--/inforackstylesheet-->
+
+<style>
+html{
+  font-size: 10px;
+  background-color: rgb(255, 255, 255);
+    margin-top:-20px;
+    margin-left: 0px;
+    margin-right:0px;
+}
+
+table, td, th {
+					  border: 1px solid rgb(158, 31, 31);
+					}
+          
+
+details summary::-webkit-details-marker { display: none; }
+summary::before {
+    font-family: "Hiragino Mincho ProN", "Open Sans", sans-serif;
+    content: "▶";
+    position: absolute;
+    top: 1rem;
+    left: 0.8rem;
+    transform: rotate(0);
+    transform-origin: center;
+    transition: 0.2s transform ease;
+
+}
+details[open] > summary:before {
+    transform: rotate(90deg);
+    transition: 0.45s transform ease;
+}
+
+/* # The Sliding Summary # */
+details { 
+  width: 96%;
+  overflow: hidden;
+  margin-left: 2%;
+  font-size: 2rem;
+  text-indent: 5%;
+ }
+
+.headimage {
+    background-image: url('https://lh3.googleusercontent.com/d/1sitChJR4HMammhoEKMSRATww76l0RR3-');
+    background-repeat: no-repeat;
+    background-attachment:local;
+    background-size: cover;
+    background-position: 100% 100%;
+    height:30rem;
+}
+details summary {
+    position: relative;
+    z-index: 10;
+}
+@keyframes details-show {
+  from {
+    margin-bottom: -80%;
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+details > *:not(summary) {
+    animation: details-show 500ms ease-in-out;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease-in-out;
+    color: transparent;
+    overflow: hidden;
+}
+details[open] > *:not(summary) { color: inherit; }
+
+/* # Style 2 # */
+details.style2 summary::before {
+    content: "×";
+    color: #FFF;
+    font-size: 2rem;
+    line-height: 1;
+    transform: rotate(-45deg);
+    top: 1.2rem;
+    left: 0.5rem;
+}
+details[open].style2 > summary:before {
+    transform: rotate(90deg);
+    color: #F00 !important;
+    transition: color ease 2s, transform ease 1s;
+}
+/* # Style 4 # */
+details.style4 summary {
+    padding-right: 2.2rem;
+    padding-left: 1rem;
+}
+details.style4 summary::before {
+    content: "›";
+    color: #FFF;
+    font-size: 3rem;
+    font-weight: bold 3rem;
+    line-height: 1rem;
+    top: 1.2rem;
+    left: unset;
+    right: 0.6rem;
+}
+details[open].style4 > summary:before {
+    transform: rotate(90deg);
+    color: #F00 !important;
+    transition: color ease 2s, transform ease 1s;
+}
+/* # Just Some Pretty Styles # */
+img { 
+    max-width: 100%; 
+}
+p { margin: 0; padding-bottom: 10px; }
+p:last-child { padding: 0; }
+
+details {
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  background: rgb(255, 255, 255);
+}
+summary {
+    border: 4px solid transparent;
+    outline: none;
+    padding: 1rem;
+    display: block;
+    background: rgb(45, 85, 116);
+    color: white;
+    padding-left: 2.2rem;
+    position: relative;
+    cursor: pointer;
+}
+details[open] summary,
+summary:hover {
+    color: #FFCA28;
+    background: rgba(4,57,94);
+}
+summary:hover strong,
+details[open] summary strong,
+summary:hover::before,
+details[open] summary::before {
+    color: #feffae;
+}
+.content {
+    padding: 10px;
+    border: 1px solid #888;
+    border-top: none;
+}
+.collapsible {
+    background-color: #777;
+    text-decoration: none;
+    font-weight: bold ;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 10cm;
+    border: 1px;
+    border-color: #eb3007;
+    text-align: left;
+    outline: 1px;
+    font-size: 2rem;
+    margin-left: 5%;
+    margin-right: 10%;
+}
+
+.budget li a{
+    font-size: 1.5rem;
+}
+
+ul{
+    list-style: none;
+    text-decoration: none;
+}
+ul li a{
+    text-decoration: none;
+    line-height: 3rem;
+    color: rgb(0, 45, 170);
+}
+
+.heading{
+					
+    margin-top:8rem;
+    font-size: 2.5rem;
+    font-family:'Times New Roman', serif;
+    color: #00658d;
+    text-align: center;
+}
+
+*,
+*::before,
+*::after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body{
+    overflow-x: hidden;
+}
+
+a{
+
+    text-decoration: none;
+}
+ul{
+    list-style: none;
+}
+header{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.containermrq{
+    width: 100%;
+    max-width: 117rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    min-height: 30rem;
+
+}
+.menu-icons{
+    color:#eee;
+    font-size: 4rem;
+    position: absolute;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 1500;
+    display: none;
+}
+nav{
+    display: flex;
+    align-items: center;
+    margin-top: .5rem;
+	  margin-bottom: .5rem;
+    width: 100%;
+    height: 4rem;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.nav-list{
+    display: flex;
+    width: 100%;
+    align-items: center;
+
+}
+.nav-list li{
+    line-height: 8rem;
+    position: relative;
+
+}
+.text{
+    width: 100%;
+    position: absolute;
+}
+.sub-menu li{
+line-height: 4rem;
+}
+.nav-list a{
+    display: block;
+    color: #eee;
+    padding: 0rem 1rem;
+    font-size: 1.4rem;
+    transition: color 300ms;
+
+}
+.nav-list a:hover{
+    color: #eb3007;
+}
+.btn{
+    display: inline-block;
+    background-color: #eb3007;
+    border: 2px solid #eb3007;
+    border-radius: 2rem;
+    transition: background-color 300ms;
+}
+.sub-menu{
+    display: block;
+    position: absolute;
+    border-top: 3px solid #eb3007;
+    background-color: #191919;
+    z-index: 100;
+    top: 16rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 300ms ease;
+	transition-delay: 300ms;
+}
+.sub-menu::before{
+    content: "";
+    position: absolute;
+    top: -2.5rem;
+    left: 3rem;
+    border: 1.2rem solid transparent;
+    border-bottom-color: #eb3007;
+}
+.sub-menu .sub-menu::before{
+    top: .9rem;
+    left: -2.5rem;
+    border: 1.2rem solid transparent;
+    border-right-color: #eb3007;
+
+}
+.sub-menu .sub-menu{
+    border-top: none;
+    border-left: 3px solid #eb3007;
+    top: 0;
+    left: 100%; 
+}
+
+li.move-right{
+    margin: auto 0 auto auto;
+    line-height: initial;
+}
+
+      
+
+
+@media screen and (max-width: 1050px) {
+  .nav-list{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        display: none;
+        flex-direction: column;
+        align-items: initial;
+        background-color: #191919;
+        z-index: 1000;
+        overflow-y: scroll;
+
+    }
+    .nav-list > li{
+        line-height: 4rem;
+
+    }
+    .nav-list > .btn{
+      margin-top: 1rem;
+    }
+    .sub-menu{
+        position: initial;
+        border: 3px solid transparent;
+        border-left-color: #eb3007;
+        margin-left: 1rem;
+        max-height: 0;
+
+    }
+    .sub-menu::before{
+        display: none;
+
+    }
+    .nav-list li:hover > .sub-menu{
+        opacity: 1;
+        visibility: visible;
+        max-height: initial;
+    }
+    li.move-right{
+        margin: 0 auto 0 0;
+        line-height: initial;
+
+    }
+    .menu-icons{
+        display: block;
+
+    }
+    .ion-md-close{
+        display: none;
+    }
+    nav.active .ion-md-close{
+        display: block;
+    }
+    nav.active .ion-md-menu{
+        display: none;
+    }
+    nav.active .nav-list{
+        display: flex;
+    }
+		.heading{
+            
+        font-size: 1.5rem;   
+    }
+    .style4 table, td, th {
+        font-size: 13px;
+    }
+		
+}
+@media screen and (max-width: 760px) {
+    table, td, th {
+              font-size: 11px;
+              margin-left: 2%;
+            }
+
+
+            details { 
+  margin-left: 2%;
+  width:96%
+ }
+
+
+}
+
+
+</style>
+
+<Title>
+  Transfer and Posting
+  </Title>
+
+
+</head>
+<body>
+
+  <div class="headimage">
+    <p class="sitename">Seniority List</p>
+    <p class="sro">Seniority List of officers working in State Goods and Services Tax Department.</p>
+  </div>
+
+
+
+
+	<header  style="background-color: rgb(14, 32, 34);">
+		<div class="container">
+		  <nav>
+			 <div class="menu-icons">
+			   <i class="icon ion-md-menu"></i>
+			   <i class="icon ion-md-close"></i>
+			 </div>
+			<ul class="nav-list">
+			  		  <li>
+					<a href="https://www.gstcell.com/" target="_blank"><span style="color: rgb(6, 186, 0); font-weight: bold;font-size: 13pt;">HOME</span></a> 
+		
+				  </li>
+			  <li>
+				<a>ACT & RULES
+				  <i class="icon ion-md-arrow-dropdown"></i>
+				</a>
+				<ul class="sub-menu">
+				 <li>
+						 <a> AIT & ST
+							<i class="icon ion-md-arrow-dropdown"></i>
+						  </a>
+							 <ul class="sub-menu">
+	<li>
+				  <a href="https://docs.google.com/uc?id=1GupZURJrXdek80KDk10qSXKLdP80XkYk" target="_blank"> AIT ACT, 1991</a>
+				   </li>
+	<li>
+<a href="https://docs.google.com/uc?id=1PXfuxx7OurFcNEiPMpmgF17nlRkBFABw" target="_blank">AIT (REPEAL) ACT</a>
+</li>
+
+<li>
+				  <a href="https://docs.google.com/uc?id=1LNCIh0vlbEmAvK3F4mqXmhnfCw72QGio" target="_blank"> AIT Rules, 1991</a>
+				   </li>
+							  </ul>
+						   
+						  </li>
+	
+				   <li>
+				  <a>CST ACT & RULES
+					<i class="icon ion-md-arrow-dropdown"></i>
+				  </a>
+					<ul class="sub-menu">
+					<li>
+					<a href="https://docs.google.com/uc?id=1WdLnpWy17YEEJ__7NaR4grYPCcNZeSdE" target="_blank">CST ACT, 1956</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1o8Hlp7r2CVh70ReuzaoNGAI1ZtnH0AOH" target="_blank">Central Finance Act, 2011</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1ObFUeL7g2HcRZyRj1Bw2r_ANT_k3NUf_" target="_blank">Taxation Laws (amdmt) Act, 2017</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1Ecup5ZjMKMUOh-eKRvhpfLsRF-2tAuAS" target="_blank">CST RULES, 1957</a>
+					  </li>
+					  <li>
+					  <a href="https://docs.google.com/uc?id=1uSHAV9ZUBUoCXXkKJU9XMOF_UhWrR8ph" target="_blank">CST (Kerala) Rules, 1957</a>
+					  </li>
+					
+					</ul>
+					
+					  </li>
+					<li>
+					  <a style="font-weight:bolder; color: rgb(0, 119, 167);">GST ACT, 2017
+						<i class="icon ion-md-arrow-dropdown"></i>
+					  </a>
+						<ul class="sub-menu">
+						  <li>
+							<a href="https://docs.google.com/uc?id=1j3lwDWofd82A7BaZraSfo0nN0ETefIpl" target="_blank">SGST ACT, 2017</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1PjiIUNJF7THYGioHHvpKoaTHMScoVbcu" target="_blank">SGST ബിൽ (മലയാളം)</a>
+							  </li>
+						<li>
+						  <a href="https://docs.google.com/uc?id=10vaJAwFDG9TLCwsxcFGT2rtJ4LIq6quG" target="_blank">SGST (AMDMT) ACT, 2018</a>
+						</li>
+						<li>
+						  <a href="https://docs.google.com/uc?id=115g8Cui95m2A2IBc89kTqR6coOxLo7hZ" target="_blank">SGST (AMDMT) ACT, 2021</a>
+						  </li>
+						  <li>
+							<a href="https://docs.google.com/uc?id=1fdPGun1o_M9iJ6UaSPkj-hS6-_p3zcV7" target="_blank">Kerala GST Rules, 2017</a>
+						  </li>
+						  <li>
+							<a href="https://docs.google.com/uc?id=1FBRAJrJR1CYEWp4ENOIm-8HG5hIOm8AC" target="_blank">CGST ACT, 2017</a>
+							</li>
+							<li>
+							<a href="https://docs.google.com/uc?id=13zWrRKlM8wsYzMf4fCAa9Jf9zWxCcZBP" target="_blank">CGST Rules</a>
+							</li>
+							<li>
+							  <a href="https://www.gstcell.com/forms" target="_blank">CGST FORMS</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1u3lK9r_9M9y-JkYFZdK1WQa02vUM-g9h" target="_blank">IGST ACT, 2017</a>
+							  </li>
+							  <li>
+								<a href="https://docs.google.com/uc?id=1Azrh2RbZYCD8O7EBLa9wlqjeVPCoUkT0" target="_blank">101 Amendment</a>
+								</li>
+								<li>
+								<a href="https://docs.google.com/uc?id=1LIfZzYidZfsug0XbmmmPojLD-uPixeO5" target="_blank">Compensation to State Act</a>
+								</li>
+								<li>
+								  <a href="https://docs.google.com/uc?id=1BGK5kSe2b0pLtg_AywP3C77wrzayvZ4N" target="_blank">GST Setlmnt of fund Rules</a>
+								  </li> </ul>
+						
+						  </li>
+						</li>
+					  </li>
+					</li>
+					<li>
+					  <a>KGST ACT & RULES
+						<i class="icon ion-md-arrow-dropdown"></i>
+					  </a>
+						<ul class="sub-menu">
+						<li>
+						  <a href="https://docs.google.com/uc?id=1-4GWzHoSFp_xXw6vstJ-7FxkAcsiMOcX" target="_blank">KGST ACT, 1963</a>
+						  </li>
+						  <li>
+						  <a href="https://docs.google.com/uc?id=12Z7i-dSH1MFA4jImevjg7KjgVQWR4cnd" target="_blank">KGST (AMDMT) ACT, 2005</a>
+						  </li>
+						  <li>
+							<a href="https://docs.google.com/uc?id=1DJXqiFzT4boO6e8GnLq66z-oX6zTHueK" target="_blank">KGST (AMDMT) ACT, 2021</a>
+							</li>
+	 <li>
+							<a href="https://docs.google.com/uc?id=1ezdVBJVUxJqJxjRgm0AjhvSu2XPpE6qL" target="_blank">KGST (AMDMT) ACT, 2022</a>
+							</li>
+							<li>
+							<a href="https://docs.google.com/uc?id=1i4VJ95YfE8h3YdkS3m8sdg2ncRZ-hAmO" target="_blank">KGST manual Vol III</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1AJjLBIsCwjEHu1snMqWl3Nrtdmhn5K4g" target="_blank">KGST Rules, 1963</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1Dga71cTekqBnuKj-Ar8-138QSRckC62U" target="_blank">KGST (amdt) Rules 2009</a>
+							  </li>
+							  <li>
+								<a href="https://docs.google.com/uc?id=1Dga71cTekqBnuKj-Ar8-138QSRckC62U"  target="_blank">KGST (amdt) Rules 2019</a>
+								</li>
+							  
+						</ul>
+					  </li>
+					  <li>
+					  <a> KVAT ACT & RULES
+						<i class="icon ion-md-arrow-dropdown"></i>
+					  </a>
+						<ul class="sub-menu">
+						<li>
+						  <a href="https://docs.google.com/uc?id=1bl-AjgmMwVQW3HrjYOcvltsxF2DteC3P" target="_blank">KVAT ACT, 2003</a>
+						  </li>
+						  <li>
+						  <a href="https://docs.google.com/uc?id=1bl-AjgmMwVQW3HrjYOcvltsxF2DteC3P" target="_blank">KVAT Schedule</a>
+						  </li>
+						  <li>
+							<a href="https://docs.google.com/uc?id=1sP1WBwbxPZoLiws3D2fFQ_CsBAehk-bj" target="_blank">Notification NO. 82/2006</a>
+							</li>
+							<li>
+							<a href="https://docs.google.com/uc?id=1TAMgKQSbXbY5Q1ux-4ouCaCod2WUFIz9" target="_blank">KVAT Rules, 2005</a>
+							</li>
+						</ul>
+					  </li>
+					  <li>
+						<a href="https://docs.google.com/uc?id=1U8DYAHahhI5tGX6xBMaALbcjtz7spOev" target="_blank">KML ACT, 1958</a>
+						</li>
+						<li>
+						<a> LUXURY TAX
+						  <i class="icon ion-md-arrow-dropdown"></i>
+						</a>
+						  <ul class="sub-menu">
+						  <li>
+							<a href="https://docs.google.com/uc?id=1-KiXF-VmCzZUYJQJjntudwbg37ecwoC1"  target="_blank">LT Act, 1976</a>
+							</li>
+							<li>
+							<a href="https://docs.google.com/uc?id=108HlNYQ-0tDbyJz8mta_gfTK3fVuMGg1"  target="_blank">LT Rules, 1976</a>
+							</li>
+							
+						  </ul>
+						</li>
+						<li>
+						 <a> SURCHARGE ACT
+							<i class="icon ion-md-arrow-dropdown"></i>
+						  </a>
+							 <ul class="sub-menu">
+							 <li>
+							  <a href="https://docs.google.com/uc?id=1ovXajHCDAi06KaPKaNT4H5i26hnkgHWy" target="_blank">Surcharge on Taxes Act</a>
+							  </li>
+	  <li>
+							  <a href="https://docs.google.com/uc?id=10x8MVsr1YuZQActv2JRH2aRBdy70ltRq" target="_blank">Surcharge on Taxes Rules</a>
+							  </li>
+							  </ul>
+						   
+						  </li>
+						  <li>
+						  <a> KERALA FINANCE ACT
+							<i class="icon ion-md-arrow-dropdown"></i>
+						  </a>
+							<ul class="sub-menu">
+<li>
+                    <a href="https://docs.google.com/uc?id=1s_oERE8zOMIIny9tvb5XFOhScQp0ZvVM" target="_blank">2024</a>
+                    </li>
+<li>
+<a href="https://docs.google.com/uc?id=1m7cwBEd_HU9BejuzFIOlW-CPAs5q2N25" target="_blank">2023</a>
+</li>
+								<li>
+									<a href="https://docs.google.com/uc?id=1ToLlXOGT8FCMAAHI2ok4hXryVMiZcQE1" target="_blank">2022</a>
+									</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1vJIwHCAV1UIdAqI8LKVAX96afplLkCyF" target="_blank">2021</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1Bf__1W1ZbVsTZeeigwgu6cgW4GgENjzA" target="_blank">2020</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1aBS_BE76EQ8AJBM2Z8sqfscXTDenmbbq" target="_blank">2019</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1p2JvSEnTI1NhLQPdsF2bhc30WyQSZP3h" target="_blank">2018</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=10x9Sewj-CuS8BcQGfqWkO9c94x3Yu0Im" target="_blank">2017</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1lCveQG1vIMkWr13UdRlh0a5PcQlvV4W3" target="_blank">2016 Errata</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1Rh2UXM6hPUx0LwpEoSI-iXZ42I_zg-le" target="_blank">2016</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1OB3Y4qqv2sRAIL2OkX6PlYSlI5RF0eIt" target="_blank">2015 Errata</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1FEXPmAYct4BE0XyWlPyb0sjl86E06920" target="_blank">2015</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1sBb6c0VMJnEM6AxQmbfl6eiTU78AXkje">Taxation law Amdmt</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1qsyKJKKZmoG9emjSt8-lZ2Yy0TnvHBNo" target="_blank">2014</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1G_Kq222V2DvXdSgtOCr-LEn_ZLZDQG9N" target="_blank">2013</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1WwvPbd--LZa6Ut6vgY7HrDKjMx_fCdGo" target="_blank">2012</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=146Y28or4BYbz0aTj_F02eaz30zdZXDL9" target="_blank">2011</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=10EmK4u97O_J3mNhAb7gyJq6PPUwZyTxK" target="_blank">2010</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1rS-_5DXHojBQGjHikFcH3xWOrhnWHQWG" target="_blank">2009</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1qIaz5HZ5-6wCwjXX97VWSx7mXWcU5Bl2" target="_blank">2008</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1jtfhYe8SCHJyYl8i8BJntRy9eJRt7bIz" target="_blank">2007</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=16EqlEzYmO9EmcrtWDDD06OWy2-D5hLHB" target="_blank">2006</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1u5PuZ1sVhWFVEtRAUFC3qcyp98qMjwT9" target="_blank">2005</a>
+							  </li>
+	
+							</ul>
+							</li>
+	
+	
+	
+							<li>
+							<a> CENTRAL FINANCE ACT
+							  <i class="icon ion-md-arrow-dropdown"></i>
+							</a>
+							  <ul class="sub-menu">
+ <li>
+                        <a href="https://docs.google.com/uc?id=17BGODUFtqRecjbGi-PQFStrkMwf-vs7H"  target="_blank">2024</a>
+                        </li>
+							 <li>
+                          <a href="https://docs.google.com/uc?id=1BAPfPJttG_hInUBeQvKPox76VRAAYQ95"  target="_blank">2023</a>
+</li>
+ <li>
+							  <a href="https://docs.google.com/uc?id=1vZpffxTgj9zMmzFbmqUSoA7KlDyEo3yG"  target="_blank">2022</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=17OCUITFFeZ1QVAEnx_mwjbR0y8EbDsVN"  target="_blank">2021</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1-6xuWoKwEVC4mOUC7BJpqMyg0mtOr38_"  target="_blank">2020</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1rJxJMMNm2yrg9oE1zcJkDyWj2c1LYVgZ"  target="_blank">2019</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1ZJIo41MJ0ADid0_KzG9-seGhOc3SrwI0"  target="_blank">2018</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1JICQpnbmey_Mjk-gn93IFSexA59oLnd3"  target="_blank">2017</a>
+							</li>
+							  </ul>  
+							</li>
+	
+	
+	
+	
+	
+							  
+						  <li>
+						  <a> OTHER ACTS
+							<i class="icon ion-md-arrow-dropdown"></i>
+						  </a>
+							<ul class="sub-menu">
+							<li>
+							  <a href="https://docs.google.com/uc?id=1r2nn3mV4R8wazRnUOtYbEc1CujExEaSX"  target="_blank">CrPC, 1973</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=19L76FGuK5wRJD2SbrQLRXA9ZXWDBpqte"  target="_blank">Kerala RR Act, 1968</a>
+							  </li>
+							  <li>
+								<a href="https://docs.google.com/uc?id=1AZAr064It-Th8LJJOecCAzwKmDlNCS88" target="_blank">KS & SS Rules, 1958</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1rpLH49o2tUeLaOFd_U3gNsH2jovuwHj9" target="_blank">Representn of People Act</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1e6ep34fYRJ1S_BCqcqzZCaEa0WpCCr4R" target="_blank">Mines & Minerals Amdt</a>
+							</li>
+							<li>
+							<a href="https://docs.google.com/uc?id=1-nfiDE7kyHF0CLWaXHntOqDrT4CTlKDX" target="_blank">Revenue Recovery Act</a>
+						  </li>
+						  <li>
+							<a href="https://docs.google.com/uc?id=1ZIKcri8m2ewNhlP9B915Iae0PK8mhXxb" target="_blank">RTI Act, 2005
+							</a>
+						  </li>
+						  <li>
+						  <a href="https://docs.google.com/uc?id=1P5-7V4riO--m2-OuvMG8Gh54L3AVZ3jD" target="_blank">The Sales of Goods Act</a>
+						</li>
+							</ul>
+						  </li>
+						  <li>
+							<a href="https://legislative.gov.in/sites/default/files/COI...pdf" target="_blank"><span style="color: rgb(0, 119, 167); font-weight: bold;font-style: italic;font-family: 'Times New Roman', Times, serif;font-size: 13pt;">Constitution of India</span></a>
+	  
+							  </li>
+							  <li> <a href="https://docs.google.com/uc?id=1-8Bm3yIKwYchjc8Xf_DS7gsVCDAaFuK2" target="_blank">FUNCTIONS UNDER 243G</a> </li>
+								<li><a href="https://docs.google.com/uc?id=1AXCU6VeZTyIiTEfualC4UWk2EnhLiDMh" target="_blank">FUNCTIONS UNDER 243W</a> </li>
+							  
+						  
+	
+				</ul>
+			  </li>
+			  <li>
+				<a> NOTIFICATION
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+				<ul class="sub-menu">
+				  
+						<li>
+							<a>GOODS & SERVICES TAX
+							  <i class="icon ion-md-arrow-dropdown"></i>
+							</a>
+							  <ul class="sub-menu">
+								<li>
+									<a href="https://www.gstcell.com/notification/gst-tax-notification"  target="_blank" rel="noopener noreferrer">TAX</a>
+									</li>
+									<li>
+										<a href="https://www.gstcell.com/notification/gst-rate-notification"  target="_blank" rel="noopener noreferrer">RATE</a>
+										</li>
+							  
+							  </ul>
+							  
+								</li>
+	
+	
+								
+						
+					  <li>
+						<a href="https://www.gstcell.com/notification/kerala-flood-cess"  target="_blank">KERALA FLOOD CESS</a>
+						</li>
+						<li>
+							<a href="https://www.gstcell.com/notification/notification-under-legacy-act"  target="_blank">KGST, AIT, LT, ET, VAT...</a>
+							</li>
+						<li>
+						  <a href="https://www.gstcell.com/rod"  target="_blank">ROD</a>
+						  </li>
+				  </ul>
+			  </li>
+			  </li>
+			  <li>
+				<a> CIRCULAR
+				  <i class="icon ion-md-arrow-dropdown"></i>
+				</a>
+				<ul class="sub-menu">
+				<li>
+				  <a href="https://www.gstcell.com/circular/cgst-circular" target="_blank">ISSUED BY CBIC</a>
+				</li>
+	  
+	
+					<li>
+					  <a href="https://www.gstcell.com/circular/kerala-circular" target="_blank">KERALA GST DEPT.</a>
+					</li>
+		  
+					  </ul>
+				</li>
+				
+			  <li>
+				<a> ADVANCE RULING
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+			  <ul class="sub-menu">
+			  <li>
+				<a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank">KERALA</a>
+			  </li>
+	
+				</ul>
+			  </li> 
+	
+	
+			  <li>
+				<a> GST
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+			  <ul class="sub-menu">
+				
+			  <li>
+				<a> RCM
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+			  <ul class="sub-menu">
+				<li>
+				<a href="https://www.gstcell.com/rcm/goods" target="_blank">GOODS</a>
+			  </li>
+			  <li>
+				<a href="https://www.gstcell.com/rcm/service" target="_blank">SERVICES</a>
+			  </li>
+	
+			  
+				</ul>
+	
+				 
+			  <li>
+				<a> ADVANCE RULING
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+			  <ul class="sub-menu">
+			  <li>
+				<a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank">KERALA</a>
+			  </li>
+	
+				</ul>
+			  </li> 
+	
+	
+			  <li>
+				<a> NOTIFICATION
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+				<ul class="sub-menu">
+				  <li>
+					<a href="https://www.gstcell.com/notification/gst-tax-notification"  target="_blank" rel="noopener noreferrer">GST (TAX)</a>
+					</li>
+					<li>
+						<a href="https://www.gstcell.com/notification/gst-rate-notification"  target="_blank" rel="noopener noreferrer">GST (RATE)</a>
+						</li>
+	
+				  </ul>
+			  </li>
+	
+	
+			  <li>
+				<a href="https://www.gstcell.com/rod"  target="_blank">ROD</a>
+				</li>
+	 <li>
+					  <a>GST ACT & RULES
+						<i class="icon ion-md-arrow-dropdown"></i>
+					  </a>
+						<ul class="sub-menu">
+						<li>
+						<a href="https://docs.google.com/uc?id=1j3lwDWofd82A7BaZraSfo0nN0ETefIpl" target="_blank">SGST ACT, 2017</a>
+						</li>
+						<li>
+						  <a href="https://docs.google.com/uc?id=10vaJAwFDG9TLCwsxcFGT2rtJ4LIq6quG" target="_blank">SGST (AMDMT) ACT, 2018</a>
+						</li>
+						<li>
+						  <a href="https://docs.google.com/uc?id=115g8Cui95m2A2IBc89kTqR6coOxLo7hZ" target="_blank">SGST (AMDMT) ACT, 2021</a>
+						  </li>
+						  <li>
+						  <a href="https://docs.google.com/document/d/1tmSiQOcmCN0-aDhf8BYkwLw9XRQjwx8t1y1tvDJnoFk/edit?usp=sharing" target="_blank">Kerala GST Rules, 2017</a>
+						  </li>
+						  <li>
+							<a href="https://docs.google.com/uc?id=1FBRAJrJR1CYEWp4ENOIm-8HG5hIOm8AC" target="_blank">CGST ACT, 2017</a>
+							</li>
+							<li>
+							<a href="https://docs.google.com/uc?id=13zWrRKlM8wsYzMf4fCAa9Jf9zWxCcZBP" target="_blank">CGST Rules</a>
+							</li>
+							<li>
+							  <a href="https://www.gstcell.com/forms" target="_blank">CGST FORMS</a>
+							  </li>
+							  <li>
+							  <a href="https://docs.google.com/uc?id=1u3lK9r_9M9y-JkYFZdK1WQa02vUM-g9h" target="_blank">IGST ACT, 2017</a>
+							  </li>
+							  <li>
+								<a href="https://docs.google.com/uc?id=1Azrh2RbZYCD8O7EBLa9wlqjeVPCoUkT0" target="_blank">101 Amendment</a>
+								</li>
+								<li>
+								<a href="https://docs.google.com/uc?id=1LIfZzYidZfsug0XbmmmPojLD-uPixeO5" target="_blank">Compensation to State Act</a>
+								</li>
+								<li>
+								  <a href="https://docs.google.com/uc?id=1BGK5kSe2b0pLtg_AywP3C77wrzayvZ4N" target="_blank">GST Setlmnt of fund Rules</a>
+								  </li> </ul>
+						
+						  </li>
+	
+	
+						  <li>
+							<a> CIRCULAR
+							  <i class="icon ion-md-arrow-dropdown"></i>
+							</a>
+							<ul class="sub-menu">
+							<li>
+							  <a href="https://www.gstcell.com/circular/cgst-circular" target="_blank">ISSUED BY CBIC</a>
+							</li>
+				  
+				
+								<li>
+								  <a href="https://www.gstcell.com/circular/kerala-circular" target="_blank">KERALA GST DEPT.</a>
+								</li>
+					  
+								  </ul>
+							</li>
+	
+			  </li> 
+			
+	
+				</ul>
+			  </li> 
+			  <li>
+			  <a>FINANCE ACT
+				<i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+			  <ul class="sub-menu">
+			  
+				<li>
+				<a>Budget Speech (Eng)
+				  <i class="icon ion-md-arrow-dropdown"></i>
+				</a>
+				<ul class="sub-menu">
+
+<li> <a href="https://docs.google.com/uc?id=1sbKVrPimFNh8f1uT3VKDaX898v4y7wqI" target="_blank">2025</a>  </li>
+<li>
+                    <a href="https://docs.google.com/uc?id=1jmFxsHK4SHaxMhVhjDtbK4GOEwRmcCmZ" target="_blank">2023</a>
+                    </li>
+<li>
+					<a href="https://docs.google.com/uc?id=1KoxhIGEOYCk-Y55rYSGAnZEfu12v2ja7" target="_blank">2022
+					</li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1kTU8jJtLCrCpnRcu-isuXSrd7fGy2t8R" target="_blank">2021 revised
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1KKfhXdKUslmoatEuhDz-wCE9dBZ9uOXo" target="_blank">2021
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1PUYRXtc2Hq_rg6JnFSjZi7g8xyFdd-J-" target="_blank">2020
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1israGFTcdQugNrf_2xSXI6GRchze4LD_" target="_blank">2019
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1y4eYo1E2gNTntfoC57or04X9Kquc4whb" target="_blank">2018
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1ba2SunIrAJ_IxlRkimRl-18UTqmfCwSF" target="_blank">2017
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1o2D_Q62d5LeyHgTEKli9lVV-S8jZUjeH" target="_blank">2016
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1ii-gILJ_qvcalSUWq6LUA34x1HoqWf12" target="_blank">2016 revised
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1R2Fj9NpJ6AP-vrP9NEj4Va-sYcnY5Oiq" target="_blank">2015
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1YhYtA8ZOlfEhVjzrpgzPUuMY53YREt3l" target="_blank">2014
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1rXeswlmcqc3fUWvALpKWFVq6n46JrVXH" target="_blank">2013
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=18u4hV7e0gwFKSnm9MpCGqw7s0HQjk_VK" target="_blank">2012
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1NRwBRuN_fd-1yku5IAnCso-JEf0tGb4A" target="_blank">2011
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1Futkmcub5qI214AW_kWj6BDE-0yHAriZ" target="_blank">2010
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1cdQeFqDbxrxhE_G6LMki9G1EXUdNKzO2" target="_blank">2009
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1RNkVMnRe2NJuDSTp92mTzuaoSHtcWush" target="_blank">2008
+				  </li>
+	
+				  </li>
+				  
+				</ul>
+				<li>
+				  <a>Budget Speech (Mal)
+					<i class="icon ion-md-arrow-dropdown"></i>
+				</a>
+				<ul class="sub-menu">
+<li><a href="https://docs.google.com/uc?id=1I5sVuLSpXF4bg5WSQZNC9BJWHyJ9kh3q" target="_blank">2025</a></li>
+<li>
+					<a href="https://docs.google.com/uc?id=1jtoaTSbuIKd8kLGc9hTKGdhszeHr3tLP" target="_blank">2022
+					</li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=14nzq3MfVTIGuua5AGS4CJaTr5s4-vjRQ" target="_blank">2021 revised
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1QJa_mcI1vibrlQ7e73j7S31_HfwTDu3i" target="_blank">2021
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1Ehe4mLzHJR38ZYZqqF6jwfiM28_XVztV" target="_blank">2020
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1OqsD9OvacFzai9aejZyppFWdLMsOQJyZ" target="_blank">2019
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=13LFfImvrdMRAMKaAJfuksAN8P4-3PK0B" target="_blank">2018
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=15u4vegJf4dELATpW4igGI4Ha3gAOPnWa" target="_blank">2017
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1jSgfF-eRFDvrhuxvrnNdT6H812Gxdsfy" target="_blank">2016 revised
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1nGrQ6Ps1jA1kl8o6rdl0rVjCthd2XOQh" target="_blank">2016
+				  </li>
+				  
+				  <li>
+				  <a href="https://docs.google.com/uc?id=10uh6-LtV1sVBthlJh3Sxeqa5q2uXDp4J" target="_blank">2015
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1i0YrYmx3BQWkj2dNh2pfRvU1R-_l3fJH" target="_blank">2014
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=17O14bx8-ti9k79ovZQz8wybR7uVLTFvn" target="_blank">2013
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1ciqwWDfRkiZ0zyo7VmsAn0PgWol7IFyM" target="_blank">2012
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1GNEuObSjTZVTZcxHjD33tmPwvxlgQOr6" target="_blank">2011
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1_cXYIooO951L7rvOm4OjX6bS7trN7mfS" target="_blank">2010
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1_tBRwRBflIuVMFquVjOLy_pHpC6TMtib" target="_blank">2009
+				  </li>
+				  <li>
+				  <a href="https://docs.google.com/uc?id=1nF0OgvMBq2qjq9ZvLQLHJ6Sr7ju_LjLU" target="_blank">2008
+				  </li>
+				</ul>
+				  </li>
+	
+				  <li>
+					<a>Kerala Finance Bill
+					  <i class="icon ion-md-arrow-dropdown"></i>
+				  </a>
+				  <ul class="sub-menu">
+					<li>
+                  <a href="https://docs.google.com/uc?id=1oiYGafcmYfFhwfdpFEZRhCmwJP5vvFtY" target="_blank">2024</a>
+                  </li>
+    <li>
+            <a href="https://docs.google.com/uc?id=1BKPdxX3V1qzRZlIGkymVp61Mno4gznI5" target="_blank">2023</a>
+            </li>
+<li>
+						<a href="https://docs.google.com/uc?id=173vAys_DAnPCMhrv1-v7wzkzWtiXdeG1" target="_blank">2022
+						</li>
+						<li>
+							<a href="https://docs.google.com/uc?id=143dkf3X0lJTm6EDAgb0F1rDOmdhHStgm" target="_blank">2021 (revised)
+							</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1NkCAuFcZDShFqUs_jQZmoYIRZDq46Mic" target="_blank">2021
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1BHdYOLWKttlrThPfdfU4q9kuneXE7omk" target="_blank">2020
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=124EPNclekqQVBo1-0cRWG2fAElrSm8Yg" target="_blank">2019
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1hnOMN_uakNKx9OmGKVIi7_FQT9_9M3gV" target="_blank">2018
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1HjO6Vep05Nlg80pz4FEqiNn0walcE5IX" target="_blank">2017
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1fNMLiKkS8TddxVOONfxns7pL_-gjl9DB" target="_blank">2016 (revised)
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1y3tbVvpxYCFzGP62oA1fakhSyVWDXq6L" target="_blank">2016
+					</li>
+					<li>
+					<a href="https://docs.google.com/uc?id=1XON_KhWvjPvjguM2tdnWsDkIhyaNwLtf" target="_blank">2014
+					</li>
+					
+				  </ul>
+					</li>
+	
+	
+				  <li>
+					<a> Kerala Finance Act
+					  <i class="icon ion-md-arrow-dropdown"></i>
+					</a>
+					  <ul class="sub-menu">
+   <li>
+                    <a href="https://docs.google.com/uc?id=1s_oERE8zOMIIny9tvb5XFOhScQp0ZvVM" target="_blank">2024</a>
+                    </li>
+           <li>
+                <a href="https://docs.google.com/uc?id=1m7cwBEd_HU9BejuzFIOlW-CPAs5q2N25" target="_blank">2023</a>
+                </li>
+					  <li>
+						<a href="https://docs.google.com/uc?id=1ToLlXOGT8FCMAAHI2ok4hXryVMiZcQE1" target="_blank">2022</a>
+						</li>
+	  <li>
+						<a href="https://docs.google.com/uc?id=1vJIwHCAV1UIdAqI8LKVAX96afplLkCyF" target="_blank">2021</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1Bf__1W1ZbVsTZeeigwgu6cgW4GgENjzA" target="_blank">2020</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1aBS_BE76EQ8AJBM2Z8sqfscXTDenmbbq" target="_blank">2019</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1p2JvSEnTI1NhLQPdsF2bhc30WyQSZP3h" target="_blank">2018</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=10x9Sewj-CuS8BcQGfqWkO9c94x3Yu0Im" target="_blank">2017</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1lCveQG1vIMkWr13UdRlh0a5PcQlvV4W3" target="_blank">2016 Errata</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1Rh2UXM6hPUx0LwpEoSI-iXZ42I_zg-le" target="_blank">2016</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1OB3Y4qqv2sRAIL2OkX6PlYSlI5RF0eIt" target="_blank">2015 Errata</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1FEXPmAYct4BE0XyWlPyb0sjl86E06920" target="_blank">2015</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1sBb6c0VMJnEM6AxQmbfl6eiTU78AXkje">Taxation law Amdmt</a>
+						</li>
+						<li>
+						  <a href="https://docs.google.com/uc?id=1DRJwSy8_9vJb_anCUuEr5_FoVs_eKQOZ" target="_blank">2014 Errata</a>
+						  </li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1qsyKJKKZmoG9emjSt8-lZ2Yy0TnvHBNo" target="_blank">2014</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1G_Kq222V2DvXdSgtOCr-LEn_ZLZDQG9N" target="_blank">2013</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1WwvPbd--LZa6Ut6vgY7HrDKjMx_fCdGo" target="_blank">2012</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=146Y28or4BYbz0aTj_F02eaz30zdZXDL9" target="_blank">2011</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=10EmK4u97O_J3mNhAb7gyJq6PPUwZyTxK" target="_blank">2010</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1rS-_5DXHojBQGjHikFcH3xWOrhnWHQWG" target="_blank">2009</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1qIaz5HZ5-6wCwjXX97VWSx7mXWcU5Bl2" target="_blank">2008</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1jtfhYe8SCHJyYl8i8BJntRy9eJRt7bIz" target="_blank">2007</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=16EqlEzYmO9EmcrtWDDD06OWy2-D5hLHB" target="_blank">2006</a>
+						</li>
+						<li>
+						<a href="https://docs.google.com/uc?id=1u5PuZ1sVhWFVEtRAUFC3qcyp98qMjwT9" target="_blank">2005</a>
+						</li>
+	
+					  </ul>
+					  </li>
+	
+	
+					  <li>
+						<a> Central Budget Speech
+						  <i class="icon ion-md-arrow-dropdown"></i>
+						</a>
+						  <ul class="sub-menu">
+<li><a href="https://docs.google.com/uc?id=14tQ_jl_c04GS_nAcN59S0J1E0Wqj5Th6"  target="_blank"><li>2025 </li></a></li>
+<li>
+<a href="https://docs.google.com/uc?id=1sPkTXSHVVPK1F1WL8zeTONXgWF53G1pd"  target="_blank"><li>2024 (2<sup>nd</sup>)</li></a>
+</li>
+
+							<li>
+							  <a href="https://docs.google.com/uc?id=1BuOkDN0JGS5eGvx_rWd0xLBHEdpM08gk"  target="_blank">2022</a>
+							</li>
+												   
+						  </ul>  
+						</li>
+	
+						<li>
+							<a> Central Finance Bill
+							  <i class="icon ion-md-arrow-dropdown"></i>
+							</a>
+							  <ul class="sub-menu">
+ <li><a href="https://docs.google.com/uc?id=1kW5ETz-BKEG2O3afy-RLMrdrYmu6jtLY"  target="_blank"><li>2025</li></a></li>
+<li>
+<a href="https://docs.google.com/uc?id=1DcS420lR2Bqfg1gTEa4h48CIhlC4_CTq"  target="_blank"><li>2024 (No. 2)</li></a>
+</li>
+
+<li>
+					  <a href="https://docs.google.com/uc?id=1XMsNX96GwjUDnnRVBpqZQctO5cApcVR-"  target="_blank">2022</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1ndtiAbs9QSgVSk9fMBR2R2S_gC_B2rt1"  target="_blank">2021</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=14LEhJDq3DQoCnxNbyhnCKwJccV1mb964"  target="_blank">2020</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1CdLBrVl74b21z9deLgW0q7oKFWR3cANJ"  target="_blank">2019</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1izyNev-pS0ReFdPd_4UDehWYmoL_VZ4L"  target="_blank">2018</a>
+					</li>
+					<li>
+					  <a href="https://docs.google.com/uc?id=1YnSL_Z3t6iAy9bwfRD0V5JwtEC831ld3"  target="_blank">2017</a>
+					</li>
+							 
+							 
+							  </ul>  
+							</li>
+							
+	
+					  <li>
+						<a> Central Finance Act
+						  <i class="icon ion-md-arrow-dropdown"></i>
+						</a>
+						  <ul class="sub-menu">
+ <li>
+                        <a href="https://docs.google.com/uc?id=17BGODUFtqRecjbGi-PQFStrkMwf-vs7H"  target="_blank">2024</a>
+                        </li>
+							<li>
+                          <a href="https://docs.google.com/uc?id=1BAPfPJttG_hInUBeQvKPox76VRAAYQ95"  target="_blank">2023</a>
+</li>
+<li>
+							  <a href="https://docs.google.com/uc?id=1vZpffxTgj9zMmzFbmqUSoA7KlDyEo3yG"  target="_blank">2022</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=17OCUITFFeZ1QVAEnx_mwjbR0y8EbDsVN"  target="_blank">2021</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1-6xuWoKwEVC4mOUC7BJpqMyg0mtOr38_"  target="_blank">2020</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1rJxJMMNm2yrg9oE1zcJkDyWj2c1LYVgZ"  target="_blank">2019</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1ZJIo41MJ0ADid0_KzG9-seGhOc3SrwI0"  target="_blank">2018</a>
+							</li>
+							<li>
+							  <a href="https://docs.google.com/uc?id=1JICQpnbmey_Mjk-gn93IFSexA59oLnd3"  target="_blank">2017</a>
+							</li>
+						 
+						  </ul>  
+						</li>
+					  
+						 
+			  </li>
+			  
+			  </ul>
+			  </li>
+			</li> 
+			<li class="move-right btn">
+			  <a>RATE FINDER
+			  <i class="icon ion-md-arrow-dropdown"></i>
+			  </a>
+			  <ul class="sub-menu">
+			  <li>
+				<a href="https://www.gstcell.com/tax-rate-finder/gst-rate-of-goods" target="_blank">GOODS</a>
+			  </li>
+			  <li>
+			  <a href="https://www.gstcell.com/tax-rate-finder/gst-rate-of-services" target="_blank">SERVICES</a>
+			</li>
+	
+				</ul>
+			</li> 
+		   
+			</ul>
+			
+		  </nav>
+		</div>
+	  </header>
+	
+
+    
+ <!--SPECIAL COMMISSIONER-->
+
+ <details class="style4" style="margin-top: 3rem;">
+  <summary><strong>SPECIAL COMMISSIONER</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+<!--LISTEN--><input class="light-table-filter13" autocomplete="off" data-table13="order-table13" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter13" data-table13="order-table13">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table13";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=1sWaF9XzoGzvZ1ep4gB5as9v8FIHPiyG3" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2022</td>
+              </tr>
+
+              <!--row2-->
+            
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+  
+<!--ADC-->
+  <details class="style4" style="margin-top: .75rem;">
+    <summary><strong>ADDITIONAL COMMISSIONER</strong></summary>
+
+
+
+  <main class="gridTandP">
+	  
+        <div class="container2">
+    
+            <input class="light-table-filter" autocomplete="off" data-table="order-table" id="search" placeholder="Search in table (works in chrome)" />
+    
+        </div>
+    
+    
+        <div class="container2">
+    
+    <div style="overflow-x:auto;">
+    <select type="search" class="select-table-filter" data-table="order-table">
+      <option value="">Select year</option>  
+      <option value="@2023">2023</option> 
+      <option value="@2022">2022</option>  
+      <option value="@2021">2021</option>  
+      <option value="@2020">2020</option>  
+      <option value="@2019">2019</option>  
+      <option value="@2018">2018</option>  
+      <option value="@2017">2017</option>  
+      <option value="@2016">2016</option>  
+      <option value="@2015">2015</option>  
+      <option value="@2014">2014</option>  
+      <option value="@2013">2013</option>  
+      <option value="@2012">2012</option>  
+      <option value="@2011">2011</option>  
+      <option value="@2010">2010</option>  
+    
+    <select>
+    </div>
+    
+          </div>
+    </main>
+
+    <div style="overflow-x:auto;">
+      <table class="order-table";>
+        <thead style="background-color: #ecd9d9;">
+                 <!--row3-->	
+          <tr>
+            <th width="20%">Order. No.</th>
+            <th width="10%">Date</th>
+            <th width="70%">Order details</th>
+            <th width="10%">Remarks</th>
+            <th width="" style="display:none;"></th>
+          </tr>
+        </thead>	
+            <tbody>
+              <!--row-->	
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=19yNXrD4URjXnvLTDcTNNITIgkRZZXYnV" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2023</td>
+              </tr>	
+                      
+                </tbody>
+                </table>
+    </div>
+
+    </details>
+    
+    
+<!--JC-->
+    <details class="style4" style="margin-top: .75rem;">
+      <summary><strong>JOINT COMMISSIONER</strong></summary>
+      <div class="content">
+        
+  
+        <main class="gridTandP">
+      
+          <div class="container2">
+      
+              <input class="light-table-filter1" autocomplete="off" data-table1="order-table1" placeholder="Search in table (works in chrome)" />
+      
+          </div>
+      
+      
+          <div class="container2">
+      
+      <div style="overflow-x:auto;">
+      <select type="search" class="select-table-filter1" data-table1="order-table1">
+        <option value="">Select year</option>  
+        <option value="@2023">2023</option> 
+        <option value="@2022">2022</option>  
+        <option value="@2021">2021</option>  
+        <option value="@2020">2020</option>  
+        <option value="@2019">2019</option>  
+        <option value="@2018">2018</option>  
+        <option value="@2017">2017</option>  
+        <option value="@2016">2016</option>  
+        <option value="@2015">2015</option>  
+        <option value="@2014">2014</option>  
+        <option value="@2013">2013</option>  
+        <option value="@2012">2012</option>  
+        <option value="@2011">2011</option>  
+        <option value="@2010">2010</option>  
+      
+      <select>
+      </div>
+      
+            </div>
+      </main>
+  
+      <div style="overflow-x:auto;">
+        <table class="order-table1";>
+          <thead style="background-color: #ecd9d9;">
+                   <!--row3-->	
+            <tr>
+              <th width="20%">Order. No.</th>
+              <th width="10%">Date</th>
+              <th width="70%">Order details</th>
+              <th width="10%">Remarks</th>
+              <th width="" style="display:none;"></th>
+            </tr>
+          </thead>	
+              <tbody>
+                  <!--row2-->
+                  <tr>	
+                    <TD>G.O.(P)No.46/2023/TAXES</TD>
+                    <TD>29/03/2023</TD>
+                    <td><a href="https://docs.google.com/uc?id=1FTSjmQ42FKAApWgknd3b6oClEksolPdB" target="_blank"><span style="color:blue">Final Seniority List of Joint Commissioners for the period from 01/01/2017 to 31/12/2020</span></a><img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="Swimming fish" width="40" height="20"></TD>
+                    <td></TD>
+                    <td style="display:none;">@2023</td>
+                  </tr>	
+                                    <!--row2-->
+
+                  </tbody>
+                  </table>
+      </div>
+  
+      </details>
+
+
+
+
+
+<!--DC-->
+    <details class="style4" style="margin-top: .75rem;">
+      <summary><strong>DEPUTY COMMISSIONER</strong></summary>
+      <div class="content">
+        
+  
+        <main class="gridTandP">
+      
+          <div class="container2">
+      
+              <input class="light-table-filter2" autocomplete="off" data-table2="order-table2" placeholder="Search in table (works in chrome)" />
+      
+          </div>
+      
+      
+          <div class="container2">
+      
+      <div style="overflow-x:auto;">
+      <select type="search" class="select-table-filter2" data-table2="order-table2">
+        <option value="">Select year</option>  
+        <option value="@2023">2023</option> 
+        <option value="@2022">2022</option>  
+        <option value="@2021">2021</option>  
+        <option value="@2020">2020</option>  
+        <option value="@2019">2019</option>  
+        <option value="@2018">2018</option>  
+        <option value="@2017">2017</option>  
+        <option value="@2016">2016</option>  
+        <option value="@2015">2015</option>  
+        <option value="@2014">2014</option>  
+        <option value="@2013">2013</option>  
+        <option value="@2012">2012</option>  
+        <option value="@2011">2011</option>  
+        <option value="@2010">2010</option> 
+      
+      <select>
+      </div>
+      
+            </div>
+      </main>
+  
+      <div style="overflow-x:auto;">
+        <table class="order-table2";>
+          <thead style="background-color: #ecd9d9;">
+                   <!--row3-->	
+            <tr>
+              <th width="20%">Order. No.</th>
+              <th width="10%">Date</th>
+              <th width="70%">Order details</th>
+              <th width="10%">Remarks</th>
+              <th width="" style="display:none;"></th>
+            </tr>
+          </thead>	
+              <tbody>
+                   <!--row-->	
+                   <tr>	
+                    <TD></TD>
+                    <TD></TD>
+                    <td><a href="https://docs.google.com/uc?id=1ltAI2BwFgOGHG4Z4CfZ-pRnC8s4D0TMa" target="_blank"><span style="color:blue"></span></a></TD>
+                    <td></TD>
+                    <td style="display:none;">@2023</td>
+                  </tr>	
+ 
+                  </tbody>
+                  </table>
+      </div>
+  
+      </details>
+
+
+
+
+<!--AC/STO-->
+    <details class="style4" style="margin-top: .75rem;">
+      <summary><strong>AC / STATE TAX OFFICER</strong></summary>
+      <div class="content">
+        
+  
+        <main class="gridTandP">
+      
+          <div class="container2">
+      
+              <input class="light-table-filter3" autocomplete="off" data-table3="order-table3" placeholder="Search in table (works in chrome)" />
+      
+          </div>
+      
+      
+          <div class="container2">
+      
+      <div style="overflow-x:auto;">
+      <select type="search" class="select-table-filter3" data-table3="order-table3">
+        <option value="">Select year</option>  
+        <option value="@2023">2023</option> 
+        <option value="@2022">2022</option>  
+        <option value="@2021">2021</option>  
+        <option value="@2020">2020</option>  
+        <option value="@2019">2019</option>  
+        <option value="@2018">2018</option>  
+        <option value="@2017">2017</option>  
+        <option value="@2016">2016</option>  
+        <option value="@2015">2015</option>  
+        <option value="@2014">2014</option>  
+        <option value="@2013">2013</option>  
+        <option value="@2012">2012</option>  
+        <option value="@2011">2011</option>  
+        <option value="@2010">2010</option>  
+      
+      <select>
+      </div>
+      
+            </div>
+      </main>
+  
+      <div style="overflow-x:auto;">
+        <table class="order-table3";>
+          <thead style="background-color: #ecd9d9;">
+                   <!--row3-->	
+            <tr>
+              <th width="20%">Order. No.</th>
+              <th width="10%">Date</th>
+              <th width="70%">Order details</th>
+              <th width="10%">Remarks</th>
+              <th width="" style="display:none;"></th>
+            </tr>
+          </thead>	
+              <tbody>
+                   <!--row-->	
+                   <tr>	
+                    <TD></TD>
+                    <TD></TD>
+                    <td><a href="https://docs.google.com/uc?id=1cKMuj3IMScvUYE8WmWC0ng4V7_oFuE-M" target="_blank"><span style="color:blue"></span></a></TD>
+                    <td></TD>
+                    <td style="display:none;">@2023</td>
+                  </tr>
+                   <!--row-->
+
+                  </tbody>
+                  </table>
+      </div>
+  
+      </details>
+
+
+
+<!--ASTO-->
+      <details class="style4" style="margin-top: .75rem;">
+        <summary><strong>DSTO / ASTO</strong></summary>
+        <div class="content">
+          
+    
+          <main class="gridTandP">
+        
+            <div class="container2">
+        
+                <input class="light-table-filter4" autocomplete="off" data-table4="order-table4" placeholder="Search in table (works in chrome)" />
+        
+            </div>
+        
+        
+            <div class="container2">
+        
+        <div style="overflow-x:auto;">
+        <select type="search" class="select-table-filter4" data-table4="order-table4">
+          <option value="">Select year</option>  
+          <option value="@2023">2023</option> 
+          <option value="@2022">2022</option>  
+          <option value="@2021">2021</option>  
+          <option value="@2020">2020</option>  
+          <option value="@2019">2019</option>  
+          <option value="@2018">2018</option>  
+          <option value="@2017">2017</option>  
+          <option value="@2016">2016</option>  
+          <option value="@2015">2015</option>  
+          <option value="@2014">2014</option>  
+          <option value="@2013">2013</option>  
+          <option value="@2012">2012</option>  
+          <option value="@2011">2011</option>  
+          <option value="@2010">2010</option>   
+        
+        <select>
+        </div>
+        
+              </div>
+        </main>
+    
+        <div style="overflow-x:auto;">
+          <table class="order-table4";>
+            <thead style="background-color: #ecd9d9;">
+                     <!--row3-->	
+              <tr>
+                <th width="20%">Order. No.</th>
+                <th width="10%">Date</th>
+                <th width="70%">Order details</th>
+                <th width="10%">Remarks</th>
+                <th width="" style="display:none;"></th>
+              </tr>
+            </thead>	
+                <tbody>
+                   <!--row2-->
+                   <tr>	
+                    <TD></TD>
+                    <TD></TD>
+                    <td><a href="https://docs.google.com/uc?id=1GcvXz2b3bckKlHQhm-2cV0PjzcFr6RSk" target="_blank"><span style="color:blue"></span></a></TD>
+                    <td></TD>
+                    <td style="display:none;">@2023</td>
+                  </tr>
+  
+                    </tbody>
+                    </table>
+        </div>
+    
+        </details>
+ 
+
+
+
+
+
+<!--5 Clerk-->
+
+        <details class="style4" style="margin-top: .75rem;">
+          <summary><strong>CLERK / SENIOR CLERK</strong></summary>
+          <div class="content">
+            
+      
+            <main class="gridTandP">
+          
+              <div class="container2">
+          
+<!--LISTEN--><input class="light-table-filter5" autocomplete="off" data-table5="order-table5" placeholder="Search in table (works in chrome)" />
+          
+              </div>
+          
+          
+              <div class="container2">
+          
+          <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter5" data-table5="order-table5">
+            <option value="">Select year</option>  
+            <option value="@2023">2023</option> 
+            <option value="@2022">2022</option>  
+            <option value="@2021">2021</option>  
+            <option value="@2020">2020</option>  
+            <option value="@2019">2019</option>  
+            <option value="@2018">2018</option>  
+            <option value="@2017">2017</option>  
+            <option value="@2016">2016</option>  
+            <option value="@2015">2015</option>  
+            <option value="@2014">2014</option>  
+            <option value="@2013">2013</option>  
+            <option value="@2012">2012</option>  
+            <option value="@2011">2011</option>  
+            <option value="@2010">2010</option>  
+          
+          <select>
+          </div>
+          
+                </div>
+          </main>
+      
+          <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table5";>
+              <thead style="background-color: #ecd9d9;">
+                       <!--row3-->	
+                <tr>
+                  <th width="20%">Order. No.</th>
+                  <th width="10%">Date</th>
+                  <th width="70%">Order details</th>
+                  <th width="10%">Remarks</th>
+                  <th width="" style="display:none;"></th>
+                </tr>
+              </thead>	
+                  <tbody>
+                   <!--row2-->
+                   <tr>	
+                    <TD>CT/5587/2022 - PD(S) 4</TD>
+                    <TD>25/07/2023</TD>
+                    <td><a href="https://docs.google.com/uc?id=1W52csYJ5d_mMfdiN9cWpxYHFE5SJDWto" target="_blank"><span style="color:blue">The Final seniority list of Senior Clerks appointed for the period from 01.01.2020 to 31.12.2021</span></a><img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="Swimming fish" width="40" height="20"></TD>
+                    <td></TD>
+                    <td style="display:none;">@2023</td>
+                  </tr>	
+                       <!--row2-->
+                  <tr>	
+                    <TD>CT/2080/2021-G2</TD>
+                    <TD>25/07/2023</TD>
+                    <td><a href="https://docs.google.com/uc?id=1Bv4mBxJE8R-DSv3zexhs1BIybnd06QP1" target="_blank"><span style="color:blue">The Final seniority list of Clerks appointed for the period from 01.01.2017 to 31.12.2020</span></a><img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="Swimming fish" width="40" height="20"></TD>
+                    <td></TD>
+                    <td style="display:none;">@2023</td>
+                  </tr>	
+                                    <!--row2-->
+  
+                      <!--row2-->
+                
+                    
+    
+                      </tbody>
+                      </table>
+          </div>
+      
+          </details>
+
+<!--6 CLERICAL ASSISTANT-->
+
+<details class="style4" style="margin-top: .75rem;">
+  <summary><strong>CLERICAL ASSISTANT</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+      <!--LISTEN--><input class="light-table-filter6" autocomplete="off" data-table6="order-table6" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter6" data-table6="order-table6">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table6";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+<tr>	
+  <TD></TD>
+  <TD></TD>
+  <td><a href="https://docs.google.com/uc?id=1EDKKnqZPtNnej516xkZVCRCTaC2TMwVK" target="_blank"><span style="color:blue"></span></a></TD>
+  <td></TD>
+  <td style="display:none;">@2023</td>
+</tr>
+
+<!--row2-->
+              <!--row-->	
+            
+
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+
+
+
+<!--7 OFFICE ATTENDANT-->
+
+<details class="style4" style="margin-top: .75rem;">
+  <summary><strong>OFFICE ATTENDANT</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+      <!--LISTEN--><input class="light-table-filter7" autocomplete="off" data-table7="order-table7" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter7" data-table7="order-table7">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table7";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=1yN03YuOHn0B3UxkFBQGK5-9W8Obr1hVL" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2023</td>
+              </tr>
+
+              <!--row2-->
+           
+            
+
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+
+
+<!--8 TYPIST-->
+
+<details class="style4" style="margin-top: .75rem;">
+  <summary><strong>TYPIST</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+<!--LISTEN--><input class="light-table-filter8" autocomplete="off" data-table8="order-table8" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter8" data-table8="order-table8">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table8";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=16dgoNrJj_opXpK8pWH_wvGprae5a3hNi" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2023</td>
+              </tr>
+
+              <!--row2-->
+            
+            
+
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+
+
+
+<!--9 FAIRCOPY SUPERINTENDENT-->
+
+<details class="style4" style="margin-top: .75rem;">
+  <summary><strong>FAIRCOPY SUPERINTENDENT</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+<!--LISTEN--><input class="light-table-filter9" autocomplete="off" data-table9="order-table9" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter9" data-table9="order-table9">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table9";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=1qBhzvNvscaglrrNlARnW2mGGVfLm5Fbr" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2023</td>
+              </tr>
+
+              <!--row2-->
+           
+              <!--row-->	
+            
+
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+
+
+  <!--10 CONFIDENTIAL ASSISTANT-->
+
+  <details class="style4" style="margin-top: .75rem;">
+    <summary><strong>CONFIDENTIAL ATTENDANT</strong></summary>
+    <div class="content">
+      <main class="gridTandP">
+        <div class="container2">
+  <!--LISTEN--><input class="light-table-filter10" autocomplete="off" data-table10="order-table10" placeholder="Search in table (works in chrome)" />
+        </div>
+    
+    
+  <div class="container2">
+    
+    <div style="overflow-x:auto;">
+  <!--LISTEN--><select type="search" class="select-table-filter10" data-table10="order-table10">
+      <option value="">Select year</option>  
+      <option value="@2023">2023</option> 
+      <option value="@2022">2022</option>  
+      <option value="@2021">2021</option>  
+      <option value="@2020">2020</option>  
+      <option value="@2019">2019</option>  
+      <option value="@2018">2018</option>  
+      <option value="@2017">2017</option>  
+      <option value="@2016">2016</option>  
+      <option value="@2015">2015</option>  
+      <option value="@2014">2014</option>  
+      <option value="@2013">2013</option>  
+      <option value="@2012">2012</option>  
+      <option value="@2011">2011</option>  
+      <option value="@2010">2010</option>  
+    
+    <select>
+    </div>
+    
+          </div>
+    </main>
+  
+    <div style="overflow-x:auto;">
+  <!--LISTEN--><table class="order-table10";>
+        <thead style="background-color: #ecd9d9;">
+                 <!--row3-->	
+          <tr>
+            <th width="20%">Order. No.</th>
+            <th width="10%">Date</th>
+            <th width="70%">Order details</th>
+            <th width="10%">Remarks</th>
+            <th width="" style="display:none;"></th>
+          </tr>
+        </thead>	
+            <tbody>
+  <!--row2-->
+                <tr>	
+                  <TD></TD>
+                  <TD></TD>
+                  <td><a href="https://docs.google.com/uc?id=1S2bF2YklIYqWnEEfUwN0_2wuHc4wP-sh" target="_blank"><span style="color:blue"></span></a></TD>
+                  <td></TD>
+                  <td style="display:none;">@2023</td>
+                </tr>
+  
+                <!--row2-->
+              
+  
+                </tbody>
+                </table>
+    </div>
+  
+    </details>
+
+
+ <!--11 DRIVER-->
+
+<details class="style4" style="margin-top: .75rem;">
+  <summary><strong>DRIVER</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+<!--LISTEN--><input class="light-table-filter11" autocomplete="off" data-table11="order-table11" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter11" data-table5="order-table11">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table11";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=1MZIoBABnhv4iSCKJNRdlmyJVbiCETYtG" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2023</td>
+              </tr>
+
+              <!--row2-->
+            
+
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+
+ <!--12 LIFT OPERATOR-->
+
+ <details class="style4" style="margin-top: .75rem;">
+  <summary><strong>LIFT OPERATOR</strong></summary>
+  <div class="content">
+    <main class="gridTandP">
+      <div class="container2">
+<!--LISTEN--><input class="light-table-filter12" autocomplete="off" data-table12="order-table12" placeholder="Search in table (works in chrome)" />
+      </div>
+  
+  
+<div class="container2">
+  
+  <div style="overflow-x:auto;">
+<!--LISTEN--><select type="search" class="select-table-filter12" data-table12="order-table12">
+    <option value="">Select year</option>  
+    <option value="@2023">2023</option> 
+    <option value="@2022">2022</option>  
+    <option value="@2021">2021</option>  
+    <option value="@2020">2020</option>  
+    <option value="@2019">2019</option>  
+    <option value="@2018">2018</option>  
+    <option value="@2017">2017</option>  
+    <option value="@2016">2016</option>  
+    <option value="@2015">2015</option>  
+    <option value="@2014">2014</option>  
+    <option value="@2013">2013</option>  
+    <option value="@2012">2012</option>  
+    <option value="@2011">2011</option>  
+    <option value="@2010">2010</option>  
+  
+  <select>
+  </div>
+  
+        </div>
+  </main>
+
+  <div style="overflow-x:auto;">
+<!--LISTEN--><table class="order-table12";>
+      <thead style="background-color: #ecd9d9;">
+               <!--row3-->	
+        <tr>
+          <th width="20%">Order. No.</th>
+          <th width="10%">Date</th>
+          <th width="70%">Order details</th>
+          <th width="10%">Remarks</th>
+          <th width="" style="display:none;"></th>
+        </tr>
+      </thead>	
+          <tbody>
+<!--row2-->
+              <tr>	
+                <TD></TD>
+                <TD></TD>
+                <td><a href="https://docs.google.com/uc?id=18hGX2fXN3slgGfH3O65r9b5SvhUij9ql" target="_blank"><span style="color:blue"></span></a></TD>
+                <td></TD>
+                <td style="display:none;">@2023</td>
+              </tr>
+
+              <!--row2-->
+            
+
+              </tbody>
+              </table>
+  </div>
+
+  </details>
+
+
+
+      <script>(function(document) {
+        'use strict';
+        
+        var LightTableFilter = (function(Arr) {
+        
+        var _input;
+          var _select;
+          var filters = {
+            name: '', //store selected option
+            number: '' //store input text
+          } //filter state
+        
+          function _onInputEvent(e , crossFilter) {
+          _input = e.target;
+          var tables = document.getElementsByClassName(_input.getAttribute('data-table'));
+          Arr.forEach.call(tables, function(table) {
+            Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+                    betterFilter(tbody.rows[key]);
+                  }
+            });
+              });
+          }
+          
+          function _onSelectEvent(e , crossFilter) {
+          _select = e.target;
+          var tables = document.getElementsByClassName(_select.getAttribute('data-table'));
+          Arr.forEach.call(tables, function(table) {
+            Arr.forEach.call(table.tBodies, function(tbody) {
+                  for (let key in tbody.rows){
+                    betterFilter(tbody.rows[key]);
+                  }
+            });
+              });
+            }
+            
+            var betterFilter = (row) =>{
+              var text = row.textContent.toLowerCase(),
+                 number = filters.number.toLowerCase(),
+                 name  = filters.name.toLowerCase();
+        
+              if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+                row.style.display = 'table-row';
+              } else {
+                row.style.display = 'none';
+              }
+        
+            }
+        
+          function _filter(row) {
+          
+          var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+          row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+        
+          }
+          
+          function _filterSelect(row) {
+           
+          var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+          row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+        
+          }
+        
+          return {
+          init: function() {
+            var inputs = document.querySelector('.light-table-filter');
+                var selects = document.querySelector('.select-table-filter');
+                
+                selects.addEventListener('change', (e)=>{
+                  filters.name= e.target.value; //update filter value
+                  _onSelectEvent(e);
+                })
+        
+                inputs.addEventListener('keyup', (e)=>{
+                  /** if on enter search required */
+                  // if(e.keyCode === 13) { 
+                  //     filters.number= e.target.value; 
+                  //     _onInputEvent(e);  
+                  // } 
+        
+                  filters.number= e.target.value; //update filter value
+                  _onInputEvent(e);    
+                })
+          }
+          };
+        })(Array.prototype);
+        
+        document.addEventListener('readystatechange', function() {
+          if (document.readyState === 'complete') {
+          LightTableFilter.init();
+          }
+        });
+        
+        })(document);</script>
+
+
+
+
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table1'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table1'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter1');
+          var selects = document.querySelector('.select-table-filter1');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+      
+
+
+
+
+      <script>(function(document) {
+        'use strict';
+        
+        var LightTableFilter = (function(Arr) {
+        
+        var _input;
+          var _select;
+          var filters = {
+            name: '', //store selected option
+            number: '' //store input text
+          } //filter state
+        
+          function _onInputEvent(e , crossFilter) {
+          _input = e.target;
+          var tables = document.getElementsByClassName(_input.getAttribute('data-table2'));
+          Arr.forEach.call(tables, function(table) {
+            Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+                    betterFilter(tbody.rows[key]);
+                  }
+            });
+              });
+          }
+          
+          function _onSelectEvent(e , crossFilter) {
+          _select = e.target;
+          var tables = document.getElementsByClassName(_select.getAttribute('data-table2'));
+          Arr.forEach.call(tables, function(table) {
+            Arr.forEach.call(table.tBodies, function(tbody) {
+                  for (let key in tbody.rows){
+                    betterFilter(tbody.rows[key]);
+                  }
+            });
+              });
+            }
+            
+            var betterFilter = (row) =>{
+              var text = row.textContent.toLowerCase(),
+                 number = filters.number.toLowerCase(),
+                 name  = filters.name.toLowerCase();
+        
+              if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+                row.style.display = 'table-row';
+              } else {
+                row.style.display = 'none';
+              }
+        
+            }
+        
+          function _filter(row) {
+          
+          var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+          row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+        
+          }
+          
+          function _filterSelect(row) {
+           
+          var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+          row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+        
+          }
+        
+          return {
+          init: function() {
+            var inputs = document.querySelector('.light-table-filter2');
+                var selects = document.querySelector('.select-table-filter2');
+                
+                selects.addEventListener('change', (e)=>{
+                  filters.name= e.target.value; //update filter value
+                  _onSelectEvent(e);
+                })
+        
+                inputs.addEventListener('keyup', (e)=>{
+                  /** if on enter search required */
+                  // if(e.keyCode === 13) { 
+                  //     filters.number= e.target.value; 
+                  //     _onInputEvent(e);  
+                  // } 
+        
+                  filters.number= e.target.value; //update filter value
+                  _onInputEvent(e);    
+                })
+          }
+          };
+        })(Array.prototype);
+        
+        document.addEventListener('readystatechange', function() {
+          if (document.readyState === 'complete') {
+          LightTableFilter.init();
+          }
+        });
+        
+        })(document);</script>
+
+
+
+
+
+
+
+
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table3'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table3'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter3');
+          var selects = document.querySelector('.select-table-filter3');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table4'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table4'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter4');
+          var selects = document.querySelector('.select-table-filter4');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+
+<!--5-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table5'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table5'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter5');
+          var selects = document.querySelector('.select-table-filter5');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+
+
+
+<!--6-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table6'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table6'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter6');
+          var selects = document.querySelector('.select-table-filter6');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+<!--7-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table7'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table7'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter7');
+          var selects = document.querySelector('.select-table-filter7');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+<!--8-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table8'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table8'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter8');
+          var selects = document.querySelector('.select-table-filter8');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+
+<!--9-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table9'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table9'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter9');
+          var selects = document.querySelector('.select-table-filter9');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+
+
+<!--10-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table10'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table10'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter10');
+          var selects = document.querySelector('.select-table-filter10');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+
+<!--11-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table11'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table11'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter11');
+          var selects = document.querySelector('.select-table-filter11');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+
+<!--12-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table12'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table12'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter12');
+          var selects = document.querySelector('.select-table-filter12');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+
+<!--12-->
+<script>(function(document) {
+  'use strict';
+  
+  var LightTableFilter = (function(Arr) {
+  
+  var _input;
+    var _select;
+    var filters = {
+      name: '', //store selected option
+      number: '' //store input text
+    } //filter state
+  
+    function _onInputEvent(e , crossFilter) {
+    _input = e.target;
+    var tables = document.getElementsByClassName(_input.getAttribute('data-table13'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+      for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+    }
+    
+    function _onSelectEvent(e , crossFilter) {
+    _select = e.target;
+    var tables = document.getElementsByClassName(_select.getAttribute('data-table13'));
+    Arr.forEach.call(tables, function(table) {
+      Arr.forEach.call(table.tBodies, function(tbody) {
+            for (let key in tbody.rows){
+              betterFilter(tbody.rows[key]);
+            }
+      });
+        });
+      }
+      
+      var betterFilter = (row) =>{
+        var text = row.textContent.toLowerCase(),
+           number = filters.number.toLowerCase(),
+           name  = filters.name.toLowerCase();
+  
+        if(text.indexOf(number) !== -1 && text.indexOf(name) !== -1) {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+  
+      }
+  
+    function _filter(row) {
+    
+    var text = row.textContent.toLowerCase(), val = filters.number.toLowerCase();
+    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+  
+    }
+    
+    function _filterSelect(row) {
+     
+    var text_select = row.textContent.toLowerCase(), val_select = filters.name.toLowerCase();
+    row.style.display = text_select.indexOf(val_select) === -1 ? 'none' : 'table-row';
+  
+    }
+  
+    return {
+    init: function() {
+      var inputs = document.querySelector('.light-table-filter13');
+          var selects = document.querySelector('.select-table-filter13');
+          
+          selects.addEventListener('change', (e)=>{
+            filters.name= e.target.value; //update filter value
+            _onSelectEvent(e);
+          })
+  
+          inputs.addEventListener('keyup', (e)=>{
+            /** if on enter search required */
+            // if(e.keyCode === 13) { 
+            //     filters.number= e.target.value; 
+            //     _onInputEvent(e);  
+            // } 
+  
+            filters.number= e.target.value; //update filter value
+            _onInputEvent(e);    
+          })
+    }
+    };
+  })(Array.prototype);
+  
+  document.addEventListener('readystatechange', function() {
+    if (document.readyState === 'complete') {
+    LightTableFilter.init();
+    }
+  });
+  
+  })(document);</script>
+
+
+
+
+<script>
+  const selectElement = (element) => document.querySelector(element);
+
+selectElement('.menu-icons'). addEventListener('click',()=>{
+  selectElement('nav'). classList.toggle('active')
+});
+</script>
+
+
+
+</body>
+</html>
