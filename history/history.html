@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historic Document</title>
+  <style>
+    body {
+    font-family: 'Georgia', serif;
+    margin: 0;
+    padding: 0;
+    background: #f9f9f9;
+    color: #333;
+  }
+  
+  header {
+    background: #273c50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .notes, .footnotes {
+    background: #fff;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+  }
+  
+  .document {
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid #ccc;
+  }
+  
+  .paragraph {
+    margin-bottom: 2rem;
+  }
+  
+  .paragraph img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footnote {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+  .hidden {
+    display: none;
+  }
+  
+  .language-switch {
+    text-align: right;
+    margin: 1rem;
+  }
+  
+  button {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+  p {
+    text-align: justify;
+    text-indent: 2rem;
+  }
+  a{
+    text-decoration: none;
+  }
+  h3{
+    text-align: center;
+  }
+  @media (max-width: 768px) {
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .notes {
+      order: -1; /* Moves notes to the top */
+    }
+  
+    .document {
+      order: 0;
+    }
+  
+    .footnotes {
+      order: 1;
+    }
+  
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="lang-en" id="beginning">Taxation History</h1>
+    <h1 class="lang-ml hidden" id="beginning2">നികുതി ചരിത്രം</h1>
+    <div class="language-switch">
+      <button onclick="switchLanguage('en')">English</button>
+      <button onclick="switchLanguage('ml')">മലയാളം</button>
+    </div>
+  </header>
+
+
+  <main class="container">
+   
+    <aside class="notes lang-en">
+      <h2>Content</h2>
+      <ul>
+        <li><a href="#context">Introduction</a></li>
+        <li><a href="#figures">Chapter 1: History</a></li>
+      </ul>
+      <nav style="background-color: #f8f8f8; padding: 10px;">
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center;">
+          <li style="margin: 5px;">
+            <a href="#context" style="text-decoration: none; padding: 8px 12px; background-color: #e0e0e0; border-radius: 4px;">ആമുഖം</a>
+          </li>
+          <li style="margin: 5px;">
+            <a href="#figures" style="text-decoration: none; padding: 8px 12px; background-color: #e0e0e0; border-radius: 4px;">അദ്ധ്യായം 1: ചരിത്രം</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <aside class="notes lang-ml hidden">
+      <h2>ഉള്ളടക്കം</h2>
+      <ul>
+        <li><a href="#context">ആമുഖം</a></li>
+        <li><a href="#figures">അദ്ധ്യായം 1: ചരിത്രം</a></li>
+      </ul>
+     
+    </aside>
+    
+
+    <article class="document">
+      <article class="document">
+        <section class="paragraph" id="context">
+          <h3 class="lang-en">Introduction</h3>
+          <h3 class="lang-ml hidden">ആമുഖം</h3>
+          <img src="https://lh3.googleusercontent.com/d/1HRr9GciyuwZjsOPocN08B9UGiv8Ju_mM" alt="Historic scene" width="350" height="300">
+      <p class="lang-en">
+            In any developed society, tax revenue plays a vital role in mobilizing resources essential for national progress and sustainable development. Governments have long relied on both tax and non-tax mechanisms to generate income, adapting various systems over time to meet evolving needs. Since ancient times, tax structures have undergone continuous reform, with timely updates to legislation and implementation practices.
+</p><p class="lang-en">
+The State Goods and Services Tax (GST) Department in Kerala stands as a testament to this legacy. As the Department responsible for generating approximately 65 to 70 percent of the state's revenue, it holds a pivotal position in the execution of tax policies. The department currently administers both the Kerala General Sales Tax Act of 1963 and the Goods and Services Tax Act of 2017, ensuring effective enforcement and compliance across the state. </p>
+        
+          <p class="lang-ml hidden">
+            ഏതൊരു വികസിത സമൂഹത്തിനും എന്നപോലെ, നാടിൻ്റെ പുരോഗതിക്കും സുസ്ഥിര
+വികസനത്തിനും അനിവാര്യമായ വിഭവ സമാഹരണത്തിലെ സുപ്രധാന പങ്കു നികുതി വരുമാനമാണ്. വരുമാനത്തിനായി നികുതി-നികുതിയിതര മാർഗങ്ങൾ എല്ലാ ഭരണകൂടങ്ങളും സ്വീകരിച്ചു പോരുന്നുണ്ട്. അതിപുരാതനകാലം മുതൽക്കു
+തന്നെ വ്യത്യസ്ത നികുതി സമ്പ്രദായങ്ങൾ അനുവർത്തിക്കേണ്ടതുണ്ട്. വ്യത്യസ്ത കാലഘട്ടങ്ങളിൽ ഇത്തരം നികുതി നിയമങ്ങളിലും നിർവഹണത്തിലും പരിഷ്കരണങ്ങൾ നടക്കുകയും അവ കാലോചിതമായി നടപ്പാക്കുകയും
+ചെയ്തിട്ടുണ്ട്. കേരളത്തിൽ ഇങ്ങനെയുള്ളൊരു സുദീർഘ ചരിത്രമാണ് സംസ്ഥാന ചരക്കു സേവന നികുതി വകുപ്പിനുള്ളത്. സംസ്ഥാനത്തിൻ്റെ റവന്യൂ വരുമാനത്തിൻ്റെ ഏതാണ്ട് 65
+മുതൽ 70 ശതമാനവും നൽകുന്ന വകുപ്പായതിനാൽ, നികുതി നിർവഹണ പ്രവർത്തനങ്ങളിൽ ഈ വകുപ്പിന് പ്രത്യേക പ്രാധാന്യമുണ്ട്. നിലവിൽ കേരള ജനറൽ സെയിൽസ് ടാക്സ് ആക്ട്,
+1963, ചരക്ക് സേവന നികുതി നിയമം, 2017 എന്നിവയുടെ നിർവഹണം ഈ വകുപ്പിലൂടെ നടത്തപ്പെടുന്നു.
+          </p>
+         <a href="#beginning" style="float: right; color: #818181;" class="lang-en"><i>Top &#8593</i></a>
+          <a href="#beginning2" style="float: right; color: #818181;" class="lang-ml hidden"><i>മുകളിലേയ്ക്ക് &#8593</i></a>
+        </section>
+        <hr style="color: #bb0000; border: 1px, solid, rgb(231, 231, 231)">
+        <section class="paragraph" id="figures" style="margin-top: 1rem;">
+          <h3 class="lang-en">Chapter 1</h3>
+          <h3 class="lang-en">History</h3>
+          <h3 class="lang-ml hidden">അദ്ധ്യായം 1</h3>
+          <h3 class="lang-ml hidden">ചരിത്രം</h3>
+          <img src="https://www.gstatic.com/analytics-suite/header/suite/v2/ic_analytics.svg" alt="Historic scene" />
+          <p class="lang-en">
+            Since the function of the department is to collect taxes, it is necessary to go through the definitions and historical background of what tax is and the various methods of tax collection that existed before. The word tax is derived from the word <i>'taxare'</i> or <i>'taxo'</i> which means <i>'to assess the worth of something'</i>. However, not only the word tax, but also the words fee and cess are used to assess the value or replace it. Often these words are mistakenly used in place of tax.
+          </p>
+          <p class="lang-ml hidden">
+            വകുപ്പിന്റെ പ്രവർത്തനം നികുതി സമാഹരണം ആയതുകൊണ്ട് തന്നെ നികുതി
+ എന്താണെന്നുള്ളെന്നുള്ളതും മുൻപ് നിലനിന്നിരുന്ന വിവിധ നികുതി സമാഹരണ മാർഗങ്ങളും
+നിർവചിക്കപ്പെട്ട സ്പഷ്ടീകരണങ്ങളിലൂടെയും ചരിത്ര പശ്ചാത്തലത്തിലൂടെയും
+കടന്നുപോകേണ്ടതുണ്ട്. 'എന്തിന്റെയെങ്കിലും മൂല്യം വിലയിരുത്തുക' <i>(to assess the worth of
+something)</i> എന്നർത്ഥമുള്ള ടാക്സറേ' <i>(taxare)</i> അല്ലെങ്കിൽ
+ടാക്സോ' <i>(taxo')</i> എന്ന വാക്കിൽനിന്നുമാണ് ടാക്സ് അഥവാ നികുതി എന്ന പദം ഉരുത്തിരിഞ്ഞിട്ടുള്ളത്. എന്നാൽ
+നികുതി എന്ന വാക്ക് മാത്രമല്ല,ഫീസ്, സെസ് എന്നീ പദങ്ങളും മൂല്യം വിലയിരുത്തുന്നതിനോ
+മൂല്യത്തിന് പകരമായോ ഉപയോഗിക്കുന്നു. പലപ്പോഴും ഈ പദങ്ങളെ നികുതിയോടൊപ്പം തെറ്റായ അർത്ഥത്തിലാണ് ഉപയോഗിച്ചു കാണുന്നത്.
+          </p>
+          <footer class="footnote lang-en">Footnote 1: Location was kept secret.</footer>
+          <footer class="footnote lang-ml hidden">അടിക്കുറിപ്പ് 1: സ്ഥലം രഹസ്യമായി സൂക്ഷിച്ചു.</footer>
+        </section>
+      </article>
+    </article>
+
+    <aside class="footnotes">
+      <h3 class="lang-en">Prepared by</h3>
+      <h3 class="lang-ml hidden">തയ്യാറാക്കിയത്</h3>
+      <img src="https://lh3.googleusercontent.com/d/1zsPTB69olDPaXsvK6GeVSff5qvrA6xYb" alt="Historic scene" width="125" height="150" style="margin-left: 20%">
+      
+      <ul class="lang-en">
+        <li>Sajeev N.</li>
+        <li>State GST Department</li>
+      </ul>
+      <ul class="lang-ml hidden">
+        <li>സജീവ് എൻ</li>
+        <li>സംസ്ഥാന നികുതി വകുപ്പ്</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script>
+    document.querySelectorAll('.footnote').forEach(note => {
+    note.addEventListener('mouseenter', () => {
+      note.style.backgroundColor = '#ffffcc';
+    });
+    note.addEventListener('mouseleave', () => {
+      note.style.backgroundColor = 'transparent';
+    });
+  });
+  function switchLanguage(lang) {
+    document.querySelectorAll('[class*="lang-"]').forEach(el => {
+      el.classList.add('hidden');
+    });
+    document.querySelectorAll('.lang-' + lang).forEach(el => {
+      el.classList.remove('hidden');
+    });
+  }
+  </script>
+</body>
+</html>
