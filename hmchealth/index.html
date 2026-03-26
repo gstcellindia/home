@@ -1,0 +1,3200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GST ASMT-10 Generator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <style>
+  body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+
+tr.active-row td {
+  background-color: #a8d4f5 !important;
+}
+
+
+    .hidden { display: none !important; }
+.tile, .tile input{
+    background-color: #95c8ff;
+    border-color: #95c8ff;
+cursor: default;
+}
+
+.tile input{
+    box-shadow: none; /* remove default shadow */ 
+    outline: none; /* remove default focus outline */
+    border-radius: 5px;
+    font-size: 12pt;
+    padding:5px;
+}
+
+.tile input:focus{
+border-color: #95c8ff; /* highlight border on focus */ 
+box-shadow: none; /* ensure no glow/shadow */
+}
+.tile {
+
+  color: white;
+  padding: 20px;
+  margin: 10px 5%;
+  border-radius: 10px;
+  width: 90%;
+
+  display: grid;                /* enable grid layout */
+  grid-template-columns: 1fr 1fr; /* two equal columns */
+  gap: 10px;                    /* spacing between items */
+}
+.tile1 {
+  display: flex;          /* enable flexbox */
+  flex-direction: column; /* stack items vertically */
+  align-items: flex-end;  /* align items to the right */
+  color: white; 
+  margin: 0 5%;
+  width: 90%;
+}
+
+.tile1 button{
+  background-color: #95c8ff;
+  border-radius: 5px;
+  padding:4px auto;
+}
+
+.tile1 button:hover{
+  background-color: #4fa3fc;
+  border-radius: 5px;
+  padding:5px auto;
+}
+
+tr.active-row td {
+  background-color: #b0d4f7 !important;
+}
+/* Two-column layout on desktop */
+@media (min-width: 992px) {
+  .tile {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+   .titles{
+display: flex; justify-content: center; /* horizontal center */ 
+align-items: center; /* vertical center */
+color:#145099;
+   }
+
+
+
+.deletesymbol{
+  border-radius: 13px;
+  padding: 1px 5px;
+  color: white;
+  background-color: red;
+  border-color: red;
+  font-size: 12pt;
+  font-weight: bold;
+}
+.deletesymbol:hover {
+  background-color: white;
+  color: red;
+  font-weight: bold;
+}
+    .table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* allows wrapping on small screens */
+  width:90%;
+  margin-left: 5%;
+}
+
+.left-controls {
+  flex: 1;
+  text-align: left;
+}
+
+.right-controls {
+  display: flex;
+  gap: 15px; /* spacing between page-size and pagination controls */
+  flex: 1;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-left: 0;
+    }
+    table, th, td {
+      background-color: #f0f7ff;
+  border: 1px solid #95c8ff;
+    }
+
+    #searchBox{
+  border: 1px solid #95c8ff;
+  border-radius: 5px;
+  padding: 5px;
+
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    .hidden1 { display: none !important; }
+    #statusModal { 
+      position: fixed; top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.5); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 11000; 
+    } 
+    #statusBox { 
+      background: #fff; padding: 20px; border-radius: 6px; 
+      text-align: center; min-width: 200px; font-weight: bold; 
+    }
+
+/* Centered login tile */
+/* ========== UNIFIED THEME ========== */
+:root {
+  --primary: #1a6fc4;
+  --primary-dark: #145099;
+  --primary-light: #4a90e2;
+  --success: #3da766;
+  --danger: #a73d3d;
+  --bg-gradient: linear-gradient(135deg, #e8f0fe, #dceeff);
+  --box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  --border-radius: 12px;
+  --input-radius: 8px;
+}
+
+/* ========== LOGIN PAGE ========== */
+#loginPage {
+  background: linear-gradient(145deg, #1e82e5, #145099);
+  color: white;
+  padding: 35px 30px;
+  border-radius: var(--border-radius);
+  width: 25%;
+  min-width: 300px;
+  margin-left: 37%;
+  margin-top: 10%;
+  box-shadow: var(--box-shadow);
+  text-align: center;
+}
+
+#loginPage h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+#loginPage input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 14px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.92);
+  color: #222;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+#loginPage input:focus {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.4);
+}
+/* Piano key effect button */
+#loginPage button, #tilePopup1 button,  #tilePopup2 button {
+  padding: 13px;
+  margin-top: 10px;
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 16px;
+  font-weight: bold;
+  background: linear-gradient(to bottom, #50c878, #3da766);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  width: 100%;
+}
+#loginPage button {
+  width: 100%;}
+/* Piano key press effect */
+#loginPage button:active, #tilePopup1 button:active, #tilePopup2 button:active {
+  transform: translateY(4px);
+  box-shadow: inset 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* Hover glow */
+#loginPage button:hover, #tilePopup1 button:hover, #tilePopup2 button:hover {
+    box-shadow: 0 6px 14px rgba(0,0,0,0.28);
+  transform: translateY(-1px);
+}
+
+/* Signup button with different color */
+#loginPage button:nth-of-type(2) {
+  background: linear-gradient(to bottom, #50c878, #3da766);
+}
+
+#tilePopup1 button:nth-of-type(2), #tilePopup2 button:nth-of-type(4), #tilePopup3 button:nth-of-type(2), #popupBox button:nth-of-type(2) {
+  background: linear-gradient(to bottom, #c85050, #a73d3d);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #loginPage {
+    padding: 25px;
+    width: 88%;
+    margin: 3px 3px;
+  }
+  #loginPage h2 {
+    font-size: 20px;
+  }
+  table, td, th{
+    font-size: 10px;
+  }
+   table {width: 96%;
+      margin-left: 1%;
+    }
+    #popupBox, #popupBox1, #popupBox2 { display: grid; grid-template-columns: 1fr 1fr; /* two equal columns */ gap: 20px; /* spacing between columns */ } 
+    #popupBox h3, #popupBox1 h3, #popupBox2 h3 { grid-column: span 2; /* title spans both columns */ } #popupBox button { grid-column: span 2; /* buttons span both columns */ margin-top: 10px; } 
+}
+
+@media (max-width: 480px) {
+  #loginPage {
+    padding: 20px;
+    max-width: 95%;
+  }
+  #loginPage input, #loginPage button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 600px) {
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+     width:100%;
+  margin-left: 0%
+  }
+  .left-controls, .right-controls {
+    text-align: center;
+    justify-content: center;
+    margin-top: 8px;
+  }
+      .tile { width: 100%; 
+      }
+    }
+    /* Flex row for buttons */
+.button-row {
+  display: flex;
+  gap: 10px; /* spacing between buttons */
+  margin-top: 12px;
+}
+
+.button-row button {
+  flex: 1; /* make both buttons equal width */
+}
+
+
+#tilePopup, #tilePopup1, #tilePopup2, #tilePopup3 {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 30, 60, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+#popupBox {
+  background: var(--bg-gradient);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 600px;
+  border-top: 4px solid var(--primary);
+}
+
+#popupBox1, #popupBox2, #popupBox3 {
+  background: var(--bg-gradient);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 400px;
+  border-top: 4px solid var(--primary);
+}
+#popupBox h3, #popupBox1 h2, #popupBox1 h3, #popupBox2 h3, #popupBox3 h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--primary);
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+#popupBox label, #popupBox1 label, #popupBox2 label, #popupBox3 label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #2a3a5c;
+  font-size: 13px;
+}
+
+#popupBox input, #popupBox1 input, #popupBox2 input, #popupBox3 input, #popupBox3 select {
+  margin-top: 5px;
+  padding: 10px 12px;
+  border-radius: var(--input-radius);
+  border: 1.5px solid #b0c8e8;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  color: #222;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#popupBox input:focus, #popupBox1 input:focus, #popupBox2 input:focus, #popupBox3 input:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+}
+
+/* ========== POPUP BUTTONS ========== */
+#popupBox button, #popupBox1 button, #popupBox2 button, #popupBox3 button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--input-radius);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  margin-top: 8px;
+  width: 100%;
+}
+
+#popupBox button:hover, #popupBox1 button:hover, #popupBox2 button:hover, #popupBox3 button:hover {
+  box-shadow: 0 5px 12px rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+}
+
+#popupBox button:active, #popupBox1 button:active, #popupBox2 button:active, #popupBox3 button:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+}
+/* Cancel buttons — red theme */
+#tilePopup1 button:last-of-type,
+#tilePopup2 button:last-of-type {
+  background: linear-gradient(to bottom, #e05555, var(--danger));
+}
+
+/* ========== PASSWORD CONTAINER ========== */
+.password-container {
+  position: relative;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.password-container input {
+  padding-right: 36px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.password-container .toggle-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6a8ab0;
+  font-size: 15px;
+}
+
+/* ========== LOGOUT BUTTON ========== */
+.logout {
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: box-shadow 0.2s, color 0.2s;
+}
+.logout:hover {
+  color: #ffd700;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+/* Forgot password link wrapper */
+.forgotWrapper {
+  text-align: right;   /* Align to the right side of the tile */
+  margin-top: 10px;
+}
+
+/* Forgot password link style */
+.forgotLink {
+  font-size: 14px;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.forgotLink:hover {
+  color: #ffd700; /* golden highlight on hover */
+}
+
+.horizontal-info-bar {
+  display: flex;
+  /* Changed from space-around to space-between */
+  justify-content: space-between; 
+  align-items: center;
+  background-color: #f0f7ff;
+  border: 1px solid #95c8ff;
+  border-radius: 8px;
+  padding: 5px 10px; /* Added horizontal padding so text doesn't touch the border */
+  margin: 0px 5%;
+  width: 90%;
+  box-sizing: border-box;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  gap: 8px;
+  font-family: Arial, sans-serif;
+}
+
+.info-label {
+  font-weight: bold;
+  color: #1a6fc4;
+}
+
+.info-value {
+  color: #333;
+  min-width: 50px;
+}
+.add-record-bar {
+  display: flex;
+  justify-content: flex-end;
+  width: 90%;
+  margin: 8px 5% 0 5%;
+}
+
+.btn-add-record {
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+  border: none;
+  border-radius: var(--input-radius);
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.btn-add-record:hover {
+  box-shadow: 0 5px 12px rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+}
+
+
+@media (max-width: 600px) {
+  .add-record-bar {
+    width: 96%;
+    margin: 8px 2% 0 2%;
+  }
+}
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .horizontal-info-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 96%;
+    margin-left: 2%;
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  #loginPage {
+    width: 88%;
+    margin: 20px auto;
+    margin-top: 8%;
+  }
+
+  #popupBox, #popupBox1, #popupBox2 {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  #loginPage {
+    padding: 20px;
+    max-width: 95%;
+    margin: 10px auto;
+  }
+}
+
+
+    #status { margin-top: 8px; font-size: 0.78rem; color: #475569; text-align: center; min-height: 16px; }
+
+/* ========== CUSTOM CONFIRM MODAL ========== */
+#customConfirmOverlay {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 30, 60, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 99999;
+  backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+#customConfirmOverlay.active {
+  opacity: 1; pointer-events: all;
+}
+#customConfirmBox {
+  background: var(--bg-gradient);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border-top: 4px solid #e05555;
+  padding: 30px 32px 22px 32px;
+  min-width: 280px; max-width: 420px; width: 90%;
+  text-align: center;
+  transform: scale(0.93);
+  transition: transform 0.18s ease;
+}
+#customConfirmOverlay.active #customConfirmBox {
+  transform: scale(1);
+}
+#customConfirmIcon {
+  font-size: 34px; margin-bottom: 10px; display: block;
+}
+#customConfirmTitle {
+  font-size: 17px; font-weight: 700;
+  color: var(--primary-dark); margin-bottom: 8px;
+}
+#customConfirmMessage {
+  font-size: 14px; color: #2a3a5c;
+  line-height: 1.55; margin-bottom: 20px;
+}
+.custom-confirm-btns {
+  display: flex; gap: 12px; justify-content: center;
+}
+.custom-confirm-btns button {
+  flex: 1; max-width: 140px;
+  padding: 11px 0; font-size: 15px; font-weight: bold;
+  border: none; border-radius: var(--input-radius);
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+.custom-confirm-btns button:hover { box-shadow: 0 5px 12px rgba(0,0,0,0.22); transform: translateY(-1px); }
+.custom-confirm-btns button:active { transform: translateY(2px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.15); }
+#customConfirmOkBtn {
+  background: linear-gradient(to bottom, #e05555, var(--danger));
+  color: white;
+}
+#customConfirmCancelBtn {
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white;
+}
+
+/* ========== CUSTOM ALERT MODAL ========== */
+#customAlertOverlay {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 30, 60, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 99999;
+  backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+#customAlertOverlay.active {
+  opacity: 1; pointer-events: all;
+}
+#customAlertBox {
+  background: var(--bg-gradient);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border-top: 4px solid var(--primary);
+  padding: 30px 32px 22px 32px;
+  min-width: 280px; max-width: 420px; width: 90%;
+  text-align: center;
+  transform: scale(0.93);
+  transition: transform 0.18s ease;
+}
+#customAlertOverlay.active #customAlertBox {
+  transform: scale(1);
+}
+#customAlertIcon {
+  font-size: 34px; margin-bottom: 10px; display: block;
+}
+#customAlertTitle {
+  font-size: 17px; font-weight: 700;
+  color: var(--primary-dark); margin-bottom: 8px;
+}
+#customAlertMessage {
+  font-size: 14px; color: #2a3a5c;
+  line-height: 1.55; margin-bottom: 20px;
+}
+#customAlertOkBtn {
+  background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+  color: white; border: none;
+  border-radius: var(--input-radius);
+  padding: 11px 36px; font-size: 15px; font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+#customAlertOkBtn:hover { box-shadow: 0 5px 12px rgba(0,0,0,0.22); transform: translateY(-1px); }
+#customAlertOkBtn:active { transform: translateY(2px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.15); }
+  </style>
+</head>
+<body>
+
+  
+  <!-- Custom Alert Modal -->
+<div id="customAlertOverlay">
+  <div id="customAlertBox">
+    <span id="customAlertIcon">ℹ️</span>
+    <div id="customAlertTitle">Notice</div>
+    <div id="customAlertMessage"></div>
+    <button id="customAlertOkBtn" onclick="closeCustomAlert()">OK</button>
+  </div>
+</div>
+
+<!-- Custom Confirm Modal -->
+<div id="customConfirmOverlay">
+  <div id="customConfirmBox">
+    <span id="customConfirmIcon">🗑️</span>
+    <div id="customConfirmTitle">Confirm</div>
+    <div id="customConfirmMessage"></div>
+    <div class="custom-confirm-btns">
+      <button id="customConfirmCancelBtn" onclick="closeCustomConfirm(false)">Cancel</button>
+      <button id="customConfirmOkBtn" onclick="closeCustomConfirm(true)">OK</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Login Page -->
+<!-- Login Page -->
+<div id="loginPage">
+  <h2>Login</h2>
+  <input type="text" id="userId" autocomplete="off" placeholder="Registered e-mail"><br>
+  <input type="password" id="password" autocomplete="off" placeholder="Password"><br>
+  
+  <button onclick="login()" style="width:100%; margin-top:12px;">Login</button>
+    <div style="margin-top: 18px; font-size: 14px; color: #e0eeff; text-align: center;">
+    Don't have an account yet? 
+    <a onclick="showSignup()" style="color: #ffd700; text-decoration: underline; cursor: pointer; font-weight: bold;">Sign Up</a>
+  </div>
+  <div class="forgotWrapper">
+    <a class="forgotLink" onclick="showForgot()">Forgot Password?</a>
+  </div>
+
+
+</div>
+
+
+
+<div id="statusModal" class="hidden1"> 
+  <div id="statusBox"> <p id="statusText">Please wait...</p> 
+  </div> 
+</div>
+ <div id="secondaryPage" class="hidden">
+
+    <div style="position: fixed; top: 10px; right: 15px; z-index: 99999;">
+      <button onclick="confirmLogout()" class="logout">⏻</button>
+    </div>
+
+    <div class="titles"><h2>Personal Details</h2></div>
+    
+   <div id="tileData" class="tile">
+  <input type="text" readonly id="colC">
+  <input type="text" readonly id="colD" style="display:none;">
+  <input type="text" readonly id="colF" style="display:none;">
+  <input type="text" readonly id="colE" style="display:none;">
+  <div id="colEStatus" style="display:flex; align-items:center; gap:8px; padding:5px; font-size:12pt;">
+    <span id="colELed" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:#aaa; box-shadow:0 0 4px #aaa; flex-shrink:0;"></span>
+    <span id="colEText" style="color:white; font-weight:bold;"></span>
+  </div>
+  <input type="text" readonly id="colG">
+  <input type="text" readonly id="colH">
+  
+</div>
+  <div class="tile1"><button style="width: 2cm;" onclick="openTileEditor()">Edit</button></div>
+
+
+<div id="tilePopup" class="hidden1">
+  <div id="popupBox">
+    <h3>Edit Personal Information</h3>
+    <label>Name: * <input type="text" id="editColC" readonly style="background: var(--bg-gradient);" autocomplete="off"></label>
+    <label>Designation: * <input type="text" id="editColD" autocomplete="off"></label>
+    <label style="display:none;">PEN: <input type="text" id="editColF" autocomplete="off"></label>
+    <label style="display:none;">Office Address: * <input type="text" id="editColE" autocomplete="off"></label>
+   <label>Phone: * 
+  <div style="display:flex; gap:6px; align-items:center;">
+    <input type="text" id="editColG" readonly style="background: var(--bg-gradient); flex:1; min-width:0;" autocomplete="off">
+    <button type="button" onclick="openPhoneChangeRequest()" 
+      style="width:113px; min-width:113px; height:38px; font-size:12px; white-space:nowrap; flex-shrink:0; padding:0;">
+      ✏️ Change
+    </button>
+  </div>
+</label>
+    <label>e-mail: * <input type="text" id="editColH" readonly style="background: var(--bg-gradient);" autocomplete="off"></label>
+    <br>
+
+    <!-- ADD THIS CHECKBOX -->
+    <label style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-bottom:10px; white-space:nowrap;">
+      <input type="checkbox" id="coreFieldAmend" onchange="toggleCoreFields()" style="margin:0; width:16px; height:16px; flex-shrink:0; cursor:pointer;">
+      <span style="font-size:14px; line-height:1;">Amend Core Field (Name &amp; e-mail)</span>
+    </label>
+
+    <button onclick="submitTileEdit()">Update</button>
+    <button onclick="cancelTileEditor()">Cancel</button>
+  </div>
+</div>
+<!-- Phone Change Request Popup -->
+<div id="phoneChangePopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:30px; max-width:350px; width:90%; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <h3>Change Phone Number Request</h3>
+    <p style="margin:10px 0; font-size:14px;">
+      You are requesting to change the phone number linked to your account:<br>
+      <strong id="displayCurrentPhone"></strong>
+    </p>
+
+    <!-- ✅ NEW — New phone number input -->
+    <div style="text-align:left; margin:12px 0;">
+      <label style="font-size:13px; font-weight:bold;">New Phone Number: *</label>
+      <input type="text" id="newPhoneNumber" placeholder="Enter new phone number"
+        style="width:100%; padding:8px; margin-top:5px; border:1px solid #ccc; border-radius:6px; font-size:14px; box-sizing:border-box;" 
+        autocomplete="off" maxlength="10">
+    </div>
+
+    <p style="font-size:13px; color:#555;">
+      An email will be sent to the admin requesting this change. 
+      Your phone number will be updated after admin approval.
+    </p>
+    <br>
+    <button onclick="sendPhoneChangeRequest()">Send Request</button>
+    <button onclick="closePhoneChangePopup()">Cancel</button>
+  </div>
+</div>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       DAY BOOK SECTION (replaces old Records section)
+       API URL is loaded dynamically from col E of the password sheet
+       ══════════════════════════════════════════════════════════ -->
+
+  <!-- External libs for Day Book (Excel/JSZip) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <div id="dbSection" style="display:none;">
+  <!-- Day Book top controls bar -->
+  <div style="margin:18px 5% 0 5%; width:90%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+    <h3 style="color:#145099; margin:0;">📒 Day Book</h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <div class="year-row" style="display:flex;align-items:center;gap:8px;">
+        <label for="dbTargetSheet" style="font-size:0.9rem;">Year:</label>
+        <select id="dbTargetSheet" onchange="dbLoadPreviewTable()" style="padding:5px 10px;border:1px solid #b0c8e8;border-radius:8px;font-size:0.9rem;"></select>
+        <button class="btn-add-record" onclick="dbPromptAddYear()" style="padding:5px 10px;font-size:0.82rem;">＋ Add Year</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn-add-record" onclick="dbDownloadTemplate()" style="background:#16a34a;">⬇ Excel Template</button>
+        <label class="btn-add-record" style="cursor:pointer;margin:0;">
+          ⬆ Upload Excel
+          <input type="file" id="dbExcelUpload" accept=".xlsx,.xls" style="display:none" onchange="dbHandleExcelUpload(event)">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entry Form Card -->
+  <div style="background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:18px;margin:14px 5%;width:90%;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+      <h4 style="margin:0;color:#1a56db;">New Entry</h4>
+    </div>
+    <div style="overflow-x:visible;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.78rem;table-layout:fixed;word-break:break-word;" id="dbFormTable">
+        <colgroup>
+          <col style="width:3%">   <!-- del button -->
+          <col style="width:9%">   <!-- Date -->
+          <col style="width:5%">   <!-- OP -->
+          <col style="width:5%">   <!-- LAB -->
+          <col style="width:9%">   <!-- Other Cash Head -->
+          <col style="width:6%">   <!-- Other Cash -->
+          <col style="width:9%">   <!-- Income Head -->
+          <col style="width:9%">   <!-- Description -->
+          <col style="width:6%">   <!-- Other Income -->
+          <col style="width:9%">   <!-- Expenditure Head -->
+          <col style="width:10%">  <!-- Desc Cheque -->
+          <col style="width:6%">   <!-- Expenditure -->
+          <col style="width:8%">   <!-- Cash to Bank -->
+        </colgroup>
+        <thead>
+          <tr>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;"></th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Date</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">OP</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">LAB</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Other Cash Head</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Other Cash</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Income Head (Bank)</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Description</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Other Income</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Expenditure Head</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Desc. (Cheque/Name)</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Expenditure</th>
+            <th style="background:#e8f0fe;color:#1a56db;padding:5px 3px;border:1px solid #d1d5db;white-space:normal;word-break:break-word;font-size:0.75rem;text-align:center;">Cash to Bank</th>
+          </tr>
+        </thead>
+        <tbody id="dbFormRows"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-add-record" onclick="dbResetForm()" style="background:#dd6b20;">🔄 Reset</button>
+        <button class="btn-add-record" onclick="dbSubmitForm()">💾 Save Record</button>
+      </div>
+      <div>
+        <button class="btn-add-record" onclick="dbAddRow()">➕ Add Row</button>
+      </div>
+    </div>
+    <div id="dbMsg" style="padding:8px 14px;border-radius:8px;font-size:0.88rem;margin-top:8px;display:none;"></div>
+  </div>
+
+  <!-- Day Book Preview Card -->
+  <div style="background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:18px;margin:0 5% 20px;width:90%;box-sizing:border-box;">
+    <!-- Opening / Closing Balance bar -->
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:10px 0 8px;border-bottom:1px solid #d1d5db;margin-bottom:10px;" id="dbBalanceBar">
+      <div style="display:flex;flex-direction:column;gap:3px;min-width:150px;">
+        <label style="font-size:0.75rem;font-weight:600;color:#6b7280;white-space:nowrap;">Opening Balance Cash</label>
+        <input type="number" id="dbObCash" min="0" placeholder="0" oninput="dbUpdateClosingBalance()" style="padding:5px 9px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;width:140px;outline:none;">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;min-width:150px;">
+        <label style="font-size:0.75rem;font-weight:600;color:#6b7280;white-space:nowrap;">Opening Balance Bank</label>
+        <input type="number" id="dbObBank" min="0" placeholder="0" oninput="dbUpdateClosingBalance()" style="padding:5px 9px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;width:140px;outline:none;">
+      </div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:1px;">
+        <button class="btn-add-record" id="dbBalanceSaveBtn" onclick="dbSaveBalances()">Add</button>
+      </div>
+      <div style="width:1px;background:#d1d5db;height:44px;margin:0 4px;"></div>
+      <div style="display:flex;flex-direction:column;gap:3px;min-width:150px;">
+        <label style="font-size:0.75rem;font-weight:600;color:#6b7280;white-space:nowrap;">Closing Balance Cash</label>
+        <input type="number" id="dbCbCash" readonly placeholder="—" style="padding:5px 9px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;font-weight:600;color:#1a56db;background:#f3f4f6;width:140px;">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;min-width:150px;">
+        <label style="font-size:0.75rem;font-weight:600;color:#6b7280;white-space:nowrap;">Closing Balance Bank</label>
+        <input type="number" id="dbCbBank" readonly placeholder="—" style="padding:5px 9px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;font-weight:600;color:#1a56db;background:#f3f4f6;width:140px;">
+      </div>
+    </div>
+
+    <!-- Search + Pagination row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <input type="text" id="dbSearchText" placeholder="🔍 Search any column…" oninput="dbApplySearch()"
+          style="width:180px;padding:5px 9px;border:1px solid #d1d5db;border-radius:8px;font-size:0.82rem;font-family:inherit;outline:none;">
+        <label style="font-size:0.79rem;color:#6b7280;white-space:nowrap;">From:</label>
+        <input type="date" id="dbSearchFrom" onchange="dbApplySearch()"
+          style="width:136px;padding:4px 7px;border:1px solid #d1d5db;border-radius:8px;font-size:0.82rem;font-family:inherit;outline:none;">
+        <label style="font-size:0.79rem;color:#6b7280;white-space:nowrap;">To:</label>
+        <input type="date" id="dbSearchTo" onchange="dbApplySearch()"
+          style="width:136px;padding:4px 7px;border:1px solid #d1d5db;border-radius:8px;font-size:0.82rem;font-family:inherit;outline:none;">
+        <button class="btn-add-record" style="padding:4px 10px;font-size:0.82rem;background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbClearSearch()">✕ Clear</button>
+        <button class="btn-add-record" style="padding:4px 10px;font-size:0.82rem;" onclick="dbOpenReportModal()">📊 Reports</button>
+        <span id="dbSearchResultInfo" style="font-size:0.79rem;color:#6b7280;white-space:nowrap;"></span>
+      </div>
+      <div id="dbPaginationControls" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+
+    <table id="dbPreviewTable" style="width:100%;border-collapse:collapse;font-size:0.82rem;table-layout:fixed;word-break:break-word;"></table>
+  </div>
+
+  <!-- ── Add Head Modal ── -->
+  <div id="dbHeadModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9500;">
+    <div style="background:white;border-radius:10px;padding:24px;width:min(500px,95vw);box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <h3 id="dbHeadModalTitle" style="font-size:1rem;font-weight:600;margin-bottom:16px;color:#1a56db;">Add New Head</h3>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <input type="text" id="dbHeadEn" placeholder="English name" style="flex:1;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:0.9rem;">
+        <input type="text" id="dbHeadMl" placeholder="Malayalam name" style="flex:1;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:0.9rem;">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseHeadModal()">Cancel</button>
+        <button class="btn-add-record" onclick="dbSaveNewHead()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Add Year Modal ── -->
+  <div id="dbYearModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9500;">
+    <div style="background:white;border-radius:10px;padding:24px;width:min(360px,95vw);box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:8px;color:#1a56db;">Add New Year</h3>
+      <p style="font-size:0.85rem;color:#6b7280;margin-bottom:12px;">Format: YYYY-YY (e.g. 2027-28)</p>
+      <input type="text" id="dbNewYearInput" placeholder="2027-28" maxlength="10" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:0.9rem;box-sizing:border-box;margin-bottom:16px;">
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseYearModal()">Cancel</button>
+        <button class="btn-add-record" onclick="dbSubmitAddYear()">Create Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Insert Row Modal ── -->
+  <div id="dbInsertModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9500;">
+    <div style="background:white;border-radius:10px;padding:24px;width:min(98vw,1200px);max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:#1a56db;">Insert New Row</h3>
+      <div style="overflow-x:auto;" id="dbInsertRowFields"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
+        <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseInsertModal()">Cancel</button>
+        <button class="btn-add-record" onclick="dbDoInsertRow()">Insert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Confirm Delete Modal ── -->
+  <div id="dbConfirmModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9500;">
+    <div style="background:white;border-radius:10px;padding:24px;width:min(340px,90vw);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <h3 id="dbConfirmTitle" style="font-size:1rem;font-weight:600;margin-bottom:16px;color:#1a56db;">Confirm</h3>
+      <p id="dbConfirmMsg" style="margin-bottom:20px;line-height:1.5;">Are you sure?</p>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseConfirm()">No</button>
+        <button class="btn-add-record" id="dbConfirmYesBtn" style="background:#e53e3e;">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Date Alert ── -->
+  <div id="dbDateAlert" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9500;">
+    <div style="background:white;border-radius:10px;padding:24px;width:min(380px,92vw);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <div style="font-size:2.2rem;margin-bottom:10px;">📅</div>
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:14px;color:#1a56db;">Date Required</h3>
+      <p style="margin:14px 0;line-height:1.6;font-size:0.95rem;color:#374151;">Please select a date for every row that has data.</p>
+      <button class="btn-add-record" onclick="dbCloseDateAlert()">OK</button>
+    </div>
+  </div>
+
+  <!-- ── Report Modal ── -->
+  <div id="dbReportModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9500;">
+    <div style="background:white;border-radius:10px;padding:24px;width:min(680px,96vw);max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:#1a56db;">📊 Generate Report</h3>
+      <div style="font-size:0.76rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 6px;">Select Period</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+        <button class="btn-add-record" id="dbPBtn-year"   onclick="dbSetPeriod('year')" style="background:#1a56db;">Whole Year</button>
+        <button class="btn-add-record" id="dbPBtn-q1"     onclick="dbSetPeriod('q1')"  style="background:white;color:#1a56db;border:1.5px solid #1a56db;">Q1 (Apr–Jun)</button>
+        <button class="btn-add-record" id="dbPBtn-q2"     onclick="dbSetPeriod('q2')"  style="background:white;color:#1a56db;border:1.5px solid #1a56db;">Q2 (Jul–Sep)</button>
+        <button class="btn-add-record" id="dbPBtn-q3"     onclick="dbSetPeriod('q3')"  style="background:white;color:#1a56db;border:1.5px solid #1a56db;">Q3 (Oct–Dec)</button>
+        <button class="btn-add-record" id="dbPBtn-q4"     onclick="dbSetPeriod('q4')"  style="background:white;color:#1a56db;border:1.5px solid #1a56db;">Q4 (Jan–Mar)</button>
+        <button class="btn-add-record" id="dbPBtn-custom" onclick="dbSetPeriod('custom')" style="background:white;color:#1a56db;border:1.5px solid #1a56db;">Custom Range</button>
+      </div>
+      <div id="dbPeriodCustom" style="display:none;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0 4px;">
+        <label style="font-size:0.8rem;color:#6b7280;">From:</label>
+        <input type="date" id="dbRptFrom" style="padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;font-size:0.82rem;">
+        <label style="font-size:0.8rem;color:#6b7280;">To:</label>
+        <input type="date" id="dbRptTo" style="padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;font-size:0.82rem;">
+      </div>
+      <div style="font-size:0.76rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 6px;">Select Report</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:8px;">
+        <button onclick="dbGenerateReport('cashbook')"    style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border:1.5px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.83rem;font-weight:600;"><span style="font-size:1.5rem;">💵</span>Cash Book</button>
+        <button onclick="dbGenerateReport('income')"      style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border:1.5px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.83rem;font-weight:600;"><span style="font-size:1.5rem;">📈</span>Income Register</button>
+        <button onclick="dbGenerateReport('expenditure')" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border:1.5px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.83rem;font-weight:600;"><span style="font-size:1.5rem;">📉</span>Expenditure Register</button>
+        <button onclick="dbGenerateReport('forum')"       style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border:1.5px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.83rem;font-weight:600;"><span style="font-size:1.5rem;">📋</span>Forum</button>
+        <button onclick="dbGenerateReport('cheque')"      style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border:1.5px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.83rem;font-weight:600;"><span style="font-size:1.5rem;">🏦</span>Cheque Register</button>
+        <button onclick="dbGenerateReport('budget')"      style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 8px;border:1.5px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.83rem;font-weight:600;"><span style="font-size:1.5rem;">📊</span>Budget</button>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;">
+        <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseReportModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /dbSection -->
+
+  </div><!-- /secondaryPage -->
+  <!-- Signup Popup -->
+<div id="tilePopup1" class="hidden">
+  <div id="popupBox1">
+    <h2>Signup</h2>
+    <input type="text" id="field1" placeholder="Name *"><br>
+    <input type="tel" id="field2" placeholder="Mobile *"><br>
+    <input type="text" id="field3" placeholder="e-mail *"><br>
+    <div class="password-container">
+      <input type="password" id="pwd1" placeholder="Password *">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd1', this)"></i>
+    </div>
+    
+    <div class="password-container">
+      <input type="password" id="pwd2" placeholder="Confirm Password *">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd2', this)"></i>
+    </div>
+    
+    <input type="text" id="field4" placeholder="Field4" style="display: none;">
+    <input type="text" id="field5" placeholder="Field5" style="display: none;">
+    <input type="text" id="field6" placeholder="Field6" style="display: none;">
+    <button onclick="signup()">Register</button>
+    <button onclick="closeSignup()">Cancel</button>
+  </div>
+</div>
+
+<div id="tilePopup2" class="hidden" >
+  <div id="popupBox2">
+    <h3>Forgot Password</h3>
+    <p style="font-style: italic;font-family: 'Times New Roman', Times, serif; color: #217ce4;">Enter the registered Mobile No. and email</p>
+    <input type="tel" id="field2Mobile" autocomplete="off" placeholder="Mobile"><br>
+    <input type="email" id="field3email" autocomplete="off" placeholder="e-mail"><br>
+
+    <!-- OTP field initially hidden -->
+    <input type="text" id="otp" autocomplete="off" placeholder="OTP" style="display:none;"><br>
+
+    <!-- Password fields initially hidden -->
+    <div class="password-container" style="display:none;" id="pwdSection">
+      <input type="password" id="pwd1Reset" placeholder="Password">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd1Reset', this)"></i><br>
+      <input type="password" id="pwd2Reset" placeholder="Confirm Password">
+      <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('pwd2Reset', this)"></i>
+    </div>
+
+    <!-- Buttons -->
+    <button id="btnSend" onclick="sendOTP()">Get OTP</button>
+    <button id="btnVerify" onclick="verifyOTP()" style="display:none;">Validate</button>
+    <button id="btnUpdate" onclick="updatePassword()" style="display:none;">Update</button>
+    <button onclick="closeForgot()">Cancel</button>
+  </div>
+</div>
+
+
+<script>
+/* ===== CUSTOM ALERT ===== */
+var _customAlertCallback = null;
+
+function customAlert(message, callback, type) {
+  // type: 'info' | 'success' | 'error' | 'warning'
+  var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  var titles = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Notice' };
+  var t = type || 'info';
+  // Auto-detect type from message content
+  if (!type) {
+    var lm = message.toLowerCase();
+    if (lm.includes('success') || lm.includes('successful') || lm.includes('sent') || lm.includes('saved') || lm.includes('updated') || lm.includes('otp sent')) t = 'success';
+    else if (lm.includes('error') || lm.includes('failed') || lm.includes('invalid') || lm.includes('cannot') || lm.includes('not found') || lm.includes('mismatch') || lm.includes('do not match') || lm.includes('does not match')) t = 'error';
+    else if (lm.includes('please') || lm.includes('should') || lm.includes('must') || lm.includes('mandatory') || lm.includes('cannot be empty') || lm.includes('exceed') || lm.includes('minimum') || lm.includes('select a record') || lm.includes('enter') || lm.includes('valid')) t = 'warning';
+  }
+  document.getElementById('customAlertIcon').textContent = icons[t] || icons.info;
+  document.getElementById('customAlertTitle').textContent = titles[t] || titles.info;
+  document.getElementById('customAlertMessage').textContent = message;
+  _customAlertCallback = callback || null;
+  document.getElementById('customAlertOverlay').classList.add('active');
+}
+
+function closeCustomAlert() {
+  document.getElementById('customAlertOverlay').classList.remove('active');
+  if (typeof _customAlertCallback === 'function') {
+    var cb = _customAlertCallback;
+    _customAlertCallback = null;
+    cb();
+  }
+}
+
+/* ===== CUSTOM CONFIRM ===== */
+var _customConfirmCallback = null;
+
+function customConfirm(message, callback, icon, title) {
+  document.getElementById('customConfirmIcon').textContent = icon || '🗑️';
+  document.getElementById('customConfirmTitle').textContent = title || 'Confirm';
+  document.getElementById('customConfirmMessage').textContent = message;
+  _customConfirmCallback = callback || null;
+  document.getElementById('customConfirmOverlay').classList.add('active');
+}
+
+function closeCustomConfirm(result) {
+  document.getElementById('customConfirmOverlay').classList.remove('active');
+  if (typeof _customConfirmCallback === 'function') {
+    var cb = _customConfirmCallback;
+    _customConfirmCallback = null;
+    cb(result);
+  }
+}
+
+// Close confirm on overlay click (as cancel)
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('customConfirmOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeCustomConfirm(false);
+  });
+  document.getElementById('customAlertOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeCustomAlert();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      var overlay = document.getElementById('customAlertOverlay');
+      if (overlay.classList.contains('active')) closeCustomAlert();
+    }
+  });
+});
+
+const BANNER_URL   = "https://lh3.googleusercontent.com/d/1GYV1-6GENqIWpi2JuZEKXKEHfe8SkmBO";
+const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbxT8jvZmiDIszc3HV6-Bj7gbC7VuywOZ9ZmN8xsfo67KMDVI7hLPrtiOAXFGjUMlip8/exec"; // GST Database
+const SCRIPT_2URL  = "https://script.google.com/macros/s/AKfycbzx-uHE46WoaZwChkBUcN5wGg4K1OzSDgzN9ts_jH4bP0MC-jJZVaURJxnjN7qKFi9PtA/exec"; // Password sheet (col E = Day Book URL)
+const scriptURL    = "https://script.google.com/macros/s/AKfycbzU1P7M0BeCz92jatvULKfXd9wvPFKHTwDJC_CoFAmcWPiuc40Fmy8FQo5PQ-nyWQanig/exec"; // OTP
+
+let selectedRowIndex = null;
+let loggedInUserId   = null;
+let loggedInPassword = null;
+
+// Day Book API URL — fetched from column E of password sheet on login
+let userDayBookUrl   = null;
+
+function showStatus(message){
+  document.getElementById("statusText").innerText = message || "Please wait...";
+  document.getElementById("statusModal").classList.remove("hidden1");
+}
+
+
+function hideStatus(){
+  document.getElementById("statusModal").classList.add("hidden1");
+}
+function login() {
+  let userId = document.getElementById("userId").value;
+  let password = document.getElementById("password").value;
+  if (!userId || !password) { customAlert("Login credentials are missing"); return; }
+
+  showStatus("Logging in...");
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({ action: "login", userId, password })
+  })
+  .then(res => res.json())
+  .then(result => {
+    hideStatus();
+    if (result.success) {
+      loggedInUserId = userId;
+      loggedInPassword = password;
+      document.getElementById("loginPage").classList.add("hidden");
+      document.getElementById("secondaryPage").classList.remove("hidden");
+      document.getElementById("colC").value = result.tileData.colC || "";
+      document.getElementById("colD").value = result.tileData.colD || "";
+      document.getElementById("colE").value = result.tileData.colE || "";
+      document.getElementById("colF").value = result.tileData.colF || "";
+      document.getElementById("colG").value = result.tileData.colG || "";
+      document.getElementById("colH").value = result.tileData.colH || "";
+
+      // ── Day Book API URL comes directly from column E of SCRIPT_URL (the database sheet) ──
+      userDayBookUrl = result.tileData.colE || null;
+      dbInitDayBook();
+
+      // Auto-open tile editor if profile fields are empty
+      var isEmpty =
+        !result.tileData.colC &&
+        !result.tileData.colD &&
+        !result.tileData.colG;
+      if (isEmpty) {
+        document.getElementById("editColC").value = "";
+        document.getElementById("editColD").value = "";
+        document.getElementById("editColE").value = "";
+        document.getElementById("editColF").value = "";
+        document.getElementById("editColG").value = "";
+        document.getElementById("editColH").value = "";
+        document.getElementById("tilePopup").classList.remove("hidden1");
+      } else {
+        document.getElementById("editColC").value = result.tileData.colC || "";
+        document.getElementById("editColD").value = result.tileData.colD || "";
+        document.getElementById("editColE").value = result.tileData.colE || "";
+        document.getElementById("editColF").value = result.tileData.colF || "";
+        document.getElementById("editColG").value = result.tileData.colG || "";
+        document.getElementById("editColH").value = result.tileData.colH || "";
+      }
+    } else {
+      customAlert("Invalid credentials", function(){ location.reload(); });
+    }
+  })
+  .catch(err => {
+    hideStatus();
+    if (!navigator.onLine) {
+      customAlert("Network not available. Please check your internet connection and try again.");
+    } else {
+      customAlert("Login error. Please try again.");
+    }
+    console.error(err);
+  });
+}
+    
+  function showSignup(){
+    document.getElementById("tilePopup1").classList.remove("hidden");
+  }
+  function closeSignup(){
+    document.getElementById("tilePopup1").classList.add("hidden");
+  }
+
+    function showForgot(){
+    document.getElementById("tilePopup2").classList.remove("hidden");
+  }
+  function closeForgot(){
+  // ✅ Clear all fields
+  document.getElementById("field2Mobile").value = "";
+  document.getElementById("field3email").value = "";
+  document.getElementById("otp").value = "";
+  document.getElementById("pwd1Reset").value = "";
+  document.getElementById("pwd2Reset").value = "";
+
+  // Reset eye icons back to open eye
+  document.querySelectorAll("#popupBox2 .toggle-eye").forEach(icon => {
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye");
+  });
+
+  // Reset password fields back to type="password"
+  document.getElementById("pwd1Reset").type = "password";
+  document.getElementById("pwd2Reset").type = "password";
+
+  // Hide sections
+  document.getElementById("btnSend").style.display = "inline-block";
+  document.getElementById("tilePopup2").classList.add("hidden");
+  document.getElementById("pwdSection").style.display = "none";
+  document.getElementById("btnUpdate").style.display = "none";
+  document.getElementById("btnVerify").style.display = "none";
+  document.getElementById("otp").style.display = "none";
+}
+
+    
+  function signup(){
+      let f1 = document.getElementById("field1").value;
+      let f2 = document.getElementById("field2").value;
+      let p1 = document.getElementById("pwd1").value;
+      let p2 = document.getElementById("pwd2").value;
+      if(!f1 || !p1|| !p2){ customAlert("Mandatory field cannot be kept blank"); return; }
+      if(f2.length > 10){ customAlert("Mobile number shall not exceed 10 digits"); return; }
+      if(p1.length < 6){ customAlert("Password should have minimum 6 characters"); return; } // ✅ added
+      if(p1 !== p2){ customAlert("Passwords do not match"); return; }
+      let data = [f1, f2, document.getElementById("field3").value, p1, p2];
+
+              showStatus("Signing Up...");
+      fetch(SCRIPT_2URL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "signup",
+          data: JSON.stringify(data)
+        })
+      })
+      .then(res => res.json())
+      .then(result => {
+        hideStatus();
+        if(result.success){
+          customAlert("Signup successful", function(){ document.getElementById("tilePopup1").classList.add("hidden"); });
+        } else {
+          customAlert(result.message || "Signup failed");
+        }
+      });
+    }
+
+
+
+function togglePassword(fieldId, icon) {
+  const field = document.getElementById(fieldId);
+  if (field.type === "password") {
+    field.type = "text";
+    icon.classList.remove("fa-eye");
+    icon.classList.add("fa-eye-slash"); // closed eye
+  } else {
+    field.type = "password";
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye"); // open eye
+  }
+}
+
+
+
+
+    
+// ═══════════════════════════════════════════════════════
+//  DAY BOOK — all functions prefixed with "db"
+//  API URL = column E of SCRIPT_URL (database sheet),
+//  returned in result.tileData.colE on login.
+// ═══════════════════════════════════════════════════════
+
+// ── DB API helper ──
+async function dbApi(action, payload = {}) {
+  if (!userDayBookUrl) {
+    throw new Error("Day Book URL not configured. Please contact your administrator.");
+  }
+  const url = `${userDayBookUrl}?action=${encodeURIComponent(action)}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action, ...payload })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+// ── DB State ──
+let dbSelect1Options = [], dbSelect2Options = [], dbOtherHeadOptions = [];
+let dbSelect1En = [], dbSelect1Ml = [], dbSelect2En = [], dbSelect2Ml = [];
+let dbOtherHeadEn = [], dbOtherHeadMl = [];
+let dbAllPreviewRows = [], dbFilteredPreviewRows = [], dbCurrentHeader = [];
+let dbCurrentPage = 1;
+const DB_ROWS_PER_PAGE = 10;
+let dbCurrentAddType = '';
+let dbInsertAtIndex = null;
+let dbCurrentPeriod = 'year';
+let dbPendingDeleteIndex = null;
+
+// ── DB Overlay (reuse existing status modal) ──
+function dbShowOverlay(msg) { showStatus(msg || 'Working…'); }
+function dbHideOverlay()    { hideStatus(); }
+
+function dbShowMsg(text, type) {
+  const el = document.getElementById('dbMsg');
+  el.textContent = text;
+  el.style.display = 'block';
+  el.style.background  = type === 'success' ? '#d1fae5' : '#fee2e2';
+  el.style.color       = type === 'success' ? '#065f46' : '#991b1b';
+  el.style.border      = type === 'success' ? '1px solid #6ee7b7' : '1px solid #fca5a5';
+  setTimeout(() => { el.style.display = 'none'; el.textContent = ''; }, 5000);
+}
+
+function dbAlert(msg, opts) {
+  opts = opts || {};
+  customAlert(msg);
+}
+
+// ── Init (called after login once userDayBookUrl is set) ──
+async function dbInitDayBook() {
+  // ── Update LED status indicator in Personal Details tile ──
+  const led  = document.getElementById('colELed');
+  const txt  = document.getElementById('colEText');
+  const sect = document.getElementById('dbSection');
+
+  if (userDayBookUrl && userDayBookUrl.trim().startsWith('https://')) {
+    // Green LED — Active
+    if (led) { led.style.background = '#22c55e'; led.style.boxShadow = '0 0 6px 2px #22c55e'; }
+    if (txt) txt.textContent = 'Active';
+    if (sect) sect.style.display = 'block';
+  } else {
+    // Red LED — Pending
+    if (led) { led.style.background = '#ef4444'; led.style.boxShadow = '0 0 6px 2px #ef4444'; }
+    if (txt) txt.textContent = 'Pending for verification';
+    if (sect) sect.style.display = 'none';
+    return; // no URL — nothing more to load
+  }
+
+  // URL exists — load the Day Book data
+  await dbLoadFormData();
+}
+
+// ── escHtml ──
+function dbEscHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Language ──
+function dbGetLang() {
+  const el = document.getElementById('lang');
+  return el ? el.value : 'en';
+}
+
+// ── Load Form Data ──
+async function dbLoadFormData() {
+  const lang = dbGetLang();
+  dbShowOverlay('Loading Day Book…');
+  try {
+    const data = await dbApi('getFormData', { language: lang });
+    dbSelect1Options   = data.select1   || [];
+    dbSelect2Options   = data.select2   || [];
+    dbOtherHeadOptions = data.otherHead || [];
+    dbSelect1En    = data.select1En    || dbSelect1Options;
+    dbSelect1Ml    = data.select1Ml    || dbSelect1Options;
+    dbSelect2En    = data.select2En    || dbSelect2Options;
+    dbSelect2Ml    = data.select2Ml    || dbSelect2Options;
+    dbOtherHeadEn  = data.otherHeadEn  || dbOtherHeadOptions;
+    dbOtherHeadMl  = data.otherHeadMl  || dbOtherHeadOptions;
+
+    const targetSelect = document.getElementById('dbTargetSheet');
+    const prevVal = targetSelect.value;
+    targetSelect.innerHTML = '';
+    (data.targets || []).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = t;
+      if (t === prevVal) opt.selected = true;
+      targetSelect.appendChild(opt);
+    });
+
+    dbBuildFormRows(10);
+  } catch (e) {
+    dbShowMsg('Error loading Day Book form: ' + e.message, 'error');
+  } finally {
+    dbHideOverlay();
+  }
+  await dbLoadPreviewTable();
+}
+
+// ── Build form rows ──
+function dbBuildFormRows(count) {
+  const container = document.getElementById('dbFormRows');
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) container.appendChild(dbCreateRow());
+  const dates = container.querySelectorAll('.db-date');
+  if (dates[0]) {
+    dates[0].addEventListener('change', () => {
+      const val = dates[0].value;
+      dates.forEach((d, i) => { if (i > 0 && !d.value) d.value = val; });
+    });
+  }
+}
+
+function dbMakePairedOptions(enList, mlList) {
+  const lang = dbGetLang();
+  const useML = lang === 'ml';
+  let html = `<option value="">— Select —</option>`;
+  enList.forEach((en, i) => {
+    const display = (useML && mlList[i]) ? mlList[i] : en;
+    html += `<option value="${dbEscHtml(en)}">${dbEscHtml(display)}</option>`;
+  });
+  html += `<option value="__add_more__">＋ Add More</option>`;
+  return html;
+}
+
+// ── Cell style for form table ──
+const dbCellStyle = 'padding:0;border:1px solid #d1d5db;vertical-align:middle;';
+const dbInputStyle = 'display:block;width:100%;height:100%;min-height:28px;padding:3px 3px;border:none;outline:none;background:transparent;font-size:0.78rem;font-family:inherit;box-sizing:border-box;';
+
+function dbCreateRow() {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td style="${dbCellStyle}width:28px;text-align:center;">
+      <button style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#e53e3e;color:white;font-size:12px;font-weight:bold;cursor:pointer;border:none;" class="db-row-del" title="Remove">✕</button>
+    </td>
+    <td style="${dbCellStyle}"><input type="date" class="db-date" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><input type="number" class="db-op"  min="0" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><input type="number" class="db-lab" min="0" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><select class="db-otherHead" style="${dbInputStyle}">${dbMakePairedOptions(dbOtherHeadEn, dbOtherHeadMl)}</select></td>
+    <td style="${dbCellStyle}"><input type="number" class="db-otherCash" min="0" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><select class="db-select1" style="${dbInputStyle}">${dbMakePairedOptions(dbSelect1En, dbSelect1Ml)}</select></td>
+    <td style="${dbCellStyle}"><input type="text" class="db-desc1" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><input type="number" class="db-income" min="0" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><select class="db-select2" style="${dbInputStyle}">${dbMakePairedOptions(dbSelect2En, dbSelect2Ml)}</select></td>
+    <td style="${dbCellStyle}"><input type="text" class="db-desc2" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><input type="number" class="db-exp" min="0" style="${dbInputStyle}"></td>
+    <td style="${dbCellStyle}"><input type="number" class="db-bank" min="0" style="${dbInputStyle}"></td>
+  `;
+  row.querySelector('.db-row-del').addEventListener('click', () => {
+    const tbody = document.getElementById('dbFormRows');
+    if (tbody.children.length > 1) { row.remove(); }
+    else {
+      row.querySelectorAll('input').forEach(i => i.value = '');
+      row.querySelectorAll('select').forEach(s => s.value = '');
+    }
+  });
+  row.querySelector('.db-otherHead').addEventListener('change', function() {
+    if (this.value === '__add_more__') { this.value = ''; dbOpenHeadModal('other'); }
+  });
+  row.querySelector('.db-select1').addEventListener('change', function() {
+    if (this.value === '__add_more__') { this.value = ''; dbOpenHeadModal('income'); }
+  });
+  row.querySelector('.db-select2').addEventListener('change', function() {
+    if (this.value === '__add_more__') { this.value = ''; dbOpenHeadModal('expenditure'); }
+  });
+  return row;
+}
+
+function dbAddRow()    { document.getElementById('dbFormRows').appendChild(dbCreateRow()); }
+function dbResetForm() {
+  dbBuildFormRows(10);
+  const el = document.getElementById('dbMsg');
+  el.style.display = 'none'; el.textContent = '';
+}
+
+function dbReadRowData(trEl) {
+  return {
+    date:      trEl.querySelector('.db-date').value,
+    op:        +trEl.querySelector('.db-op').value        || 0,
+    lab:       +trEl.querySelector('.db-lab').value       || 0,
+    otherHead: trEl.querySelector('.db-otherHead').value,
+    otherCash: +trEl.querySelector('.db-otherCash').value || 0,
+    select1:   trEl.querySelector('.db-select1').value,
+    desc1:     trEl.querySelector('.db-desc1').value,
+    income:    +trEl.querySelector('.db-income').value    || 0,
+    select2:   trEl.querySelector('.db-select2').value,
+    desc2:     trEl.querySelector('.db-desc2').value,
+    exp:       +trEl.querySelector('.db-exp').value       || 0,
+    bank:      +trEl.querySelector('.db-bank').value      || 0,
+  };
+}
+
+function dbHasData(r) {
+  return r.op || r.lab || r.otherCash || r.bank || r.income || r.desc1 || r.exp || r.desc2;
+}
+
+function dbValidateHeads(r, rowLabel) {
+  if (r.otherCash && !r.otherHead) {
+    customAlert(`Row ${rowLabel}: "Other Cash Head" is not selected.`); return false;
+  }
+  if ((r.income || r.desc1) && !r.select1) {
+    customAlert(`Row ${rowLabel}: "Income Head (Bank)" is not selected.`); return false;
+  }
+  if ((r.exp || r.desc2) && !r.select2) {
+    customAlert(`Row ${rowLabel}: "Expenditure Head" is not selected.`); return false;
+  }
+  return true;
+}
+
+function dbFmtDateForDisplay(isoDate) {
+  if (!isoDate) return '';
+  const [y, m, d] = isoDate.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function dbCheckDuplicate(newRow, newRowLabel) {
+  const fmtDate = newRow.date ? dbFmtDateForDisplay(newRow.date) : '';
+  if (!fmtDate) return null;
+  for (const pr of dbAllPreviewRows) {
+    const v = pr.values;
+    const existDate = String(v[0] || '').replace(/^'/, '').trim();
+    if (existDate !== fmtDate) continue;
+    const matches =
+      (Number(v[1])||0) === (newRow.op||0) &&
+      (Number(v[2])||0) === (newRow.lab||0) &&
+      (Number(v[3])||0) === (newRow.otherCash||0) &&
+      String(v[4]||'').trim() === (newRow.otherHead||'') &&
+      (Number(v[5])||0) === (newRow.bank||0) &&
+      (Number(v[6])||0) === (newRow.income||0) &&
+      String(v[7]||'').trim() === (newRow.select1||'') &&
+      String(v[8]||'').trim() === (newRow.desc1||'') &&
+      (Number(v[9])||0) === (newRow.exp||0) &&
+      String(v[10]||'').trim() === (newRow.select2||'') &&
+      String(v[11]||'').trim() === (newRow.desc2||'');
+    if (matches) return `The record in row ${newRowLabel} already exists in the Day Book (row ${pr.rowIndex}).`;
+  }
+  return null;
+}
+
+// ── Submit Form ──
+async function dbSubmitForm() {
+  const rows = [];
+  const children = Array.from(document.getElementById('dbFormRows').children);
+  for (let i = 0; i < children.length; i++) {
+    const r = dbReadRowData(children[i]);
+    if (dbHasData(r)) {
+      if (!r.date) { dbOpenDateAlert(); return; }
+      if (!dbValidateHeads(r, i + 1)) return;
+      const dup = dbCheckDuplicate(r, i + 1);
+      if (dup) { customAlert(dup); return; }
+      rows.push(r);
+    }
+  }
+  if (!rows.length) return;
+  const targetSheet = document.getElementById('dbTargetSheet').value;
+  dbShowOverlay('Saving…');
+  try {
+    const result = await dbApi('submitRows', { targetSheet, rows });
+    dbShowMsg(result.message || 'Saved successfully.', 'success');
+    dbResetForm();
+    await dbLoadPreviewTable();
+  } catch (e) {
+    dbShowMsg('Error saving: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+// ── Load Preview Table ──
+async function dbLoadPreviewTable() {
+  const targetSheet = document.getElementById('dbTargetSheet').value;
+  if (!targetSheet) return;
+  dbShowOverlay('Fetching Day Book data…');
+  try {
+    const [data, bal] = await Promise.all([
+      dbApi('getAllDataRows', { targetSheet }),
+      dbApi('getBalances',   { targetSheet }).catch(() => ({ obCash: '', obBank: '' }))
+    ]);
+    dbAllPreviewRows      = data.rows   || [];
+    dbCurrentHeader       = data.header || [];
+    dbFilteredPreviewRows = dbAllPreviewRows.slice();
+
+    const obCashEl = document.getElementById('dbObCash');
+    const obBankEl = document.getElementById('dbObBank');
+    const btn      = document.getElementById('dbBalanceSaveBtn');
+    const hasCash  = bal.obCash !== '' && bal.obCash !== null && bal.obCash !== undefined;
+    const hasBank  = bal.obBank !== '' && bal.obBank !== null && bal.obBank !== undefined;
+    obCashEl.value = hasCash ? bal.obCash : '';
+    obBankEl.value = hasBank ? bal.obBank : '';
+    btn.textContent = (hasCash || hasBank) ? 'Update' : 'Add';
+
+    dbApplySearch();
+    dbUpdateClosingBalance();
+  } catch (e) {
+    dbShowMsg('Error loading Day Book: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+// ── Search ──
+function dbApplySearch() {
+  const text = (document.getElementById('dbSearchText').value || '').trim().toLowerCase();
+  const from = document.getElementById('dbSearchFrom').value;
+  const to   = document.getElementById('dbSearchTo').value;
+
+  dbFilteredPreviewRows = dbAllPreviewRows.filter(row => {
+    if (text) {
+      const allCells = row.values.map(v => String(v).toLowerCase()).join(' ');
+      if (!allCells.includes(text)) return false;
+    }
+    if (from || to) {
+      const raw = String(row.values[0]).replace(/^'/, '').trim();
+      const m   = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (m) {
+        const rowDate = new Date(+m[3], +m[2] - 1, +m[1]);
+        if (from) {
+          const [fy,fm,fd] = from.split('-').map(Number);
+          if (rowDate < new Date(fy, fm - 1, fd)) return false;
+        }
+        if (to) {
+          const [ty,tm,td] = to.split('-').map(Number);
+          if (rowDate > new Date(ty, tm - 1, td)) return false;
+        }
+      }
+    }
+    return true;
+  });
+
+  const info = document.getElementById('dbSearchResultInfo');
+  if (text || from || to) {
+    info.textContent = `${dbFilteredPreviewRows.length} of ${dbAllPreviewRows.length} record(s)`;
+  } else { info.textContent = ''; }
+
+  dbCurrentPage = 1;
+  dbRenderPreviewTable(dbCurrentHeader, dbCurrentPage);
+}
+
+function dbClearSearch() {
+  document.getElementById('dbSearchText').value = '';
+  document.getElementById('dbSearchFrom').value = '';
+  document.getElementById('dbSearchTo').value   = '';
+  dbFilteredPreviewRows = dbAllPreviewRows.slice();
+  document.getElementById('dbSearchResultInfo').textContent = '';
+  dbCurrentPage = 1;
+  dbRenderPreviewTable(dbCurrentHeader, dbCurrentPage);
+}
+
+// ── Balances ──
+async function dbSaveBalances() {
+  const obCash = document.getElementById('dbObCash').value.trim();
+  const obBank = document.getElementById('dbObBank').value.trim();
+  const targetSheet = document.getElementById('dbTargetSheet').value;
+  dbShowOverlay('Saving balances…');
+  try {
+    await dbApi('saveBalances', { targetSheet, obCash: obCash || 0, obBank: obBank || 0 });
+    document.getElementById('dbBalanceSaveBtn').textContent = 'Update';
+    dbUpdateClosingBalance();
+    dbShowMsg('Opening balances saved.', 'success');
+  } catch(e) {
+    dbShowMsg('Error saving balances: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+function dbUpdateClosingBalance() {
+  const obCash = parseFloat(document.getElementById('dbObCash').value) || 0;
+  const obBank = parseFloat(document.getElementById('dbObBank').value) || 0;
+  let sumOP=0, sumLAB=0, sumOtherCash=0, sumBank=0, sumOtherIncome=0, sumExp=0;
+  dbAllPreviewRows.forEach(row => {
+    const v = row.values;
+    sumOP         += parseFloat(v[1]) || 0;
+    sumLAB        += parseFloat(v[2]) || 0;
+    sumOtherCash  += parseFloat(v[3]) || 0;
+    sumBank       += parseFloat(v[5]) || 0;
+    sumOtherIncome+= parseFloat(v[6]) || 0;
+    sumExp        += parseFloat(v[9]) || 0;
+  });
+  document.getElementById('dbCbCash').value = (obCash + sumOP + sumLAB + sumOtherCash - sumBank).toFixed(2);
+  document.getElementById('dbCbBank').value = (obBank + sumOtherIncome + sumBank - sumExp).toFixed(2);
+}
+
+// ── Highlight search text ──
+function dbHighlightText(text, term) {
+  if (!term) return dbEscHtml(text);
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.split(new RegExp(`(${escaped})`, 'gi')).map((part, idx) =>
+    idx % 2 === 1
+      ? `<mark style="background:#fef08a;color:#1a202c;border-radius:2px;padding:0 1px;">${dbEscHtml(part)}</mark>`
+      : dbEscHtml(part)
+  ).join('');
+}
+
+// ── Render Preview Table ──
+function dbRenderPreviewTable(header, page) {
+  const table = document.getElementById('dbPreviewTable');
+  table.innerHTML = '';
+  table.style.tableLayout = 'fixed';
+  table.style.width = '100%';
+  table.style.wordBreak = 'break-word';
+
+  // ── Column widths (%) — must sum to 100 ──
+  // Actions|Date|OP|LAB|OtherCashHead|OtherCash|IncomeHead|Desc|OtherIncome|ExpHead|Desc2|Exp|Bank
+  const colWidths = ['6%','7%','4%','4%','8%','5%','9%','8%','6%','9%','10%','5%','7%'];
+  const colgroup = document.createElement('colgroup');
+  colWidths.forEach(w => {
+    const col = document.createElement('col');
+    col.style.width = w;
+    colgroup.appendChild(col);
+  });
+  table.appendChild(colgroup);
+
+  const thead = document.createElement('thead');
+  const hRow  = document.createElement('tr');
+
+  const thStyle = 'background:#1a56db;color:white;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:0.75rem;white-space:normal;word-break:break-word;line-height:1.2;';
+
+  const actTh = document.createElement('th');
+  actTh.textContent = 'Act.';
+  actTh.style.cssText = thStyle;
+  hRow.appendChild(actTh);
+
+  const displayHeaders = ['Date','OP','LAB','Other Cash Head','Other Cash','Income Head (Bank)','Description','Other Income','Expenditure Head','Desc. (Cheque/Name)','Expenditure','Cash to Bank'];
+  displayHeaders.forEach(h => {
+    const th = document.createElement('th');
+    th.textContent = h;
+    th.style.cssText = thStyle;
+    hRow.appendChild(th);
+  });
+  thead.appendChild(hRow);
+  table.appendChild(thead);
+
+  // Display order: Date(0)|OP(1)|LAB(2)|OtherCashHead(4)|OtherCash(3)|IncomeHead(7)|Desc1(8)|OtherIncome(6)|ExpHead(10)|Desc2(11)|Exp(9)|Bank(5)
+  const displayOrder = [0,1,2,4,3,7,8,6,10,11,9,5];
+
+  const tdStyle = 'border:1px solid #d1d5db;padding:4px 4px;font-size:0.78rem;word-break:break-word;vertical-align:top;';
+
+  const tbody = document.createElement('tbody');
+  const start = (page - 1) * DB_ROWS_PER_PAGE;
+  dbFilteredPreviewRows.slice(start, start + DB_ROWS_PER_PAGE).forEach((row, idx) => {
+    const tr = document.createElement('tr');
+    tr.style.background = idx % 2 === 1 ? '#f9fafb' : '';
+    tr.dataset.rowIndex = row.rowIndex;
+
+    const actionTd = document.createElement('td');
+    actionTd.style.cssText = 'padding:2px 2px;border:1px solid #d1d5db;text-align:center;white-space:nowrap;vertical-align:middle;';
+
+    const editBtn = document.createElement('button');
+    editBtn.title = 'Edit';
+    editBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#6366f1;color:white;font-size:11px;cursor:pointer;border:none;margin-right:2px;';
+    editBtn.innerHTML = '✏️';
+    editBtn.addEventListener('click', () => dbStartEditRow(tr, row, editBtn));
+
+    const delBtn = document.createElement('button');
+    delBtn.title = 'Delete';
+    delBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e53e3e;color:white;font-size:12px;cursor:pointer;border:none;';
+    delBtn.textContent = '✕';
+    delBtn.addEventListener('click', () => dbConfirmDelete(row.rowIndex));
+
+    actionTd.appendChild(editBtn); actionTd.appendChild(delBtn);
+    tr.appendChild(actionTd);
+
+    const searchTerm = (document.getElementById('dbSearchText').value || '').trim();
+    displayOrder.forEach(i => {
+      const td = document.createElement('td');
+      td.style.cssText = tdStyle;
+      const cellVal = row.values[i] !== undefined ? String(row.values[i]) : '';
+      if (searchTerm && cellVal.toLowerCase().includes(searchTerm.toLowerCase())) {
+        td.innerHTML = dbHighlightText(cellVal, searchTerm);
+      } else { td.textContent = cellVal; }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  if (dbFilteredPreviewRows.length === 0) {
+    const emptyRow = document.createElement('tr');
+    const emptyTd  = document.createElement('td');
+    emptyTd.colSpan = 13;
+    emptyTd.textContent = dbAllPreviewRows.length === 0
+      ? 'No records found for this year.'
+      : 'No records match your search.';
+    emptyTd.style.cssText = 'text-align:center;padding:20px;color:#6b7280;font-style:italic;border:1px solid #d1d5db;';
+    emptyRow.appendChild(emptyTd);
+    tbody.appendChild(emptyRow);
+  }
+  table.appendChild(tbody);
+  dbRenderPagination(page);
+}
+
+function dbRenderPagination(page) {
+  const total = Math.ceil(dbFilteredPreviewRows.length / DB_ROWS_PER_PAGE);
+  const el = document.getElementById('dbPaginationControls');
+  el.innerHTML = '';
+  if (total <= 1) return;
+
+  const mk = (label, disabled, fn) => {
+    const b = document.createElement('button');
+    b.textContent = label; b.disabled = disabled;
+    b.style.cssText = 'padding:5px 10px;border:1px solid #d1d5db;border-radius:8px;background:white;cursor:pointer;font-size:0.82rem;';
+    if (disabled) b.style.opacity = '0.4';
+    b.addEventListener('click', fn); return b;
+  };
+  el.appendChild(mk('⏮', page===1, ()=>{ dbCurrentPage=1; dbRenderPreviewTable(dbCurrentHeader,dbCurrentPage); }));
+  el.appendChild(mk('◀', page===1, ()=>{ dbCurrentPage--; dbRenderPreviewTable(dbCurrentHeader,dbCurrentPage); }));
+  const info = document.createElement('span');
+  info.textContent = `Page ${page} of ${total}`;
+  info.style.cssText = 'font-size:0.82rem;color:#6b7280;padding:0 4px;';
+  el.appendChild(info);
+  el.appendChild(mk('▶', page===total, ()=>{ dbCurrentPage++; dbRenderPreviewTable(dbCurrentHeader,dbCurrentPage); }));
+  el.appendChild(mk('⏭', page===total, ()=>{ dbCurrentPage=total; dbRenderPreviewTable(dbCurrentHeader,dbCurrentPage); }));
+}
+
+// ── Inline Row Edit ──
+function dbGetEditColDefs() {
+  return [
+    { bi: 0,  type: 'date'   },
+    { bi: 1,  type: 'number' },
+    { bi: 2,  type: 'number' },
+    { bi: 4,  type: 'select', enOpts: () => dbOtherHeadEn, mlOpts: () => dbOtherHeadMl },
+    { bi: 3,  type: 'number' },
+    { bi: 7,  type: 'select', enOpts: () => dbSelect1En,   mlOpts: () => dbSelect1Ml   },
+    { bi: 8,  type: 'text'   },
+    { bi: 6,  type: 'number' },
+    { bi: 10, type: 'select', enOpts: () => dbSelect2En,   mlOpts: () => dbSelect2Ml   },
+    { bi: 11, type: 'text'   },
+    { bi: 9,  type: 'number' },
+    { bi: 5,  type: 'number' },
+  ];
+}
+
+function dbStartEditRow(tr, row, editBtn) {
+  if (tr.dataset.editing === '1') return;
+  tr.dataset.editing = '1';
+  const colDefs  = dbGetEditColDefs();
+  const dataCells = Array.from(tr.cells).slice(1);
+
+  dataCells.forEach((td, colIdx) => {
+    const def = colDefs[colIdx];
+    if (!def) return;
+    const rawVal = String(row.values[def.bi] || '').replace(/^'/, '').trim();
+    td.style.padding = '1px 2px';
+    td.innerHTML = '';
+
+    let input;
+    if (def.type === 'date') {
+      input = document.createElement('input');
+      input.type = 'date';
+      const dm = rawVal.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (dm) input.value = `${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
+      else input.value = rawVal;
+    } else if (def.type === 'number') {
+      input = document.createElement('input');
+      input.type = 'number'; input.min = '0';
+      const n = parseFloat(rawVal);
+      input.value = (!isNaN(n) && n > 0) ? n : '';
+    } else if (def.type === 'text') {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.value = rawVal;
+    } else if (def.type === 'select') {
+      const lang = dbGetLang();
+      const useML = lang === 'ml';
+      const enList = def.enOpts ? def.enOpts() : [];
+      const mlList = def.mlOpts ? def.mlOpts() : [];
+      input = document.createElement('select');
+      const emptyOpt = document.createElement('option');
+      emptyOpt.value = ''; emptyOpt.textContent = '— Select —';
+      input.appendChild(emptyOpt);
+      enList.forEach((en, i) => {
+        const display = (useML && mlList[i]) ? mlList[i] : en;
+        const opt = document.createElement('option');
+        opt.value = en; opt.textContent = display;
+        if (en === rawVal || (mlList[i] && mlList[i] === rawVal)) opt.selected = true;
+        input.appendChild(opt);
+      });
+    }
+    input.style.cssText = 'width:100%;min-width:60px;padding:3px 5px;border:1.5px solid #1a56db;border-radius:4px;font-size:0.82rem;font-family:inherit;background:#fffbeb;outline:none;box-sizing:border-box;';
+    if (def.type === 'number') input.style.minWidth = '70px';
+    if (def.type === 'date')   input.style.minWidth = '120px';
+    input.dataset.bi = def.bi;
+    td.appendChild(input);
+  });
+
+  editBtn.innerHTML = '✅';
+  editBtn.style.background = '#0ea47a';
+  editBtn.title = 'Save';
+  const newBtn = editBtn.cloneNode(true);
+  editBtn.parentNode.replaceChild(newBtn, editBtn);
+  newBtn.addEventListener('click', () => dbSaveEditRow(tr, row.rowIndex, newBtn));
+}
+
+async function dbSaveEditRow(tr, rowIndex, saveBtn) {
+  const colDefs  = dbGetEditColDefs();
+  const dataCells = Array.from(tr.cells).slice(1);
+  const vals = {};
+  dataCells.forEach((td, colIdx) => {
+    const def = colDefs[colIdx];
+    if (!def) return;
+    const input = td.querySelector('input, select');
+    if (!input) return;
+    vals[def.bi] = input.value;
+  });
+  const row = {
+    date: vals[0]||'', op: parseFloat(vals[1])||0, lab: parseFloat(vals[2])||0,
+    otherCash: parseFloat(vals[3])||0, otherHead: vals[4]||'',
+    bank: parseFloat(vals[5])||0, income: parseFloat(vals[6])||0,
+    select1: vals[7]||'', desc1: vals[8]||'',
+    exp: parseFloat(vals[9])||0, select2: vals[10]||'', desc2: vals[11]||'',
+  };
+  if (!row.date) { dbOpenDateAlert(); return; }
+  if (!dbValidateHeads(row, `Row ${rowIndex}`)) return;
+  const targetSheet = document.getElementById('dbTargetSheet').value;
+  dbShowOverlay('Updating…');
+  try {
+    await dbApi('updateRow', { targetSheet, rowIndex, row });
+    await dbLoadPreviewTable();
+  } catch(e) {
+    dbShowMsg('Error updating: ' + e.message, 'error');
+    dbHideOverlay();
+  }
+}
+
+// ── Delete Row ──
+function dbConfirmDelete(rowIndex) {
+  dbPendingDeleteIndex = parseInt(rowIndex, 10);
+  document.getElementById('dbConfirmMsg').textContent = `Delete row ${dbPendingDeleteIndex}? This cannot be undone.`;
+  document.getElementById('dbConfirmModal').style.display = 'flex';
+  document.getElementById('dbConfirmYesBtn').onclick = dbDoDelete;
+}
+function dbCloseConfirm() { document.getElementById('dbConfirmModal').style.display = 'none'; }
+async function dbDoDelete() {
+  const rowIndex = parseInt(dbPendingDeleteIndex, 10);
+  dbCloseConfirm();
+  const targetSheet = document.getElementById('dbTargetSheet').value;
+  if (!rowIndex || isNaN(rowIndex) || rowIndex < 2) {
+    dbShowMsg('Invalid row index.', 'error'); return;
+  }
+  dbShowOverlay('Deleting…');
+  try {
+    await dbApi('deleteRow', { targetSheet, rowIndex });
+    await dbLoadPreviewTable();
+  } catch(e) {
+    dbShowMsg('Error deleting: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+// ── Insert Row Modal ──
+function dbOpenInsertModal(index) {
+  dbInsertAtIndex = index;
+  const container = document.getElementById('dbInsertRowFields');
+  const table = document.createElement('table');
+  table.style.cssText = 'width:100%;border-collapse:collapse;font-size:0.82rem;';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Date</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">OP</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">LAB</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Other Cash Head</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Other Cash</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Income Head (Bank)</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Description</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Other Income</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Expenditure Head</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Desc. (Cheque No./Name)</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Expenditure</th>
+    <th style="background:#e8f0fe;color:#1a56db;padding:7px 6px;border:1px solid #d1d5db;">Cash Deposited to Bank</th>
+  </tr>`;
+  const tbody = document.createElement('tbody');
+  tbody.appendChild(dbCreateRow());
+  table.appendChild(thead); table.appendChild(tbody);
+  container.innerHTML = ''; container.appendChild(table);
+  document.getElementById('dbInsertModal').style.display = 'flex';
+}
+function dbCloseInsertModal() {
+  document.getElementById('dbInsertModal').style.display = 'none';
+  dbInsertAtIndex = null;
+}
+async function dbDoInsertRow() {
+  const trEl = document.querySelector('#dbInsertRowFields tbody tr');
+  if (!trEl) return;
+  const row = dbReadRowData(trEl);
+  if (!dbHasData(row)) { customAlert('Please enter at least one value.'); return; }
+  if (!row.date) { dbOpenDateAlert(); return; }
+  if (!dbValidateHeads(row, 'Insert')) return;
+  const dup = dbCheckDuplicate(row, 'Insert');
+  if (dup) { customAlert(dup); return; }
+  const targetSheet = document.getElementById('dbTargetSheet').value;
+  dbCloseInsertModal();
+  dbShowOverlay('Inserting…');
+  try {
+    await dbApi('insertRow', { targetSheet, rowIndex: dbInsertAtIndex, row });
+    await dbLoadPreviewTable();
+  } catch(e) {
+    dbShowMsg('Error inserting: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+// ── Add Head Modal ──
+function dbOpenHeadModal(type) {
+  dbCurrentAddType = type;
+  document.getElementById('dbHeadEn').value = '';
+  document.getElementById('dbHeadMl').value = '';
+  document.getElementById('dbHeadModalTitle').textContent =
+    type==='income' ? 'Add Income Head' :
+    type==='expenditure' ? 'Add Expenditure Head' : 'Add Other Cash Head';
+  document.getElementById('dbHeadModal').style.display = 'flex';
+}
+function dbCloseHeadModal() { document.getElementById('dbHeadModal').style.display = 'none'; }
+async function dbSaveNewHead() {
+  const en = document.getElementById('dbHeadEn').value.trim();
+  const ml = document.getElementById('dbHeadMl').value.trim();
+  if (!en || !ml) { customAlert('Please fill both English and Malayalam fields.'); return; }
+  dbCloseHeadModal();
+  dbShowOverlay('Saving head…');
+  try {
+    await dbApi('saveNewHead', { type: dbCurrentAddType, en, ml });
+    await dbLoadFormData();
+  } catch(e) {
+    dbShowMsg('Error saving head: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+// ── Add Year Modal ──
+function dbPromptAddYear() {
+  document.getElementById('dbNewYearInput').value = '';
+  document.getElementById('dbYearModal').style.display = 'flex';
+}
+function dbCloseYearModal() { document.getElementById('dbYearModal').style.display = 'none'; }
+async function dbSubmitAddYear() {
+  const year = document.getElementById('dbNewYearInput').value.trim();
+  if (!year) { customAlert('Please enter a year.'); return; }
+  dbCloseYearModal();
+  dbShowOverlay('Creating year sheet…');
+  try {
+    const data = await dbApi('addYear', { year });
+    const targetSelect = document.getElementById('dbTargetSheet');
+    targetSelect.innerHTML = '';
+    (data.years || []).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = t;
+      if (t === year) opt.selected = true;
+      targetSelect.appendChild(opt);
+    });
+    targetSelect.value = year;
+    dbShowMsg(`Year sheet "${year}" created successfully.`, 'success');
+    await dbLoadPreviewTable();
+  } catch(e) {
+    dbShowMsg('Error creating year: ' + e.message, 'error');
+  } finally { dbHideOverlay(); }
+}
+
+// ── Date Alert ──
+function dbOpenDateAlert()  { document.getElementById('dbDateAlert').style.display = 'flex'; }
+function dbCloseDateAlert() { document.getElementById('dbDateAlert').style.display = 'none'; }
+
+// ── Report Modal ──
+function dbOpenReportModal() {
+  dbSetPeriod('year');
+  document.getElementById('dbReportModal').style.display = 'flex';
+}
+function dbCloseReportModal() { document.getElementById('dbReportModal').style.display = 'none'; }
+
+function dbSetPeriod(p) {
+  dbCurrentPeriod = p;
+  ['year','q1','q2','q3','q4','custom'].forEach(id => {
+    const btn = document.getElementById('dbPBtn-' + id);
+    if (!btn) return;
+    if (id === p) {
+      btn.style.background = '#1a56db'; btn.style.color = 'white'; btn.style.border = 'none';
+    } else {
+      btn.style.background = 'white'; btn.style.color = '#1a56db'; btn.style.border = '1.5px solid #1a56db';
+    }
+  });
+  const customDiv = document.getElementById('dbPeriodCustom');
+  customDiv.style.display = p === 'custom' ? 'flex' : 'none';
+}
+
+function dbGetPeriodRange() {
+  const year = document.getElementById('dbTargetSheet').value;
+  let startYear = new Date().getFullYear(), endYear = startYear + 1;
+  const m = year.match(/^(\d{4})-(\d{2,4})$/);
+  if (m) {
+    startYear = parseInt(m[1]);
+    endYear = m[2].length === 2 ? parseInt(m[1].substring(0,2) + m[2]) : parseInt(m[2]);
+  }
+  const dt = (y, mo, d) => new Date(y, mo, d);
+  const fyStart = dt(startYear, 3, 1), fyEnd = dt(endYear, 2, 31);
+  const quarters = {
+    q1: { from: dt(startYear,3,1),  to: dt(startYear,5,30),  label:'Q1 (Apr–Jun)' },
+    q2: { from: dt(startYear,6,1),  to: dt(startYear,8,30),  label:'Q2 (Jul–Sep)' },
+    q3: { from: dt(startYear,9,1),  to: dt(startYear,11,31), label:'Q3 (Oct–Dec)' },
+    q4: { from: dt(endYear,0,1),    to: dt(endYear,2,31),    label:'Q4 (Jan–Mar)' },
+  };
+  if (dbCurrentPeriod === 'year')             return { from: fyStart, to: fyEnd, label: 'Full Year ' + year };
+  if (quarters[dbCurrentPeriod])              return quarters[dbCurrentPeriod];
+  if (dbCurrentPeriod === 'custom') {
+    const f = document.getElementById('dbRptFrom').value;
+    const t = document.getElementById('dbRptTo').value;
+    if (!f || !t) { customAlert('Please select both From and To dates.'); return null; }
+    const [fy,fm,fd] = f.split('-').map(Number);
+    const [ty,tm,td] = t.split('-').map(Number);
+    return { from: dt(fy,fm-1,fd), to: dt(ty,tm-1,td), label: `${f} to ${t}` };
+  }
+  return { from: fyStart, to: fyEnd, label: year };
+}
+
+function dbGetRowsForPeriod(range) {
+  if (dbCurrentPeriod === 'year') return dbAllPreviewRows.slice();
+  function toInt(dt) { return dt.getFullYear()*10000+(dt.getMonth()+1)*100+dt.getDate(); }
+  const fromInt = toInt(range.from), toInt2 = toInt(range.to);
+  return dbAllPreviewRows.filter(row => {
+    const raw = String(row.values[0]).replace(/^'/, '').trim();
+    let mc = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!mc) mc = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (!mc) return false;
+    const rowInt = parseInt(mc[3])*10000+parseInt(mc[2])*100+parseInt(mc[1]);
+    return rowInt >= fromInt && rowInt <= toInt2;
+  });
+}
+
+function dbGenerateReport(type) {
+  const range = dbGetPeriodRange();
+  if (!range) return;
+  const rows = dbGetRowsForPeriod(range);
+  const lang  = dbGetLang();
+  switch(type) {
+    case 'cashbook':    dbReportCashBook(rows, range, lang);    break;
+    case 'income':      dbReportIncome(rows, range.label, lang);      break;
+    case 'expenditure': dbReportExpenditure(rows, range.label, lang); break;
+    case 'forum':       dbReportForum(rows, range, lang);       break;
+    case 'cheque':      dbReportCheque(rows, range.label, lang);      break;
+    case 'budget':      dbReportBudget(rows, range.label, lang);      break;
+  }
+  dbCloseReportModal();
+}
+
+// ── Report helpers ──
+function dbFmt(v) {
+  return v !== '' && v !== null && v !== undefined && !isNaN(Number(v))
+    ? Number(v).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})
+    : '—';
+}
+function dbFmtNum(v) { const n=parseFloat(v); return isNaN(n)?'—':n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function dbFmtDate(v) { return String(v).replace(/^'/,'').trim(); }
+
+function dbPrintReport(titleEn, titleMl, h1En, h1Ml, period, bodyHtml, exportData, boldInfo) {
+  // boldInfo = { rows: [rowIndexes...], cols: [colIndexes...] }
+  // row 0 = header; row 1 = first data row, etc.
+  const lang = dbGetLang();
+  const orgName = document.getElementById('formTitle') ? document.getElementById('formTitle').textContent : '';
+  const h1 = lang === 'ml' ? h1Ml : h1En;
+  const h2 = lang === 'ml' ? titleMl : titleEn;
+
+  const w = window.open('', '_blank', 'width=980,height=740');
+  if (!w) { customAlert('Popup was blocked. Please allow popups for this page.'); return; }
+
+  // Pass all data via window property — avoids template literal / escaping issues
+  w._rd = {
+    ed:   exportData || null,
+    org:  orgName,
+    h1:   h1,
+    h2:   h2,
+    pr:   period,
+    bRows: (boldInfo && boldInfo.rows) ? boldInfo.rows : [],
+    bCols: (boldInfo && boldInfo.cols) ? boldInfo.cols : []
+  };
+
+  function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(h2) + '</title>'
+    + '<style>'
+    + 'body{font-family:Arial,sans-serif;font-size:12px;color:#111;margin:20px;}'
+    + 'h1,h2{text-align:center;margin-bottom:2px;}h1{font-size:15px;}h2{font-size:13px;}'
+    + 'p.period{text-align:center;font-size:11px;color:#666;margin-bottom:12px;}'
+    + 'table{width:100%;border-collapse:collapse;table-layout:auto;margin-top:4px;}'
+    + 'th,td{padding:6px 8px;border:1px solid #c8d3f0;font-size:11px;white-space:nowrap;}'
+    + 'th{background:#e8f0fe;color:#1a56db;font-weight:bold;}td{background:#fff;}'
+    + 'tr:nth-child(even) td{background:#f7f9ff;}'
+    + '.total-row td{font-weight:bold;background:#e8f0fe!important;border-top:2px solid #c8d3f0;}'
+    + '.num{text-align:right;}.ctr{text-align:center;}.lft{text-align:left;}'
+    + '.btn-bar{display:flex;gap:8px;margin:12px 0 6px;flex-wrap:wrap;}'
+    + '.btn-bar button{padding:6px 16px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;}'
+    + '.bp{background:#1a56db;color:#fff;}.bx{background:#217346;color:#fff;}.bd{background:#c0392b;color:#fff;}'
+    + '.btn-bar button:disabled{opacity:0.4;cursor:not-allowed;}'
+    + '@media print{.btn-bar{display:none!important;}}'
+    + '</style></head><body>'
+    + '<h1>' + esc(orgName) + '</h1>'
+    + (h1 && h1 !== h2 ? '<h2>' + esc(h1) + '</h2>' : '')
+    + '<h2>' + esc(h2) + '</h2>'
+    + '<p class="period">Period: ' + esc(period) + '</p>'
+    + '<div class="btn-bar">'
+    + '<button class="bp" onclick="window.print()">&#128438; Print</button>'
+    + '<button class="bx" id="btnXl" onclick="dlExcel()" disabled>&#8595; Excel</button>'
+    + '<button class="bd" id="btnPdf" onclick="dlPdf()" disabled>&#8595; PDF</button>'
+    + '</div>'
+    + bodyHtml
+    + '<script>'
+    + 'var _xlR=false,_pdR=false;'
+    + 'var _rd=window._rd||{};'
+    + 'var _ed=_rd.ed||null;'
+    + 'var _org=_rd.org||"";'
+    + 'var _h1=_rd.h1||"";'
+    + 'var _h2=_rd.h2||"";'
+    + 'var _pr=_rd.pr||"";'
+    + 'var _bRows=_rd.bRows||[];'
+    + 'var _bCols=_rd.bCols||[];'
+    + 'function _fn(s){return(s||"").replace(/[\/\\\\?*:[\\]]/g,"_");}'
+    + 'function _chk(){'
+    + '  if(_xlR){var b=document.getElementById("btnXl");if(b)b.disabled=false;}'
+    + '  if(_pdR){var b=document.getElementById("btnPdf");if(b)b.disabled=false;}'
+    + '}'
+    + 'var sXL=document.createElement("script");'
+    + 'sXL.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";'
+    + 'sXL.onload=function(){_xlR=true;_chk();};'
+    + 'document.head.appendChild(sXL);'
+    + 'var sPDF=document.createElement("script");'
+    + 'sPDF.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";'
+    + 'sPDF.onload=function(){'
+    + '  var sAT=document.createElement("script");'
+    + '  sAT.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js";'
+    + '  sAT.onload=function(){_pdR=true;_chk();};'
+    + '  document.head.appendChild(sAT);'
+    + '};'
+    + 'document.head.appendChild(sPDF);'
+    + 'function dlExcel(){'
+    + '  if(typeof XLSX==="undefined"){alert("Excel not ready, wait a moment.");return;}'
+    + '  try{'
+    + '    var wb=XLSX.utils.book_new();'
+    + '    var aoa=[];'
+    + '    if(_org)aoa.push([_org]);'
+    + '    if(_h1&&_h1!==_h2)aoa.push([_h1]);'
+    + '    if(_h2)aoa.push([_h2]);'
+    + '    aoa.push(["Period: "+_pr]);'
+    + '    aoa.push([]);'
+    + '    if(_ed&&_ed.length){for(var i=0;i<_ed.length;i++)aoa.push(_ed[i]);}'
+    + '    var ws=XLSX.utils.aoa_to_sheet(aoa);'
+    + '    var nc=(_ed&&_ed[0])?_ed[0].length:4;'
+    + '    ws["!cols"]=[];for(var c=0;c<nc;c++)ws["!cols"].push({wch:20});'
+    + '    XLSX.utils.book_append_sheet(wb,ws,"Report");'
+    + '    XLSX.writeFile(wb,_fn(_h2)+".xlsx");'
+    + '  }catch(e){alert("Excel export error: "+e.message);}'
+    + '}'
+    + 'function dlPdf(){'
+    + '  if(!window.jspdf||!window.jspdf.jsPDF){alert("PDF not ready, wait a moment.");return;}'
+    + '  try{'
+    + '    var JP=window.jspdf.jsPDF;'
+    + '    var doc=new JP({orientation:"landscape",unit:"mm",format:"a4"});'
+    + '    var pw=doc.internal.pageSize.width;var y=14;'
+    + '    doc.setFontSize(13);doc.setFont("helvetica","bold");'
+    + '    doc.text(_org||"",pw/2,y,{align:"center"});y+=7;'
+    + '    doc.setFontSize(11);'
+    + '    if(_h1&&_h1!==_h2){doc.text(_h1,pw/2,y,{align:"center"});y+=6;doc.text(_h2,pw/2,y,{align:"center"});y+=6;}'
+    + '    else{doc.text(_h2||"",pw/2,y,{align:"center"});y+=6;}'
+    + '    doc.setFontSize(9);doc.setFont("helvetica","normal");'
+    + '    doc.text("Period: "+(_pr||""),pw/2,y,{align:"center"});y+=8;'
+    + '    if(_ed&&_ed.length>1){'
+    + '      var bRowSet=new Set(_bRows);'
+    + '      var bColSet=new Set(_bCols);'
+    + '      doc.autoTable({'
+    + '        head:[_ed[0]],body:_ed.slice(1),startY:y,theme:"grid",'
+    + '        styles:{fontSize:8,cellPadding:2.5,overflow:"linebreak",lineColor:[200,211,240],lineWidth:0.3},'
+    + '        headStyles:{fillColor:[30,86,219],textColor:255,fontStyle:"bold",halign:"center"},'
+    + '        alternateRowStyles:{fillColor:[247,249,255]},'
+    + '        didParseCell:function(d){'
+    + '          if(d.section==="body"){'
+    + '            var ri=d.row.index;'  /* 0-based body row index */
+    + '            var ci=d.column.index;'
+    + '            if(bRowSet.has(ri)||bColSet.has(ci)){'
+    + '              d.cell.styles.fontStyle="bold";'
+    + '              if(bRowSet.has(ri)){d.cell.styles.fillColor=[232,240,254];d.cell.styles.textColor=[20,80,153];}'
+    + '            }'
+    + '          }'
+    + '        },'
+    + '        didDrawPage:function(d){doc.setFontSize(8);doc.setFont("helvetica","normal");doc.text("Page "+d.pageNumber,pw-15,doc.internal.pageSize.height-8);}'
+    + '      });'
+    + '    }'
+    + '    doc.save(_fn(_h2)+".pdf");'
+    + '  }catch(e){alert("PDF export error: "+e.message);}'
+    + '}'
+    + '<\/script></body></html>';
+
+  w.document.write(html);
+  w.document.close();
+}
+
+
+
+// ── Cash Book ──
+function dbReportCashBook(rows, range, lang) {
+  const period = range.label;
+  const ml = lang === 'ml';
+  const lOB='Opening Balance',lCB='Closing Balance',lTotal='Total',lBankD='Cash Deposited to Bank';
+  const byDate = {}, dateOrder = [];
+  rows.forEach(row => {
+    const dt = dbFmtDate(row.values[0]);
+    if (!byDate[dt]) { byDate[dt]=[]; dateOrder.push(dt); }
+    byDate[dt].push(row.values);
+  });
+  if (!dateOrder.length) {
+    dbPrintReport('Cash Book','Cash Book','','',period,'<p style="text-align:center;padding:20px;">No data for this period.</p>',null);
+    return;
+  }
+  const obCashInit = parseFloat(document.getElementById('dbObCash').value)||0;
+  const obBankInit = parseFloat(document.getElementById('dbObBank').value)||0;
+  let runCash = obCashInit, runBank = obBankInit;
+  if (dbCurrentPeriod !== 'year') {
+    function toIntCB(dt) { return dt.getFullYear()*10000+(dt.getMonth()+1)*100+dt.getDate(); }
+    const periodStartInt = toIntCB(range.from);
+    let priorCashIn=0,priorBankDep=0,priorOtherIncome=0,priorExp=0;
+    dbAllPreviewRows.forEach(row => {
+      const v=row.values;
+      const s=String(v[0]||'').replace(/^'/,'').trim();
+      let mc=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if(!mc)mc=s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      if(!mc)return;
+      const rInt=parseInt(mc[3])*10000+parseInt(mc[2])*100+parseInt(mc[1]);
+      if(rInt>=periodStartInt)return;
+      priorCashIn+=(parseFloat(v[1])||0)+(parseFloat(v[2])||0)+(parseFloat(v[3])||0);
+      priorBankDep+=parseFloat(v[5])||0;
+      priorOtherIncome+=parseFloat(v[6])||0;
+      priorExp+=parseFloat(v[9])||0;
+    });
+    runCash=obCashInit+priorCashIn-priorBankDep;
+    runBank=obBankInit+priorOtherIncome+priorBankDep-priorExp;
+  }
+  const exportData=[['Date','Particulars (Dr)','Cash (₹)','Bank (₹)','','Particulars (Cr)','Cash (₹)','Bank (₹)']];
+  const cbBoldRows = [];  // track which exportData body rows are totals
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let allTables='';
+  let currentMonthKey = ''; // tracks "MM/YYYY" to detect month change
+
+  dateOrder.forEach(dt => {
+    // ── Extract month/year from date string (dd/mm/yyyy) ──
+    const dtParts = dt.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    const monthKey = dtParts ? `${dtParts[2]}/${dtParts[3]}` : '';
+    if (monthKey && monthKey !== currentMonthKey) {
+      currentMonthKey = monthKey;
+      const monthName = dtParts ? `${MONTH_NAMES[parseInt(dtParts[2],10)-1]} ${dtParts[3]}` : '';
+      allTables += `<div style="margin:18px 0 4px;padding:6px 12px;background:#1a56db;color:white;font-size:13px;font-weight:bold;border-radius:4px;letter-spacing:0.04em;">${monthName}</div>`;
+    }
+
+    const dayRows=byDate[dt];
+    const incEntries=[], payEntries=[];
+    dayRows.forEach(v=>{
+      const op=parseFloat(v[1])||0,lab=parseFloat(v[2])||0,oc=parseFloat(v[3])||0,
+            ocH=String(v[4]||'').trim(),inc=parseFloat(v[6])||0,
+            incH=String(v[7]||'').trim(),bd=parseFloat(v[5])||0;
+      if(op>0)incEntries.push({label:'OP',cash:op,bank:0});
+      if(lab>0)incEntries.push({label:'LAB',cash:lab,bank:0});
+      if(oc>0)incEntries.push({label:ocH||'Other Cash',cash:oc,bank:0});
+      if(inc>0)incEntries.push({label:incH||'Income',cash:0,bank:inc});
+      if(bd>0)incEntries.push({label:lBankD,cash:0,bank:bd});
+    });
+    const bankDepTotal=dayRows.reduce((s,v)=>s+(parseFloat(v[5])||0),0);
+    dayRows.forEach(v=>{
+      const exp=parseFloat(v[9])||0,expH=String(v[10]||'').trim();
+      if(exp>0)payEntries.push({label:expH||'Expenditure',cash:0,bank:exp});
+    });
+    if(bankDepTotal>0)payEntries.push({label:lBankD,cash:bankDepTotal,bank:0});
+    const incCashTotal=incEntries.reduce((s,e)=>s+e.cash,0);
+    const incBankTotal=incEntries.reduce((s,e)=>s+e.bank,0);
+    const payBankTotal=payEntries.reduce((s,e)=>s+e.bank,0);
+    const payCashTotal=payEntries.reduce((s,e)=>s+e.cash,0);
+    const cbCash=runCash+incCashTotal-payCashTotal;
+    const cbBank=runBank+incBankTotal-payBankTotal;
+    const leftCashTotal=runCash+incCashTotal,leftBankTotal=runBank+incBankTotal;
+    const leftRows=[{label:lOB,cash:runCash,bank:runBank},...incEntries];
+    const rightRows=[...payEntries,{label:lCB,cash:cbCash,bank:cbBank}];
+    const maxMid=Math.max(leftRows.length,rightRows.length);
+    let tRows='';
+    for(let i=0;i<maxMid;i++){
+      const L=leftRows[i],R=rightRows[i],isFirstRow=i===0,LisOB=i===0,RisCB=R&&R.label===lCB;
+      tRows+=`<tr>`;
+      if(isFirstRow)tRows+=`<td rowspan="${maxMid+1}" class="ctr" style="vertical-align:top;font-weight:600;">${dbEscHtml(dt)}</td>`;
+      if(L){tRows+=`<td>${dbEscHtml(L.label)}</td><td class="num">${L.cash>0||LisOB?dbFmtNum(L.cash):''}</td><td class="num">${L.bank>0||LisOB?dbFmtNum(L.bank):''}</td>`;}
+      else{tRows+=`<td></td><td></td><td></td>`;}
+      tRows+=`<td style="border-left:2px solid #c8d3f0;"></td>`;
+      if(R){tRows+=`<td>${dbEscHtml(R.label)}</td><td class="num">${R.cash>0||RisCB?dbFmtNum(R.cash):''}</td><td class="num">${R.bank>0||RisCB?dbFmtNum(R.bank):''}</td>`;}
+      else{tRows+=`<td></td><td></td><td></td>`;}
+      tRows+=`</tr>`;
+      // ── Push to exportData ──
+      exportData.push([
+        isFirstRow ? dt : '',
+        L ? L.label : '',
+        L ? (L.cash>0||LisOB ? L.cash : '') : '',
+        L ? (L.bank>0||LisOB ? L.bank : '') : '',
+        '',
+        R ? R.label : '',
+        R ? (R.cash>0||RisCB ? R.cash : '') : '',
+        R ? (R.bank>0||RisCB ? R.bank : '') : ''
+      ]);
+    }
+    // Push total row to exportData
+    exportData.push([lTotal,'',leftCashTotal,leftBankTotal,'',lTotal,payCashTotal+cbCash,payBankTotal+cbBank]);
+    cbBoldRows.push(exportData.length - 2);  // body row index = exportData.length-1 minus 1 for header
+    tRows+=`<tr class="total-row"><td><b>${lTotal}</b></td><td class="num"><b>${dbFmtNum(leftCashTotal)}</b></td><td class="num"><b>${dbFmtNum(leftBankTotal)}</b></td><td style="border-left:2px solid #c8d3f0;"></td><td><b>${lTotal}</b></td><td class="num"><b>${dbFmtNum(payCashTotal+cbCash)}</b></td><td class="num"><b>${dbFmtNum(payBankTotal+cbBank)}</b></td></tr>`;
+    allTables+=`<table style="margin-bottom:22px;width:100%;"><thead><tr>
+      <th class="ctr" style="width:80px;">Date</th><th class="lft" style="min-width:150px;">Particulars</th>
+      <th class="num" style="width:85px;">Cash (₹)</th><th class="num" style="width:85px;">Bank (₹)</th>
+      <th style="width:8px;padding:0;background:#f0f4ff;border:none;"></th>
+      <th class="lft" style="min-width:150px;">Particulars</th>
+      <th class="num" style="width:85px;">Cash (₹)</th><th class="num" style="width:85px;">Bank (₹)</th>
+    </tr></thead><tbody>${tRows}</tbody></table>`;
+    runCash=cbCash; runBank=cbBank;
+  });
+  dbPrintReport('Cash Book','Cash Book','','',period,allTables,exportData,{rows:cbBoldRows,cols:[]});
+}
+
+// ── Income Register ──
+function dbReportIncome(rows, period, lang) {
+  const ml=lang==='ml';
+  let hasOP=false,hasLAB=false;
+  rows.forEach(r=>{if(parseFloat(r.values[1])>0)hasOP=true;if(parseFloat(r.values[2])>0)hasLAB=true;});
+  const otherHeadOrder=[],otherHeadSet=new Set();
+  rows.forEach(r=>{const h=String(r.values[4]||'').trim(),a=parseFloat(r.values[3])||0;if(a>0&&h&&!otherHeadSet.has(h)){otherHeadSet.add(h);otherHeadOrder.push(h);}});
+  const incHeadOrder=[],incHeadSet=new Set();
+  rows.forEach(r=>{const h=String(r.values[7]||'').trim(),a=parseFloat(r.values[6])||0;if(a>0&&h&&!incHeadSet.has(h)){incHeadSet.add(h);incHeadOrder.push(h);}});
+  const colDefs=[];
+  if(hasOP)colDefs.push({label:'OP',key:'op'});
+  if(hasLAB)colDefs.push({label:'LAB',key:'lab'});
+  otherHeadOrder.forEach(h=>colDefs.push({label:h,key:'oh:'+h}));
+  incHeadOrder.forEach(h=>colDefs.push({label:h,key:'ih:'+h}));
+  if(!colDefs.length){dbPrintReport('Income Register','Income Register','Form 1','Form 1',period,'<p style="text-align:center;padding:20px;">No income data.</p>',null);return;}
+  const byDate={},dateOrder=[];
+  rows.forEach(r=>{const dt=dbFmtDate(r.values[0]);if(!byDate[dt]){byDate[dt]=[];dateOrder.push(dt);}byDate[dt].push(r.values);});
+  const tableRows=[]; let hasAnyData=false;
+  const colTotals={}; colDefs.forEach(c=>colTotals[c.key]=0); let grandTotal=0;
+  dateOrder.forEach(dt=>{
+    const dayRows=byDate[dt];
+    let opAmt=0,labAmt=0;
+    dayRows.forEach(v=>{opAmt+=parseFloat(v[1])||0;labAmt+=parseFloat(v[2])||0;});
+    const ocItems=[],ihItems=[];
+    dayRows.forEach(v=>{
+      const oh=String(v[4]||'').trim(),oc=parseFloat(v[3])||0;
+      if(oc>0&&oh){const k='oh:'+oh;const ex=ocItems.find(x=>x.key===k);if(ex)ex.amt+=oc;else ocItems.push({key:k,amt:oc});}
+      const ih=String(v[7]||'').trim(),inc=parseFloat(v[6])||0;
+      if(inc>0){const k=ih?'ih:'+ih:'ih:';const ex=ihItems.find(x=>x.key===k);if(ex)ex.amt+=inc;else ihItems.push({key:k,amt:inc});}
+    });
+    const extraLen=Math.max(ocItems.length,ihItems.length);
+    if(opAmt===0&&labAmt===0&&extraLen===0)return;
+    hasAnyData=true;
+    const numRows=Math.max(1,extraLen);
+    for(let i=0;i<numRows;i++){
+      const amounts={};
+      if(i===0){if(opAmt>0)amounts['op']=opAmt;if(labAmt>0)amounts['lab']=labAmt;}
+      if(ocItems[i])amounts[ocItems[i].key]=ocItems[i].amt;
+      if(ihItems[i])amounts[ihItems[i].key]=ihItems[i].amt;
+      tableRows.push({date:i===0?dt:'',amounts});
+    }
+  });
+  if(!hasAnyData){dbPrintReport('Income Register','Income Register','Form 1','Form 1',period,'<p style="text-align:center;padding:20px;">No income data.</p>',null);return;}
+  const exportData=[['Date',...colDefs.map(c=>c.label),'Total']];
+  const theadRow=`<tr><th class="ctr" style="width:90px;">Date</th>${colDefs.map(c=>`<th class="num" style="min-width:90px;">${dbEscHtml(c.label)}</th>`).join('')}<th class="num" style="width:90px;">Total</th></tr>`;
+  let tbodyRows='';
+  tableRows.forEach(tr=>{
+    const rowAmounts=colDefs.map(c=>tr.amounts[c.key]||0);
+    const rowTotal=rowAmounts.reduce((s,a)=>s+a,0);
+    rowAmounts.forEach((a,i)=>colTotals[colDefs[i].key]+=a); grandTotal+=rowTotal;
+    const cells=rowAmounts.map(a=>`<td class="num">${a>0?dbFmt(a):''}</td>`).join('');
+    tbodyRows+=`<tr><td class="ctr">${tr.date}</td>${cells}<td class="num">${rowTotal>0?'<b>'+dbFmt(rowTotal)+'</b>':''}</td></tr>`;
+    exportData.push([tr.date,...rowAmounts.map(a=>a>0?a:''),rowTotal>0?rowTotal:'']);
+  });
+  tbodyRows+=`<tr class="total-row"><td><b>Total</b></td>${colDefs.map(c=>`<td class="num">${dbFmt(colTotals[c.key])}</td>`).join('')}<td class="num"><b>${dbFmt(grandTotal)}</b></td></tr>`;
+  exportData.push(['Total',...colDefs.map(c=>colTotals[c.key]),grandTotal]);
+  const irLastBodyRow = exportData.length - 2;  // 0-based index of total row in body
+  const irTotalCol = colDefs.length + 1;         // last column index (Total)
+  dbPrintReport('Income Register','Income Register','Form 1','Form 1',period,`<table>${theadRow}${tbodyRows}</table>`,exportData,{rows:[irLastBodyRow],cols:[irTotalCol]});
+}
+
+// ── Expenditure Register ──
+function dbReportExpenditure(rows, period, lang) {
+  const headOrder=[],headSet=new Set();
+  rows.forEach(r=>{const h=String(r.values[10]||'').trim(),a=parseFloat(r.values[9])||0;if(a>0&&h&&!headSet.has(h)){headSet.add(h);headOrder.push(h);}});
+  const entries=[];
+  rows.forEach(r=>{const v=r.values,a=parseFloat(v[9])||0;if(!a)return;entries.push({date:dbFmtDate(v[0]),desc:String(v[11]||'').trim()||String(v[8]||'').trim(),head:String(v[10]||'').trim(),amt:a});});
+  if(!entries.length){dbPrintReport('Expenditure Register','Expenditure Register','Form 2','Form 2',period,'<p style="text-align:center;padding:20px;">No expenditure data.</p>',null);return;}
+  const colTotals={};headOrder.forEach(h=>colTotals[h]=0);let grandTotal=0;
+  const exportData=[['Date','Description',...headOrder,'Total']];
+  let theadRow=`<tr><th class="ctr" style="width:90px;">Date</th><th class="lft">Description</th>${headOrder.map(h=>`<th class="num" style="width:100px;">${dbEscHtml(h)}</th>`).join('')}<th class="num" style="width:90px;">Total</th></tr>`;
+  let tbodyRows='';
+  entries.forEach(e=>{
+    const rowAmounts=headOrder.map(h=>h===e.head?e.amt:0);
+    rowAmounts.forEach((a,i)=>colTotals[headOrder[i]]+=a); grandTotal+=e.amt;
+    const cells=rowAmounts.map(a=>`<td class="num">${a>0?dbFmt(a):''}</td>`).join('');
+    tbodyRows+=`<tr><td class="ctr">${e.date}</td><td class="lft">${dbEscHtml(e.desc)}</td>${cells}<td class="num"><b>${dbFmt(e.amt)}</b></td></tr>`;
+    exportData.push([e.date,e.desc,...rowAmounts.map(a=>a>0?a:''),e.amt]);
+  });
+  tbodyRows+=`<tr class="total-row"><td colspan="2"><b>Total</b></td>${headOrder.map(h=>`<td class="num">${dbFmt(colTotals[h])}</td>`).join('')}<td class="num"><b>${dbFmt(grandTotal)}</b></td></tr>`;
+  exportData.push(['Total','',...headOrder.map(h=>colTotals[h]),grandTotal]);
+  const erLastBodyRow = exportData.length - 2;
+  const erTotalCol = headOrder.length + 2;  // Date, Desc, ...heads, Total
+  dbPrintReport('Expenditure Register','Expenditure Register','Form 2','Form 2',period,`<table>${theadRow}${tbodyRows}</table>`,exportData,{rows:[erLastBodyRow],cols:[erTotalCol]});
+}
+
+// ── Forum (Receipts & Payments) ──
+function dbReportForum(rows, range, lang) {
+  const period=range.label,ml=lang==='ml';
+  const obCashInit=parseFloat(document.getElementById('dbObCash').value)||0;
+  const obBankInit=parseFloat(document.getElementById('dbObBank').value)||0;
+  let obCash=obCashInit,obBank=obBankInit;
+  if(dbCurrentPeriod!=='year'){
+    function toIntFR(dt){return dt.getFullYear()*10000+(dt.getMonth()+1)*100+dt.getDate();}
+    const periodStartInt=toIntFR(range.from);
+    let pCI=0,pBD=0,pOI=0,pE=0;
+    dbAllPreviewRows.forEach(row=>{
+      const v=row.values;
+      const s=String(v[0]||'').replace(/^'/,'').trim();
+      let mc=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if(!mc)mc=s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      if(!mc)return;
+      const rInt=parseInt(mc[3])*10000+parseInt(mc[2])*100+parseInt(mc[1]);
+      if(rInt>=periodStartInt)return;
+      pCI+=(parseFloat(v[1])||0)+(parseFloat(v[2])||0)+(parseFloat(v[3])||0);
+      pBD+=parseFloat(v[5])||0;pOI+=parseFloat(v[6])||0;pE+=parseFloat(v[9])||0;
+    });
+    obCash=obCashInit+pCI-pBD;obBank=obBankInit+pOI+pBD-pE;
+  }
+  let totalOP=0,totalLAB=0,totalOC=0,totalIncome=0,totalBank=0,totalExp=0;
+  const ocHeads={},ihHeads={},expHeads={},bdHeads={};
+  rows.forEach(r=>{
+    const v=r.values;
+    const op=parseFloat(v[1])||0,lab=parseFloat(v[2])||0,oc=parseFloat(v[3])||0;
+    const oh=String(v[4]||'').trim()||'Other Cash',inc=parseFloat(v[6])||0;
+    const ih=String(v[7]||'').trim()||'(Unclassified)',bd=parseFloat(v[5])||0;
+    const exp=parseFloat(v[9])||0,eh=String(v[10]||'').trim()||'(Unclassified)';
+    totalOP+=op;totalLAB+=lab;totalOC+=oc;totalIncome+=inc;totalBank+=bd;totalExp+=exp;
+    if(oc>0)ocHeads[oh]=(ocHeads[oh]||0)+oc;
+    if(inc>0)ihHeads[ih]=(ihHeads[ih]||0)+inc;
+    if(exp>0)expHeads[eh]=(expHeads[eh]||0)+exp;
+    if(bd>0){const bdLabel=String(v[7]||'').trim()||'Bank Deposit';bdHeads[bdLabel]=(bdHeads[bdLabel]||0)+bd;}
+  });
+  const cbCash=obCash+totalOP+totalLAB+totalOC-totalBank;
+  const cbBank=obBank+totalIncome+totalBank-totalExp;
+  const receiptTotal=obCash+obBank+totalOP+totalLAB+totalOC+totalIncome+totalBank;
+  const paymentTotal=totalExp+totalBank+cbCash+cbBank;
+  const recRows=[],payRows=[];
+  const addRec=(l,a,o)=>recRows.push({label:l,amount:a,...(o||{})});
+  const addPay=(l,a,o)=>payRows.push({label:l,amount:a,...(o||{})});
+  addRec('Opening Balance (Cash)',obCash);addRec('Opening Balance (Bank)',obBank);
+  addRec('OP Collections',totalOP);addRec('LAB Collections',totalLAB);
+  addRec('Other Cash Receipts',totalOC,{bold:true});
+  Object.entries(ocHeads).forEach(([l,a])=>addRec(l,a,{indent:true}));
+  addRec('Other Income (Bank)',totalIncome,{bold:true});
+  Object.entries(ihHeads).forEach(([l,a])=>addRec(l,a,{indent:true}));
+  addRec('Cash Deposited to Bank',totalBank);
+  addPay('Expenditure',totalExp,{bold:true});
+  Object.entries(expHeads).forEach(([l,a])=>addPay(l,a,{indent:true}));
+  addPay('Cash Deposited to Bank',totalBank,{bold:true});
+  Object.entries(bdHeads).forEach(([l,a])=>addPay(l,a,{indent:true}));
+  addPay('Closing Balance (Cash)',cbCash);addPay('Closing Balance (Bank)',cbBank);
+  const maxRows=Math.max(recRows.length,payRows.length);
+  function renderCell(e){
+    if(!e)return'<td></td><td></td>';
+    const style=e.indent?' style="padding-left:1.6em;color:#555;"':(e.bold?' style="font-weight:bold;"':'');
+    const val=e.bold?`<b>₹${dbFmt(e.amount)}</b>`:`₹${dbFmt(e.amount)}`;
+    return`<td${style}>${e.bold?'<b>'+dbEscHtml(e.label)+'</b>':dbEscHtml(e.label)}</td><td class="num">${val}</td>`;
+  }
+  let bodyRows='';
+  for(let i=0;i<maxRows;i++){bodyRows+=`<tr>${renderCell(recRows[i])}<td style="border-left:2px solid #c8d3f0;width:4px;padding:0;"></td>${renderCell(payRows[i])}</tr>`;}
+  const html=`<table style="width:100%;"><thead><tr>
+    <th colspan="2" style="text-align:center;">Receipts</th>
+    <th style="width:4px;padding:0;background:#f0f4ff;border:none;"></th>
+    <th colspan="2" style="text-align:center;">Payments</th>
+  </tr></thead><tbody>${bodyRows}
+  <tr class="total-row">
+    <td><b>Total</b></td><td class="num"><b>₹${dbFmt(receiptTotal)}</b></td>
+    <td style="border-left:2px solid #c8d3f0;width:4px;padding:0;"></td>
+    <td><b>Total</b></td><td class="num"><b>₹${dbFmt(paymentTotal)}</b></td>
+  </tr></tbody></table>`;
+  // Build exportData for Forum
+  const forumExport = [['Receipts','Amount (₹)','','Payments','Amount (₹)']];
+  const forumBoldRows = [];
+  const maxFE = Math.max(recRows.length, payRows.length);
+  for(let i=0;i<maxFE;i++){
+    const r=recRows[i], p=payRows[i];
+    forumExport.push([
+      r ? r.label : '', r ? r.amount : '',
+      '',
+      p ? p.label : '', p ? p.amount : ''
+    ]);
+    // Mark row as bold if either side has bold:true
+    if((r&&r.bold)||(p&&p.bold)) forumBoldRows.push(forumExport.length - 2);
+  }
+  forumExport.push(['Total',receiptTotal,'','Total',paymentTotal]);
+  forumBoldRows.push(forumExport.length - 2);  // Total row body index
+  dbPrintReport('Forum (Receipts & Payments)','Forum','' ,'',period,html,forumExport,{rows:forumBoldRows,cols:[]});
+}
+
+// ── Cheque Register ──
+function dbReportCheque(rows, period, lang) {
+  const chequeRows=rows.filter(r=>(parseFloat(r.values[9])||0)>0&&String(r.values[11]||'').trim()!=='');
+  let tbody=`<tr><th>#</th><th>Date</th><th>Payee / Cheque No.</th><th>Expenditure Head</th><th class="num">Amount (₹)</th></tr>`;
+  const exportData=[['#','Date','Payee / Cheque No.','Expenditure Head','Amount (₹)']];
+  let total=0;
+  chequeRows.forEach((r,idx)=>{
+    const v=r.values,amt=parseFloat(v[9])||0;total+=amt;
+    tbody+=`<tr><td>${idx+1}</td><td>${dbFmtDate(v[0])}</td><td>${dbEscHtml(String(v[11]||''))}</td><td>${dbEscHtml(String(v[10]||''))}</td><td class="num">${dbFmt(amt)}</td></tr>`;
+    exportData.push([idx+1,dbFmtDate(v[0]),String(v[11]||''),String(v[10]||''),amt]);
+  });
+  tbody+=`<tr class="total-row"><td colspan="4"><b>Total</b></td><td class="num"><b>${dbFmt(total)}</b></td></tr>`;
+  exportData.push(['Total','','','',total]);
+  const crLastBodyRow = exportData.length - 2;
+  dbPrintReport('Cheque Issue Register','Cheque Issue Register','','',period,`<table>${tbody}</table>`,exportData,{rows:[crLastBodyRow],cols:[]});
+}
+
+// ── Budget ──
+function dbReportBudget(rows, period, lang) {
+  const incGroups={},expGroups={};let totalInc=0,totalExp=0,sumOP=0,sumLAB=0,sumOC=0;
+  rows.forEach(r=>{
+    const v=r.values;
+    const ih=String(v[7]||'').trim()||'(Unclassified)',ia=parseFloat(v[6])||0;
+    const eh=String(v[10]||'').trim()||'(Unclassified)',ea=parseFloat(v[9])||0;
+    if(ia){incGroups[ih]=(incGroups[ih]||0)+ia;totalInc+=ia;}
+    if(ea){expGroups[eh]=(expGroups[eh]||0)+ea;totalExp+=ea;}
+    sumOP+=parseFloat(v[1])||0;sumLAB+=parseFloat(v[2])||0;sumOC+=parseFloat(v[3])||0;
+  });
+  if(sumOP){const k='OP Collections';incGroups[k]=(incGroups[k]||0)+sumOP;totalInc+=sumOP;}
+  if(sumLAB){const k='LAB Collections';incGroups[k]=(incGroups[k]||0)+sumLAB;totalInc+=sumLAB;}
+  if(sumOC){const k='Other Cash';incGroups[k]=(incGroups[k]||0)+sumOC;totalInc+=sumOC;}
+  const incKeys=Object.keys(incGroups),expKeys=Object.keys(expGroups);
+  const budgetExpTotal=totalExp*1.05;
+  const incFactor=totalInc>0?(budgetExpTotal/totalInc):1.0;
+  const incPct=((incFactor-1)*100).toFixed(2);
+  const budgetIncTotal=totalInc*incFactor;
+  const maxLen=Math.max(incKeys.length,expKeys.length);
+  const exportData=[['Income Head','Actual (₹)','Budget (₹)','Expenditure Head','Actual (₹)','Budget (₹)']];
+  let rows2=`<tr>
+    <th colspan="3" style="text-align:center;">Income Head — (+${incPct}% to eliminate deficit)</th>
+    <th colspan="3" style="text-align:center;">Expenditure Head — (Actual + 5%)</th>
+  </tr><tr>
+    <th>Income Head</th><th class="num">Actual (₹)</th><th class="num" style="background:#d1fae5;color:#065f46;">Budget (₹)</th>
+    <th>Expenditure Head</th><th class="num">Actual (₹)</th><th class="num" style="background:#dbeafe;color:#1e3a8a;">Budget (₹)</th>
+  </tr>`;
+  for(let i=0;i<maxLen;i++){
+    const ik=incKeys[i]||'',ek=expKeys[i]||'';
+    const ia=ik?incGroups[ik]:null,ea=ek?expGroups[ek]:null;
+    const ib=ia!==null?ia*incFactor:null,eb=ea!==null?ea*1.05:null;
+    rows2+=`<tr>
+      <td>${dbEscHtml(ik)}</td><td class="num">${ia!==null?'₹'+dbFmt(ia):''}</td><td class="num" style="background:#f0fdf4;">${ib!==null?'₹'+dbFmt(ib):''}</td>
+      <td>${dbEscHtml(ek)}</td><td class="num">${ea!==null?'₹'+dbFmt(ea):''}</td><td class="num" style="background:#eff6ff;">${eb!==null?'₹'+dbFmt(eb):''}</td>
+    </tr>`;
+    exportData.push([ik,ia!==null?ia:'',ib!==null?ib:'',ek,ea!==null?ea:'',eb!==null?eb:'']);
+  }
+  rows2+=`<tr class="total-row">
+    <td><b>Total Income</b></td><td class="num"><b>₹${dbFmt(totalInc)}</b></td><td class="num" style="background:#d1fae5;color:#065f46;"><b>₹${dbFmt(budgetIncTotal)}</b></td>
+    <td><b>Total Expenditure</b></td><td class="num"><b>₹${dbFmt(totalExp)}</b></td><td class="num" style="background:#dbeafe;color:#1e3a8a;"><b>₹${dbFmt(budgetExpTotal)}</b></td>
+  </tr>`;
+  exportData.push(['Total Income',totalInc,budgetIncTotal,'Total Expenditure',totalExp,budgetExpTotal]);
+  const budLastRow = exportData.length - 2;
+  const budSurplusRow = exportData.length - 1;
+  dbPrintReport('Budget Statement','Budget Statement','','',period,`<table>${rows2}</table>`,exportData,{rows:[budLastRow,budSurplusRow],cols:[]});
+}
+
+// ── Excel Template Download ──
+async function dbDownloadTemplate() {
+  if (!window.XLSX) { customAlert('Excel library not loaded yet.'); return; }
+  if (!window.JSZip) { customAlert('JSZip library not loaded yet.'); return; }
+
+  // ── Step 1: Build workbook with SheetJS ──
+  const wb = XLSX.utils.book_new();
+  const headers = [
+    'Date (dd-mm-yyyy)', 'OP', 'LAB',
+    'Other Cash Head', 'Other Cash',
+    'Income Head (Bank)', 'Description',
+    'Other Income', 'Expenditure Head',
+    'Description (Cheque No./Name)',
+    'Expenditure', 'Cash Deposited to Bank'
+  ];
+  const entryData = [headers];
+  for (let i = 0; i < 20; i++) entryData.push(Array(headers.length).fill(''));
+  const wsEntry = XLSX.utils.aoa_to_sheet(entryData);
+  wsEntry['!cols'] = [
+    {wch:18},{wch:10},{wch:10},
+    {wch:22},{wch:14},
+    {wch:22},{wch:24},
+    {wch:14},{wch:22},{wch:28},
+    {wch:14},{wch:22}
+  ];
+  // Freeze header row
+  wsEntry['!freeze'] = { xSplit: 0, ySplit: 1, topLeftCell: 'A2', activePane: 'bottomLeft', state: 'frozen' };
+
+  // Lists sheet: Col A = Other Cash Head, Col B = Income Head, Col C = Exp Head
+  const maxLen = Math.max(dbOtherHeadOptions.length, dbSelect1Options.length, dbSelect2Options.length, 1);
+  const listsData = [['Other Cash Head', 'Income Head (Bank)', 'Expenditure Head']];
+  for (let i = 0; i < maxLen; i++) {
+    listsData.push([
+      dbOtherHeadOptions[i] || '',
+      dbSelect1Options[i]   || '',
+      dbSelect2Options[i]   || ''
+    ]);
+  }
+  const wsLists = XLSX.utils.aoa_to_sheet(listsData);
+  wsLists['!cols'] = [{wch:24},{wch:24},{wch:24}];
+
+  XLSX.utils.book_append_sheet(wb, wsEntry, 'Entry');
+  XLSX.utils.book_append_sheet(wb, wsLists, 'Lists');
+
+  // Generate base xlsx buffer
+  const xlsxBuf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+
+  // ── Step 2: Use JSZip to patch sheet1.xml with dataValidations ──
+  const zip = await JSZip.loadAsync(xlsxBuf);
+
+  // ── Step 2a: Apply freeze pane via sheetViews in sheet1.xml ──
+  const sheet1File = zip.file('xl/worksheets/sheet1.xml');
+  if (!sheet1File) { customAlert('Could not patch Excel file structure.'); return; }
+  let sheet1Xml = await sheet1File.async('string');
+
+  // Inject freeze pane if not already there
+  const freezeXml = `<sheetView tabSelected="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft"/></sheetView>`;
+  if (!sheet1Xml.includes('<sheetViews>')) {
+    sheet1Xml = sheet1Xml.replace('<sheetData>', `<sheetViews>${freezeXml}</sheetViews><sheetData>`);
+  }
+
+  // ── Step 2b: Find actual sheet filename for the Lists sheet via workbook.xml.rels ──
+  let listsSheetXmlName = 'sheet2.xml'; // default fallback
+  const wbXmlFile = zip.file('xl/workbook.xml');
+  if (wbXmlFile) {
+    const wbXml = await wbXmlFile.async('string');
+    const sheetMatch = wbXml.match(/<sheet[^>]*name="Lists"[^>]*r:id="([^"]+)"/);
+    if (sheetMatch) {
+      const rId = sheetMatch[1];
+      const wbRelsFile = zip.file('xl/_rels/workbook.xml.rels');
+      if (wbRelsFile) {
+        const wbRels = await wbRelsFile.async('string');
+        const relMatch = wbRels.match(new RegExp(`Id="${rId}"[^>]*Target="worksheets/([^"]+)"`));
+        if (relMatch) listsSheetXmlName = relMatch[1];
+      }
+    }
+  }
+  // Strip .xml to get just the sheet name token (e.g. "sheet2")
+  const listsSheetToken = listsSheetXmlName.replace('.xml', '');
+
+  // ── Step 2c: Inject dataValidations referencing Lists sheet ──
+  const colMap = [
+    { col: 'D', listCol: 'A', opts: dbOtherHeadOptions, label: 'Other Cash Head' },
+    { col: 'F', listCol: 'B', opts: dbSelect1Options,   label: 'Income Head (Bank)' },
+    { col: 'I', listCol: 'C', opts: dbSelect2Options,   label: 'Expenditure Head' },
+  ];
+  const dvDefs = [];
+  for (const { col, listCol, opts, label } of colMap) {
+    if (!opts.length) continue;
+    const lastRow = opts.length + 1; // +1 because row 1 is header in Lists sheet
+    const escapedLabel = label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    dvDefs.push(
+      `<dataValidation type="list" sqref="${col}2:${col}1001" showDropDown="0" ` +
+      `showErrorMessage="1" errorStyle="stop" ` +
+      `errorTitle="Invalid Value" error="Please select from the ${escapedLabel} list">` +
+      `<formula1>Lists!$${listCol}$2:$${listCol}$${lastRow}</formula1>` +
+      `</dataValidation>`
+    );
+  }
+
+  if (dvDefs.length > 0) {
+    const dvXml = `<dataValidations count="${dvDefs.length}">${dvDefs.join('')}</dataValidations>`;
+    if (sheet1Xml.includes('<ignoredErrors>')) {
+      sheet1Xml = sheet1Xml.replace('<ignoredErrors>', dvXml + '<ignoredErrors>');
+    } else if (sheet1Xml.includes('<pageMargins')) {
+      sheet1Xml = sheet1Xml.replace('<pageMargins', dvXml + '<pageMargins');
+    } else {
+      sheet1Xml = sheet1Xml.replace('</worksheet>', dvXml + '</worksheet>');
+    }
+    zip.file('xl/worksheets/sheet1.xml', sheet1Xml);
+  }
+
+  // ── Step 3: Export patched file ──
+  const patchedBuf = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
+  const blob = new Blob([patchedBuf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'DayBook_Template.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+}
+
+// ── Excel Upload ──
+function dbHandleExcelUpload(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  event.target.value='';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type:'binary', cellDates:true });
+      const ws = wb.Sheets['Entry'] || wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'', raw:false });
+      if(rows.length<2) { customAlert('The uploaded file has no data rows.'); return; }
+      const dataRows = rows.slice(1).filter(r=>r.some(c=>String(c).trim()!==''));
+      if(!dataRows.length) { customAlert('No data found in the uploaded file.'); return; }
+      const mismatches=[];
+      const validOH = new Set(dbOtherHeadOptions.map(v=>v.toLowerCase()));
+      const validS1 = new Set(dbSelect1Options.map(v=>v.toLowerCase()));
+      const validS2 = new Set(dbSelect2Options.map(v=>v.toLowerCase()));
+      dataRows.forEach((r,idx)=>{
+        const rn=idx+2;
+        const oh=String(r[3]||'').trim(),s1=String(r[5]||'').trim(),s2=String(r[8]||'').trim();
+        if(oh&&!validOH.has(oh.toLowerCase()))mismatches.push(`Row ${rn}: Other Cash Head "${oh}" not in list`);
+        if(s1&&!validS1.has(s1.toLowerCase()))mismatches.push(`Row ${rn}: Income Head "${s1}" not in list`);
+        if(s2&&!validS2.has(s2.toLowerCase()))mismatches.push(`Row ${rn}: Expenditure Head "${s2}" not in list`);
+      });
+      if(mismatches.length) customAlert(`${mismatches.length} dropdown mismatch(es):\n`+mismatches.slice(0,5).join('\n'));
+      dbBuildFormRows(Math.max(dataRows.length,10));
+      const formRows = document.getElementById('dbFormRows').querySelectorAll('tr');
+      dataRows.forEach((r,idx)=>{
+        const trEl=formRows[idx]; if(!trEl)return;
+        const parsedDate=dbParseExcelDate(String(r[0]||'').trim());
+        if(parsedDate)trEl.querySelector('.db-date').value=parsedDate;
+        const setNum=(cls,val)=>{const n=parseFloat(String(val).replace(/[^0-9.]/g,''));if(!isNaN(n)&&n>0)trEl.querySelector(cls).value=n;};
+        setNum('.db-op',r[1]);setNum('.db-lab',r[2]);setNum('.db-otherCash',r[4]);
+        setNum('.db-income',r[7]);setNum('.db-exp',r[10]);setNum('.db-bank',r[11]);
+        const setText=(cls,val)=>{if(val)trEl.querySelector(cls).value=String(val).trim();};
+        setText('.db-desc1',r[6]);setText('.db-desc2',r[9]);
+        const setDrop=(cls,val,validSet)=>{
+          const v=String(val||'').trim();
+          if(v&&validSet.has(v.toLowerCase())){
+            const sel=trEl.querySelector(cls);
+            const match=[...sel.options].find(o=>o.value.toLowerCase()===v.toLowerCase());
+            if(match)sel.value=match.value;
+          }
+        };
+        setDrop('.db-otherHead',r[3],validOH);setDrop('.db-select1',r[5],validS1);setDrop('.db-select2',r[8],validS2);
+      });
+      if(!mismatches.length) dbShowMsg(`${dataRows.length} row(s) loaded from Excel.`,'success');
+    } catch(err) { customAlert('Failed to read Excel file: '+err.message); }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function dbParseExcelDate(raw) {
+  if(!raw) return null;
+  raw=raw.trim();
+  let m=raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if(m)return`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  m=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m)return`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m)return raw;
+  const d=new Date(raw);
+  if(!isNaN(d.getTime()))return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return null;
+}
+
+
+
+
+
+
+function openTileEditor() {
+  document.getElementById("editColC").value = document.getElementById("colC").value;
+  document.getElementById("editColD").value = document.getElementById("colD").value;
+  document.getElementById("editColE").value = document.getElementById("colE").value;
+  document.getElementById("editColF").value = document.getElementById("colF").value;
+  document.getElementById("editColG").value = document.getElementById("colG").value;
+  document.getElementById("editColH").value = document.getElementById("colH").value;
+  document.getElementById("tilePopup").classList.remove("hidden1");
+}
+
+function closeTileEditor() {
+  document.getElementById("tilePopup").classList.add("hidden1");
+}
+
+function cancelTileEditor() {
+  var c = document.getElementById("editColC").value.trim();
+  var d = document.getElementById("editColD").value.trim();
+  var e = document.getElementById("editColE").value.trim();
+  var g = document.getElementById("editColG").value.trim();
+
+  document.getElementById("tilePopup").classList.add("hidden1");
+
+  if (!c || !d || !g) {
+    showLoginPage();
+  }
+}
+
+// ADD THIS NEW FUNCTION
+function toggleCoreFields() {
+  const checked = document.getElementById("coreFieldAmend").checked;
+  const nameField = document.getElementById("editColC");
+  const emailField = document.getElementById("editColH");
+  const bg = "var(--bg-gradient)";
+
+  if (checked) {
+    nameField.removeAttribute("readonly");
+    nameField.style.background = "";
+    emailField.removeAttribute("readonly");
+    emailField.style.background = "";
+  } else {
+    nameField.setAttribute("readonly", true);
+    nameField.style.background = bg;
+    emailField.setAttribute("readonly", true);
+    emailField.style.background = bg;
+  }
+}
+
+// REPLACE your existing submitTileEdit() with this
+function submitTileEdit() {
+  var c = document.getElementById("editColC").value.trim();
+  var d = document.getElementById("editColD").value.trim();
+  var e = document.getElementById("editColE").value.trim();
+  var f = document.getElementById("editColF").value.trim();
+  var g = document.getElementById("editColG").value.trim();
+  var h = document.getElementById("editColH").value.trim();
+  var coreAmend = document.getElementById("coreFieldAmend").checked;
+
+  if (!c || !d || !g) {
+    customAlert("Mandatory fields cannot be empty");
+    return;
+  }
+
+  if (coreAmend && !h) {
+    customAlert("e-mail cannot be empty for Core Field Amendment");
+    return;
+  }
+
+  let updatedData = {
+    colC: c,
+    colD: d,
+    colE: e,
+    colF: f,
+    colG: g,
+    colH: h
+  };
+
+  showStatus("Updating...");
+
+  // PRIMARY UPDATE — Designation, PEN, Office Address via SCRIPT_URL
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "updateTileData",
+      userId: loggedInUserId,
+      password: loggedInPassword,
+      tileContent: JSON.stringify(updatedData)
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    
+
+    if (!result.success) {
+      showStatus("Update failed");
+      setTimeout(hideStatus, 2000);
+      return;
+    }
+
+    // If core field amendment checkbox is checked, also update Name & e-mail via SCRIPT_2URL
+    if (coreAmend) {
+      fetch(SCRIPT_2URL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "updateCoreFields",
+          phone: g,          // Column C (phone) used to identify the row
+          newName: c,        // Column B (Name)
+          newEmail: h        // Column D (e-mail)
+        })
+      })
+      .then(res => res.json())
+      .then(coreResult => {
+        if (coreResult.success) {
+          applyUIUpdates(updatedData);
+          showStatus("All fields updated successfully");
+
+          // ✅ Reset core amendment checkbox and lock fields back to readonly
+          document.getElementById("coreFieldAmend").checked = false;
+          var nameField  = document.getElementById("editColC");
+          var emailField = document.getElementById("editColH");
+          nameField.setAttribute("readonly", true);
+          nameField.style.background = "var(--bg-gradient)";
+          emailField.setAttribute("readonly", true);
+          emailField.style.background = "var(--bg-gradient)";
+
+        } else {
+          showStatus("Main data updated but Core Field Amendment failed");
+        }
+        setTimeout(hideStatus, 2000);
+      })
+      .catch(err => {
+        console.error("Error updating core fields", err);
+        showStatus("Main data updated but Core Field Amendment error");
+        setTimeout(hideStatus, 2000);
+      });
+
+    } else {
+      applyUIUpdates(updatedData);
+      showStatus("Tile data updated successfully");
+      setTimeout(hideStatus, 2000);
+    }
+  })
+  .catch(err => {
+    console.error("Error updating tile data", err);
+    showStatus("Error updating tile data");
+    setTimeout(hideStatus, 2000);
+  });
+}
+
+// ADD THIS HELPER to avoid repeating UI update code
+function applyUIUpdates(data) {
+  document.getElementById("colC").value = data.colC;
+  document.getElementById("colD").value = data.colD;
+  document.getElementById("colE").value = data.colE;
+  document.getElementById("colF").value = data.colF;
+  document.getElementById("colG").value = data.colG;
+  document.getElementById("colH").value = data.colH;
+  closeTileEditor();
+}
+
+
+
+// Open phone change confirmation popup
+function openPhoneChangeRequest() {
+  var phone = document.getElementById("editColG").value.trim();
+  var name  = document.getElementById("editColC").value.trim();
+
+  if (!phone) { customAlert("Phone number not found."); return; }
+
+  document.getElementById("displayCurrentPhone").textContent = phone;
+  document.getElementById("phoneChangePopup")._requestData = { phone, name };
+
+  document.getElementById("phoneChangePopup").style.display = "flex";
+}
+
+function closePhoneChangePopup() {
+  document.getElementById("phoneChangePopup").style.display = "none";
+}
+
+function openPhoneChangeRequest() {
+  var phone = document.getElementById("editColG").value.trim();
+  var name  = document.getElementById("editColC").value.trim();
+
+  if (!phone) { customAlert("Phone number not found."); return; }
+
+  document.getElementById("displayCurrentPhone").textContent = phone;
+  document.getElementById("newPhoneNumber").value = ""; // ✅ Clear previous input
+  document.getElementById("phoneChangePopup")._requestData = { phone, name };
+
+  document.getElementById("phoneChangePopup").style.display = "flex";
+}
+
+function closePhoneChangePopup() {
+  document.getElementById("newPhoneNumber").value = ""; // ✅ Clear on close
+  document.getElementById("phoneChangePopup").style.display = "none";
+}
+
+function sendPhoneChangeRequest() {
+  var data     = document.getElementById("phoneChangePopup")._requestData || {};
+  var phone    = data.phone || document.getElementById("editColG").value.trim();
+  var name     = data.name  || document.getElementById("editColC").value.trim();
+  var email    = document.getElementById("editColH").value.trim();
+  var newPhone = document.getElementById("newPhoneNumber").value.trim(); // ✅ NEW
+
+  // ✅ Validate new phone number
+  if (!newPhone) {
+    customAlert("Please enter the new phone number.");
+    return;
+  }
+  if (!/^\d{10}$/.test(newPhone)) {
+    customAlert("Please enter a valid 10-digit phone number.");
+    return;
+  }
+
+  var sendBtn = document.querySelector("#phoneChangePopup button");
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Sending...";
+
+  fetch(SCRIPT_2URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "phoneChangeRequest",
+      userName: name,
+      userPhone: phone,
+      newPhone: newPhone,        // ✅ NEW — send new phone to script
+      userEmail: email,
+      adminEmail: "gstcell.com@gmail.com"
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    closePhoneChangePopup();
+    if (result.success) {
+      customAlert("Your request to change phone number has been sent to the admin. Please check after some time for the change.");
+    } else {
+      customAlert("Failed to send request. Please try again later.");
+    }
+  })
+  .catch(err => {
+    console.error("Phone change request error:", err);
+    closePhoneChangePopup();
+    customAlert("Error sending request: " + err.message);
+  })
+  .finally(() => {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Send Request";
+  });
+}
+
+function confirmLogout() {
+  customConfirm(
+    "Are you sure you want to log out?",
+    function(confirmed) {
+      if (confirmed) showLoginPage();
+    },
+    '⏻',
+    'Logout'
+  );
+}
+
+function showLoginPage() {
+  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("secondaryPage").classList.add("hidden");
+  loggedInUserId   = null;
+  loggedInPassword = null;
+  userDayBookUrl   = null;
+  document.getElementById("userId").value   = "";
+  document.getElementById("password").value = "";
+  // Reset Day Book state
+  dbAllPreviewRows = []; dbFilteredPreviewRows = [];
+  dbCurrentPage = 1;
+  const tbl = document.getElementById('dbPreviewTable');
+  if (tbl) tbl.innerHTML = '';
+  const ts = document.getElementById('dbTargetSheet');
+  if (ts) ts.innerHTML = '';
+  const formRows = document.getElementById('dbFormRows');
+  if (formRows) formRows.innerHTML = '';
+  // Reset LED and hide Day Book section
+  const led  = document.getElementById('colELed');
+  const txt  = document.getElementById('colEText');
+  const sect = document.getElementById('dbSection');
+  if (led) { led.style.background = '#aaa'; led.style.boxShadow = '0 0 4px #aaa'; }
+  if (txt) txt.textContent = '';
+  if (sect) sect.style.display = 'none';
+}
+</script>
+</body>
+</html>
