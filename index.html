@@ -1,239 +1,4841 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Site Under Maintenance</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6346584862129842">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+	<link rel="stylesheet" href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://gistcdn.githack.com/binutaxes/1a7108160ddb9145c56800983f53f8fb/raw/5f03027765e3b1f6c9d5f1b79d169e8cc8d17bd8/Chat2.css" rel="stylesheet" />
+
+  <title>HOME</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+/*-------------------------------------HTML PAGE STYLE STARTS--------------------------------*/
+html{
+ font-size: 10px;
+ background-color: rgb(255, 255, 255);
+}
+/*-------------------------------------HTML PAGE STYLE ENDS----------------------------------*/
+ .col-sm.quick-link-margin a {
+  text-decoration: none !important;
+}
+/*-------------------------------------HEAD IMAGE STYLE STARTS-------------------------------*/
+.headimage {
 
-    :root {
-      --bg: #0b0c0f;
-      --surface: #13151a;
-      --border: #2a2d35;
-      --accent: #e8c547;
-      --text: #e5e7eb;
-      --muted: #6b7280;
+ background-image: url('https://lh3.googleusercontent.com/d/1sitChJR4HMammhoEKMSRATww76l0RR3-');
+ background-repeat: no-repeat;
+  background-attachment:local;
+  background-size: cover;
+  background-position: 100% 100%;
+  height:30rem;
+}
+/*-------------------------------------HEAD IMAGE STYLE ENDS---------------------------------*/
+
+
+
+    /* Bullet lists */
+    .gstPrompt-popup-window ul {
+      margin: 10px 0 20px 20px;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* Background grid */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(232,197,71,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,197,71,0.04) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-    }
-
-    /* Glow blob */
-    body::after {
-      content: '';
-      position: fixed;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(232,197,71,0.07) 0%, transparent 70%);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      animation: pulse 6s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-    }
-
-    .card {
-      position: relative;
-      z-index: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 56px 64px;
-      max-width: 620px;
-      width: 90%;
-      text-align: center;
-      animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(32px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Corner accents */
-    .card::before, .card::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-color: var(--accent);
-      border-style: solid;
-    }
-    .card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
-    .card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
-
-    .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 32px;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--accent);
-      opacity: 0;
-      animation: fadeUp 0.9s 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: blink 1.4s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 700;
-      line-height: 1.15;
-      color: #fff;
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: fadeUp 0.9s 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    h1 span {
-      color: var(--accent);
-    }
-
-    .divider {
-      width: 48px;
-      height: 1px;
-      background: var(--accent);
-      margin: 24px auto;
-      opacity: 0;
-      animation: fadeUp 0.9s 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    p {
-      font-size: 13px;
-      line-height: 1.8;
-      color: var(--muted);
-      font-weight: 300;
-      opacity: 0;
-      animation: fadeUp 0.9s 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .meta {
-      margin-top: 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      color: var(--border);
-      border-top: 1px solid var(--border);
-      padding-top: 24px;
-      opacity: 0;
-      animation: fadeUp 0.9s 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .meta span { color: var(--muted); }
-
-    /* Progress bar */
-    .progress-wrap {
-      margin-top: 36px;
-      opacity: 0;
-      animation: fadeUp 0.9s 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
+    .gstPrompt-popup-window li {
       margin-bottom: 8px;
     }
+/* Style all popup text */
+#aiPopupTextContent p, #aiPopupTextContent ul li {
+  font-size: 16px;
+  line-height: 1;
+  color: #333;
+  margin-bottom: 1rem;
+}
+#aiPopupTextContent ul li{
+  font-style: italic;
+}
 
-    .progress-bar {
-      height: 2px;
-      background: var(--border);
-      position: relative;
-      overflow: hidden;
+#aiPopupTextContent h2,  .aiPopupText h1{
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #004080; /* dark blue */
+}
+
+#aiPopupTextContent h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #006699;
+}
+
+#aiPopupTextContent em {
+  font-style: italic;
+  color: #444;
+}
+#aiPopupTextContent strong {
+  font-weight: bold;
+}
+
+
+
+    .aiPopupOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    /* Main popup */
+    .aiPopupMain {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+
+    }
+    .aiPopupTiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      column-gap: 20px; /* spacing between columns */ 
+      row-gap: 40px; /* larger spacing between rows */
+      margin-bottom: 20px;
+      
     }
 
-    .progress-fill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 72%;
-      background: var(--accent);
-      animation: fillBar 2s 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .aiPopupTile {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* smooth animation */
+  padding-bottom: 5px;
+  
+}
+
+
+.aiPopupTile:hover {
+  transform: scale(1.03); /* moves forward slightly */
+  box-shadow: 0 8px 16px rgba(0,0,0,0.25); /* adds depth */
+}
+
+
+    .aiPopupTile img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 5px auto;
+  transition: transform 0.3s ease; /* smooth animation */
+}
+
+.aiPopupImage {
+  max-width: 300px;
+  aspect-ratio: 4 / 3; /* 2:1.5 simplified */
+}
+
+.aiPopupTile label{
+font-weight: bold;
+text-shadow: 2px 2px 4px #ffffff;
+font-size: 11pt;}
+
+.aiPopupTileWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* space between tile and button */
+}
+
+.aiPopupTileWrapper button {
+  width: 100%;
+  padding: 5px 15px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #4690cc, #6ea8d4);
+  color: #fff;
+  cursor: pointer;
+  font-size: 11pt;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.aiPopupTileWrapper button:hover {
+  background: linear-gradient(135deg, #005a9e, #004080);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.25);
+}
+
+
+    .aiPopupDisclaimer {
+      font-size: 11pt;
+      color: #303030;
+      margin-top: 11pt;
+      text-align: justify;
+      font-style: italic;
+    }
+    /* Secondary popup for text */
+    .aiPopupText {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      text-align: justify;
+      max-height: 95vh; /* limit height to 80% of viewport */ 
+      overflow-y: auto; /* enable vertical scroll if content exceeds */
+    }
+    .aiPopupClose {
+      float: right;
+      font-size: 13pt;
+      cursor: pointer;
+      font-weight: bold;
+      color: red;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-bottom: 5px;
+    }
+    @media (max-width:780px){
+      .aiPopupText {
+      padding: 5px;
+      border-radius: 8px;
+      max-width: 300px;
+      width: 95%;
+      text-align: justify;
+    }
+       /* Main popup */
+       .aiPopupMain {
+      padding: 5px;
+      border-radius: 8px;
+      max-width: 300px;
+      width: 95%;
+      text-align: center;
+      max-height: 90vh; /* limit height to 80% of viewport */ 
+      overflow-y: auto; /* enable vertical scroll if content exceeds */
+    }
+    }
+/*-------------------------------------SITE NAME STYLE STARTS--------------------------------*/
+.sitename{
+ font-size: 90px; 
+ margin-left: 10%; 
+ font-family:Georgia, 'Times New Roman', Times, serif;
+ font-style: italic;
+ font-weight: bold;
+ color:white;
+ text-shadow: 8px 0px 10px #032500;
+}
+.sitename span{
+    color: rgb(12, 100, 12);
+    text-shadow: 8px 0px 10px #1b4102;
+    font-style: italic;
+    font-family: 'Times New Roman';
+}
+/*-------------------------------------SITE NAME STYLE ENDS-----------------------------------*/
+
+/*-------------------------------------NAV BAR STYLE START------------------------------------*/
+
+.see-more, .loading-message {
+      cursor: pointer;
+      color: rgb(236, 255, 116);
+      font-style: italic;
+      text-decoration: underline;
+      font-size: 13pt;
+      margin-left: 10%;
+      text-decoration: none;
+    }/* nav bar change*/
+    .wrapper .nav-links >li:hover .menu-under{
+background:blue;
+border:0px;
+text-decoration: underline;
+}/* nav bar change*/
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.Act-rule-left{
+  margin-left: -200px;
+}
+nav{
+  position: relative;
+  width: 100%;
+  margin-top: -4rem;
+  background: #242526;
+  margin-bottom:3.5rem;
+}
+nav .wrapper{
+  position: relative;
+  max-width: 1300px;
+  padding: 4px 30px 0px 30px;
+  height: 46px;
+  line-height: 45px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wrapper .logo a{
+  color: #44ff00;
+  font-size: 16px;
+  font-weight:bold;
+  text-decoration: none;
+}
+.wrapper .logo {
+  margin-top: -5px;
+}
+.wrapper .nav-links{
+  display: inline-flex;
+}
+.nav-links li{
+  list-style: none;
+}
+.nav-links li a{
+  color: #f2f2f2;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 9px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+.nav-butt-on{
+  background: #ff0101;
+  border: 3px solid #ff0101;
+  font-size: 16px;
+  color:white; 
+  border-radius: 25PX; 
+  margin-left: 16px;
+  padding: 07px 10px 7px 10px;
+}
+.nav-butt-on:hover{
+  background: #242526;
+}
+.nav-links li a:hover, .binu-row .mega-links li a:hover{
+  COLOR: #ff0101;
+  border:.01px solid white;
+}
+.binu-row .mega-links1{
+  margin-left: -20px;
+}
+
+
+.binu-row .mega-links1 li a:hover{
+  COLOR: #d9d9d9;
+  border:.01px solid white;
+}
+
+
+.nav-links li header a:hover {
+  color: #ffffff;
+}
+.wrapper .nav-links >li:hover .menu-red{
+  background:#ff0101;
+  border:0px;
+}
+.wrapper .nav-links >li:hover .nav-butt-on{
+  background:#242526;
+}
+.nav-links .mobile-item{
+  display: none;
+}
+.nav-links .drop-menu, .drop-menu {
+  position: absolute;
+  border-top: 3px solid #ff0101;
+  background: #242526;
+  width: 155px;
+  line-height: 30px;
+  top: 85px;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+.drop-menu{
+	z-index: 100;
+}
+.nav-links li:hover .drop-menu,
+.nav-links li:hover .mega-box{
+  transition: all 300ms ease;
+  transition-delay: 250ms;
+  top: 40px;
+  opacity: 1;
+  visibility: visible;
+}
+.drop-menu li a{
+  width: 100%;
+  display: block;
+  padding: 0 0 0 16px;
+  border-radius: 0px;
+}
+.mega-box{
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding: 0px 30px;
+  top: 85px;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 100;
+  
+}
+.mega-short-box{
+  width:800px; 
+  margin-left: 300px;
+  
+}
+.mega-short-2box{
+  position:flex;
+  width:300px; 
+  margin-left: 570px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 715px;
+}
+.mega-box .content{
+  border-top: 3px solid #eb3007;
+  background: #242526;
+  padding: 0px 20px 10px 20px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+.mega-box .content .binu-row{
+  width: calc(25% - 30px);
+  line-height: 30px;
+}
+.content .binu-row img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.content .binu-row header{
+  margin-top: 10px;
+  color: #ff0000;
+  font-size: 16px;
+}
+.content .binu-row header > a{
+  color: #ff0000;
+  font-size: 16px;
+}
+.content .binu-row .mega-links{
+  margin-left: -20px;
+  border-left: 2px solid rgba(255,255,255,0.09);
+}
+.binu-row .mega-links li{
+  padding: 0 20px;
+}
+.binu-row .mega-links li a{
+  padding: 0px;
+  padding: 0 20px;
+  color: #d9d9d9;
+  font-size: 16px;
+  display: block;
+  border-bottom:.01px solid rgb(45, 45, 45);
+}
+.binu-row .mega-links1 li a{
+  padding: 0px;
+  padding: 0 20px;
+  color: #ff0101;
+  font-size: 16px;
+  display: block;
+  border-bottom:.01px solid rgb(45, 45, 45);
+}
+.wrapper .btn{
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: none;
+}
+.wrapper .btn.close-btn{
+  position: absolute;
+  right: 30px;
+  top: 10px;
+}
+.drop-menu-margin{
+  margin-left: 25PX;
+  width:20;
+}
+nav input{
+  display: none;
+}
+.body-text{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  padding: 0 30px;
+}
+
+
+/*-------------------------------------NAV BAR STYLE ENDS-------------------------------------*/
+
+
+
+
+
+
+
+.panel {
+            position: fixed;
+            top: 70%;
+            right: 0;
+            transform: translateY(-50%);
+            background-color: #a1a1a162;
+            padding: 10px;
+            border-radius: 8px 0 0 8px;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.5);
+            transition: right 0.3s ease-in-out;
+        }
+
+        .panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .panel ul li {
+            margin: 10px 0;
+        }
+
+        .panel a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+        }
+
+        .panel a:hover {
+            text-decoration: none;
+            color: #ffff00;
+            font-size: 24px;
+        }
+
+
+        .panel a.facebook { background-color: #4267B2; }
+        .panel a.whatsapp { background-color: #25D366; }
+        .panel a.gmail { background-color: #D93025; }
+        .panel a.instagram { background-color: #E4405F; }
+        .panel a.linkedin { background-color: #0077B5; }
+        .panel a.x { background-color: #000; }
+        .panel a.y { background-color: #0c88887b; color:blue}
+        .Sharesocial{font-weight: bold;
+          font-size: 10pt;
+          color:rgb(21, 97, 133);
+        }
+        #arrow {
+    position: fixed;
+    top: 71%;
+    right: 47px; /* Default position */
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-radius: 2px;
+    border-width: 13px 0 13px 8px; /* Leftward triangle */
+    border-color: transparent transparent transparent #616161; /* Triangle color */
+    transition: right 0.3s ease-in-out, border-width 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+#arrow.collapsed {
+    border-width: 14px 9px 14px 0; /* Rightward triangle */
+    border-color: transparent #444 transparent transparent; /* Triangle color */
+    right: 0px; /* Adjust position */
+}
+
+
+        .collapsed {
+            right: -46px; /* Hide panel */
+        }
+.hide-social{
+  display:none;
+}
+
+        @media (max-width: 800px) {
+            .panel {
+                position: static;
+                width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+                padding: 10px 20px 0px 20px;
+                margin-top: 5rem;
+                background-color: #ffffff;
+            }
+            .Sharesocial{font-weight: bold;
+          display:none;
+            }
+            .panel ul {
+                display: flex;
+                justify-content: center;
+            }
+
+            .panel ul li {
+                margin: 0 10px;
+            }
+
+            #arrow {
+                display: none;
+            }
+            footer {
+  margin-top: 0px; /* Smaller spacing above the footer */}
+  .hide-social{
+  display:block;
+}
+        }
+
+        
+
+
+
+
+
+
+
+.pressreleasehead {
+    background-color: #e6fff7;
+    color: rgb(14, 24, 160);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 1rem 0;
+}
+
+#articles-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    margin-left: 3%;
+    width:94%;
+}
+
+.category-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+.category-container h2 {
+    background-color: #f6fcd8;
+    color: rgb(14, 24, 160);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+article {
+    background: white;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 12pt;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+article img {
+    max-width: 100%; /* Ensures images don't exceed the container width */
+    max-height: 300px; /* Sets a maximum height for images */
+    height: auto; /* Maintains aspect ratio */
+    margin-bottom: 15px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+
+article p {
+    text-align: justify;
+    text-indent: 2em; /* Adds indentation to the beginning of each paragraph */
+}
+
+
+.references {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.text1 {
+    font-style: italic;
+    color: blue;
+    border: none;
+    margin: 10px auto;
+    cursor: pointer;
+    text-align: center;
+    
+}
+
+.text1:hover {
+    color: rgb(0, 0, 179);
+}
+
+button {
+    display: block;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px auto;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 800px) {
+.pressreleasehead {
+        flex-direction: column;
+  gap: 5px;
+    padding: 5px;
     }
 
-    @keyframes fillBar {
-      from { width: 0; }
-      to   { width: 72%; }
+    .category-container {
+        flex: 1 0 100%;
     }
+    article {
+    font-size: 8pt;
+padding: 8px;
+}
+#articles-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    margin-left: 1%;
+    width:98%;
+}
+}
+
+
+
+
+
+/*-------------------------------------CLOCK STYLE STARTS-------------------------------------*/
+.clock {
+  background: #ececec00;
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 8% auto 0;
+  border-radius: 50%;
+  border: 10px solid #3333337c;
+  box-shadow: 0 2vw 4vw -1vw rgba(0,0,0,0.8);
+  margin-left: 39%;
+  margin-top: -65PX;
+}
+.clock:hover {
+  background: #001001;
+}
+.clock:hover .info, .clock:hover #SPAN{
+  color: #ffffff;
+  background: #001001;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  position: absolute;
+  z-index: 10;
+  box-shadow: 0 3px 6px -1px black;
+}
+.hour-hand {
+  position: absolute;
+  z-index: 3;
+  width: 4px;
+  height: 18px;
+  background: #a41010;
+  top: 42px;
+  transform-origin: 50% 24px;
+  left: 50%;
+  margin-left: -2px;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+}
+.minute-hand {
+  position: absolute;
+  z-index: 5;
+  width: 3px;
+  height: 29px;
+  background: #ccc;
+  top: 32px;
+  left: 50%;
+  margin-left: -2px;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+  transform-origin: 50% 33px;
+}
+.second-hand {
+  position: absolute;
+  z-index: 5;
+  width: 2px;
+  height: 48px;
+  background: gold;
+  top: 29.5px;
+  lefT: 50%;
+  margin-left: -.5px;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+  transform-origin: 40% 36px;
+}
+#SPAN {
+  display: inline-block;
+  position: absolute;
+  color:#929292;
+  font-size: 22px;
+  font-family: 'Poiret One';
+  font-weight: 700;
+  z-index: 4;
+}
+.h12 {
+  top: 6px;
+  left: 50%;
+  margin-left: -9px;
+  color:#ccc;
+  font-size: 1.8rem;
+}
+.h3 {
+  top: 54px;
+  right: 10px;
+  font-size: 2rem;
+  color:#ccc;
+}
+.h6 {
+  bottom: 3px;
+  left: 50%;
+  margin-left: -4px;
+  font-size: 2rem;
+  color:#ccc;
+}
+.h9 {
+  left: 13px;
+  top: 53px;
+  font-size: 1.8rem;
+}
+.diallines {
+  position: absolute;
+  z-index: 2;
+  width: 2px;
+  height: 5px;
+  background: #7a7a7a;
+  left: 50%;
+  margin-left: -1px;
+  transform-origin: 50% 66px;
+}
+.diallines:nth-of-type(5n) {
+  position: absolute;
+  z-index: 2;
+  width: 2px;
+  height: 10px;
+  background: #666;
+  left: 50%;
+  margin-left: -1px;
+  transform-origin: 50% 66px;
+}
+.info {
+  position: absolute;
+  width: 120px;
+  height: 20px;
+  border-radius: 7px;
+  background: #0000008b;
+  text-align: center;
+  line-height: 20px;
+  color: #929292;
+  font-size: 15px;
+  font-style: italic;
+  top: 20px;
+  left: 50%;
+  z-index: 3;
+  letter-spacing: 3px;
+  margin-left: 330px;
+}
+.date {
+    top: 100px;
+}
+.day {
+    top: 125px;
+}
+/*-------------------------------------CLOCK STYLE ENDS---------------------------------------*/
+  /*-------------------------------------Suggestion STYLE ENDS---------------------------------------*/
+ .cchat {
+    position: relative;
+    display: flex; flex-direction: column;
+    width: 100%; max-width: 780px;
+    height: 65vh;          /* override to any height when embedding */
+    margin: 0 auto;
+    font-family: var(--cc-font);
+    color: var(--cc-text);
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 0;       /* set to e.g. 20px when embedded in a card */
+  }
+  .cchat *, .cchat *::before, .cchat *::after {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+
+  
+/* ---- Enlarge button on chat header ---- */
+/* Ensure header doesn't clip the enlarge button */
+.cchat .cc-header {
+  overflow: visible !important;
+  flex-wrap: nowrap !important;
+}
+.cc-enlarge-btn {
+  background: rgba(255,255,255,0.2) !important;
+  border: 1.5px solid rgba(255,255,255,0.6) !important;
+  cursor: pointer !important;
+  color: #fff !important;
+  padding: 5px 7px !important;
+  border-radius: 7px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: background 0.2s !important;
+  margin-left: 8px !important;
+  flex-shrink: 0 !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  z-index: 10 !important;
+  position: relative !important;
+}
+.cc-enlarge-btn:hover {
+  background: rgba(255,255,255,0.35) !important;
+}
+.cc-enlarge-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke: #fff !important;
+  fill: none !important;
+  display: block !important;
+}
+
+/* ---- Chat popup overlay ---- */
+#chatPopupOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.65);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+#chatPopupOverlay.active {
+  display: flex;
+}
+#chatPopupBox {
+  position: relative;
+  width: 80%;
+  height: 100%;
+  max-height: 100vh;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+#chatPopupBox .cchat {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  flex: 1;
+  border-radius: 12px;
+}
+#chatPopupCloseBtn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 10001;
+  background: #ff3b3b;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: background 0.2s, transform 0.2s;
+  line-height: 1;
+}
+#chatPopupCloseBtn:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+/* ── Reply indent ── */
+.cc-bubble-row.l1 { margin-left: 20px; }
+.cc-bubble-row.l2 { margin-left: 40px; }
+/* ── WhatsApp quote block ── */
+.cc-quote { display:flex; flex-direction:column; background:rgba(0,0,0,0.06); border-left:3px solid #25a560; border-radius:4px; padding:4px 8px; margin-bottom:5px; cursor:pointer; transition:background 0.2s; }
+.cc-quote:hover { background:rgba(0,0,0,0.12); }
+.cc-quote-name { font-size:11px; font-weight:700; color:#25a560; margin-bottom:2px; }
+.cc-quote-text { font-size:11px; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@keyframes cc-flash { 0% { background-color:rgba(37,165,96,0.4); } 100% { background-color:transparent; } }
+.cc-highlight { animation:cc-flash 1.8s ease-out forwards; border-radius:8px; }
+
+  /*-------------------------------------Suggestion STYLE ENDS---------------------------------------*/
+
+.text1 {
+padding: 20px 0px 0px; 
+font-style: italic; 
+text-transform: uppercase; 
+text-align: center;
+}
+.text button{
+background: #ef6f6c ;
+border-radius: 20px;
+border:none;
+color: #fff;
+padding: 10px;
+width: 100%;
+font-weight: 600;
+cursor: pointer;
+  }
+ 
+.container{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+ul{
+list-style: none;}
+
+
+
+
+.containermrq{
+width: 100%;
+max-width: 117rem;
+margin: 0 auto;
+padding: 0 1.5rem;
+min-height: 30rem;
+
+}
+
+
+
+
+/*-------------------------------------Home tile 1 & 2 start-----------------------------------*/
+.container1 {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.container1 img {vertical-align: middle;}
+
+.container1 .content {
+  position: absolute;
+  bottom: 0;
+  background: rgb(3, 0, 196); /* Fallback color--------------------------------------------- */
+  background: rgba(149, 243, 255, 0.089); /* Black background with 0.5 opacity-------------- */
+  color: #0063a5;
+  width: 100%;
+  height: 50%;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.inline{
+  display:inline-block;
+  width:48%;
+}
+label .container1 {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+label .container1 img {vertical-align: middle;}
+
+label .container1 .content {
+  position: absolute;
+  bottom: 0;
+  background: rgb(3, 0, 196); /* Fallback color--------------------------------------------- */
+  background: rgba(149, 243, 255, 0.089); /* Black background with 0.5 opacity-------------- */
+  color: #0063a5;
+  width: 100%;
+  height: 50%;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.grid{
+margin-top: 10px;
+margin-bottom: 20px;
+margin-left: auto;
+margin-right: auto;
+display: grid;
+grid-template-columns: repeat(6, 1fr);
+margin-left: -95px;
+grid-gap: 25px;
+align-items: center;
+}
+
+.grid > article {
+background: #eee5e9;
+border: none;
+box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
+border-radius: 20px;
+text-align: center;
+width: 250px;
+transition: transform .3s;
+
+  }
+.grid > div {
+border: none;
+box-shadow: 2px 2px 20px 4px rgba(0,0,0,0.3);
+border-radius: 20px;
+text-align: center;
+width: 200px;
+height: 250px;
+transition: transform .3s;
+
+  }
+  .grid > article:hover{
+transform: translateY(5px);
+box-shadow:  2px 2px 26px 6px rgba(0,0,0,0.3);
+
+  }
+  .grid > div:hover{
+transform: translateY(5px);
+box-shadow:  2px 2px 26px 8px rgba(0,0,0,0.3);
+
+  }
+  .grid > article img {
+width: 100%;
+height:50%;
+border-top-left-radius: 20px;
+border-top-right-radius: 20px;
+
+  }
+  .grid > div img {
+width: 100%;
+border-top-left-radius: 20px;
+border-top-right-radius: 20px;
+
+  }
+
+
+
+  .grid > label > article {
+  background: #eee5e9;
+  border: none;
+  box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  text-align: center;
+  width: 250px;
+  transition: transform .3s;
+  
+    }
+  .grid > label > div {
+  border: none;
+  box-shadow: 2px 2px 20px 4px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  text-align: center;
+  width: 200px;
+  height: 250px;
+  transition: transform .3s;
+  
+    }
+    .grid > label > article:hover{
+  transform: translateY(px);
+  box-shadow:  2px 2px 26px 6px rgba(0,0,0,0.3);
+  
+    }
+    .grid > label > div:hover{
+  transform: translateY(5px);
+  box-shadow:  2px 2px 26px 8px rgba(0,0,0,0.3);
+  
+    }
+    .grid > label > article img {
+  width: 100%;
+  height:50%;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  
+    }
+    .grid > label > div img {
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  
+    }
+
+
+
+
+  .container1 label a, .container1 a, #menu-container a{
+      text-decoration: none !important;
+  }
+
+.container1 h3 {
+  padding: 20px 0px 0px; 
+  font-weight: bold; 
+  text-transform: uppercase; 
+  text-align: center;
+  font-size: 1.6rem;  /* ADD */
+}
+.container1 p {
+  font-size: 1.3rem;  /* CHANGE from 13px */
+}
+ 
+ label .container1 .tiktok, label .container1 .tiktok2, label .container1 .tiktok3, label .container1 .tiktok4, label .container1 .tiktok5, label .container1 .tiktok6, label .container1 .tiktok7, label .container1 .tiktok8, label .container1 .tiktok9{
+    display:none;
+  }
+ 
+  .show-div-class{
+    display:none;
+  }
+  .find-div-class{
+    display:block;
+  }
+
+ 
+  #find-div:checked ~ .find-div-class{
+    display:none;
+  }
+  #find-div:checked ~ .show-div-class{
+    display:block;
+  }
+
+
+  .drop-menu-Act, .drop-menu-Act1, .drop-menu-Act2, .drop-menu-Act3, .drop-menu-Act4, .drop-menu-Act5, .drop-menu-Act6, .drop-menu-Act7{
+    border-top: 3px solid #eb3007;
+    border-bottom: 3px solid #eb3007;
+    border-right: 1px solid #0063a587;
+    margin-top:-20rem;
+    margin-left: 10%;
+    position:fixed;
+    display:none;
+    text-decoration: none;
+    font-size: 13pt;
+    border-radius: 10px;
+    padding-left: 30px;
+    line-height: 1.5;
+    width: 30rem;
+    overflow:auto;
+    box-shadow:  2px 2px 2px 2px #001c2e87;
+    transition: all 0.3s ease;
+    z-index: 100;
+    background-color: #8bbdc1;
+    min-height: 30rem;
+    max-height: 50rem;
+  }
+
+ .scroll-bar::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+.scroll-bar::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgb(51, 51, 51); 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+.scroll-bar::-webkit-scrollbar-thumb {
+  background: #0063a587; 
+  border-radius: 10px;
+  max-height: 1rem;
+}
+
+/* Handle on hover */
+.scroll-bar::-webkit-scrollbar-thumb:hover {
+  background: #0063a5; 
+}
+.topmargin60{
+  margin-top: 60px; 
+}
+.topmargin30{
+  margin-top: 30px; 
+}
+
+.topmargin20{
+  margin-top: 20px; 
+}
+
+.topmargin10{
+  margin-top: 10px; 
+}
+.topmargin8{
+  margin-top: 8px; 
+}
+.topmargin5{
+  margin-top: 5px; 
+}
+.topmargin-10{
+  margin-top: -10px; 
+}
+
+
+  #showDrop3:checked ~ .drop-menu-Act{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+  #showDrop4:checked ~ .drop-menu-Act1{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+  #showDrop5:checked ~ .drop-menu-Act2{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+  #showDrop6:checked ~ .drop-menu-Act3{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+
+  #showDrop7:checked ~ .drop-menu-Act4{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+
+  #showDrop8:checked ~ .drop-menu-Act5{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+
+  #showDrop9:checked ~ .drop-menu-Act6{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+  #showDrop10:checked ~ .drop-menu-Act7{
+    padding: 5px 5px 5px 15px;
+    display:block;
+  }
+  
+  input[type="radio"],
+  input[type="checkbox"] {
+    display: none;
+  }
+ 
+  .drop-menu-Act .Mahesh, .drop-menu-Act1 .Mahesh, .drop-menu-Act2 .Mahesh, .drop-menu-Act3 .Mahesh, .drop-menu-Act4 .Mahesh, .drop-menu-Act5 .Mahesh, .drop-menu-Act6 .Mahesh, .drop-menu-Act7 .Mahesh, .drop-menu-Act8 .Mahesh, .drop-menu-Act9 .Mahesh {
+    color: rgb(21, 77, 21); font-weight: bold; margin-left: 5px; font-size: 16pt; text-decoration: none;
+  }
+
+  .drop-menu-Act li, .drop-menu-Act1 li, .drop-menu-Act2 li, .drop-menu-Act3 li, .drop-menu-Act4 li, .drop-menu-Act5 li, .drop-menu-Act6 li, .drop-menu-Act7 li, .drop-menu-Act8 li {
+    border-bottom: 2px solid #37739c87;
+    border-radius: 10px;
+    border-bottom-left-radius: 2px solid #37739c87;
+    border-bottom-right-radius: 2px solid #37739c87;
+    text-decoration: none;
+    color: black;
+    padding-left:20px;
+  }
+  .drop-menu-Act{
+    text-decoration: none;
+  }
+  .drop-menu-Act li:hover, .drop-menu-Act1 li:hover, .drop-menu-Act2 li:hover, .drop-menu-Act3 li:hover, .drop-menu-Act4 li:hover, .drop-menu-Act5 li:hover, .drop-menu-Act6 li:hover, .drop-menu-Act7 li:hover, .drop-menu-Act8 li:hover, .drop-menu-Act9 li:hover {
+     font-weight: bold;
+     transform: translateY(1px);
+     box-shadow:  2px 2px 10px 2px #71717157;
+     transition: all 30ms ease;
+
+  }
+
+/* CSS */
+.button-17 {
+  align-items: center;
+  appearance: none;
+  background-color: #dfdfdf;
+  border-radius: 15px;
+  border:1px solid #0063a587;
+  box-shadow:  2px 2px 10px 2px #0063a587;
+  text-shadow:  5px 5px 5px #00548d87;
+  color: #0063a5;
+  display: inline-flex;
+  font-size: 14pt;
+  font-weight: bold;
+  justify-content: center;
+  letter-spacing: .25px;
+  max-width: 90%;
+  overflow: visible;
+  padding: 8px 8px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  z-index: 0;
+    margin-left: 10px;
+    height:40px;
+}
+
+.button-17:hover {
+  background: #cacaca;
+  color: #174ea6;
+  box-shadow:  2px 2px 10px 6px #0063a587;
+  transition: all 350ms ease;
+}
+
+
+.button-18 {
+  align-items: center;
+  appearance: none;
+  background-color: #dfdfdf;
+  border-radius: 15px;
+  border:1px solid #0063a587;
+  box-shadow:  2px 2px 10px 2px #0063a587;
+  text-shadow:  5px 5px 5px #00548d87;
+  color: #0063a5;
+  display: inline-flex;
+  font-size: 13pt;
+  font-weight: bold;
+  justify-content: center;
+  letter-spacing: .25px;
+  max-width: 90%;
+  overflow: visible;
+  padding: 5px 8px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  z-index: 0;
+    margin-left: 10px;
+    height:33px;
+}
+
+.button-18:hover {
+  background: #cacaca;
+  color: #174ea6;
+  box-shadow:  2px 2px 10px 6px #0063a587;
+  transition: all 350ms ease;
+}
+
+.button-19 {
+  align-items: center;
+  appearance: none;
+  color: #006826;
+  display:inline-flex;
+  font-size: 15pt;
+  font-weight: bold;
+  text-shadow:  3px 3px 5px #009b39b9;
+  justify-content: center;
+  letter-spacing: 1px;
+  max-width: 90%;
+  padding: 10px 0px 0px 0px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  z-index: 0;
+  margin-bottom: 2rem;
+    margin-left: 10px;
+    margin-top: 0px;
+     text-decoration: none;
+}
+
+.image-setting{
+  position:fixed; 
+  border-radius: 15px; 
+  height:100%;
+  margin-top:-52px; 
+  z-index: 0; 
+  opacity: .2;
+}
+/*-------------------------------------Home tile 1 & 2 ends------------------------------------*/
+
+
+/*---socialmedia share----*/
+
+
+@keyframes pop {
+  0% {
+    clip-path:circle(5%);
+    transform:scale(0.5);
+  }
+  100% {
+    clip-path:circle(50%);
+    transform:scale(1);
+  }
+}
+
+
+/*--------social media--------*/
+
+/*-------------------------------------External link style starts-------------------------------*/
+.link-grid{
+margin-left: 5px;
+margin-top: 10px;
+margin-bottom: 40px;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+grid-gap: 30px;
+align-items: center;
+}
+.link-grid > article {
+background: #eee5e9;
+border: none;
+box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.3);
+border-radius: 3px;
+text-align: center;
+width: 225px;
+transition: transform .3s;
+
+}
+.link-grid > div {
+border: 1px solid green;
+border-radius: 3px;
+text-align: center;
+width: 225px;
+height: 225px;
+transition: transform .3s;
+}
+.link-grid > div img {
+width: 100%;
+height: 100%;
+border-top-left-radius: 3px;
+border-top-right-radius: 3px;
+opacity:.125;
+}
+.text button{
+border:none;
+color: #fff;
+padding: 10px;
+width:100%;
+font-weight: 600;
+cursor: pointer;
+}
+.glass{
+	/* background styles */
+position: relative;
+display: inline-block;
+padding: 0px 0px 0px 5px;
+background-color: green; /*for compatibility with older browsers*/
+background:linear-gradient(rgb(0, 108, 216),rgb(0, 170, 212));
+width:90%;
+border-radius: 5px;
+box-shadow: 0px 1px 4px -2px #333;
+text-shadow: 0px -1px #333;
+/* text styles */
+text-decoration: none;
+color: #fff;
+font-family: sans-serif;
+font-weight: 100;
+}
+.glass:after{
+content: '';
+position: absolute;
+top: 1px;
+left: 1px;
+bottom: 1px;
+width: calc(100% - 4px);
+height: 20%;
+background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+}
+.glass:hover{
+background: linear-gradient(#073,#0fa);
+box-shadow: 4px 4px 5px 2px #94c59c;
+}
+/*-------------------------------------and youtube style start--------------------------------*/
+.container .link-grid .container-link .content ul li{
+  height:25px;
+  margin-top:5px;
+}
+.container .link-grid .container-link .content ul li:hover{
+ transform: translateX(1px);
+}
+
+.container .link-grid .container-link .content ul li a{
+padding: 0px 0px 0px 5px; 
+font-weight: bolder; text-align: left; text-indent: 0px; font-size: 1.5rem;
+text-shadow: -1px 1.5px black;
+margin-bottom: 5px;
+color: rgb(255, 255, 255);
+text-decoration:none;
+height:23px;
+  line-height:1.6;
+}
+
+.container .link-grid .container-link .content h1{
+padding: 10px 0px 0px; font-weight: bold; text-align: left; text-indent: 10px; font-size: 1.8rem;
+
+}
+
+.container-link {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.container-link img {vertical-align: middle;}
+
+.container-link .content {
+  position: absolute;
+  bottom: 0;
+  background: rgb(208, 207, 255); /* Fallback color ---------------------------*/
+  background: rgba(255, 246, 246, 0.089); /* Black background with 0.5 opacity */
+  color: #000000;
+  width: 100%;
+  height:100%;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+/*-------------------------------------External link style ends--------------------------------*/
+/*-------------------------------------and youtube style ends----------------------------------*/
+
+/*-------------------------------------Quick link style start----------------------------------*/
+footer {
+  background-color: #f8f9fa; /* Light gray background */
+  text-align: center; /* Center the text */
+  padding: 1rem; /* Padding around the text */
+  margin-top: 2rem; /* Smaller spacing above the footer */
+  font-family:'Times New Roman', Times, serif;
+  font-size: 1.5rem;
+  color: #212529; /* Dark gray text */
+  border-top: 1px solid #dee2e6; /* Subtle top border */
+  clear: both; /* Ensure it doesn't overlap floating elements */
+  position:relative;
+}
+footer a {
+      color: #001aff; /* Link color */
+      text-decoration: none; /* No underline */
+    }
+    footer a:hover {
+      text-decoration: underline; /* Underline on hover */
+    }
+.scrolltext {
+  color: rgb(0, 119, 167); 
+  font-weight: bold;
+  font-style: italic;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 13pt;
+  line-height: 13pt;
+  position: relative; /* Keeps it in flow */
+}
+
+.scrolltext:hover{
+  color: rgb(0, 53, 167); }
+    
+
+.scrolltext1{
+color: rgb(226, 102, 0); 
+font-weight: bold;
+font-style: italic;
+font-family: 'Times New Roman', Times, serif;
+font-size: 13pt;
+line-height: 25px;
+position: relative;
+}
+
+.scrolltext1:hover{
+  color: rgb(156, 49, 0); }
+
+.quick-link-margin{
+  margin-left:8%;
+}
+/*-------------------------------------Quick link style ends-----------------------------------*/
+
+/*-------------------------------------youtube style ends--------------------------------------*/
+.youtube{
+margin-top: 10px;
+margin-bottom: 20px;
+margin-left: -4%;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+grid-gap: 25px;
+  }
+
+/*-------------------------------------youtube style ends--------------------------------------*/
+
+
+@media screen and (min-width:1200px){
+  .container{max-width:1140px}
+}
+
+@media screen and (min-width:1100px){
+
+
+  .container1:hover .vanishdisplay {
+    display:none;
+  }
+
+  .container1:hover .tiktok{
+    display:block
+  }
+}
+nav{
+  display:none;
+}
+
+@media (max-width:10000px){
+  nav{
+  display:block;
+}
+}
+/*-----------------------------------------media @1500 starts-----------------------------------*/
+@media (max-width:1500px){
+.grid{
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 60px;
+  margin-left:auto;
+  margin-top: 10px;
+}
+
+.text {
+padding: 0 10px 10px;
+}
+  
+.text button{ 
+padding: 10px;
+font-weight: 600;
+}
+
+.mega-box .content .binu-row{
+    margin-bottom: 0px;
+    border-top: 0px solid rgba(255,255,255,0.08);
+  }
+
+.link-grid{
+  grid-template-columns: repeat(4, 1fr);
+} 
+.hide {
+    display:none;
+  }
+}
+/*-----------------------------------------media @1500 end--------------------------------------*/
+
+/*----------------------------------------Youtube video style @1250 start-----------------------*/
+@media screen and (max-width: 1290px) {
+
+  .mega-short-2box{
+  width:300px; 
+  margin-left: 540px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 680px;
+}
+}
+/*----------------------------------------Youtube video style @1250 end-------------------------*/
+/*----------------------------------------Youtube video style @1250 start-----------------------*/
+@media screen and (max-width: 1250px) {
+.info{
+  display:none;}
+.clock{
+  display:none;}
+  .mega-short-2box{
+  width:300px; 
+  margin-left: 490px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 630px;
+}
+}
+/*----------------------------------------Youtube video style @1250 end-------------------------*/
+
+/*----------------------------------------media @1200 starts------------------------------------*/
+@media (max-width:1200px){
+.youtube{
+grid-template-columns: repeat(3, 1fr);
+  }
+ .directoryimage
+  {
+  display:none;}
+  .mega-short-box{
+  margin-left: 215px;
+}
+.mega-short-2box{
+  width:300px; 
+  margin-left: 440px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 580px;
+}
+}
+/*------------------------------------------media @1200 end---------------------------------------*/
+/*----------------------------------------media @1150 starts------------------------------------*/
+@media (max-width:1150px){
+  .mega-short-2box{
+  width:300px; 
+  margin-left: 400px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 540px;
+}
+
+}
+/*------------------------------------------media @1150 end---------------------------------------*/
+
+/*-----------------------------------------media @1100 starts-------------------------------------*/
+  @media (max-width:1100px){
+.grid{
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 30px;
+}
+.text {
+padding: 0 8px 8px;
+}
+.text button{
+padding: 8px;
+}
+.link-grid{
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 10px;
+  margin-left: auto;
+  grid-gap: 30px;
+}
+.youtube{
+margin-left: 2%;
+}
+.text {
+padding: 0 8px 8px;
+}
+  .text button{
+  padding: 8px;
+}
+.hide1 {
+    display:none;
+  }
+
+  #find-div1:checked ~ label .vanishdisplay1, #find-div2:checked ~ label .vanishdisplay2, #find-div3:checked ~ label .vanishdisplay3, #find-div4:checked ~ label .vanishdisplay4, #find-div5:checked ~ label .vanishdisplay5, #find-div6:checked ~ label .vanishdisplay6, #find-div7:checked ~ label .vanishdisplay7, #find-div8:checked ~ label .vanishdisplay8, #find-div9:checked ~ label .vanishdisplay9, #find-div10:checked ~ label .vanishdisplay10, #find-div11:checked ~ label .vanishdisplay11, #find-div12:checked ~ label .vanishdisplay12, #find-div13:checked ~ label .vanishdisplay13, #find-div14:checked ~ label .vanishdisplay14, #find-div14:checked ~ label .vanishdisplay14, #find-div15:checked ~ label .vanishdisplay15, #find-div16:checked ~ label .vanishdisplay16, #find-div17:checked ~ label .vanishdisplay17, #find-div18:checked ~ label .vanishdisplay18, #find-div19:checked ~ label .vanishdisplay19 , #find-div20:checked ~ label .vanishdisplay20 {
+    display:none;}
+  
+  #find-div1:checked ~ label .tiktok1, #find-div2:checked ~ label .tiktok2, #find-div3:checked ~ label .tiktok3, #find-div4:checked ~ label .tiktok4, #find-div5:checked ~ label .tiktok5, #find-div6:checked ~ label .tiktok6, #find-div7:checked ~ label .tiktok7, #find-div8:checked ~ label .tiktok8, #find-div9:checked ~ label .tiktok9, #find-div10:checked ~ label .tiktok10, #find-div11:checked ~ label .tiktok11, #find-div12:checked ~ label .tiktok12, #find-div13:checked ~ label .tiktok13, #find-div14:checked ~ label .tiktok14, #find-div15:checked ~ label .tiktok15, #find-div16:checked ~ label .tiktok16, #find-div17:checked ~ label .tiktok17, #find-div18:checked ~ label .tiktok18, #find-div19:checked ~ label .tiktok19, #find-div20:checked ~ label .tiktok20 {
+    display:block;
+  }
+  .mega-short-box{
+  margin-left: 130px;
+}
+.mega-short-2box{
+  width:300px; 
+  margin-left: 350px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 490px;
+}
+}
+/*-----------------------------------------media @1100 ends--------------------------------------*/
+
+/*----------------------------------------media @1050 starts------------------------------------*/
+@media (max-width:1050px){
+
+.mega-short-2box{
+  width:300px; 
+  margin-left: 300px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 440px;
+}
+}
+/*------------------------------------------media @1050 end---------------------------------------*/
+/*-----------------------------------------media MIN @1020 starts-----------------------------------*/
+@media screen and (min-width: 1020px) {
+       
+        .vanishnav{
+            display:none
+        }/* nav bar change*/
+}
+/*-----------------------------------------media MIN @1020 ENDS-----------------------------------*/
+/*-------------------------------------NAV BAR STYLE @ 1020PX start-----------------------------*/
+@media screen and (max-width: 1020px) {
+.wrapper .btn{
+    display: block;
+}
+
+.wrapper .nav-links{
+  border-top: 3px solid #eb3007;
+  border-right: 3px solid #848484;
+  border-left: 3px solid #848484;
+    margin-top:4.6rem;
+    Margin-left:0px;
+    position:absolute;
+    min-height: 70vh;
+    width: 100%;
+    max-width: 340px;
+    top: 0;
+    left: -100%;
+    background: #242526;
+    display: block;
+    padding: 30px 10px;
+    line-height: 30px;
+    overflow-y: auto;
+    box-shadow: 0px 16px 16px rgba(0,0,0,0.18);
+    transition: all 0.3s ease;
+	  z-index: 100;
+  }
+  
+.drop-menu-Act, .drop-menu-Act1, .drop-menu-Act2, .drop-menu-Act3, .drop-menu-Act4, .drop-menu-Act5, .drop-menu-Act6, .drop-menu-Act7{
+
+margin-top:-30rem;
+margin-left: .5rem;
+font-size: 13pt;
+padding-left: 30px;
+line-height: 1.5;
+width: 300px;
+overflow:auto;
+box-shadow:  2px 2px 2px 2px #001c2e87;
+transition: all 0.3s ease;
+z-index: 100;
+background-color: #8bbdc1;
+max-height: 40rem;
+}
+
+  #menu-btn:checked ~ .nav-links {
+    left: 0%;
+  }
+  #menu-btn:checked ~ .btn.menu-btn{
+    display: none;
+  }
+  #close-btn:checked ~ .btn.menu-btn{
+    display: block;
+  }
+  .nav-links li{
+    margin: 16px 10px;
+  }
+  .nav-links li a{
+    padding: 0 20px;
+    display: block;
+    font-size: 16px;
+  }
+  .nav-links .drop-menu {
+    border-top: 0px solid #eb3007;
+    position: static;
+    opacity: 1;
+    top: 65px;
+    visibility: visible;
+    padding-left: 20px;
+    width: 100%;
+    max-height: 0px;
+    overflow: hidden;
+    box-shadow: none;
+    transition: all 0.3s ease;
+  }
+  .mega-box .content{
+
+    border-top: 0px solid #eb3007;
+  }
+  .binu-row .mega-links li a{
+  COLOR: #5dfdd8af;
+  width:280px;
+  border-bottom: hidden;
+}
+  #showDrop:checked ~ .drop-menu, #showDrop1:checked ~ .drop-menu,#showDrop2:checked ~ .drop-menu, 
+  #showMega1:checked ~ .mega-box, #showMega2:checked ~ .mega-box, #showMega3:checked ~ .mega-box, #showMega4:checked ~ .mega-box, #showMega5:checked ~ .mega-box{
+    max-height: 100%;
+  }
+.drop-menu-margin{
+  margin-left: 1PX;
+  WIDTH:120PX
+}
+  .nav-links .desktop-item, .nav-links{
+    display: none;
+  }
+ 
+  .nav-links .mobile-item{
+   
+    display: block;
+    color: #f2f2f2;
+    font-size: 16px;
+    padding-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  .nav-butt-on{
+  margin-left: 10px;
+}
+  .nav-links .mobile-item:hover{
+    background: #3A3B3C;
+  }
+  .drop-menu li{
+    margin: 0;
+
+  }
+  .drop-menu li a{
+    border-radius: 5px;
+    font-size: 16px;
+    color:red;
+  }
+  .drop-menu li a:hover{
+    color:rgb(255, 255, 255);
+  }
+  .mega-box{
+    position: static;
+    top: 65px;
+    opacity: 1;
+    visibility: visible;
+    padding: 0 20px;
+    max-height: 0px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .mega-box .content{
+    box-shadow: none;
+    flex-direction: column;
+    padding: 00px 20px 0 20px;
+  }
+  .mega-box .content .binu-row{
+    width: 100%;
+    margin-bottom: 16px;
+  }/* nav bar change*/
+  .mega-box .content .binu-row:nth-child(1),
+  .mega-box .content .binu-row:nth-child(2){
+    border-top: 1px;
+  }
+  .content .binu-row .mega-links{
+    border-left: 0px;
+    padding-left: 16px;
+    width:380px;
+    max-height: 0px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-left: -65px;
+  }
+  .content .binu-row .mega-links1{
+          border-left: 0px;
+          padding-left: 16px;
+          width:380px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          margin-left: -60px;
+          margin-top: -12px;
+          margin-bottom: -30px;
+          }/*nav bar change*/
+  
+  .binu-row .mega-links1 li a{
+    border-style: hidden;
+  }
+
+  .binu-row .mega-links li {
+    border-style: hidden;
+  }
+  #sub-sub-menu1:checked ~ .sub-sub-link1, #sub-sub-menu2:checked ~ .sub-sub-link2, #sub-sub-menu3:checked ~ .sub-sub-link3, #sub-sub-menu3A:checked ~ .sub-sub-link3A, #sub-sub-menu4:checked ~ .sub-sub-link4, #sub-sub-menu5:checked ~ .sub-sub-link5, #sub-sub-menu6:checked ~ .sub-sub-link6, #sub-sub-menu7:checked ~ .sub-sub-link7, #sub-sub-menu8:checked ~ .sub-sub-link8, #sub-sub-menu9:checked ~ .sub-sub-link9, #sub-sub-menu10:checked ~ .sub-sub-link10, #sub-sub-menu11:checked ~ .sub-sub-link11, #sub-sub-menu12:checked ~ .sub-sub-link12, #sub-sub-menu13:checked ~ .sub-sub-link13, #sub-sub-menu14:checked ~ .sub-sub-link14, #sub-sub-menu15:checked ~ .sub-sub-link15, #sub-sub-menu16:checked ~ .sub-sub-link16, #sub-sub-menu17:checked ~ .sub-sub-link17, #sub-sub-menu18:checked ~ .sub-sub-link18, #sub-sub-menu19:checked ~ .sub-sub-link19, #sub-sub-menu20:checked ~ .sub-sub-link20, #sub-sub-menu21:checked ~ .sub-sub-link21, #sub-sub-menu22:checked ~ .sub-sub-link22, #sub-sub-menu23:checked ~ .sub-sub-link23, #sub-sub-menu24:checked ~ .sub-sub-link24, #sub-sub-menu25:checked ~ .sub-sub-link25, #sub-sub-menu27:checked ~ .sub-sub-link27, #sub-sub-menu28:checked ~ .sub-sub-link28, #sub-sub-menu29:checked ~ .sub-sub-link29, #sub-sub-menu30:checked ~ .sub-sub-link30, #sub-sub-menu31:checked ~ .sub-sub-link31, #sub-sub-menu32:checked ~ .sub-sub-link32, #sub-sub-menu33:checked ~ .sub-sub-link33, #sub-sub-menu34:checked ~ .sub-sub-link34, #sub-sub-menu34:checked ~ .sub-sub-link34, #sub-sub-menu35:checked ~ .sub-sub-link35, #sub-sub-menu36:checked ~ .sub-sub-link36, #sub-sub-menu37:checked ~ .sub-sub-link37, #sub-sub-menu38:checked ~ .sub-sub-link38, #sub-sub-menu39:checked ~ .sub-sub-link39, #sub-sub-menu40:checked ~ .sub-sub-link40, #sub-sub-menu41:checked ~ .sub-sub-link41, #sub-sub-menu42:checked ~ .sub-sub-link42, #sub-sub-menu43:checked ~ .sub-sub-link43, #sub-sub-menu44:checked ~ .sub-sub-link44, #sub-sub-menu45:checked ~ .sub-sub-link45, #sub-sub-menu46:checked ~ .sub-sub-link46, #sub-sub-menu47:checked ~ .sub-sub-link47, #sub-sub-menu48:checked ~ .sub-sub-link48, #sub-sub-menu49:checked ~ .sub-sub-link49, #sub-sub-menu50:checked ~ .sub-sub-link50, #sub-sub-menu51:checked ~ .sub-sub-link51, #sub-sub-menu52:checked ~ .sub-sub-link52, #sub-sub-menu53:checked ~ .sub-sub-link53, #sub-sub-menu54:checked ~ .sub-sub-link54, #sub-sub-menu55:checked ~ .sub-sub-link55, #sub-sub-menu56:checked ~ .sub-sub-link56, #sub-sub-menu57:checked ~ .sub-sub-link57, #sub-sub-menu58:checked ~ .sub-sub-link58, #sub-sub-menu59:checked ~ .sub-sub-link59, #sub-sub-menu60:checked ~ .sub-sub-link60, #sub-sub-menu61:checked ~ .sub-sub-link61, #sub-sub-menu62:checked ~ .sub-sub-link62, #sub-sub-menu63:checked ~ .sub-sub-link63, #sub-sub-menu64:checked ~ .sub-sub-link64, #sub-sub-menu65:checked ~ .sub-sub-link65, #sub-sub-menu66:checked ~ .sub-sub-link66, #sub-sub-menu67:checked ~ .sub-sub-link67, #sub-sub-menu68:checked ~ .sub-sub-link68 {
+    max-height: 100%;
+  }
+ 
+.sub-sub-link26{
+  max-height: 100%;
+}
+
+  .binu-row .mega-links li{
+    margin: 0;
+    width:380px;
+  }
+  .content .binu-row header, .content .binu-row header a{
+    font-size: 16px;
+    padding-left:6px;
+    margin-left:-20px;
+  }
+  .content .binu-row header a{
+    padding-left:10px;
+  }
+  .content .binu-row header:hover{
+    background: #3A3B3C;
+  }
+  /*--tile--*/
+
+.mega-short-2box{
+  width:300px; 
+  margin-left: 10px;
+}
+.mega-short-3box{
+  width:300px; 
+  margin-left: 10px;
+}
+.mega-box .content .binu-row{
+          width: 100%;
+          margin-bottom: 0px;
+          }/*nav bar change*/
+  footer {
+  font-size: 1rem;
+  }
+
+}
+/*-------------------------------------NAV BAR STYLE @ 1020PX end-------------------------------*/
+
+
+/*---------------------------------------media @870 starts---------------------------------------*/ 
+@media (max-width:870px){
+
+  .scrolltext{
+font-size: 11pt;
+}
+.scrolltext1{
+font-size: 11pt;
+}
+.col-sm{
+  margin-top:10px;
+  margin-left:2.5%;
+}
+
+.col1-sm{
+
+  width:100%;
+  margin-top:10px;
+  margin-left:2.5%;
+}
+
+.row{
+  margin-right:-15px;
+  margin-left:-15px;
+  padding-right:auto;
+  padding-left:5%;}
+ 
+  .link-grid{
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 30px;
+  margin-left: -15px;
+}
+
+.youtube{
+grid-template-columns: repeat(2, 1fr);
+}
+
+.button-17 {
+  border-radius: 15px;
+  font-size: 12pt;
+  font-weight:lighter;
+  letter-spacing: .25px;
+  padding: 4px 5px;
+  margin-left: 7px;
+  height:30px;
+}
+
+.button-18 {
+  border-radius: 15px;
+  font-size: 12pt;
+  font-weight:lighter;
+  letter-spacing: .25px;
+  padding: 3px 5px;
+  margin-left: 7px;
+  height:25px;
+}
+
+.inline{
+  width:51%;
+}
+
+.button-19 {
+  font-size: 14pt;
+  letter-spacing: 1px;
+  padding: -5px 5px 8px 5px;
+  margin-bottom: 2rem;
+  margin-left: 8px;
+}
+
+.drop-menu-Act .Mahesh, .drop-menu-Act1 .Mahesh, .drop-menu-Act2 .Mahesh, .drop-menu-Act3 .Mahesh, .drop-menu-Act4 .Mahesh, .drop-menu-Act5 .Mahesh, .drop-menu-Act6 .Mahesh, .drop-menu-Act7 .Mahesh, .drop-menu-Act8 .Mahesh, .drop-menu-Act9 .Mahesh {
+    font-weight: bold; margin-left: 5px; font-size: 13pt;
+  }
+  .drop-menu-Act li, .drop-menu-Act1 li, .drop-menu-Act2 li, .drop-menu-Act3 li, .drop-menu-Act4 li, .drop-menu-Act5 li, .drop-menu-Act6 li, .drop-menu-Act7 li, .drop-menu-Act8 li, .drop-menu-Act9 li {
+     font-size: 12pt;
+  }
+
+  .grid > article:hover{
+transform: translateY(0px);
+box-shadow:  2px 2px 26px 6px rgba(0,0,0,0.3);
+
+  }
+  .grid > div:hover{
+transform: translateY(0px);
+box-shadow:  2px 2px 26px 8px rgba(0,0,0,0.3);
+
+  }
+  .grid > label > article:hover{
+transform: translateY(0px);
+box-shadow:  2px 2px 26px 6px rgba(0,0,0,0.3);
+
+  }
+  .grid > label > div:hover{
+transform: translateY(0px);
+box-shadow:  2px 2px 26px 8px rgba(0,0,0,0.3);
+
+  }
+}
+/*---------------------------------------media @870 ends---------------------------------------*/
+/*---------------------------------------media @780 Starts-------------------------------------*/
+  @media (max-width:780px){
+.grid{
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 30px;
+}
+
+.grid > div{
+  width:150px;
+  height: 200px;
+  text-align: center;
+}
+
+.grid > label > div{
+  width:150px;
+  height: 200px;
+  text-align: center;
+}
+
+.scrolltext{
+font-size: 9pt;
+}
+.scrolltext1{
+font-size: 9pt;
+}
+
+.text {
+padding: 0 5px 5px;
+}
+
+  .text button{
+  padding: 6px;
+}
+
+.text h3 {
+line-height: 2px;
+}
+
+  .link-grid{
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 30px;
+  margin-left: 0px;
+}
+
+.link-grid > div{
+  width:150px;
+  height: 150px;
+  text-align: center;
+}
+
+.text {
+padding: 0 5px 5px;
+}
+
+  .text button{
+  padding: 6px;
+}
+
+.container .link-grid .container-link .content h1{
+padding: 10px 0px 0px; font-weight: bold; text-indent: 5px; font-size: 1.5rem;
+
+}
+.container .link-grid .container-link .content ul li a{
+padding: 0px 0px 0px 0px; font-weight: bold; text-indent: 1px; font-size: 12px; height:20px;
+}
+.container .link-grid .container-link .content ul li{
+height:18px;
+}
+
+.topmargin60{
+  margin-top: 20px; 
+}
+.topmargin30{
+  margin-top: 10px; 
+}
+
+.topmargin20{
+  margin-top: 5px; 
+}
+
+.topmargin10{
+  margin-top: 3px; 
+}
+.topmargin8{
+  margin-top: 2px; 
+}
+.topmargin5{
+  margin-top: 2px; 
+}
+.topmargin-10{
+  margin-top: -5px; 
+}
+.button-17 {
+  border-radius: 18px;
+  letter-spacing: .25px;
+  padding: 6px 5px;
+  height:35px;
+}
+
+.button-18 {
+  border-radius: 18px;
+  letter-spacing: .25px;
+  padding: 5px 5px;
+  height:30px;
+}
+
+.button-19 {
+  font-size: 12pt;
+  letter-spacing: 1px;
+  padding: -5px 5px 8px 5px;
+  margin-bottom: 1.5rem;
+  margin-left: 7px;
+}
+
+.container1 label span {
+    display:none;
+  }
+  .container1 h3 {
+    font-size: 11pt;
+  }
+  .container1 p {
+    font-size: 10px;
+  }
+  .height-class{
+    height:55px;
+  }
+}
+/*---------------------------------------media @780 ends---------------------------------------*/
+/*---------------------------------------media @620 Starts-------------------------------------*/
+@media (max-width:620px){
+ .grid, .link-grid {
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+ }
+ .sitename{
+font-size: 60px; 
+margin-left: 25%; 
+
+   padding: 30% 30% 30% 0%;
+text-shadow: 2px 4px 8px #000000;
+}
+
+.quick-link-margin{
+  margin-left:3%;
+
+}
+footer {
+  font-size: 10px;
+  }
+}
+/*---------------------------------------media @620 ends---------------------------------------*/
+/*---------------------------------------media @550 Starts-------------------------------------*/
+@media (max-width:550px){
+  /*---------------------------------------Youtube video------------------------------------------------------*/
+.youtube{
+grid-template-columns: repeat(1, 1fr);
+margin-left: 50px;
+  }
+  /*------------------------------------------Youtube video---------------------------------------------------*/
+}
+/*---------------------------------------media @550 ends---------------------------------------*/
+/*---------------------------------------media @500 Starts-------------------------------------*/
+
+  @media (max-width:500px){
+ .grid{
+  grid-column-gap: 5px;
+  grid-row-gap: 10px;
+  margin-left:5px;
+  margin-right:5px;
+
+}
+
+  .link-grid{
+    grid-gap: 10px;
+    grid-column-gap: 5px;
+  grid-row-gap: 10px;
+  margin-left:5px;
+  margin-right:5px;
+  }
+
+  .text button{
+  padding: 2px;
+}
+.hide1 {
+    display:block;
+  }
+}
+ /*---------------------------------------media @500 ends---------------------------------------*/
+
   </style>
 </head>
+<!-------------------------------------hEAD ENDS--------------------------------------->
+
+
+
+
+
+<!-------------------------------------bOADY START------------------------------------->
 <body>
-  <div class="card">
-    <div class="status-row">
-      <div class="dot"></div>
-      Scheduled Maintenance
+<!-------------------------------------clock start------------------------------------->
+<div class="headimage">
+	<hp class="sitename">GST<span>Cell</span></p>
+	
+			  <div class="clock">
+				<div>
+				  <div class="info date"></div>
+				  <div class="info day"></div>
+				</div>
+				<div class="dot"></div>
+				<div>
+				  <div class="hour-hand"></div>
+				  <div class="minute-hand"></div>
+				  <div class="second-hand"></div>
+				</div>
+				<div>
+				  <span ID="SPAN" class="h3">3</span>
+				  <span ID="SPAN" class="h6">6</span>
+				  <span ID="SPAN" class="h9">9</span>
+				  <span ID="SPAN" class="h12">12</span>
+				</div>
+				<div class="diallines"></div>
+			  </div>
+	</div>
+<!-------------------------------------clock end--------------------------------------->
+
+<!-------------------------------------Nav Start--------------------------------------->
+<!-- Created By CodingNepal - www.codingnepalweb.com -->
+<nav class="loading">
+<div class="wrapper">
+    <div class="logo "><table>
+        <tr><td><a>&#127968; <span class="hide-home">HOME</span></a></td></tr></table></a>
+    </div>
+    <input type="radio" name="slider" id="menu-btn">
+    <input type="radio" name="slider" id="close-btn">
+    <ul class="nav-links">
+    <label for="close-btn" class="btn close-btn">&#x2715;</label>
+    
+      <li>
+      <a class="desktop-item menu-red" STYLE="margin-RIGHT: 10PX; color:white">&#9743;</a>
+      <input type="checkbox" name="main-menu" id="showDrop1">
+      <label for="showDrop1" class="mobile-item ">&#9743;</label>
+        <ul class="drop-menu" STYLE="margin-RIGHT: 20PX;">
+        <li><a href="https://www.gstcell.com/sgst-directory">DIRECTORY</a></li>
+        </ul>
+      </li>
+    
+      <li>
+        <a class="desktop-item menu-red" style="color:white">ACT & RULES &#9662;</a>
+        <input type="checkbox" name="main-menu" id="showMega1">
+        <label for="showMega1" class="mobile-item">ACT & RULES &#9662;</label>
+            <div class="mega-box">
+                <div class="content">
+                    <div class="binu-row">
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu1">
+                        <header><label for="sub-sub-menu1">AIT & ST &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link1" id="AIT_ST">
+                                        <li class="loading-message">Loading...</li>
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+    
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu2">
+                        <header><label for="sub-sub-menu2">CST ACT & RULES &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link2" id="CST_ACT_RULES">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu3">
+                        <header><label for="sub-sub-menu3">ENTRY TAX ACT &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link3" id="ENTRY_TAX">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu4">
+                        <header> <label for="sub-sub-menu4">GST ACT, 2017 &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link4" id="GST_ACT">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                    </div>
+                    <div class="binu-row">
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu5">
+                        <header> <label for="sub-sub-menu5">KGST ACT & RULES &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link5" id="KGST_ACT_RULES">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu3A">
+                        <header><label for="sub-sub-menu3A">KML ACT &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link3A" id="KML_ACT">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu6">
+                        <header> <label for="sub-sub-menu6">KVAT ACT & RULES &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link6" id="KVAT_ACT">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+    
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu7">
+                        <header> <label for="sub-sub-menu7">LUXURY TAX &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link7" id="LUXURY_TAX">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+    
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu8">
+                        <header> <label for="sub-sub-menu8">SURCHARGE ACT &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link8" id="SURCHARGE">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                    </div>
+                    <div class="binu-row">
+                        <header><a href="https://docs.google.com/uc?id=1y6jKYVMAGUPWGdIGtEXOoL556mpn9Fsh" style="margin-left: -10px;">SOCIAL SECURITY CESS</a></header>
+    
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu9">
+                        <header> <label for="sub-sub-menu9">TAX ON LOTTERY ACT &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link9" id="LOTTERY">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu10">
+                        <header> <label for="sub-sub-menu10">KERALA FINANCE ACT &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link10" id="KERALA_FINANCE_ACT">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                    </div>
+                    <div class="binu-row">
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu11">
+                        <header> <label for="sub-sub-menu11">CENTRAL FINANCE ACT &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link11" id="CENTRAL_FINANCE_ACT">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+    
+                        <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu12">
+                        <header> <label for="sub-sub-menu12">OTHER ACTS &#9662;</label></header>
+                                    <ul class="mega-links sub-sub-link12" id="OTHER_ACTS">
+                                        <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                                    </ul>
+                    </div>
+                </div>
+            </div>
+        </li>
+    <li>
+          <a  class="desktop-item menu-red" style="color:white">NOTIFICATION &#9662;</a>
+          <input type="checkbox" name="main-menu" id="showMega2">
+          <label for="showMega2" class="mobile-item">NOTIFICATION &#9662;</label>
+          <div class="mega-box mega-short-2box">
+              <div class="content">
+                  <div class="binu-row" style="width:100%; margin-left: 0%;">
+                      <ul class="mega-links1">
+                         <li> <a href="https://www.gstcell.com/notification" target="_blank">NOTIFICATION</a>    </li>
+                      </ul>
+                      <ul class="mega-links1">
+                        <li> <a href="https://www.gstcell.com/rod" target="_blank">R.O.D</a>    </li>
+                     </ul>
+                     <ul class="mega-links1">
+                        <li class="vanishnav"> <a href="https://www.gstcell.com/rod" target="_blank">.</a>    </li>
+                     </ul>
+                  </div>
+              </div>
+          </div>
+    </li>
+    <li> <a href="https://www.gstcell.com/circular" class="desktop-item menu-under" style="color:white">CIRCULAR</a><input type="checkbox" name="main-menu" id="showMega5">
+    <a href="https://www.gstcell.com/circular" for="showMega5" class="mobile-item">CIRCULAR</a>
+        <div class="mega-box mega-short-3box">
+          
+        </div>
+    </li>
+    <li> <a  class="desktop-item menu-red" style="color:white">GST &#9662;</a><input type="checkbox" name="main-menu" id="showMega3">
+        <label for="showMega3" class="mobile-item">GST &#9662;</label>
+          <div class="mega-box mega-short-box" style="width:900px">
+            <div class="content">
+                <div class="binu-row" style="min-width:300px; margin-left: 10px;">
+                <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu15">
+                <header> <label for="sub-sub-menu15"></label></header>
+                <!-- <ul class="mega-links sub-sub-link15">
+                      <li> <a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank">KERALA</a>      </li>
+                </ul>
+                <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu14">
+                <header> <label for="sub-sub-menu14">RCM &#9662;</label></header>
+                <ul class="mega-links sub-sub-link14">
+                <li> <a href="https://www.gstcell.com/rcm/goods" target="_blank">GOODS</a>    </li>
+                <li> <a href="https://www.gstcell.com/rcm/service" target="_blank">SERVICES</a>    </li>
+                </ul>-->
+                    <ul class="mega-links1"> 
+                        <li> <a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank">ADVANCE RULING</a>      </li>
+                    </ul>
+                    <ul class="mega-links1"> 
+                        <li> <a href="https://www.gstcell.com/notification" target="_blank">NOTIFICATIONS</a>      </li>
+                    </ul>
+                    <ul class="mega-links1">
+                        <li> <a href="https://www.gstcell.com/rcm" target="_blank">R.C.M</a>    </li>
+                    </ul>
+                    <ul class="mega-links1">
+                        <li> <a href="https://www.gstcell.com/rod" target="_blank">R.O.D</a>    </li>
+                    </ul>
+                    <ul class="mega-links1">
+                        <li> <a href="https://www.gstcell.com/notification" target="_blank">CIRCULAR</a>  </li>
+                     </ul>
+                </div>
+                <div class="binu-row" style="margin-left: 10px;">
+                  <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu17" >
+                  <header> <label for="sub-sub-menu17">GST ACT & RULES &#9662;</label></header>
+                              <ul class="mega-links sub-sub-link17" id="GST_ACT_1" style="width:280px">
+                                <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                            </ul>
+                </div>
+               
+               
+                <div class="binu-row" style="width:250px">
+                    <input type="radio" name="sub-menu-Act" id="sub-sub-menu18">
+                    <header> <label for="sub-sub-menu18"></label></header>
+                  
+                  </div>
+    
+    
+            </div>
+          </div>
+    </li>
+      <li>
+          <a  class="desktop-item menu-red" style="color:white">FINANCE BILL & ACT &#9662;</a>
+          <input type="checkbox" name="main-menu" id="showMega4">
+          <label for="showMega4" class="mobile-item">FINANCE BILL & ACT &#9662;</label>
+          <div class="mega-box">
+          <div class="content">
+    
+              <div class="binu-row">
+                <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu25">
+                <header> <label for="sub-sub-menu25">BUDGET SPEECH (ENG) &#9662;</label></header>
+                            <ul class="mega-links sub-sub-link25" id="K_BS_ENG">
+                              <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                          </ul>
+              </div>
+          <div class="binu-row">
+              <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu19">
+              <header> <label for="sub-sub-menu19">BUDGET SPEECH (MAL) &#9662;</label></header>
+                            <ul class="mega-links sub-sub-link19" id="K_BS_MAL">
+                              <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                          </ul>
+          </div>
+    
+          <div class="binu-row">
+              <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu20">
+              <header> <label for="sub-sub-menu20">KERALA FINANCE BILL &#9662;</label></header>
+                        <ul class="mega-links sub-sub-link20" id="KF_BILL">
+                          <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                      </ul>
+          </div>
+    
+          <div class="binu-row">
+              <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu21">
+              <header> <label for="sub-sub-menu21">KERALA FINANCE ACT &#9662;</label></header>
+                          <ul class="mega-links sub-sub-link21" id="KERALA_FINANCE_ACT_1">
+                            <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                        </ul>
+            <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu22">
+            <header> <label for="sub-sub-menu22">CENTRL BUDGET SPEECH &#9662;</label></header>
+                            <ul class="mega-links sub-sub-link22" id="CENTRAL_SPEECH">
+                                <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                            </ul>
+          </div>
+          <div class="binu-row">
+          <input type="checkbox" name="sub-menu-Act" id="sub-sub-menu23">
+          <header> <label for="sub-sub-menu23">CENTRAL FINANCE BILL &#9662;</label></header>
+                            <ul class="mega-links sub-sub-link23" id="CF_BILL">
+                                <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                            </ul>
+          <input type="checkbox" name="sub-menu-Act"   id="sub-sub-menu24">
+            <header> <label for="sub-sub-menu24">CENTRAL FINANCE ACT &#9662;</label></header>
+                            <ul class="mega-links sub-sub-link24" id="CF_ACT">
+                                <!-- Dynamic content will be inserted here for sub-sub-link1 -->
+                            </ul>
+          </div>
+          </div>
+          </div>
+      </li>
+    <li>
+      <span class="desktop-item nav-butt-on" >&#128176; TAX RATE &#9662;</span>
+      <input type="checkbox" name="main-menu" id="showDrop2">
+      <label for="showDrop2" class="mobile-item nav-butt-on">&#128176; TAX RATE FINDER &#9662;</label>
+          <ul class="drop-menu drop-menu-margin">
+              <li><a href="https://www.gstcell.com/tax-rate-finder/gst-rate">GST</a></li>
+              <li><a href="https://www.gstcell.com/tax-rate-finder/gst-rate-of-services/ratechangequicksearch">GST rate change</a></li>
+              <li><a href="https://www.gstcell.com/tax-rate-finder/kgst-act">KGST</a></li>
+          </ul>
+    </li>
+    
+    </ul>
+    <label for="menu-btn" class="btn menu-btn">&#x2630;</label>
+    </div>
+    </nav>
+<!-------------------------------------Nav end----------------------------------------->
+
+
+<!------------------------------------Social media----------------------------------------->
+<div class="aiPopupOverlay" id="aiPopupMainOverlay">
+  <div class="aiPopupMain">
+    <span class="aiPopupClose" onclick="closeMainPopup()">X</span>
+    <h2>Assistant based on subjects</h2>
+    <div class="aiPopupTiles">
+      <!-- Tile 1 -->
+<!-- Tile 1 -->
+<div class="aiPopupTileWrapper">
+  <!-- Tile -->
+  <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-6937083030308191bbed121da51a919b-gst-notice-examiner')">
+    <img src="https://lh3.googleusercontent.com/d/1u5a1MneXVHqDq7BqCPh-YXeZ3OcsWxWI" alt="" class="aiPopupImage">
+    <label>Notice Examinor</label>
+  </div>
+  <!-- Button directly below -->
+  <button type="button" onclick="openTextPopup('aiPopupText1')">Prompt</button>
+</div>
+
+<div class="aiPopupTileWrapper">
+  <!-- Tile1 -->
+  <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-69726d7b52bc8191bd22715224bc2495-gst-audit-assistant')">
+    <img src="https://lh3.googleusercontent.com/d/1p7ROVph_euOQ1c830Jid3ISpIhdAO6Td" alt="" class="aiPopupImage">
+    <label>Audit Assistant</label>
+  </div> 
+  <!-- Button directly below -->
+  <button type="button" onclick="openTextPopup('aiPopupText2')">Prompt</button>
+</div>
+<div class="aiPopupTileWrapper">
+  <!-- Tile2 -->
+  <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-697fa0c235b48191a29b359a2e7daf6c-gst-drafting-assistant')">
+    <img src="https://lh3.googleusercontent.com/d/17qXvaqChqHFRGNGzm2QBEw9fdJe1a5Qg" alt="" class="aiPopupImage">
+    <label>Drafting Assistant</label>
+  </div>
+  <!-- Button directly below -->
+  <button type="button" onclick="openTextPopup('aiPopupText3')">Prompt</button>
+</div>
+<div class="aiPopupTileWrapper">
+  <!-- Tile3 -->
+  <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-6978ecbb2d4481918f1847206b100506-bank-statement-analyst')">
+    <img src="https://lh3.googleusercontent.com/d/1SGRj79o2hCsiVwNqgLFm6NZXGOeBAa7f" alt="" class="aiPopupImage">
+    <label>Bank Statement Analyst</label>
+  </div>
+  <!-- Button directly below -->
+  <button type="button" onclick="openTextPopup('aiPopupText4')">Prompt</button>
+</div>
+<div class="aiPopupTileWrapper">
+  <!-- Tile4 -->
+  <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-69203abff4b48191aa9f970fe9127864-gst-mentor')">
+    <img src="https://lh3.googleusercontent.com/d/1vTmDFXd7suTOnL5MDiG-ZftxF9DvXK5l" alt="" class="aiPopupImage">
+    <label>GST Mentor</label>
+  </div>
+  <!-- Button directly below -->
+  <button type="button" onclick="openTextPopup('aiPopupText5')">Prompt</button>
+</div>
+<div class="aiPopupTileWrapper">
+  <!-- Tile5 -->
+  <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-6998907abf208191b28bc060cc866ecc-gst-prompt-maker')">
+    <img src="https://lh3.googleusercontent.com/d/1jEYbz_e3kWgVkGyjIvlsU5_mqPCrRx4r" alt="" class="aiPopupImage">
+    <label>Prompt Maker</label>
+  </div>
+  <!-- Button directly below -->
+  <button type="button" onclick="openTextPopup('aiPopupText6')">Prompt</button>
+</div>
+
+  </div>
+  <div class="aiPopupDisclaimer">
+    Disclaimer: The information, suggestions, or outputs generated by this AI regarding Goods and Services Tax (GST) are intended solely for general guidance. They do not constitute legal, financial, or professional advice. Users are advised to verify all AI-generated content against the latest GST Act, rules, and official notifications issued by the relevant government authorities. <br><br><p style=" color:blue;">This AI assistant has been developed by <strong>Sri. Rajesh Damodaran, Assistant State Tax Officer</strong> of State GST Department</p></div>
+</div>
+</div>
+<!-- Text Popups -->
+<div class="aiPopupOverlay" id="aiPopupTextOverlay">
+  <div class="aiPopupText">
+    <span class="aiPopupClose" onclick="closeTextPopup()">X</span>
+    <h1 style="text-align: center;">Information</h1>
+    <p id="aiPopupTextContent"></p>
+  </div>
+</div>
+
+<!-- Hidden text content for each tile -->
+<div class="AiPopupStyle" style="display:none; ">
+  <div id="aiPopupText1"> <h2>GST Notice Examiner – Usage Guide</h2>
+
+    <h3>Basic Review Prompt</h3>
+    <p>When a GST notice, investigation report, or GST order is uploaded, enter:</p>
+    <p><em>“Review this GST Show Cause Notice draft and list all errors.”</em></p>
+    <p>The tool will identify mistakes and generate a structured report.</p>
+
+    <h3>Advanced Review Prompt</h3>
+    <p>For deeper analysis and a more comprehensive report, enter:</p>
+    <p><em>“Act as a senior GST Investigation Expert and legal drafting analyst. Review GST notices, investigation reports, statements, submissions, and adjudication orders for:</em></p>
+
+    <ul>
+      <li><strong>Linguistic issues</strong> – grammar, clarity, sentence structure</li>
+      <li><strong>Legal issues</strong> – Act/Rule violations, incorrect section citations, limitation, natural justice concerns</li>
+      <li><strong>Factual inconsistencies</strong> – GSTIN, period, amounts, returns, annexures</li>
+      <li><strong>Computational errors</strong> – tax, interest, penalty, totals</li>
+      <li><strong>Procedural lapses</strong> – improper SCN, missing documents, invalid authority"</li>
+    </ul>
+
+    <p>The tool will then produce a <strong>structured report</strong> containing findings, corrections, and recommendations.</p><br>
+</div>
+
+
+<div id="aiPopupText2"><h3>Guidelines and Prompt for GST Audit</h3>
+  <p><a href="https://docs.google.com/uc?id=1CRV5IvU4iqj_KtvPNQr_rSIYB_iF2zeu" target="_blank" style="text-decoration: none;" >Click here</a></p>
+
+</div>
+ 
+
+
+<div id="aiPopupText4"> <h2>Bank Statement Reconciliation – Usage Guide</h2>
+
+  <h3>Goal</h3>
+  <p>To analyze a taxpayer’s bank statement and surface anomalies, discrepancies, and GST-fraud risk indicators, written as investigation-ready leads (not accusations).</p>
+  <p>Review the provided bank statement data and produce a structured <em>“Anomaly & GST Risk Report”</em></p>
+  <h3>Context</h3>
+<ul>
+  <li>
+    - Bank statement (CSV/Excel/text table): Date, Value Date, Narration, Cheque/UTR, Debit, Credit, Balance, Channel (NEFT/RTGS/IMPS/UPI/Cash), Counterparty (if present).
+  </li>
+  <li>
+    - Taxpayer profile (if available): GSTIN, legal name, business nature, declared turnover, filing status, principal place of business, key vendors/customers.
+  </li>
+  <li>
+    - Optional: GSTR-1, GSTR-3B summaries, e-way bill summaries, vendor/customer master list, prior intelligence inputs.
+  </li>
+
+</ul>
+
+  <h3>Step-by-step instructions:</h3>
+  <p>(1) Clean and standardize: normalize dates, amounts, deduplicate, flag missing fields,    classify each transaction (sales receipt, purchase payment, cash deposit/withdrawal, self-    transfer, loan, refund, tax payment, unknown).</p>
+  <p>(2) Build baselines: monthly totals, average ticket size, top counterparties, cash ratio,      inflow/outflow symmetry, pass-through behavior, round-number frequency, spikes/outliers.</p>
+  <p>(3) Detect red flags linked to GST fraud risks, such as:</p>
+  <p></p>
+  <ul>
+    <li>- Turnover mismatch signals (bank credits vs declared turnover, sharp seasonality shifts).</li>
+    <li>- Circular/round-tripping patterns (in-and-out same/next day, same amounts, clustered      counter parties).</li>
+    <li>- Layering/splitting (many small transfers below typical thresholds, repetitive UPI/IMPS).</li>
+    <li>- High cash activity inconsistent with business profile, sudden cash deposits before tax      dates.</li>
+    <li>- Payments to high-risk/unknown entities, frequent “loan/advance” narratives,      refunds/chargebacks patterns.</li>
+  </ul>
+
+  <p>(4) Correlate: map each anomaly to plausible GST risk themes (fake invoicing/ITC,    suppression of sales, accommodation entries) and state what additional evidence would    confirm/refute it.</p><br>
+  <p>(5) Produce the report in this exact format:</p>
+  <ul>
+    <li>
+      (A) Executive summary (5–8 bullets).
+    </li>
+    <li>
+      (B) Anomaly Register table with columns: ID, Date range, Pattern, Transactions/Evidence      (txn references), Why it’s anomalous, GST risk linkage, Severity (1–5), Data gaps,      Suggested follow-up.
+    </li>
+    <li>
+      (C) Counter party risk list (top 15) with brief notes.
+    </li>
+    <li>
+      (D) Questions to issue to the taxpayer (10–15 precise questions).
+    </li>
+    <li>
+      (E) Next actions checklist (bank confirmation, summons targets, return reconciliation steps).
+    </li>
+    <li>
+      (F) Caveats: do not allege guilt; treat as leads; do not guess missing facts—mark      “Unknown”.
+    </li>
+  </ul>
+</div>
+
+<div id="aiPopupText3"><p>Will be provided soon</p></div>
+   <div id="aiPopupText5"><p>Will be provided soon</p></div>
+  <div id="aiPopupText6"><p>Will be provided soon</p></div>
+</div>
+
+
+   
+
+
+
+
+     <!------------------------------------Social media----------------------------------------->
+<!-------------------------------------Home tiles 1 start------------------------------>
+<div id="menu-container">
+  <input type="radio" name="hider" id="showDrop3">
+  <input type="radio" name="hider" id="showDrop4">
+  <input type="radio" name="hider" id="showDrop5">
+  <input type="radio" name="hider" id="showDrop6">
+  <input type="radio" name="hider" id="showDrop7">
+  <input type="radio" name="hider" id="showDrop8">
+  <input type="radio" name="hider" id="showDrop9">
+  <input type="radio" name="hider" id="showDrop10">
+  <input type="radio" name="hider" id="hideDrop3">
+  <input type="radio" name="hider" id="hideDrop4">
+  <input type="radio" name="hider" id="hideDrop5">
+  <input type="radio" name="hider" id="hideDrop6">
+  <input type="radio" name="hider" id="hideDrop7">
+  <input type="radio" name="hider" id="hideDrop8">
+  <input type="radio" name="hider" id="hideDrop9">
+  <input type="radio" name="hider" id="hideDrop10">
+  
+  
+  </div>
+
+
+                  <div class="container" >
+                  <main class="grid"> <input type="radio" name="find-div-name" id="find-div10"> <label for="find-div10">
+                      <div class="container1 vanish find-div-class2"> 
+                        <a class="container1 vanishdisplay vanishdisplay10"> <img src="https://lh3.googleusercontent.com/d/1kp2bZcZ4tSi9-3mwwP4YBQOrCS9qe-0D" alt="">
+                        <a style="text-decoration: none;" class="button-19 tiktok tiktok10">Act & Rules</a> <img src="https://lh3.googleusercontent.com/d/1kp2bZcZ4tSi9-3mwwP4YBQOrCS9qe-0D" style="opacity: .08;" class="tiktok tiktok10 image-setting" alt="">
+                        <a href="https://www.gstcell.com/act-rules" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok10 topmargin60">Act & Rules</a>
+                            <div class="content  vanishdisplay vanishdisplay10">
+                              <h3>Act & Rules</h3>
+                              <p>GST & legecy Acts</p> 
+                            </div> </a>
+                      </div></label>
+
+                  <input type="radio" name="find-div-name" id="find-div2"> 
+                    <label for="find-div2">
+                        <div class="container1 vanish find-div-class2"> 
+                          <a class="container1 vanishdisplay vanishdisplay2">
+                            <img src="https://lh3.googleusercontent.com/d/1GMFB9LjrNOtqbULXw8JnEI9FJG1rOsMk" alt=""> 
+                            <a style="text-decoration: none;" class="button-19 tiktok tiktok2 topmargin10">Tax rate (%)</a>
+                            <a href="https://www.gstcell.com/tax-rate-finder/gst-rate" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok2 topmargin-15">GST</a>
+                            <a href="https://www.gstcell.com/tax-rate-finder/gst-rate-of-services/ratechangequicksearch" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok2 topmargin8">GST Rate Change</a>
+                            <a href="https://www.gstcell.com/tax-rate-finder/vat-rate-on-goods" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok2 topmargin8">VAT</a>
+                            <a href="https://www.gstcell.com/tax-rate-finder/kgst-act" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok2 topmargin8">KGST</a>
+                                <div class="content  vanishdisplay vanishdisplay2">
+                                  <h3>Tax rate Finder</h3>
+                                  <p>Find GST rate</p>
+                                </div> 
+                          </a>
+                        </div>
+                      </label>
+
+                  <input type="radio" name="find-div-name" id="find-div3"> 
+                  <label for="find-div3">
+                    <div  class="container1 vanish find-div-class3"> 
+                      <a class="container1 vanishdisplay vanishdisplay3">
+                      <img src="https://lh3.googleusercontent.com/d/1K6y4twig3vQKoZjqikI8Hm1z003ppXcH" alt="">
+                      <a style="text-decoration: none;" class="button-19 tiktok tiktok3 topmargin5">Notification</a>
+                      <img src="https://lh3.googleusercontent.com/d/1K6y4twig3vQKoZjqikI8Hm1z003ppXcH" style="opacity: .08;" class="tiktok tiktok3 image-setting" alt="">
+                      <a href="https://www.gstcell.com/notification" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok3 topmargin30">Notifications</a>
+                      <a href="https://www.gstcell.com/rod" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok3 topmargin20">R.O.D.</a>
+                          <div class="content  vanishdisplay vanishdisplay3">
+                            <h3>Notifications</h3>
+                            <p>Issued under GST &<br> Legacy Acts</p>
+                          </div>  
+                      </a>
+                    </div>
+                  </label>
+
+
+                  <input type="radio" name="find-div-name" id="find-div4"> 
+                    <label for="find-div4">
+                        <div  class="container1 vanish find-div-class4"> 
+                          <a class="container1 vanishdisplay vanishdisplay4">
+                          <img src="https://lh3.googleusercontent.com/d/1R0fwngbqOYIq1-NB3pS4TDCjYS6PuxXj" alt="">
+                          <a style="text-decoration: none;" class="button-19 tiktok tiktok4 topmargin10">Circular &<br>Instructions</a>
+                          <img src="https://lh3.googleusercontent.com/d/1R0fwn gbqOYIq1-NB3pS4TDCjYS6PuxXj" style="opacity: .08;" class="tiktok tiktok4 image-setting" alt="">
+                          <a href="https://www.gstcell.com/circular" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok4 topmargin60">STATE/CBIC</a>
+                              <div class="content vanishdisplay vanishdisplay4">
+                                  <h3>Circular</h3>
+                                  <p>Circular, Instructions & Advisory</p>
+                              </div>
+                          </a>
+                        </div>
+                    </label>
+
+
+                  <!--Advance Ruling-->
+                  <input type="radio" name="find-div-name" id="find-div11">
+                    <label for="find-div11">
+                        <div class="container1 vanish find-div-class11"> 
+                          <a class="container1 vanishdisplay vanishdisplay11">
+                          <img src="https://lh3.googleusercontent.com/d/1Nki_6P_LJsbdGiUqlbn2mc2D0pgDU6VY" alt="">
+                          <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok11">Advance Ruling</a>
+                          <img src="https://lh3.googleusercontent.com/d/1Nki_6P_LJsbdGiUqlbn2mc2D0pgDU6VY" style="opacity: .08;" class="tiktok tiktok11 image-setting" alt="">
+                          <a href="https://www.gstcell.com/kerala-advance-ruling" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok11 topmargin60">Kerala</a>
+                            <div class="content  vanishdisplay vanishdisplay11">
+                              <h3>Advance Ruling</h3>
+                              <p>Issued by Kerala</p>
+                            </div>
+                          </a>
+                        </div>
+                    </label>
+                  <!--//Advance Ruling//-->
+
+                  <input type="radio" name="find-div-name" id="find-div5">
+                    <label for="find-div5">
+                      <div  class="container1 vanish find-div-class5"> 
+                        <a class="container1 vanishdisplay vanishdisplay5">
+                        <img src="https://lh3.googleusercontent.com/d/17NIJ_d9s_ZtdibjKVbHqFchq9RAXvGJh" alt="">
+                        <a style="text-decoration: none;" class="button-19 tiktok tiktok5">R.C.M. on</a>
+                        <img src="https://lh3.googleusercont ent.com/d/17NIJ_d9s_ZtdibjKVbHqFchq9RAXvGJh" style="opacity: .08;" class="tiktok tiktok5 image-setting" alt="">
+                        <a href="https://www.gstcell.com/rcm" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok5 topmargin60 height-class">Goods & Services</a><br>
+                          <div class="content vanishdisplay vanishdisplay5">
+                            <h3>Reverse Charge</h3>
+                            <p>Supply under RCM</p>
+                          </div>
+                        </a>
+                      </div>
+                    </label>
+
+
+
+                  <input type="radio" name="find-div-name" id="find-div6">
+                      <label for="find-div6">
+                      <div  class="container1 vanish find-div-class6"> 
+                      <a class="container1 vanishdisplay vanishdisplay6"> 
+                      <img src="https://lh3.googleusercontent.com/d/1W8Q6DcO-nfhjDIZ_PFhj6ipfRZKesn5w" alt="">
+                      <a style="text-decoration: none;" class="button-19 tiktok tiktok6 topmargin10">Budget Speech</a>
+                      <a style="text-decoration: none;" class="button-17 tiktok tiktok6 topmargin10">  <label for="showDrop3" style="cursor: pointer;" class="mobile-item"> Kerala Budget</a>  </label>
+                    <label for="showDrop4" style="cursor: pointer;" class="mobile-item"> <a style="text-decoration: none; font-family: meera;" class="button-17 tiktok tiktok6 topmargin10">മലയാളം</a></label>
+                    <label for="showDrop5" style="cursor: pointer;" class="mobile-item"> <a style="text-decoration: none;" class="button-17 tiktok tiktok6 topmargin10">Union Budget</a></label>
+                        <div class="content vanishdisplay vanishdisplay6">
+                          <h3>Budget Speech</h3>
+                          <p>State and Central</p>
+                        </div>
+                    </a>
+                    </div>
+                  </label>
+
+    <input type="radio" name="find-div-name" id="find-div7">
+    <label for="find-div7">
+    <div  class="container1 vanish find-div-class7"> 
+      <a class="container1 vanishdisplay vanishdisplay7">
+      <img src="https://lh3.googleusercontent.com/d/1TDWFSVa3UWyceaRs6AIdt7_HcrOKQfRs" alt="">
+      <a style="text-decoration: none;" class="button-19 tiktok tiktok7 topmargin10">Finance Bill & Act</a>
+      <a style="text-decoration: none;" class="button-18 tiktok tiktok7 topmargin20">  <label for="showDrop6" style="cursor: pointer;" class="mobile-item">State <span clause="hide">Finance</span> Bill</a></label>
+      <a style="text-decoration: none;" class="button-18 tiktok tiktok7 topmargin8">  <label for="showDrop8" style="cursor: pointer;" class="mobile-item">State <span clause="hide">Finance</span> Act</a></label>
+      <label for="showDrop7" style="cursor: pointer;" class="mobile-item"> <a style="text-decoration: none;" class="button-18 tiktok tiktok7 topmargin8">Union <span clause="hide">Finance</span> Bill</a></label>
+      <label for="showDrop9" style="cursor: pointer;" class="mobile-item"> <a class="button-18 tiktok tiktok7 topmargin8">Union <span clause="hide">Finance</span> Act</a></label>
+       
+      <div class="content vanishdisplay vanishdisplay7">
+          <h3>Finance Bill & Act</h3>
+          <p>State and Central</p>
+        </div>
+      </a>
+    </div></label>
+
+
+     <!--GO 12-->
+    <input type="radio" name="find-div-name" id="find-div12">
+    <label for="find-div12">
+    <div class="container1 vanish find-div-class12"> 
+      <a class="container1 vanishdisplay vanishdisplay12">
+      <img src="https://lh3.googleusercontent.com/d/13mZs00nALLC3Me9D81gu__eTIHhY5XXe" alt="">
+      <a style="text-decoration: none;" class="button-19 tiktok tiktok12">G.O.</a>
+      <a href="https://www.gstcell.com/go" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok12 topmargin60">Govt. Order</a>
+        <div class="content  vanishdisplay vanishdisplay12">
+          <h3>Government Orders</h3>
+          <p>Related to GST Department</p>
+        </div>
+      </a>
+    </div></label>
+    <!--//GO//-->
+
+
+    <!--Instruction 13-->
+    <input type="radio" name="find-div-name" id="find-div13">
+      <label for="find-div13">
+        <div class="container1 vanish find-div-class13"> 
+          <a class="container1 vanishdisplay vanishdisplay13">
+          <img src="https://lh3.googleusercontent.com/d/1y5hNwyh-Or-5C8j2eL0t6Ow8t2Qn9jX2" alt="">
+          <a style="text-decoration: none;" class="button-19 tiktok tiktok13">Instructions</a>
+          <a href="https://www.gstcell.com/instruction-of-cct" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok13 topmargin60">Instructions</a>
+            <div class="content  vanishdisplay vanishdisplay13">
+              <h3>Instructions</h3>
+              <p>Issued by CBIC / Kerala GST</p>
+            </div>
+          </a>
+        </div>
+      </label>
+    <!--//Instruction//-->
+
+
+
+    <!--ROD-->
+    <input type="radio" name="find-div-name" id="find-div14">
+      <label for="find-div14">
+        <div class="container1 vanish find-div-class14"> 
+          <a class="container1 vanishdisplay vanishdisplay14">
+          <img src="https://lh3.googleusercontent.com/d/14hY4vtBrSxyRexedQ5j-JDrP1R5BxGLz" alt=""> 
+          <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok14">R.O.D.</a>
+          <img src="https://docs.google.com/uc?id=14hY4vtBrSxyRexedQ5j-JDrP1R5BxGLz" class="tiktok tiktok14 image-setting" alt="">
+          <a href="https://www.gstcell.com/rod" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok14 topmargin60">R.O.D.</a> 
+            <div class="content  vanishdisplay vanishdisplay14">
+            <h3>R.O.D.</h3>
+            <p>Removal of Difficulties</p>
+            </div>
+          </a>
+        </div>
+      </label>
+    <!--//ROD//-->
+
+
+    <input type="radio" name="find-div-name" id="find-div9">
+    <label for="find-div9">
+      <div  class="container1 vanish find-div-class9"> 
+        <a class="container1 vanishdisplay vanishdisplay9"> 
+        <img src="https://lh3.googleusercontent.com/d/1GlmuN1EpFOooNH_qlxQQ3zOu7YH0gBVZ" alt="">  
+        <a style="text-decoration: none;" class="button-19 tiktok tiktok9 topmargin10">Service Matters</a>
+        <a href="https://www.gstcell.com/service-matters/transfer-and-posting" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok9 topmargin10">Promo/Transfer</a>
+        <a href="https://www.gstcell.com/service-matters/pay-revision-orders" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok9 topmargin8">Pay Revision</a>
+        <a href="https://www.gstcell.com/sli-calculator" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok9 topmargin8">SLI Calculator</a>
+        <a href="https://www.gstcell.com/dearness-arrear-da-arrear-calculator" target="_blank" style="text-decoration: none;" class="button-18 tiktok tiktok9 topmargin8">DA Arrear Calc.</a>
+          <div class="content vanishdisplay vanishdisplay9">
+            <h3>Service Matters</h3>
+            <p>Transfer and Posting, Pay Revision,<span style="color: red;"> SLI & DA Arrear Calculator</span></p>
+          </div>
+        </a>
+      </div>
+    </label>
+
+
+
+
+    <!--KFC-->
+    <input type="radio" name="find-div-name" id="find-div15">
+    <label for="find-div15">
+      <div class="container1 vanish find-div-class15"> 
+        <a class="container1 vanishdisplay vanishdisplay15">
+        <img src="https://lh3.googleusercontent.com/d/1GLVZVcSsbZy4plPy3VxFV37Zxatr3qYS" alt="">
+        <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok15">Kerala Flood Cess</a>
+        <img src="https://docs.google.com/uc?id=1GLVZVcSsbZy4plPy3VxFV37Zxatr3qYS" style="opacity: .1;" class="tiktok tiktok15 image-setting" alt="">
+        <a href="https://www.gstcell.com/notification/kerala-flood-cess" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok15 topmargin60 height-class">Kerala Flood Cess</a>
+          <div class="content  vanishdisplay vanishdisplay15">
+            <h3>Kerala Flood Cess</h3>
+            <p>Rule and Notifications</p>
+          </div>
+        </a>
+      </div>
+    </label>
+    <!--//KFC//-->
+
+
+
+    <!--Judgment-->
+    <input type="radio" name="find-div-name" id="find-div16">
+    <label for="find-div16">
+      <div class="container1 vanish find-div-class16"> 
+        <a class="container1 vanishdisplay vanishdisplay16">
+        <img src="https://lh3.googleusercontent.com/d/12Mpfjd7YnismqsqXv4Eua1zjIy-kEtDF" alt="">
+        <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok16">Judgement</a>
+        <img src="https://docs.google.com/uc?id=12Mpfjd7YnismqsqXv4Eua1zjIy-kEtDF" style="opacity: .08;" class="tiktok tiktok16 image-setting" alt="">
+        <a href="https://www.gstcell.com/judgment" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok16 topmargin60">Judgement</a>
+          <div class="content  vanishdisplay vanishdisplay16">
+            <h3>Judgement</h3>
+            <p>Court Judgement</p>
+          </div>
+        </a>
+       </div>
+    </label>
+    <!--//Judgment//-->
+
+
+    <!--Judgment-->
+    <input type="radio" name="find-div-name" id="find-div17">
+    <label for="find-div17">
+        <div class="container1 vanish find-div-class17"> 
+          <a class="container1 vanishdisplay vanishdisplay17">
+          <img src="https://lh3.googleusercontent.com/d/1lH7NN_sqfRa9fBT-MNLHfnCE0BPgCwAP" alt=""> 
+          <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok17">Salary Matters</a>
+          <img src="https://docs.google.com/uc?id=1lH7NN_sqfRa9fBT-MNLHfnCE0BPgCwAP" style="opacity: .08;" class="tiktok tiktok17 image-setting" alt="">
+          
+          <div style="display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:5px; margin-bottom:0; padding:0 2px; box-sizing:border-box;">
+  <a href="https://www.gstcell.com/sli-calculator" target="_blank" style="text-decoration: none; flex:1; margin-right:6px;" class="button-17 tiktok tiktok17">SLI 🧮</i></a>
+  <a href="https://docs.google.com/uc?id=196ZqfVj5Y0WGzDqVHyKrA8B-vwZY3AvH" target="_blank" style="text-decoration: none; flex-shrink:0;" class="tiktok tiktok17">
+    <svg style="margin-top:5px" width="60" height="40" viewBox="0 0 60 44" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="56" height="35" rx="10" fill="rgba(255,0,0,0.18)"/>
+      <rect width="56" height="38" rx="10" fill="#FF0000"/>
+      <polygon points="22,11 40,19 22,27" fill="white"/>
+    </svg>
+  </a>
+</div>
+
+ <div style="display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:8px; margin-bottom:0; padding:0 2px; box-sizing:border-box;">
+  <a href="https://www.gstcell.com/dearness-arrear-da-arrear-calculator" target="_blank" style="text-decoration: none; flex:1; margin-right:6px;" class="button-17 tiktok tiktok17">DA Arr<span clause="hide">ear</span></i></a>
+  <a href="https://docs.google.com/uc?id=196ZqfVj5Y0WGzDqVHyKrA8B-vwZY3AvH" target="_blank" style="text-decoration: none; flex-shrink:0;" class="tiktok tiktok17">
+    <svg style="margin-top:5px" width="60" height="40" viewBox="0 0 60 44" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="56" height="35" rx="10" fill="rgba(255,0,0,0.18)"/>
+      <rect width="56" height="38" rx="10" fill="#FF0000"/>
+      <polygon points="22,11 40,19 22,27" fill="white"/>
+    </svg>
+  </a>
+</div>
+
+ <div style="display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:8px; margin-bottom:0; padding:0 2px; box-sizing:border-box;">
+  <a href="https://www.gstcell.com/earned-leave-calculator" target="_blank" style="text-decoration: none; flex:1; margin-right:6px;" class="button-17 tiktok tiktok17">Leave<span clause="hide"> Surr.. </span></a></i></a>
+  <a href="https://docs.google.com/uc?id=196ZqfVj5Y0WGzDqVHyKrA8B-vwZY3AvH" target="_blank" style="text-decoration: none; flex-shrink:0;" class="tiktok tiktok17">
+    <svg style="margin-top:5px" width="60" height="40" viewBox="0 0 60 44" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="56" height="35" rx="10" fill="rgba(255,0,0,0.18)"/>
+      <rect width="56" height="38" rx="10" fill="#FF0000"/>
+      <polygon points="22,11 40,19 22,27" fill="white"/>
+    </svg>
+  </a>
+</div>
+            <div class="content  vanishdisplay vanishdisplay17">
+            <h3>Salary Matters <img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="" width="25%" height="40"></h3>
+            <p>Move to make it simple</p>
+            </div>
+          </a>
+        </div>
+   </label>
+    <!--//Judgment//-->
+
+
+          <!--Income Tax-->
+        <input type="radio" name="find-div-name" id="find-div18">
+        <label for="find-div18">
+          <div class="container1 vanish find-div-class18"> 
+            <a class="container1 vanishdisplay vanishdisplay18">
+            <img src="https://lh3.googleusercontent.com/d/17qx9If80f7BXhxFgmp8ID4hPa1DO3Zw6" alt="">
+            <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok18">Income Tax</a>
+            <img src="https://lh3.googleusercontent.com/d/17qx9If80f7BXhxFgmp8ID4hPa1DO3Zw6" style="opacity: .08;" class="tiktok tiktok18 image-setting" alt="">
+            <a href="https://www.gstcell.com/incometax" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok18 topmargin30">Calculator 2025</a>
+            <a href="https://www.gstcell.com/incometax-2026" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok18 topmargin20">Calculator 2026</a>
+              <div class="content  vanishdisplay vanishdisplay18">
+                <h3>Income Tax<img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="" width="20" height="30"></h3>
+                <p>Calculator</p>
+              </div>
+            </a>
+           </div>
+        </label>
+        <!--//Income Tax//-->
+
+          <!--GST Notice-->
+          <input type="radio" name="find-div-name" id="find-div19">
+          <label for="find-div19">
+            <div class="container1 vanish find-div-class19"> 
+              <a class="container1 vanishdisplay vanishdisplay19">
+              <img src="https://lh3.googleusercontent.com/d/1rAAu6BtsB5vMoj-fT2Wit8L38yh71cvf" alt="">
+              <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok19">AI Assistant</a>
+              <img src="https://lh3.googleusercontent.com/d/1rAAu6BtsB5vMoj-fT2Wit8L38yh71cvf" style="opacity: .08;" class="tiktok tiktok19 image-setting" alt="">
+              <a target="_blank" style="text-decoration: none;"  class="button-17 tiktok tiktok19 topmargin60"  onclick="openMainPopup()">AI Assistant</a>
+                <div class="content  vanishdisplay vanishdisplay19">
+                  <h3>AI Assistant<!--<img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="" width="20" height="30">--></h3>
+                  <p>in GST application</p>
+                </div>
+              </a>
+             </div>
+          </label>
+          <!--//GST Notice//-->
+                    <!--DA Arrear-->
+        <input type="radio" name="find-div-name" id="find-div20">
+        <label for="find-div20">
+          <div class="container1 vanish find-div-class20"> 
+            <a class="container1 vanishdisplay vanishdisplay20">
+            <img src="https://lh3.googleusercontent.com/d/1gKoNITu-Wj3PUb9DQ8Lp0_Tc9I3GCudu" alt="">
+            <a style="text-decoration: none; z-index: 5;" class="button-19 tiktok tiktok20">DA Arrear</a>
+            <img src="https://lh3.googleusercontent.com/d/1gKoNITu-Wj3PUb9DQ8Lp0_Tc9I3GCudu" style="opacity: .08;" class="tiktok tiktok20 image-setting" alt="">
+            <a href="https://www.gstcell.com/dearness-arrear-da-arrear-calculator" target="_blank" style="text-decoration: none;" class="button-17 tiktok tiktok20 topmargin60">Calculator</a>
+              <div class="content  vanishdisplay vanishdisplay20">
+                <h3>DA Arrear<img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="" width="20" height="30"></h3>
+                <p>Calculate Arrear DA</p>
+              </div>
+            </a>
+           </div>
+        </label>
+        <!--DA Arrear-->
+
+<!-------------------------------------BLANK TILES-------------------------------->
+
+
+         <!----- <div class="container1 vanish1 hide">
+            <a>
+            <div class="content">
+            <h3></h3>
+            <p></p>
+            </div>
+            </a>
+            </div>-->
+
+           
+
+
+            </main></div>
+            
+<!-------------------------------------BLANK TILES-------------------------------->
+
+
+<!-------------------------------------Home tiles 1 End-------------------------------->
+<!-------------------------------------Separator 1 start------------------------------->
+<br><br>
+<hr style="border: 1px solid red";>
+<h2 style="margin-left: 10%; margin-top: 10px;  color: rgb(0, 105, 112); font-weight: bold; " >  <img src="https://lh3.googleusercontent.com/d/1QO-Nip9rfF40qOoq4MSdAXw21TVOqXgl" alt="" width="20" height="20"> Useful external links </h2>
+<br><br>
+<!-------------------------------------Separator 1 ends-------------------------------->
+
+<!-------------------------------------External link tiles start----------------------->
+<div class="container">
+	<main class="link-grid"><div class="container-link">
+	<img src="https://docs.google.com/uc?id=1rpKEo_yXsB7q3-EbbN1mTR4gZIXhrNnJ" alt="">
+	<div class="content">
+  <h1>Kerala Taxes</h1>
+  <ul>
+	<li> <a href="https://www.keralataxes.gov.in" target="_blank" class="glass">Home</a> </li>
+<li> <a href="https://kitis.keralataxes.gov.in/" target="_blank" class="glass">KITIS (return filing)</a> </li>
+	<li> <a href="https://kitis.keralataxes.gov.in/Auth/TRNLogin" target="_blank" class="glass">Amnesty Scheme, 2024</a> </li>
+	<li> <a href="https://www.facebook.com/keralastategst/" target="_blank" class="glass">Facebook page</a> </li>
+	<li> <a href="https://www.gstcell.com/sgst-directory" class="glass">Directory</a> </li>
+  </div></div><div class="container-link">
+  <img src="https://docs.google.com/uc?id=1PYACilELU-xbUfZcNuPA7Rl3in8fS2r1" alt="">
+  <div class="content">
+	<h1>CBIC</h1>
+  <ul>
+	<li> <a href="https://www.cbic.gov.in" target="_blank" class="glass">Home</a> </li>
+	<li> <a href="https://taxinformation.cbic.gov.in/" target="_blank" class="glass">Notification</a> </li>
+	<li> <a href="https://www.cbic.gov.in/htdocs-cbec/gst/circularcgst" target="_blank" class="glass">Circular</a> </li>
+	<li> <a href="https://www.cbic.gov.in/htdocs-cbec/gst/gstInstructions" target="_blank" class="glass">Instructions</a> </li>
+	<li> <a href="https://taxinformation.cbic.gov.in" target="_blank" class="glass">Tax information portal</a> </li></div></div><div class="container-link">
+  <img src="https://docs.google.com/uc?id=1xy2JJHesKmohyavEE-Q0YtXANNLXhgMJ" alt="">
+  <div class="content">
+	<h1>GST</h1>
+	<ul>
+  <li> <a href="https://services.gst.gov.in/services/login" target="_blank" class="glass">GST Return filing</a> </li>
+  <li> <a href="http://gstcouncil.gov.in/" target="_blank" class="glass">GST Council</a> </li><li> <a href="http://www.gstcouncil.gov.in/authority-for-advance-rulings" target="_blank" class="glass">Advance Ruling (AAR)</a> </li>
+  <li> <a href="http://www.gstcouncil.gov.in/appellate-orders" target="_blank" class="glass">Appellate AAR</a> </li>
+  <li> <a href="https://www.naa.gov.in/news.php?page=1&cat=2&pagesize=10" target="_blank" class="glass">National AAR</a> </li>
+  </div>
+  </div><div class="container-link">
+  <img src="https://docs.google.com/uc?id=1xDfoEuCM3OrBxmmRAs2lp4kvJPNDJ_Gy" alt="">
+  <div class="content">
+	<h1>Health Services</h1>
+  <ul>
+	<li> <a href="https://www.gstcell.com/hmchealth" target="_blank" class="glass" style="color: rgb(255, 182, 182);">HMC Register &#128274;</a> </li>
+   
+  </ul>
+  </div>
+  </div>
+  <div class="container-link">
+  <img src="https://docs.google.com/uc?id=1JpmT6-P9wfXr9s76gg5unD_rC5qcIQOj" alt="">
+  <div class="content">
+	<h1>eGazette</h1>
+	<ul>
+	<li> <a href="http://www.egazette.kerala.gov.in/archives.php?id=6" target="_blank" class="glass">Ordinary Gazette</a> </li>
+	<li> <a href="https://compose.kerala.gov.in/egazettelink1" target="_blank" class="glass">Extra Ordinary Gazette</a> </li>
+<li> <a href="https://egazette.gov.in/" target="_blank" class="glass">eGazette India</a> </li>
+  </div></div>
+  <div class="container-link">
+  <img src="https://docs.google.com/uc?id=1zHAAkSIIsdDHrnflDrUHlNsay01OrFjC" alt="">
+  <div class="content">
+	<h1>E-office</h1>
+	<ul>
+  <li> <a href="https://eoffice.kerala.gov.in/EofficePortal/letterSearchRedirect" target="_blank" class="glass">Citizen portal</a> </li>
+  <li> <a href="http://www.ctax.kerala.gov.in" target="_blank" class="glass">GST employee login</a> </li>
+<li> <a href="https://www.gstcell.com/my-office" target="_blank" class="glass">My Office</a> </li>
+  </div></div><div class="container-link">
+  <img src="https://docs.google.com/uc?id=1zS9Y4ONaM0CtkCNqx07wdSHL0rYEwojs" alt="">
+  <div class="content">
+	<h1>Service Matters</h1>
+	<ul>
+  <li> <a href="https://www.spark.gov.in/webspark/(S(exi0hj1e3hcw3huaioubmzob))/sparklogin.aspx" target="_blank" class="glass">Spark login</a> </li>
+  <li> <a href="https://eportal.incometax.gov.in/iec/foservices/#/login" target="_blank" class="glass">Income Tax login</a> </li>
+  <li> <a href="https://ksemp.agker.cag.gov.in/Login" target="_blank" class="glass">AG Kerala login</a> </li>
+			  <li> <a href="https://tsbonline.kerala.gov.in" target="_blank" class="glass">TSB online login</a> </li>
+	</div></div><div class="container-link">
+  <img src="https://docs.google.com/uc?id=18aCeLvsLa7mP8meA4I05tXbkHrDKTj_b" alt="">
+  <div class="content">
+	<h1>Kerala PSC</h1>
+	<ul>
+  <li> <a href="https://psc.kerala.gov.in/kpsc/" target="_blank" class="glass">Department test login</a> </li>
+  <li> <a href="https://psc.kerala.gov.in/kpsc/prevresult.php?notlogged=yes" target="_blank" class="glass">Department test result</a> </li>
+  <li> <a href="https://thulasi.psc.kerala.gov.in/thulasi/" target="_blank" class="glass">One time regn login</a> </li>
+  <li> <a href="https://keralapsc.gov.in/rankedlist" target="_blank" class="glass">Rank List</a> </li>
+  <li> <a href="https://keralapsc.gov.in/status_of_advice" target="_blank" class="glass">Advice detail</a> </li>
+  </div>
+  
+	</div>
+  
+	</main></div>
+<!-------------------------------------External link tiles ends------------------------>
+
+   <!-------------------------------------Separator 2 start------------------------------->
+<hr style="border: 1px solid red; margin-bottom: 10px;";>
+<!-------------------------------------Separator 2 ends-------------------------------->
+
+<!-------------------------------------Suggestion box container starts----------------->
+<div class="cchat" id="cchatWidget">
+  <!-- background layer (self-contained, no body pollution) -->
+  <div class="cchat__bg"></div>
+
+  <div class="cchat__inner">
+
+    <!-- SPINNER -->
+    <div class="cc-spinner hidden" id="globalSpinner">
+      <div class="cc-spinner-ring"></div>
     </div>
 
-    <h1>We'll be back<br>shortly<span>.</span></h1>
+    <!-- TOAST -->
+    <div class="cc-toast" id="toast"></div>
 
-    <div class="divider"></div>
-
-    <p>
-      Our site is currently down for scheduled maintenance.<br>
-      We're making improvements to serve you better.<br>
-      Please check back soon — we appreciate your patience.
-    </p>
-
-    <div class="progress-wrap">
-      <div class="progress-label">
-        <span>Maintenance Progress</span>
-        <span>72%</span>
+    <!-- HEADER -->
+    <div class="cc-header">
+      <div class="cc-header-avatar">💬</div>
+      <div class="cc-header-info">
+        <h1>Let's suggest 😀</h1>
+        <p>Stay updated, and stay connected </p>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
+      <div class="cc-header-status" id="headerStatus">
+        <span class="cc-status-dot" id="statusDot"></span>
+        <span id="statusText">Live</span>
+      </div>
+      <button class="cc-refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="Refresh chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"/>
+          <path d="M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+      </button>
+      <button class="cc-refresh-btn" onclick="openChatPopup()" title="Expand chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/>
+          <polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/>
+          <line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="cc-messages" id="messagesWrap">
+      <div class="cc-load-more" id="loadMoreArea" style="display:none">
+        <div class="cc-load-pill" id="loadMorePill">
+          <span class="cc-pill-spinner" id="pillSpinner" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </span>
+          <span id="pillText">↑ Scroll up for older messages</span>
+        </div>
+      </div>
+      <div id="commentsList"></div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="cc-input-area">
+      <div class="cc-input-row">
+        <div class="cc-input-fields">
+          <div class="cc-name-wrap">
+            <input class="cc-name-input" autocomplete="off" id="mainName" type="text" placeholder="Your name…" maxlength="50" />
+          </div>
+          <div class="cc-msg-wrap">
+            <textarea class="cc-msg-input" id="mainMessage" placeholder="Type a message…" rows="1"
+              onInput="autoResize(this)" onKeydown="handleMainKeydown(event)"></textarea>
+          </div>
+        </div>
+        <button class="cc-send-btn" onclick="sendMainComment()" title="Send">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
       </div>
     </div>
 
-    <div class="meta">
-      <span>EST. RETURN — TBD</span>
-      <span>SYSTEM OFFLINE</span>
+    <!-- REPLY MODAL -->
+    <div class="cc-modal-overlay" id="replyModal">
+      <div class="cc-modal">
+        <div class="cc-modal-hdr">
+          <div class="cc-modal-title">
+            <span>Reply</span>
+            <div class="cc-modal-badge" id="modalBadge">Level 1</div>
+          </div>
+          <button class="cc-modal-close" onclick="closeReplyModal()">✕</button>
+        </div>
+        <div class="cc-modal-quote" id="modalQuote">
+          <strong id="modalQuoteAuthor"></strong>
+          <span id="modalQuoteText"></span>
+        </div>
+        <div class="cc-modal-field">
+          <label class="cc-modal-label" for="replyName">Your Name</label>
+          <input class="cc-modal-input" id="replyName" type="text" placeholder="Enter your name…" maxlength="50" />
+        </div>
+        <div class="cc-modal-field">
+          <label class="cc-modal-label" for="replyMessage">Message</label>
+          <textarea class="cc-modal-input" id="replyMessage" placeholder="Write your reply…"></textarea>
+        </div>
+        <button class="cc-modal-submit" id="replySubmitBtn" onclick="submitReply()">
+          <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          Send Reply
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /.cchat__inner -->
+</div><!-- /.cchat -->
+
+</div><!-- /.cchat -->
+
+<div id="chatPopupOverlay">
+  <div id="chatPopupBox">
+    <button id="chatPopupCloseBtn" onclick="closeChatPopup()" title="Close">&#x2715;</button>
+    <div class="cchat" id="cchatWidgetPopup">
+      <div class="cchat__bg"></div>
+      <div class="cchat__inner">
+        <div class="cc-spinner hidden" id="globalSpinnerPopup">
+          <div class="cc-spinner-ring"></div>
+        </div>
+        <div class="cc-toast" id="toastPopup"></div>
+        <div class="cc-header">
+          <div class="cc-header-avatar">💬</div>
+          <div class="cc-header-info">
+            <h1>Let's suggest 😀</h1>
+            <p>Stay updated, and stay connected</p>
+          </div>
+          <div class="cc-header-status">
+            <span class="cc-status-dot" id="statusDotPopup"></span>
+            <span id="statusTextPopup">Live</span>
+          </div>
+          <button class="cc-refresh-btn" onclick="manualRefresh()" title="Refresh chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+            </svg>
+          </button>
+        </div>
+        <div class="cc-messages" id="messagesWrapPopup">
+          <div class="cc-load-more" id="loadMoreAreaPopup" style="display:none">
+            <div class="cc-load-pill" id="loadMorePillPopup">
+              <span class="cc-pill-spinner" id="pillSpinnerPopup" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13">
+                  <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+              </span>
+              <span id="pillTextPopup">↑ Scroll up for older messages</span>
+            </div>
+          </div>
+          <div id="commentsListPopup"></div>
+        </div>
+        <div class="cc-input-area">
+          <div class="cc-input-row">
+            <div class="cc-input-fields">
+              <div class="cc-name-wrap">
+                <input class="cc-name-input" autocomplete="off" id="mainNamePopup" type="text" placeholder="Your name…" maxlength="50" />
+              </div>
+              <div class="cc-msg-wrap">
+                <textarea class="cc-msg-input" id="mainMessagePopup" placeholder="Type a message…" rows="1"
+                  onInput="autoResize(this)" onKeydown="handlePopupKeydown(event)"></textarea>
+              </div>
+            </div>
+            <button class="cc-send-btn" onclick="sendPopupComment()" title="Send">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</body>
+</div>
+<!-------------------------------------Suggestion box container ends------------------->
+
+
+
+<!-------------------------------------Separator 4 start------------------------------->
+<hr style="border: 1px solid red; margin-top: 10px; margin-bottom: 15px;";>
+<h2 style="margin-left: 5%; color: rgb(0, 105, 112); font-weight: bold; " > <img src="https://lh3.googleusercontent.com/d/1N-Z_HUYrz6A0FFg8cXEch9N-SNiGYCn0" alt="" width="20" height="20"> Recently issued </h2>
+<!-------------------------------------Separator 4 ends-------------------------------->
+<!-------------------------------------What is new start------------------------------->
+
+
+<!-------------------------------------What is new start------------------------------->
+<div class="col-sm quick-link-margin">
+  <!-- Dynamically generated rows will appear here -->
+</div>
+<!-------------------------------------What is new ends-------------------------------->
+
+
+<!-------------------------------------What is new ends-------------------------------->
+<!-------------------------------------Youtube starts---------------------------------->
+<div class="container-link" style="margin-top: 50px; display:none;">
+    <main class="youtube">
+      <div><iframe width="250px" height="150px" src="https://www.youtube.com/embed/a7y7ECcyz9c" title="Benefits Of GST" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+      <div><iframe width="250px" height="150px" src="https://www.youtube.com/embed/a7y7ECcyz9c" title="Benefits Of GST" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+      <div><iframe width="250px" height="150px" src="https://www.youtube.com/embed/a7y7ECcyz9c" title="Benefits Of GST" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+      <div><iframe width="250px" height="150px" src="https://www.youtube.com/embed/a7y7ECcyz9c" title="Benefits Of GST" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+    </main>
+</div>
+<!-------------------------------------Youtube ends------------------------------------>
+<hr style="border: 1px solid red; margin-top: 2rem;";>
+
+
+<header class="pressreleasehead">
+    <h1>General Informations</h1>
+</header>
+<main id="articles-container">
+    <!-- Categories and articles will be dynamically loaded here -->
+</main>
+
+<hr class="hide-social" style="border: 1px solid red; margin-top: 2rem;";>
+
+<h2 class="hide-social" style="margin-left: 5%; margin-bottom:-20px; color: rgb(0, 105, 112); font-weight: bold;">Share this page on </h2>
+
+
+<div id="social-media-panel" class="panel">
+  <ul>
+    <li class="Sharesocial">Share</li>
+    <li><a href="https://www.facebook.com/sharer/sharer.php?u=https://www.gstcell.com" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a></li>
+      <li><a href="https://api.whatsapp.com/send?text=https://www.gstcell.com" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a></li>
+      <li><a href="mailto:?subject=Check%20this%20out&body=https://www.gstcell.com" target="_blank" class="gmail"><i class="fas fa-envelope"></i></a></li>
+      <li><a href="https://www.linkedin.com/shareArticle?url=https://www.gstcell.com" target="_blank" class="linkedin"><i class="fab fa-linkedin-in"></i></a></li>
+      <li><a href="https://twitter.com/intent/tweet?url=https://www.gstcell.com" target="_blank" class="x"><span>X</span></a></li>
+<li><a target="_blank" class="y"><span>A</span></a></li>
+  </ul>
+</div>
+<div id="arrow"></div>
+
+
+<!-------------------------------------footer------------------------->
+<div>
+  <footer>
+    <p>Contact: <a href="tel:+9744012007">9744012007</a>, Email: <a href="mailto:inforack.in@gmail.com">inforack.in@gmail.com</a></p>
+  </footer>
+ 
+  </div>
+<!-------------------------------------footer------------------------->
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6346584862129842"
+     crossorigin="anonymous"></script>
+
+<!-------------------------------------suggestion box script starts-------------------->
+
+<script>
+  
+// ════════════════════════════════════════════════════════
+//  CONFIG — paste your deployed Apps Script URL here
+// ════════════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysJ0Rmy9v8_wbX4cdC7TZThZMGt_6WMMPu4rZjQDD2uljayrbc01nosu2gkt38zLdYvg/exec";
+
+// ────────────────────────────────────────────────────────
+// ADMIN ALIASES  — code → { displayName, isAdmin }
+// ────────────────────────────────────────────────────────
+const ADMIN_ALIASES = {
+  'ab1': { displayName: 'Binu L A', isAdmin: true }
+  // Add more: 'ab2': { displayName: 'Someone Else', isAdmin: true }
+};
+
+function resolveUser(rawName) {
+  const key = (rawName || '').trim().toLowerCase();
+  if (ADMIN_ALIASES[key]) return ADMIN_ALIASES[key];
+  return { displayName: rawName || 'Anonymous', isAdmin: false };
+}
+
+// ────────────────────────────────────────────────────────
+// STATE
+// ────────────────────────────────────────────────────────
+let allComments = [];       // all loaded comments (oldest first)
+let currentPage = 1;        // 1 = most recent page
+const PAGE_SIZE = 10;
+let hasMore = false;
+let totalComments = 0;
+let isSyncing = false;
+let syncTimer = null;
+const POLL_MS = 5000;       // auto-refresh every 5 seconds
+
+// For reply modal
+let replyContext = null;    // { parentId, level, authorName, authorText }
+
+// ────────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadInitialComments();
+
+  // Infinite scroll — load older messages when user scrolls near the top
+  let scrollDebounce = null;
+  document.getElementById('messagesWrap').addEventListener('scroll', function () {
+    clearTimeout(scrollDebounce);
+    scrollDebounce = setTimeout(() => {
+      if (this.scrollTop <= 120 && hasMore && !this._loading) {
+        loadMoreComments();
+      }
+    }, 80);
+  });
+
+  // Pause auto-sync when tab is hidden, resume when visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(syncTimer);
+    } else {
+      syncComments();                        // immediate refresh on tab focus
+      syncTimer = setInterval(syncComments, POLL_MS);
+    }
+  });
+});
+
+// ────────────────────────────────────────────────────────
+// API
+// ────────────────────────────────────────────────────────
+async function api(params) {
+  const isWrite = ['addMainComment', 'addReply'].includes(params.action);
+  if (isWrite) {
+    const body = Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
+    const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+    if (!res.ok) throw new Error("Network error " + res.status);
+    return await res.json();
+  } else {
+    const url = new URL(SCRIPT_URL);
+    Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error("Network error " + res.status);
+    return await res.json();
+  }
+}
+
+// ────────────────────────────────────────────────────────
+// LOAD
+// ────────────────────────────────────────────────────────
+async function loadInitialComments() {
+  showGlobalSpinner(true);
+  try {
+    const data = await api({ action: 'getComments', page: 1, pageSize: PAGE_SIZE });
+    allComments = data.comments || [];
+    totalComments = data.total || 0;
+    hasMore = data.hasMore || false;
+    currentPage = 1;
+    renderAllComments(true);
+    scrollToBottom(false);
+    updateLoadMoreUI();
+    // Start polling after first successful load
+    syncTimer = setInterval(syncComments, POLL_MS);
+  } catch(e) {
+    showToast("⚠️ Could not load comments. Check your Script URL.");
+    renderDemoComments();
+  } finally {
+    showGlobalSpinner(false);
+  }
+}
+
+// ────────────────────────────────────────────────────────
+// SYNC — silent DOM diff, zero jerk, 5-second polling
+// ────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────
+// SYNC
+// ────────────────────────────────────────────────────────
+async function syncComments() {
+  if (isSyncing || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  isSyncing = true;
+  try {
+    const pagesToFetch = currentPage;
+    const freshAll = [];
+    for (let p = pagesToFetch; p >= 1; p--) {
+      const data = await api({ action: 'getComments', page: p, pageSize: PAGE_SIZE });
+      freshAll.push(...(data.comments || []));
+      if (p === pagesToFetch) { hasMore = data.hasMore || false; totalComments = data.total || 0; }
+    }
+    if (JSON.stringify(freshAll) === JSON.stringify(allComments)) { setSyncStatus('live'); return; }
+    const wrap = document.getElementById('messagesWrap');
+    const atBottom = (wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight) < 80;
+    const scrollTopBefore = wrap.scrollTop;
+    const scrollHeightBefore = wrap.scrollHeight;
+    allComments = freshAll;
+    renderAllComments(true);
+    updateLoadMoreUI();
+    if (atBottom) scrollToBottom(false);
+    else wrap.scrollTop = scrollTopBefore + (wrap.scrollHeight - scrollHeightBefore);
+    setSyncStatus('live');
+  } catch(e) { setSyncStatus('error'); }
+  finally { isSyncing = false; }
+}
+
+function setSyncStatus(state) {
+  const dot  = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  if (!dot || !text) return;
+  if (state === 'error') {
+    dot.className    = 'cc-status-dot error';
+    text.textContent = 'Offline';
+    text.style.color = '#ef4444';
+  } else {
+    dot.className    = 'cc-status-dot';
+    text.textContent = 'Live';
+    text.style.color = '';
+  }
+}
+
+// ────────────────────────────────────────────────────────
+// MANUAL REFRESH
+// ────────────────────────────────────────────────────────
+async function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  if (!btn || btn._busy) return;
+  btn._busy = true;
+  btn.classList.remove('done');
+  btn.classList.add('spinning');
+
+  // Force sync even if auto-sync is mid-cycle
+  isSyncing = false;
+  await syncComments();
+
+  btn.classList.remove('spinning');
+  btn.classList.add('done');
+  setTimeout(() => { btn.classList.remove('done'); btn._busy = false; }, 500);
+}
+
+async function loadMoreComments() {
+  const wrap = document.getElementById('messagesWrap');
+  if (!hasMore || wrap._loading) return;
+  wrap._loading = true;
+  const pillSpinner = document.getElementById('pillSpinner');
+  const pillText    = document.getElementById('pillText');
+  if (pillSpinner) pillSpinner.style.display = 'inline-flex';
+  if (pillText)    pillText.textContent = 'Loading…';
+  try {
+    currentPage++;
+    const data = await api({ action: 'getComments', page: currentPage, pageSize: PAGE_SIZE });
+    const older = data.comments || [];
+    hasMore = data.hasMore || false;
+    if (older.length > 0) {
+      const scrollTopBefore    = wrap.scrollTop;
+      const scrollHeightBefore = wrap.scrollHeight;
+      allComments = [...older, ...allComments];
+      renderAllComments(true);
+      wrap.scrollTop = scrollTopBefore + (wrap.scrollHeight - scrollHeightBefore);
+    }
+    updateLoadMoreUI();
+  } catch(e) {
+    showToast("⚠️ Failed to load older messages.");
+    currentPage--;
+  } finally {
+    if (pillSpinner) pillSpinner.style.display = 'none';
+    if (pillText)    pillText.textContent = '↑ Scroll up for older messages';
+    wrap._loading = false;
+  }
+}
+
+// ────────────────────────────────────────────────────────
+// SEND MAIN COMMENT
+// ────────────────────────────────────────────────────────
+async function sendMainComment() {
+  const rawName = document.getElementById('mainName').value.trim() || 'Anonymous';
+  const { displayName, isAdmin } = resolveUser(rawName);
+  const msg  = document.getElementById('mainMessage').value.trim();
+  if (!msg) { showToast("Please type a message."); return; }
+
+  // Optimistic UI
+  const tempId = 'temp_' + Date.now();
+  const newComment = {
+    id: tempId, text: msg, name: displayName, isAdmin,
+    timestamp: new Date().toISOString(),
+    level: 0, replies: [], _pending: true
+  };
+  allComments.push(newComment);
+  appendCommentToDOM(newComment);
+  scrollToBottom(true);
+
+  document.getElementById('mainMessage').value = '';
+  autoResize(document.getElementById('mainMessage'));
+
+  try {
+    // Save the display name (not the code) to the sheet
+    const res = await api({ action: 'addMainComment', name: displayName, message: msg });
+    if (res.error) throw new Error(res.error);
+    const c = allComments.find(c => c.id === tempId);
+    if (c) { c.id = res.id; c._pending = false; }
+    const el = document.querySelector(`[data-id="${tempId}"]`);
+    if (el) { el.dataset.id = res.id; el.classList.remove('_pending'); }
+  } catch(e) {
+    showToast("⚠️ Failed to save. Try again.");
+    allComments = allComments.filter(c => c.id !== tempId);
+    const el = document.querySelector(`[data-id="${tempId}"]`);
+    if (el) el.remove();
+  }
+}
+
+// ────────────────────────────────────────────────────────
+// REPLY MODAL
+// ────────────────────────────────────────────────────────
+function openReplyModal(parentId, level, authorName, authorText) {
+  replyContext = { parentId, level, authorName, authorText };
+  document.getElementById('modalBadge').textContent = level === 1 ? 'Level 1' : 'Level 2';
+  document.getElementById('modalQuoteAuthor').textContent = authorName;
+  document.getElementById('modalQuoteText').textContent = authorText.length > 100
+    ? authorText.slice(0, 100) + '…' : authorText;
+  document.getElementById('replyName').value = document.getElementById('mainName').value || '';
+  document.getElementById('replyMessage').value = '';
+  document.getElementById('replyModal').classList.add('open');
+  setTimeout(() => document.getElementById('replyName').focus(), 300);
+}
+
+function closeReplyModal() {
+  document.getElementById('replyModal').classList.remove('open');
+  replyContext = null;
+}
+
+document.getElementById('replyModal').addEventListener('click', function(e) {
+  if (e.target === this) closeReplyModal();
+});
+
+async function submitReply() {
+  if (!replyContext) return;
+  const rawName = document.getElementById('replyName').value.trim() || 'Anonymous';
+  const { displayName, isAdmin } = resolveUser(rawName);
+  const msg  = document.getElementById('replyMessage').value.trim();
+  if (!msg) { showToast("Please type a reply."); return; }
+
+  const btn = document.getElementById('replySubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await api({
+      action: 'addReply',
+      parentId: replyContext.parentId,
+      level: replyContext.level,
+      name: displayName, message: msg
+    });
+    if (res.error) throw new Error(res.error);
+
+    // Insert into local state and re-render
+    const newReply = {
+      id: res.id, text: msg, name: displayName, isAdmin,
+      timestamp: new Date().toISOString(),
+      level: replyContext.level, replies: []
+    };
+
+    if (replyContext.level === 1) {
+      const parent = findById(allComments, replyContext.parentId);
+      if (parent) parent.replies.push(newReply);
+    } else {
+      // level 2 — find l1 parent
+      for (const c of allComments) {
+        const l1 = c.replies.find(r => r.id === replyContext.parentId);
+        if (l1) { l1.replies.push(newReply); break; }
+      }
+    }
+
+    closeReplyModal();
+
+    // ── Preserve scroll position: re-render then restore ──
+    const wrap = document.getElementById('messagesWrap');
+    const prevScrollTop = wrap.scrollTop;
+    const prevScrollHeight = wrap.scrollHeight;
+    renderAllComments(true);
+    // After render the DOM is taller; keep the same visual position
+    const newScrollHeight = wrap.scrollHeight;
+    wrap.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+
+    showToast("✓ Reply sent!");
+  } catch(e) {
+    showToast("⚠️ Failed to send reply.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="white" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Send Reply';
+  }
+}
+
+// ────────────────────────────────────────────────────────
+// RENDER
+// ────────────────────────────────────────────────────────
+function buildFlatList(comments) {
+  const idMap = {};
+  comments.forEach(c => {
+    idMap[c.id] = c;
+    (c.replies || []).forEach(r1 => {
+      idMap[r1.id] = r1;
+      (r1.replies || []).forEach(r2 => { idMap[r2.id] = r2; });
+    });
+  });
+  const flat = [];
+  comments.forEach(c => {
+    flat.push({ msg: c, cls: 'main', quoted: null });
+    (c.replies || []).forEach(r1 => {
+      flat.push({ msg: r1, cls: 'l1', quoted: idMap[r1.parentId] || c });
+      (r1.replies || []).forEach(r2 => {
+        flat.push({ msg: r2, cls: 'l2', quoted: idMap[r2.parentId] || r1 });
+      });
+    });
+  });
+  flat.sort((a, b) => new Date(a.msg.timestamp) - new Date(b.msg.timestamp));
+  return flat;
+}
+
+function renderAllComments(fullRender) {
+  const list = document.getElementById('commentsList');
+  list.innerHTML = '';
+  buildFlatList(allComments).forEach(item => list.appendChild(buildBubble(item.msg, item.cls, item.quoted)));
+}
+
+function appendCommentToDOM(comment) {
+  document.getElementById('commentsList').appendChild(buildBubble(comment, 'main', null));
+}
+
+function buildCommentThread(comment) {
+  const div = document.createElement('div');
+  div.dataset.threadId = comment.id;
+  return div;
+}
+
+function buildBubble(comment, cls, quotedMsg) {
+  const row = document.createElement('div');
+  const isAdmin = comment.isAdmin ||
+    Object.values(ADMIN_ALIASES).some(a => a.isAdmin && a.displayName === comment.name);
+  row.className = 'cc-bubble-row ' + cls + (isAdmin ? ' is-admin' : '');
+  row.dataset.id = comment.id;
+  const time = comment.timestamp
+    ? new Date(comment.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+  const badgeHtml = isAdmin ? `<span class="cc-admin-badge">Admin</span>` : '';
+  let quoteHtml = '';
+  if (quotedMsg) {
+    const shortText = quotedMsg.text.length > 60 ? quotedMsg.text.slice(0,60)+'…' : quotedMsg.text;
+    quoteHtml = `<div class="cc-quote" onclick="scrollToMessage('${quotedMsg.id}')">
+      <span class="cc-quote-name">${esc(quotedMsg.name)}</span>
+      <span class="cc-quote-text">${esc(shortText)}</span>
+    </div>`;
+  }
+  let replyBtnHtml = '';
+  if (cls === 'main') {
+    replyBtnHtml = `<button class="cc-reply-btn" onclick="openReplyModal('${comment.id}',1,'${esc(comment.name)}','${esc(comment.text)}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>Reply</button>`;
+  } else if (cls === 'l1') {
+    replyBtnHtml = `<button class="cc-reply-btn" onclick="openReplyModal('${comment.id}',2,'${esc(comment.name)}','${esc(comment.text)}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>Reply</button>`;
+  }
+  row.innerHTML = `<div class="cc-bubble">
+    ${quoteHtml}
+    <div class="cc-name">${esc(comment.name)}${badgeHtml}</div>
+    <div class="cc-text">${esc(comment.text)}</div>
+    <div class="cc-meta">${replyBtnHtml}<span class="cc-time">${time}</span></div>
+  </div>`;
+  return row;
+}
+
+function scrollToMessage(id) {
+  const wrap = document.getElementById('messagesWrap');
+  const target = wrap.querySelector(`[data-id="${id}"] .cc-bubble`);
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  target.classList.add('cc-highlight');
+  setTimeout(() => target.classList.remove('cc-highlight'), 1800);
+}
+
+// ────────────────────────────────────────────────────────
+// HELPERS
+// ────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function findById(comments, id) {
+  for (const c of comments) {
+    if (c.id === id) return c;
+    for (const r of c.replies || []) {
+      if (r.id === id) return r;
+    }
+  }
+  return null;
+}
+
+function scrollToBottom(smooth) {
+  const wrap = document.getElementById('messagesWrap');
+  wrap.scrollTo({ top: wrap.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+}
+
+function updateLoadMoreUI() {
+  const area = document.getElementById('loadMoreArea');
+  area.style.display = hasMore ? 'flex' : 'none';
+}
+
+function autoResize(el) {
+  // horizontal layout — keep single line, no resize needed
+}
+
+function handleMainKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMainComment();
+  }
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function showGlobalSpinner(show) {
+  document.getElementById('globalSpinner').classList.toggle('hidden', !show);
+}
+
+// ────────────────────────────────────────────────────────
+// DEMO COMMENTS (shown when Script URL not configured)
+// ────────────────────────────────────────────────────────
+function renderDemoComments() {
+  // Simulate a page of recent comments
+  allComments = [
+    {
+      id:'d6', name:'Ivan', text:'The threaded reply system is super intuitive 👌',
+      timestamp: new Date(Date.now()-600000).toISOString(), level:0,
+      replies:[
+        { id:'d6r1', name:'Jane', text:'Totally agree — level 1 replies in teal are clear.',
+          timestamp: new Date(Date.now()-500000).toISOString(), level:1,
+          replies:[
+            { id:'d6r1r1', name:'Karl', text:'And level 2 in amber stands out perfectly!',
+              timestamp: new Date(Date.now()-400000).toISOString(), level:2, replies:[] }
+          ]
+        }
+      ]
+    },
+    {
+      id:'d7', name:'Binu L A', text:'Admin here — everything is synced with Google Sheets in real time. 🚀',
+      timestamp: new Date(Date.now()-300000).toISOString(), level:0,
+      replies:[
+        { id:'d7r1', name:'Leo', text:'Wow, this is really smooth!',
+          timestamp: new Date(Date.now()-200000).toISOString(), level:1, replies:[] }
+      ]
+    },
+    {
+      id:'d8', name:'Mia', text:'⚠️ Demo mode — paste your Apps Script URL in SCRIPT_URL to connect to Google Sheets.',
+      timestamp: new Date().toISOString(), level:0, replies:[]
+    }
+  ];
+
+  // Simulate that there are older pages to load (triggers the scroll-up pill)
+  hasMore = true;
+  currentPage = 1;
+
+  renderAllComments(true);
+  scrollToBottom(false);
+  updateLoadMoreUI();
+
+  // Override loadMoreComments in demo mode to inject fake older messages
+  window._demoOlderLoaded = false;
+  const _origLoad = loadMoreComments;
+  window.loadMoreComments = async function() {
+    const wrap = document.getElementById('messagesWrap');
+    if (wrap._loading) return;
+    wrap._loading = true;
+
+    const pillSpinner = document.getElementById('pillSpinner');
+    const pillText    = document.getElementById('pillText');
+    if (pillSpinner) pillSpinner.style.display = 'inline-flex';
+    if (pillText)    pillText.textContent = 'Loading…';
+
+    await new Promise(r => setTimeout(r, 700)); // simulate network delay
+
+    const older = [
+      {
+        id:'d1', name:'Alice', text:'Welcome to the community chatboard! 🎉 (older message)',
+        timestamp: new Date(Date.now()-3600000).toISOString(), level:0,
+        replies:[
+          { id:'d1r1', name:'Bob', text:'Thanks! This looks amazing.',
+            timestamp: new Date(Date.now()-3000000).toISOString(), level:1,
+            replies:[
+              { id:'d1r1r1', name:'Carol', text:'Agreed, love the light design!',
+                timestamp: new Date(Date.now()-2400000).toISOString(), level:2, replies:[] }
+            ]
+          }
+        ]
+      },
+      {
+        id:'d2', name:'Eve', text:'Has anyone tried the Google Sheets integration? (older message)',
+        timestamp: new Date(Date.now()-2000000).toISOString(), level:0,
+        replies:[
+          { id:'d2r1', name:'Frank', text:'Yes! Works perfectly.',
+            timestamp: new Date(Date.now()-1900000).toISOString(), level:1, replies:[] }
+        ]
+      },
+      {
+        id:'d3', name:'Grace', text:'The scroll-up loading works just like WhatsApp now! 📱',
+        timestamp: new Date(Date.now()-1800000).toISOString(), level:0, replies:[]
+      },
+      {
+        id:'d4', name:'Hank', text:'Smooth infinite scroll going upward 🔥',
+        timestamp: new Date(Date.now()-1500000).toISOString(), level:0, replies:[]
+      },
+      {
+        id:'d5', name:'Ivy', text:'Love the teal and amber colour coding for replies.',
+        timestamp: new Date(Date.now()-1200000).toISOString(), level:0, replies:[]
+      }
+    ];
+
+    const list = document.getElementById('commentsList');
+    const scrollTopBefore    = wrap.scrollTop;
+    const scrollHeightBefore = wrap.scrollHeight;
+
+    wrap.style.overflowAnchor = 'none';
+    list.style.overflowAnchor = 'none';
+
+    const fragment = document.createDocumentFragment();
+    older.forEach(c => fragment.appendChild(buildCommentThread(c)));
+    list.prepend(fragment);
+
+    wrap.scrollTop = scrollTopBefore + (wrap.scrollHeight - scrollHeightBefore);
+
+    wrap.style.overflowAnchor = '';
+    list.style.overflowAnchor = '';
+
+    allComments = [...older, ...allComments];
+
+    hasMore = false; // no more older demo messages
+    updateLoadMoreUI();
+
+    if (pillSpinner) pillSpinner.style.display = 'none';
+    if (pillText)    pillText.textContent = '↑ Scroll up for older messages';
+    wrap._loading = false;
+  };
+}
+</script>
+
+<script>
+  /* ------ Chat popup open/close ------ */
+  function openChatPopup() {
+    const overlay = document.getElementById('chatPopupOverlay');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    // Sync name field from main chat
+    const mainName = document.getElementById('mainName');
+    const popupName = document.getElementById('mainNamePopup');
+    if (mainName && popupName && mainName.value) {
+      popupName.value = mainName.value;
+    }
+    // Sync messages list into popup
+    syncMessagesToPopup();
+  }
+
+  function closeChatPopup() {
+    const overlay = document.getElementById('chatPopupOverlay');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close on overlay backdrop click
+  document.getElementById('chatPopupOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeChatPopup();
+  });
+
+  // ESC key closes popup
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeChatPopup();
+  });
+
+  /* Sync messages from main chat into popup view */
+  function syncMessagesToPopup() {
+    const src = document.getElementById('commentsList');
+    const dst = document.getElementById('commentsListPopup');
+    if (src && dst) {
+      dst.innerHTML = src.innerHTML;
+      // Scroll to bottom
+      const wrap = document.getElementById('messagesWrapPopup');
+      if (wrap) setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+    }
+  }
+
+  /* Send from popup - mirrors main sendMainComment if available */
+  function sendPopupComment() {
+    // Copy name back to main input first
+    const popupName = document.getElementById('mainNamePopup');
+    const mainName = document.getElementById('mainName');
+    if (popupName && mainName) mainName.value = popupName.value;
+
+    // Copy message to main input and fire send
+    const popupMsg = document.getElementById('mainMessagePopup');
+    const mainMsg = document.getElementById('mainMessage');
+    if (popupMsg && mainMsg) {
+      mainMsg.value = popupMsg.value;
+      popupMsg.value = '';
+    }
+    if (typeof sendMainComment === 'function') {
+      sendMainComment();
+      setTimeout(syncMessagesToPopup, 800);
+    }
+  }
+
+  function handlePopupKeydown(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendPopupComment();
+    }
+  }
+
+  /* Keep popup in sync when main chat updates */
+  const _origCommentsList = document.getElementById('commentsList');
+  if (_origCommentsList && window.MutationObserver) {
+    const _obs = new MutationObserver(function() {
+      const overlay = document.getElementById('chatPopupOverlay');
+      if (overlay && overlay.classList.contains('active')) {
+        syncMessagesToPopup();
+      }
+    });
+    _obs.observe(_origCommentsList, { childList: true, subtree: true });
+  }
+</script>
+<!-------------------------------------suggestion box script ends---------------------->
+
+<!--------------------------------------other script starts---------------------------->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!--------------------------------------other script ends------------------------------>
+
+<!-------------------------------------Whatsapp script starts-------------------------->
+  <script>   
+	function openWhatsApp() {  
+	window.open('whatsapp://send?text= https://www.gstcell.com/');  
+	}  
+	</script>
+<!-------------------------------------Whatsapp script script ends--------------------->
+
+<!-------------------------------------Clock script starts----------------------------->
+<script>
+	var dialLines = document.getElementsByClassName('diallines');
+   var clockEl = document.getElementsByClassName('clock')[0];
+   
+   for (var i = 1; i < 60; i++) {
+	 clockEl.innerHTML += "<div class='diallines'></div>";
+	 dialLines[i].style.transform = "rotate(" + 6 * i + "deg)";
+   }
+   
+   function clock() {
+	 var weekday = [
+		   "Sunday",
+		   "Monday",
+		   "Tuesday",
+		   "Wednesday",
+		   "Thursday",
+		   "Friday",
+		   "Saturday"
+		 ],
+		 d = new Date(),
+		 h = d.getHours(),
+		 m = d.getMinutes(),
+		 s = d.getSeconds(),
+		 date = d.getDate(),
+		 month = d.getMonth() + 1,
+		 year = d.getFullYear(),
+			  
+		 hDeg = h * 30 + m * (360/720),
+		 mDeg = m * 6 + s * (360/3600),
+		 sDeg = s * 6,
+		 
+		 hEl = document.querySelector('.hour-hand'),
+		 mEl = document.querySelector('.minute-hand'),
+		 sEl = document.querySelector('.second-hand'),
+		 dateEl = document.querySelector('.date'),
+		 dayEl = document.querySelector('.day');
+	 
+		 var day = weekday[d.getDay()];
+	 
+	 if(month < 9) {
+	   month = "0" + month;
+	 }
+	 
+	 hEl.style.transform = "rotate("+hDeg+"deg)";
+	 mEl.style.transform = "rotate("+mDeg+"deg)";
+	 sEl.style.transform = "rotate("+sDeg+"deg)";
+	 dateEl.innerHTML = date+"/"+month+"/"+year;
+	 dayEl.innerHTML = day;
+   }
+   
+   setInterval("clock()", 100);
+   
+   </script>
+<!-------------------------------------Clock script ends------------------------------->
+<!--social media script-->
+<!-------------------------------------facebook script starts-------------------------->
+<script>
+  function share_fb() {
+    var window_location_encoded = "www.gstcell.com";
+      var share_link = "https://www.facebook.com/sharer/sharer.php?u="+window_location_encoded;
+      window.open(share_link,'_blank');
+  }
+    </script>
+    
+  
+  <!-------------------------------------facebook script Endss-------------------------->
+  <!-------------------------------------Whatsapp script starts-------------------------->
+  <script>   
+    function openWhatsApp() {  
+    window.open('whatsapp://send?text= https://www.gstcell.com/');  
+    }  
+    </script>
+  <!-------------------------------------Whatsapp script script ends--------------------->
+  <!--social media script-->
+  <!--------------------------------------------------------NAV Bar Script---------------------------------------------------------------->
+
+<script>
+    const sheetId = '1fUwgZ4dZw6Voub9OUFUSU92xhrRthvb8cN5QFFRzWV8';
+      const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
+      const range = 'Sheet2!A:C';  // Adjust the range based on your Google Sheet
+    
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+  
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const rows = data.values;
+        if (rows.length > 0) {
+          const linksMap = {};
+  
+          // Group links by type
+          rows.slice(1).forEach(row => {
+            const type = row[0];
+            const linkName = row[1];
+            const linkUrl = row[2];
+            
+            if (!linksMap[type]) {
+              linksMap[type] = [];
+            }
+            
+            linksMap[type].push({ name: linkName, url: linkUrl });
+          });
+  
+          // Create HTML structure for each type and insert into corresponding ul
+          for (const type in linksMap) {
+            const ulElement = document.getElementById(type);
+            if (ulElement) {
+              let content = '';
+              const links = linksMap[type];
+              const initialLoad = Math.min(10, links.length);
+  
+              // Load initial 10 or fewer links
+              for (let i = 0; i < initialLoad; i++) {
+                content += `<li><a href="${links[i].url}" target="_blank">${links[i].name}</a></li>`;
+              }
+  
+              // If more than 10 links, add "See more" button
+              if (links.length > 10) {
+                content += `<li class="see-more" onclick="showMore('${type}')">See more</li>`;
+  
+                // Add hidden links
+                for (let i = 10; i < links.length; i++) {
+                  content += `<li class="hidden ${type}" style="display:none;"><a href="${links[i].url}" target="_blank">${links[i].name}</a></li>`;
+                }
+              }
+  
+              ulElement.innerHTML = content;
+            }
+          }
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error))
+      .finally(() => {
+        // Hide the loading message after data is loaded
+        const loadingMessages = document.querySelectorAll('.loading-message');
+        loadingMessages.forEach(message => {
+          message.style.display = 'none';
+        });
+      });
+  
+    function showMore(type) {
+      const hiddenLinks = document.querySelectorAll(`.hidden.${type}`);
+      hiddenLinks.forEach(link => {
+        link.style.display = 'list-item';
+      });
+      document.querySelector(`.see-more[onclick="showMore('${type}')"]`).style.display = 'none';
+    
+    }
+  </script>
+<!--------------------------------------------------------NAV Bar Script---------------------------------------------------------------->
+
+<!--------------------------------------------------------Pop Up Window---------------------------------------------------------------->
+<script>
+  async function populateMenuFromSheet() {
+    const sheetId1 = '1fUwgZ4dZw6Voub9OUFUSU92xhrRthvb8cN5QFFRzWV8';
+const apiKey1 = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
+const range1 = 'Sheet3!A:E'; // Adjust range as needed (columns A to D)
+
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId1}/values/${range1}?key=${apiKey1}`;
+
+      try {
+  const response = await fetch(url);
+  const data = await response.json();
+  const rows = data.values;
+
+  if (!rows || rows.length < 2) {
+      console.error('No data found or insufficient rows.');
+      return;
+  }
+
+  const container = document.getElementById('menu-container');
+  let currentUl = null;
+  let currentLabelFor = null;
+
+  rows.forEach((row, index) => {
+      if (index === 0) return; // Skip header row
+
+      const [ulClass, labelFor, mainLiText, link, linkLiName] = row;
+
+      // Create a new <ul> element if class or labelFor changes
+      if (currentUl === null || currentLabelFor !== labelFor) {
+          currentUl = document.createElement('ul');
+          currentUl.className = ulClass; // Column 1 for class
+          currentUl.draggable = true;
+          currentUl.style.zIndex = '50';
+
+          const label = document.createElement('label');
+          label.htmlFor = labelFor; // Column 2 for `for` attribute
+          label.style.color = 'red';
+          label.style.marginLeft = '88%';
+          label.style.cursor = 'pointer';
+          label.style.fontSize = '20pt';
+          label.innerHTML = '<i class="fas fa-times"></i>';
+          currentUl.appendChild(label);
+
+          const mainLi = document.createElement('li');
+          const mainA = document.createElement('a');
+          mainA.className = 'Mahesh';
+          mainA.textContent = mainLiText; // Column 3 for text
+          mainLi.appendChild(mainA);
+          currentUl.appendChild(mainLi);
+
+          container.appendChild(currentUl);
+          currentLabelFor = labelFor; // Update the currentLabelFor tracker
+      }
+
+      // Add <a> and nested <li> for each row (Column 4 and Column 5)
+      const linkElement = document.createElement('a');
+      linkElement.href = link.trim(); // Column 4 for href
+      linkElement.target = '_blank';
+
+      const linkLi = document.createElement('li');
+
+// Create the <i> element
+const pdfIcon = document.createElement('i');
+pdfIcon.className = 'fa fa-file-pdf-o';
+pdfIcon.style.fontSize = '16px';
+pdfIcon.style.color = 'red';
+
+// Append the <i> element to the <li>
+linkLi.appendChild(pdfIcon);
+
+// Add a space and then the text content
+linkLi.appendChild(document.createTextNode(' ' + linkLiName)); // Column 5 for <li> text
+
+linkElement.appendChild(linkLi);
+
+      currentUl.appendChild(linkElement);
+  });
+} catch (error) {
+  console.error('Error fetching or processing data:', error);
+}
+}
+
+document.addEventListener('DOMContentLoaded', populateMenuFromSheet);
+</script>
+<!--------------------------------------------------------Pop Up Window---------------------------------------------------------------->
+
+<!--------------------------------------------------------Recent---------------------------------------------------------------->
+<script>
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1nvKcyt1sU-05syE-krBqoxv2yx4z5HnVbxrzzJXB6ds/gviz/tq?sheet=Sheet1';
+  fetch(sheetUrl)
+      .then(response => response.text())
+      .then(data => {
+          const json = JSON.parse(data.substring(47).slice(0, -2)); // Clean up Google's response
+          const rows = json.table.rows;
+  
+          // Select the container where the rows will be added
+          const container = document.querySelector('.col-sm.quick-link-margin');
+  
+          // Limit the number of rows initially displayed
+          let defaultMaxRows = 7;
+          let isExpanded = false; // To track the state
+  
+          rows.forEach((row, index) => {
+              // Extract data from specific columns
+              const link1Href = row.c[3]?.v || '#'; // Column D
+              let span1Text = row.c[2]?.v || 'Default Name'; // Column C
+              const link2Href = row.c[7]?.v || '#'; // Column H
+              const span2Text = row.c[6]?.v || 'Default Name'; // Column G
+  
+              // Check screen width and truncate span1Text accordingly
+              const maxLength = window.innerWidth < 700 ? 45 : 75;
+              if (span1Text.length > maxLength) {
+                  span1Text = span1Text.substring(0, maxLength) + '...';
+              }
+  
+              // Create a new set of HTML elements for the current row
+              const newRow = `
+                <div class="row-item" style="display: ${index < defaultMaxRows ? 'block' : 'none'}">
+                  <br><img src="https://amarebe.com/wp-content/uploads/2021/01/icon_new.gif" alt="" width="40" height="20">
+                  <a href="${link1Href}" target="_blank">
+                    <span class="scrolltext">${span1Text}</span>
+                  </a>
+                  
+                  <a href="${link2Href}" target="_blank">
+                    <span class="scrolltext1">${span2Text}</span>
+                  </a>
+                  <br>
+                </div>
+              `;
+  
+              // Append the new HTML row to the container
+              container.innerHTML += newRow;
+          });
+  
+          // Add "See More" and "See Less" functionality
+          const toggleBtn = document.createElement('button');
+          toggleBtn.textContent = 'See More';
+          toggleBtn.onclick = () => {
+              const allRows = container.querySelectorAll('.row-item');
+              if (isExpanded) {
+                  // Collapse to show only default rows
+                  allRows.forEach((row, index) => {
+                      row.style.display = index < defaultMaxRows ? 'block' : 'none';
+                  });
+                  toggleBtn.textContent = 'See More';
+                  isExpanded = false;
+              } else {
+                  // Expand to show all rows
+                  allRows.forEach(row => {
+                      row.style.display = 'block';
+                  });
+                  toggleBtn.textContent = 'See Less';
+                  isExpanded = true;
+              }
+          };
+          container.appendChild(toggleBtn);
+  
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  
+  // Optional: Add a listener for window resizing to dynamically update maxLength if needed
+  window.addEventListener('resize', () => {
+      // Add functionality to dynamically adjust truncation here if required
+  });
+  </script>
+<!--------------------------------------------------------Recent---------------------------------------------------------------->
+
+<!-------------------------------------------------------NEWS---------------------------------------------------------------->
+
+<script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1qyS5zd921dGTeDQLBdbVoZXIrteZYBVt7GgP9UTKl48/gviz/tq?tqx=out:json';
+    
+    async function fetchArticles() {
+        try {
+            const response = await fetch(SHEET_URL);
+            const text = await response.text();
+            const json = JSON.parse(text.substr(47).slice(0, -2)); // Parse the Google Sheets JSON
+    
+            const articlesContainer = document.getElementById('articles-container');
+            const categories = {};
+    
+            // Process rows and categorize articles
+            json.table.rows.forEach(row => {
+        const category = row.c[0]?.v || "Uncategorized";
+        const title = row.c[1]?.v || "Untitled";
+        // Adjusted for more paragraphs (columns C to P now hold paragraphs)
+        const paragraphs = row.c.slice(2, 16).map(cell => cell?.v || "").filter(Boolean);
+        const imageUrl = row.c[16]?.v; // Previously column L, now column Q
+        const refText1 = row.c[17]?.v; // Column R
+        const refLink1 = row.c[18]?.v; // Column S
+        const refText2 = row.c[19]?.v; // Column T
+        const refLink2 = row.c[20]?.v; // Column U
+        const shareLink = row.c[21]?.v; // Column V
+    
+        if (!categories[category]) {
+            categories[category] = [];
+        }
+    
+        const article = document.createElement('article');
+    
+        const heading = document.createElement('h3');
+        heading.textContent = title;
+        article.appendChild(heading);
+    
+        if (imageUrl) {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = "Article Image";
+            article.appendChild(img);
+        }
+    
+        // First paragraph and additional paragraphs
+        const firstParagraph = paragraphs[0] || "";
+        const firstParagraphElement = document.createElement('p');
+        firstParagraphElement.textContent = firstParagraph;
+        article.appendChild(firstParagraphElement);
+    
+        const additionalParagraphsContainer = document.createElement('div');
+        additionalParagraphsContainer.style.display = "none";
+        paragraphs.slice(1).forEach(paragraph => {
+            const p = document.createElement('p');
+            p.textContent = paragraph;
+            additionalParagraphsContainer.appendChild(p);
+        });
+        article.appendChild(additionalParagraphsContainer);
+    
+        if (paragraphs.length > 1) {
+            const toggleButton = document.createElement('text1');
+            toggleButton.textContent = "Read More...";
+            toggleButton.addEventListener('click', () => {
+                if (additionalParagraphsContainer.style.display === "none") {
+                    additionalParagraphsContainer.style.display = "block";
+                    toggleButton.textContent = "Show Less";
+                } else {
+                    additionalParagraphsContainer.style.display = "none";
+                    toggleButton.textContent = "Read More...";
+                }
+            });
+            article.appendChild(toggleButton);
+        }
+    
+        // References
+        const references = document.createElement('div');
+        references.classList.add('references');
+    
+
+        if (refText1 && refLink1) {
+                     // Add PDF icon after the link
+                    const pdfIcon1 = document.createElement('i');
+                    pdfIcon1.className = "fa fa-file-pdf-o"; // FontAwesome class
+                    pdfIcon1.style.fontSize = "14px"; // Set font size
+                    pdfIcon1.style.color = "red"; // Set color to red
+                    pdfIcon1.style.marginLeft = "5px"; // Add spacing
+                    references.appendChild(pdfIcon1);
+
+                    const ref1 = document.createElement('a');
+                    ref1.href = refLink1;
+                    ref1.textContent = refText1;
+                    ref1.target = "_blank";
+                    references.appendChild(document.createTextNode(" "));
+                    references.appendChild(ref1);
+                }
+
+                if (refText2 && refLink2) {
+                    // Add PDF icon after the link
+                    const pdfIcon2 = document.createElement('i');
+                    pdfIcon2.className = "fa fa-file-pdf-o"; // FontAwesome class
+                    pdfIcon2.style.fontSize = "14px"; // Set font size
+                    pdfIcon2.style.color = "red"; // Set color to red
+                    pdfIcon2.style.marginLeft = "5px"; // Add spacing
+                    references.appendChild(document.createTextNode(" | "));
+                    references.appendChild(pdfIcon2);
+                    
+                    const ref2 = document.createElement('a');
+                    ref2.href = refLink2;
+                    ref2.textContent = refText2;
+                    ref2.target = "_blank";
+                    references.appendChild(document.createTextNode(" "));
+                    references.appendChild(ref2);
+                }
+    
+        article.appendChild(references);
+    
+        // Social media buttons
+        if (shareLink) {
+            const socialMediaContainer = document.createElement('div');
+            socialMediaContainer.style.display = "flex";
+            socialMediaContainer.style.gap = "10px";
+            socialMediaContainer.style.marginTop = "10px";
+    
+            const platforms = [
+                { name: "Facebook", url: `https://www.facebook.com/sharer.php?u=${encodeURIComponent(shareLink)}`, icon: "fab fa-facebook" },
+                { name: "WhatsApp", url: `https://api.whatsapp.com/send?text=${encodeURIComponent(shareLink)}`, icon: "fab fa-whatsapp" },
+                { name: "Gmail", url: `mailto:?body=${encodeURIComponent(shareLink)}`, icon: "fas fa-envelope" },
+                { name: "Instagram", url: `https://www.instagram.com/?url=${encodeURIComponent(shareLink)}`, icon: "fab fa-instagram" },
+                { name: "LinkedIn", url: `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(shareLink)}`, icon: "fab fa-linkedin" },
+                { name: "X", url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}`, icon: "fab fa-twitter" }
+            ];
+    
+            platforms.forEach(platform => {
+                const button = document.createElement('a');
+                button.href = platform.url;
+                button.target = "_blank";
+                button.title = platform.name;
+                button.style.display = "inline-block";
+                button.style.backgroundColor = "#007BFF";
+                button.style.color = "white";
+                button.style.padding = "10px";
+                button.style.borderRadius = "50%";
+                button.style.textDecoration = "none";
+                button.style.textAlign = "center";
+                button.style.fontSize = "20px";
+    
+                const icon = document.createElement('i');
+                icon.className = platform.icon;
+                button.appendChild(icon);
+    
+                socialMediaContainer.appendChild(button);
+            });
+    
+            article.appendChild(socialMediaContainer);
+        }
+    
+        categories[category].push(article);
+    });
+    
+    
+    
+            // Create category sections with "See More/See Less" button for additional articles
+            Object.keys(categories).forEach(category => {
+                const categoryContainer = document.createElement('div');
+                categoryContainer.classList.add('category-container');
+    
+                const categoryHeading = document.createElement('h2');
+                categoryHeading.textContent = category;
+                categoryContainer.appendChild(categoryHeading);
+    
+                const articles = categories[category];
+                const maxVisible = 2;
+    
+                const visibleArticles = articles.slice(0, maxVisible);
+                const hiddenArticles = articles.slice(maxVisible);
+    
+                visibleArticles.forEach(article => {
+                    categoryContainer.appendChild(article);
+                });
+    
+                const hiddenArticlesContainer = document.createElement('div');
+                hiddenArticlesContainer.style.display = "none"; // Hidden by default
+                hiddenArticles.forEach(article => {
+                    hiddenArticlesContainer.appendChild(article);
+                });
+                categoryContainer.appendChild(hiddenArticlesContainer);
+    
+                if (hiddenArticles.length > 0) {
+                    const toggleCategoryButton = document.createElement('button');
+                    toggleCategoryButton.textContent = "See More";
+                    toggleCategoryButton.addEventListener('click', () => {
+                        if (hiddenArticlesContainer.style.display === "none") {
+                            hiddenArticlesContainer.style.display = "block";
+                            toggleCategoryButton.textContent = "See Less";
+                        } else {
+                            hiddenArticlesContainer.style.display = "none";
+                            toggleCategoryButton.textContent = "See More";
+                        }
+                    });
+                    categoryContainer.appendChild(toggleCategoryButton);
+                }
+    
+                articlesContainer.appendChild(categoryContainer);
+            });
+        } catch (error) {
+            console.error("Error fetching articles:", error);
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', fetchArticles);
+    
+        </script>
+        <!-------------------------------------------------------NEWS---------------------------------------------------------------->
+        <script>
+          const panel = document.getElementById('social-media-panel');
+   const arrow = document.getElementById('arrow');
+   
+   let panelVisible = true;
+   
+   arrow.addEventListener('click', () => {
+       if (panelVisible) {
+           panel.classList.add('collapsed');
+           arrow.classList.add('collapsed');
+           panelVisible = false;
+       } else {
+           panel.classList.remove('collapsed');
+           arrow.classList.remove('collapsed');
+           panelVisible = true;
+       }
+   });
+   
+
+
+  function openMainPopup() {
+    document.getElementById('aiPopupMainOverlay').style.display = 'flex';
+  }
+  function closeMainPopup() {
+    document.getElementById('aiPopupMainOverlay').style.display = 'none';
+  }
+  function openLink(url) {
+    window.open(url, '_blank');
+  }
+  function openTextPopup(textId) {
+  const text = document.getElementById(textId).innerHTML; // preserve HTML
+  document.getElementById('aiPopupTextContent').innerHTML = text; // render HTML
+  document.getElementById('aiPopupTextOverlay').style.display = 'flex';
+}
+
+  function closeTextPopup() {
+    document.getElementById('aiPopupTextOverlay').style.display = 'none';
+  }
+  
+       </script>
+
+
+
+      </body>
 </html>
