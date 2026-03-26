@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST Data Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- XLSX loaded with defer so it never blocks the page or inline script -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ─── Variables ────────────────────────────────────────────────────────────── */
+:root{
+  --bg:#f0f4f8; --surface:#fff; --border:#d1dae8;
+  --accent:#1a56db; --accent-h:#1d4ed8; --accent2:#7c3aed; --accent3:#059669;
+  --text:#1e293b; --muted:#64748b; --warning:#d97706; --danger:#dc2626;
+  --hbg:#1e3a5f; --ralt:#f7faff; --rhov:#edf3ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh}
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+header{background:var(--hbg);padding:15px 28px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:100}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#6366f1);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+header h1{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px}
+header h1 span{color:#60a5fa}
+header small{font-size:11px;color:#93c5fd;font-family:'JetBrains Mono',monospace;display:block;margin-top:1px}
+.bc{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;
+  color:#93c5fd;font-family:'JetBrains Mono',monospace}
+.bcs{opacity:.4}.bcs.on{opacity:1;color:#fff;font-weight:700}.bcsep{opacity:.3}
+
+/* ─── Pages ────────────────────────────────────────────────────────────────── */
+.pg{display:none;animation:fup .28s ease}.pg.on{display:block}
+.main{max-width:1560px;margin:0 auto;padding:24px 28px}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--surface);
+  border:1px solid var(--border);color:var(--muted);border-radius:8px;
+  padding:7px 13px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s;margin-bottom:20px}
+.back:hover{border-color:var(--accent);color:var(--accent);background:#eff6ff}
+
+/* ─── Landing ──────────────────────────────────────────────────────────────── */
+.hero{text-align:center;padding:52px 20px 36px}
+.hero h2{font-size:30px;font-weight:800;margin-bottom:10px}
+.hero h2 em{color:var(--accent);font-style:normal}
+.hero p{font-size:14px;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.75}
+.cards{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;max-width:760px;margin:0 auto}
+.card{background:var(--surface);border:2px solid var(--border);border-radius:16px;
+  padding:36px 30px;flex:1;min-width:240px;max-width:320px;cursor:pointer;text-align:center;
+  transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.card:hover{border-color:var(--accent);box-shadow:0 8px 28px rgba(26,86,219,.12);transform:translateY(-3px)}
+.cico{width:68px;height:68px;margin:0 auto 18px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;font-size:32px}
+.cb{background:linear-gradient(135deg,#dbeafe,#e0e7ff)}
+.cg{background:linear-gradient(135deg,#d1fae5,#dcfce7)}
+.card h3{font-size:17px;font-weight:800;margin-bottom:7px}
+.card p{font-size:13px;color:var(--muted);line-height:1.6}
+.ctag{display:inline-block;margin-top:14px;font-size:11px;font-family:'JetBrains Mono',monospace;
+  padding:3px 10px;border-radius:20px;background:#eff6ff;color:var(--accent);font-weight:600}
+.ctag.g{background:#dcfce7;color:var(--accent3)}
+
+/* ─── Upload ───────────────────────────────────────────────────────────────── */
+.dz{border:2px dashed var(--border);border-radius:14px;padding:48px 36px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);
+  box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.dz:hover,.dz.ov{border-color:var(--accent);background:#eff6ff;box-shadow:0 4px 20px rgba(26,86,219,.09)}
+.dzico{width:60px;height:60px;margin:0 auto 16px;background:linear-gradient(135deg,#dbeafe,#ede9fe);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.dz h2{font-size:19px;font-weight:700;margin-bottom:7px}
+.dz p{color:var(--muted);font-size:13px}
+.tags{display:flex;gap:7px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:5px;
+  background:#f1f5f9;border:1px solid var(--border);color:var(--muted)}
+.tag.a{background:#eff6ff;border-color:#bfdbfe;color:var(--accent);font-weight:600}
+#finput{display:none}
+
+/* ─── GSheet panel ─────────────────────────────────────────────────────────── */
+.gsp{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:32px;max-width:560px;margin:0 auto;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.gsp h2{font-size:19px;font-weight:800;margin-bottom:6px}
+.gsp>p{color:var(--muted);font-size:13px;margin-bottom:22px;line-height:1.6}
+.fld{margin-bottom:14px}
+.fld label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;letter-spacing:.3px}
+.fld select,.fld input{width:100%;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:9px 13px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;transition:border-color .18s}
+.fld select:focus,.fld input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+/* API URL setup box */
+.setup-box{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;
+  padding:13px 15px;margin-bottom:18px;font-size:12px;color:#92400e;line-height:1.7}
+.setup-box strong{color:#78350f}
+.setup-box code{background:#fef9c3;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+.api-saved{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;border-radius:8px;
+  padding:8px 13px;font-size:12px;font-family:'JetBrains Mono',monospace;margin-top:8px;display:none}
+
+/* ─── Viewer ───────────────────────────────────────────────────────────────── */
+.finfo{display:flex;align-items:center;gap:12px;background:var(--surface);
+  border:1px solid var(--border);border-radius:11px;padding:11px 16px;
+  margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);flex-wrap:wrap;animation:fup .25s ease}
+.fico{font-size:24px}.fn{font-weight:700;font-size:14px}
+.fm{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.stabs{display:flex;gap:5px;margin-left:auto;flex-wrap:wrap}
+.stab{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid var(--border);
+  background:#f8fafc;color:var(--muted);cursor:pointer;font-family:'Syne',sans-serif;
+  font-weight:600;transition:all .15s}
+.stab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.stab:hover:not(.on){border-color:var(--accent);color:var(--accent);background:#eff6ff}
+
+.stats{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;animation:fup .3s ease}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  padding:11px 18px;flex:1;min-width:100px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.sc .lb{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+.sc .vl{font-size:21px;font-weight:800;margin-top:2px}
+.sc.bl .vl{color:var(--accent)}.sc.gr .vl{color:var(--accent3)}
+.sc.pu .vl{color:var(--accent2)}.sc.ye .vl{color:var(--warning);font-size:13px;padding-top:6px}
+
+.cbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px;animation:fup .33s ease}
+.sw{position:relative;flex:1;min-width:180px}
+.sw svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.sw input{width:100%;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:8px 12px 8px 34px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .18s}
+.sw input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+.sw input::placeholder{color:#94a3b8}
+select{background:var(--surface);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:8px 12px;font-family:'Syne',sans-serif;font-size:12px;outline:none;cursor:pointer}
+select:focus{border-color:var(--accent)}
+
+.btn{display:flex;align-items:center;gap:5px;background:var(--surface);
+  border:1px solid var(--border);color:var(--text);border-radius:8px;
+  padding:8px 14px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .17s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:#eff6ff}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.btn.pr{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pr:hover{background:var(--accent-h);color:#fff;box-shadow:0 4px 10px rgba(26,86,219,.22)}
+.btn.su{background:var(--accent3);border-color:var(--accent3);color:#fff}
+.btn.su:hover{background:#047857;color:#fff;box-shadow:0 4px 10px rgba(5,150,105,.2)}
+
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+  overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.05);animation:fup .38s ease}
+.ts{overflow-x:auto;max-height:58vh;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{position:sticky;top:0;z-index:20}
+thead th{background:var(--hbg);color:#e2e8f0;border-bottom:2px solid #2d4a6e;
+  border-right:1px solid #2d4a6e;padding:9px 13px;text-align:left;font-weight:700;
+  font-size:11px;white-space:nowrap;cursor:pointer;user-select:none;
+  transition:background .14s;letter-spacing:.2px}
+thead th:hover{background:#254b7a}
+thead th:last-child{border-right:none}
+.si{margin-left:3px;opacity:.3;font-size:9px}.si.asc,.si.desc{opacity:1;color:#60a5fa}
+tbody tr{border-bottom:1px solid #e9eef5;transition:background .1s}
+tbody tr:nth-child(even){background:var(--ralt)}
+tbody tr:hover{background:var(--rhov)}
+tbody tr:last-child{border-bottom:none}
+td{padding:8px 13px;border-right:1px solid #e9eef5;font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--text);max-width:260px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+td:last-child{border-right:none}
+td.num{text-align:right;color:#1d4ed8}
+td.gstin{color:var(--accent3);font-weight:600;letter-spacing:.3px;cursor:pointer;position:relative;transition:background .15s,color .15s;}
+td.gstin:hover{background:#d1fae5;color:#065f46;border-radius:4px;}
+td.gstin::after{content:'📤 Click to send to Sheet';position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#1e293b;color:#fff;font-size:10px;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;z-index:50;font-family:'JetBrains Mono',monospace;}
+td.gstin:hover::after{opacity:1;}
+td.gstin.sending{animation:pulse-gstin .6s infinite alternate;}
+@keyframes pulse-gstin{from{background:#d1fae5;}to{background:#6ee7b7;}}
+.rn{color:var(--muted);font-size:10px;text-align:center;padding:8px 9px;
+  min-width:38px;background:#f8fafc;border-right:1px solid #e9eef5!important}
+thead th.rnh{background:#162d47;font-size:10px;color:#94a3b8;text-align:center;width:38px}
+mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
+
+.pgn{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.pi{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.pbs{display:flex;gap:4px}
+.pb{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:12px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.pb:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:#eff6ff}
+.pb.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pb:disabled{opacity:.3;cursor:not-allowed}
+.rpp{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
+.rpp select{padding:4px 9px;font-size:11px}
+
+/* ─── Modal ────────────────────────────────────────────────────────────────── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;
+  align-items:center;justify-content:center}
+.modal-ov.on{display:flex;animation:fi .2s ease}
+.modal{background:var(--surface);border-radius:14px;padding:26px 28px;
+  max-width:520px;width:94%;box-shadow:0 20px 50px rgba(0,0,0,.18);
+  animation:fup .22s ease;max-height:88vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:12px}
+.mlog{background:#f8fafc;border:1px solid var(--border);border-radius:7px;
+  padding:12px;max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;
+  font-size:11px;line-height:1.85;margin-bottom:16px}
+.mbtns{display:flex;gap:9px;justify-content:flex-end}
+.lok{color:var(--accent3)}.lw{color:var(--warning)}.li{color:var(--accent)}.lr{color:var(--danger)}
+
+/* ─── Misc ─────────────────────────────────────────────────────────────────── */
+.loading{text-align:center;padding:56px;color:var(--muted)}
+.sp{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+.spsm{width:15px;height:15px;border:2px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+.empty{text-align:center;padding:56px;color:var(--muted)}
+.ei{font-size:40px;margin-bottom:12px}
+.err{background:#fff1f2;border:1px solid #fecdd3;color:#be123c;border-radius:9px;
+  padding:12px 15px;font-size:13px;margin-bottom:13px;display:flex;align-items:center;gap:9px}
+
+.toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;border-radius:9px;
+  padding:11px 18px;font-size:12px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.18);
+  z-index:999;opacity:0;transform:translateY(8px);transition:all .22s;pointer-events:none}
+.toast.on{opacity:1;transform:translateY(0)}
+.tok{background:var(--accent3)}.terr{background:var(--danger)}.tinfo{background:var(--accent)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fup{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+/* ─── Reports Page ──────────────────────────────────────────────────────────── */
+.rpt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:22px}
+.rpt-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:20px;box-shadow:0 2px 6px rgba(0,0,0,.05);cursor:pointer;transition:all .2s}
+.rpt-card:hover{border-color:var(--accent);box-shadow:0 6px 22px rgba(26,86,219,.10);transform:translateY(-2px)}
+.rpt-card h4{font-size:14px;font-weight:800;margin-bottom:4px}
+.rpt-card p{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.rpt-icon{font-size:28px;margin-bottom:10px}
+.rpt-badge{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;
+  padding:2px 8px;border-radius:20px;font-weight:600}
+.rpt-badge.blue{background:#eff6ff;color:var(--accent)}
+.rpt-badge.red{background:#fff1f2;color:var(--danger)}
+.rpt-badge.orange{background:#fff7ed;color:var(--warning)}
+.rpt-badge.green{background:#f0fdf4;color:var(--accent3)}
+.rpt-badge.purple{background:#f5f3ff;color:var(--accent2)}
+
+/* Report modal/panel */
+.rpt-panel{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:300;
+  align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px}
+.rpt-panel.on{display:flex}
+.rpt-box{background:var(--surface);border-radius:14px;width:100%;max-width:1100px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);animation:fup .22s ease;margin:auto}
+.rpt-head{display:flex;align-items:center;gap:12px;padding:18px 22px;
+  border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);
+  border-radius:14px 14px 0 0;z-index:10}
+.rpt-head h3{font-size:16px;font-weight:800;flex:1}
+.rpt-close{background:none;border:1px solid var(--border);border-radius:7px;
+  width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;
+  justify-content:center;color:var(--muted);transition:all .15s}
+.rpt-close:hover{border-color:var(--danger);color:var(--danger);background:#fff1f2}
+.rpt-body{padding:18px 22px;max-height:75vh;overflow-y:auto}
+.rpt-filter{display:flex;gap:9px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.rpt-filter input,.rpt-filter select{background:var(--surface);border:1px solid var(--border);
+  color:var(--text);border-radius:7px;padding:7px 11px;font-family:'JetBrains Mono',monospace;
+  font-size:12px;outline:none}
+.rpt-filter input:focus,.rpt-filter select:focus{border-color:var(--accent)}
+.rpt-count{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-left:auto}
+.rpt-tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.rpt-tbl thead th{background:var(--hbg);color:#e2e8f0;padding:8px 12px;text-align:left;
+  font-weight:700;font-size:11px;white-space:nowrap;position:sticky;top:0}
+.rpt-tbl tbody tr{border-bottom:1px solid #e9eef5}
+.rpt-tbl tbody tr:nth-child(even){background:var(--ralt)}
+.rpt-tbl tbody tr:hover{background:var(--rhov)}
+.rpt-tbl td{padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;
+  max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rpt-tbl td.amt{text-align:right;color:#1d4ed8;font-weight:600}
+.rpt-tbl td.rank{text-align:center;font-weight:800;color:var(--accent2);font-size:13px}
+@media(max-width:600px){.rpt-grid{grid-template-columns:1fr}}
+
+/* ─── Login Page ────────────────────────────────────────────────────────────── */
+#pg-login{ min-height:calc(100vh - 60px); background:var(--bg) }
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:44px 40px 36px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(30,58,95,.10);
+  animation:fup .3s ease;text-align:center}
+.login-logo{width:64px;height:64px;background:linear-gradient(135deg,#1a56db,#6366f1);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:800;color:#fff;margin:0 auto 18px}
+.login-box h2{font-size:20px;font-weight:800;margin-bottom:4px}
+.login-box p{font-size:13px;color:var(--muted);margin-bottom:28px}
+.login-fld{margin-bottom:16px;text-align:left}
+.login-fld label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;
+  letter-spacing:.4px;color:var(--muted);text-transform:uppercase}
+.login-fld input{width:100%;background:#f8fafc;border:1.5px solid var(--border);
+  color:var(--text);border-radius:9px;padding:10px 14px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;
+  transition:border-color .18s,box-shadow .18s}
+.login-fld input:focus{border-color:var(--accent);background:#fff;
+  box-shadow:0 0 0 3px rgba(26,86,219,.10)}
+.login-btn{width:100%;background:var(--accent);border:none;color:#fff;border-radius:9px;
+  padding:11px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .18s;margin-top:6px;letter-spacing:.2px}
+.login-btn:hover{background:var(--accent-h);box-shadow:0 4px 14px rgba(26,86,219,.25)}
+.login-err{background:#fff1f2;border:1px solid #fecdd3;color:#be123c;border-radius:8px;
+  padding:9px 13px;font-size:12px;margin-top:12px;display:none}
+.login-user-badge{display:inline-flex;align-items:center;gap:7px;background:#eff6ff;
+  border:1px solid #bfdbfe;border-radius:20px;padding:4px 13px 4px 8px;
+  font-size:12px;font-weight:700;color:var(--accent);margin-left:auto;cursor:pointer;
+  transition:all .15s}
+.login-user-badge:hover{background:#dbeafe}
+.login-user-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--accent3)}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="logo">G</div>
+  <div>
+    <h1>GST <span>Data</span> Manager</h1>
+    <small id="hsub">Select a data source to begin</small>
+  </div>
+  <div class="bc">
+    <span class="bcs on" id="bc1">① Home</span>
+    <span class="bcsep">›</span>
+    <span class="bcs" id="bc2">② Import</span>
+    <span class="bcsep">›</span>
+    <span class="bcs" id="bc3">③ View Data</span>
+  </div>
+  <div class="login-user-badge" id="user-badge" style="display:none" onclick="doLogout()">
+    <span class="dot"></span>
+    <span id="user-badge-name">—</span>
+    <span style="opacity:.5;font-size:10px">✕</span>
+  </div>
+</header>
+
+<!-- ═══ PAGE 0 – LOGIN ════════════════════════════════════════════════════════ -->
+<div class="pg on" id="pg-login">
+  <div id="pg-login-inner" style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px)">
+    <div class="login-box">
+      <div class="login-logo">G</div>
+      <h2>GST Data Manager</h2>
+      <p>Sign in to continue to your dashboard</p>
+      <div class="login-fld">
+        <label>Username</label>
+        <input type="text" id="login-user" placeholder="Enter username" autocomplete="username" />
+      </div>
+      <div class="login-fld">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
+      <div class="login-err" id="login-err">⚠️ Invalid username or password.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 1 – LANDING ══════════════════════════════════════════════════════ -->
+<div class="pg" id="pg-home">
+  <div class="main">
+    <div class="hero">
+      <h2>Choose Your <em>Data Source</em></h2>
+      <p>Import taxpayer data from a local Excel file, or connect directly to your Google Spreadsheet to read any sheet tab.</p>
+    </div>
+    <div class="cards">
+      <div class="card" onclick="goToViewer()">
+        <div class="cico cb">📊</div>
+        <h3>Upload Excel File</h3>
+        <p>Import a local .xlsx / .xls file. Supports all GST portal reports including GSTR-3B, Active, Suspended, Cancelled, Defaulter.</p>
+        <span class="ctag">.xlsx / .xls</span>
+      </div>
+      <div class="card" onclick="goTo('pg-reports')">
+        <div class="cico cg">📋</div>
+        <h3>Live Report</h3>
+        <p>View, search, sort, edit and download all records from your Google Sheet in a full paginated table.</p>
+        <span class="ctag g">Live Data · Edit · Download</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 2a – UPLOAD ══════════════════════════════════════════════════════ -->
+<div class="pg" id="pg-upload">
+  <div class="main">
+    <button class="back" onclick="goTo('pg-home')">← Back</button>
+    <div class="dz" id="dz" onclick="document.getElementById('finput').click()">
+      <div class="dzico">📊</div>
+      <h2>Drop your Excel file here</h2>
+      <p>Or click to browse — supports all GST portal reports</p>
+      <div class="tags">
+        <span class="tag a">.xlsx</span><span class="tag a">.xls</span>
+        <span class="tag">GSTR-3B</span><span class="tag">Active Taxpayer</span>
+        <span class="tag">Suspended / Cancelled</span><span class="tag">Defaulter</span>
+      </div>
+      <input type="file" id="finput" accept=".xlsx,.xls" />
+    </div>
+    <div id="uperr" style="margin-top:11px"></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 2b – GOOGLE SHEET (kept for internal loadGSheetTab use) ══════════ -->
+<div class="pg" id="pg-gsheet">
+  <div class="main">
+    <button class="back" onclick="goTo('pg-home')">← Home</button>
+    <div class="gsp">
+      <h2>📊 Fetch from Google Sheet</h2>
+      <p>Select a sheet tab to load data directly from the connected Google Spreadsheet.</p>
+      <input type="hidden" id="api-url-input" />
+      <div id="api-saved" style="display:none"></div>
+      <div class="fld">
+        <label>SHEET TAB</label>
+        <select id="gs-tab-sel">
+          <option value="">Loading sheets…</option>
+        </select>
+      </div>
+      <button class="btn pr" id="gs-load-btn" style="width:100%;justify-content:center;padding:10px"
+              onclick="loadGSheetTab()">
+        Load Selected Tab
+      </button>
+      <div id="gserr" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 4 – LIVE REPORT ═══════════════════════════════════════════════ -->
+<div class="pg" id="pg-reports">
+  <div class="main">
+    <button class="back" onclick="goTo('pg-home')">← Home</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+      <div>
+        <h2 style="font-size:22px;font-weight:800">📊 <em style="color:var(--accent);font-style:normal">Live</em> Report</h2>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Fetched directly from Google Sheet · sorted by sheet order</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" id="lr-refresh-btn" onclick="loadLiveReport(true)" title="Refresh from Google Sheet">🔄 Refresh</button>
+        <button class="btn" onclick="openDownloadModal()" title="Download PDF or Excel">⬇ Download</button>
+      </div>
+    </div>
+
+    <div id="lr-load-err" style="margin-bottom:10px"></div>
+
+    <!-- Control bar -->
+    <div class="cbar" style="margin-bottom:8px">
+      <div class="sw" style="max-width:280px">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="lr-srch" placeholder="Search all columns…" oninput="lrSearch()"/>
+      </div>
+      <div class="rpp" style="font-size:11px;color:var(--muted)">Rows/page:
+        <select id="lr-rsel" onchange="lrRppChange()">
+          <option value="25">25</option><option value="50" selected>50</option>
+          <option value="100">100</option><option value="all">All</option>
+        </select>
+      </div>
+      <div id="lr-stat" style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-left:auto"></div>
+    </div>
+    <!-- Filter bar -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;background:#f8fafc;border:1px solid var(--border);border-radius:9px;padding:9px 13px">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.3px;white-space:nowrap">&#x1F53D; FILTER:</span>
+      <select id="lr-f-assignedto" onchange="lrApplyFilters();lrHighlightDefault(this)" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);min-width:140px;transition:background .2s,color .2s,border-color .2s">
+        <option value="">All &#x2013; Assigned To</option>
+      </select>
+      <select id="lr-f-taxpayertype" onchange="lrApplyFilters();lrHighlightDefault(this)" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);min-width:160px;transition:background .2s,color .2s,border-color .2s">
+        <option value="">All &#x2013; Type of Taxpayer</option>
+      </select>
+      <select id="lr-f-officer" onchange="lrApplyFilters();lrHighlightDefault(this)" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);min-width:140px;transition:background .2s,color .2s,border-color .2s">
+        <option value="">All &#x2013; Officer</option>
+      </select>
+      <select id="lr-f-live" onchange="lrApplyFilters();lrHighlightDefault(this)" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);min-width:120px;transition:background .2s,color .2s,border-color .2s">
+        <option value="">All &#x2013; LIVE Status</option>
+      </select>
+      <select id="lr-f-returndefault" onchange="lrApplyFilters();lrHighlightDefault(this)" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);min-width:180px;transition:background .2s,color .2s,border-color .2s">
+        <option value="">All &#x2013; Return Defaulters</option>
+        <optgroup label="Upto (≤ N defaults)">
+          <option value="upto_1">Upto 1</option>
+          <option value="upto_2">Upto 2</option>
+          <option value="upto_3">Upto 3</option>
+          <option value="upto_4">Upto 4</option>
+          <option value="upto_5">Upto 5</option>
+          <option value="upto_6">Upto 6</option>
+          <option value="upto_7">Upto 7</option>
+          <option value="upto_8">Upto 8</option>
+          <option value="upto_9">Upto 9</option>
+          <option value="upto_10">Upto 10</option>
+          <option value="upto_12">Upto 12</option>
+        </optgroup>
+        <optgroup label="Exactly (= N defaults)">
+          <option value="exact_1">Exactly 1</option>
+          <option value="exact_2">Exactly 2</option>
+          <option value="exact_3">Exactly 3</option>
+          <option value="exact_4">Exactly 4</option>
+          <option value="exact_5">Exactly 5</option>
+          <option value="exact_6">Exactly 6</option>
+          <option value="exact_7">Exactly 7</option>
+          <option value="exact_8">Exactly 8</option>
+          <option value="exact_9">Exactly 9</option>
+          <option value="exact_10">Exactly 10</option>
+          <option value="exact_12">Exactly 12</option>
+        </optgroup>
+      </select>
+      <select id="lr-f-constitution" onchange="lrApplyFilters();lrHighlightDefault(this)" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);min-width:180px;transition:background .2s,color .2s,border-color .2s">
+        <option value="">All &#x2013; Constitution of Business</option>
+      </select>
+
+      <button class="btn" onclick="lrClearFilters()" style="font-size:11px;padding:5px 11px;white-space:nowrap">&#x2715; Clear Filters</button>
+    </div>
+
+    <div class="tw">
+      <div class="ts" id="lr-tblwrap">
+        <div class="loading"><div class="sp"></div>Loading from Google Sheet…</div>
+      </div>
+      <div class="pgn" id="lr-pgn" style="display:none">
+        <div class="pi" id="lr-pinfo">—</div>
+        <div class="pbs" id="lr-pbs"></div>
+      </div>
+    </div>
+
+    <!-- Update notification bar -->
+    <div id="lr-update-bar" style="display:none;align-items:center;gap:14px;background:#dcfce7;border:2px solid #86efac;border-radius:10px;padding:12px 18px;margin-top:12px;font-size:13px;font-family:'JetBrains Mono',monospace;color:#15803d"></div>
+  </div>
+</div>
+
+<!-- ═══ DOWNLOAD MODAL ════════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="dl-modal">
+  <div class="modal" style="max-width:460px">
+    <h3>⬇ Download Options</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Select columns to include in your download</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn" style="font-size:11px;padding:5px 11px" onclick="dlSelectAll()">Select All</button>
+      <button class="btn" style="font-size:11px;padding:5px 11px" onclick="dlSelectNone()">Clear All</button>
+    </div>
+    <div id="dl-col-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:260px;overflow-y:auto;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px"></div>
+    <div class="mbtns">
+      <button class="btn" onclick="closeDlModal()">Cancel</button>
+      <button class="btn su" onclick="dlExcel()">📊 Excel</button>
+      <button class="btn pr" onclick="dlPDF()">📄 PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 3 – VIEWER ═══════════════════════════════════════════════════════ -->
+<div class="pg" id="pg-viewer">
+  <div class="main">
+    <!-- hidden file input lives here so it's always available -->
+    <input type="file" id="finput-viewer" accept=".xlsx,.xls" style="display:none" />
+    <button class="back" onclick="goTo('pg-home')">← Home</button>
+
+    <!-- Upload prompt shown when no file loaded yet -->
+    <div id="upload-prompt" style="text-align:center;padding:60px 20px">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#dbeafe,#ede9fe);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px">📊</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px">No File Loaded</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:28px">Click the button below to select an Excel file (.xlsx / .xls)</div>
+      <button class="btn pr" style="margin:0 auto;padding:11px 28px;font-size:14px" onclick="document.getElementById('finput-viewer').click()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Select Excel File
+      </button>
+    </div>
+
+    <!-- File info + table: hidden until file loaded -->
+    <div id="viewer-content" style="display:none">
+      <div class="finfo">
+        <span class="fico" id="vfico">📄</span>
+        <div>
+          <div class="fn" id="vfname">—</div>
+          <div class="fm" id="vfmeta">—</div>
+        </div>
+        <div class="stabs" id="stabs"></div>
+      </div>
+
+      <div class="stats">
+        <div class="sc bl"><div class="lb">Total Records</div><div class="vl" id="st-tot">0</div></div>
+        <div class="sc gr"><div class="lb">Columns</div><div class="vl" id="st-col">0</div></div>
+        <div class="sc pu"><div class="lb">Showing</div><div class="vl" id="st-shw">0</div></div>
+        <div class="sc ye"><div class="lb">Sheet</div><div class="vl" id="st-sht">—</div></div>
+      </div>
+
+      <!-- sync progress bar — shown above search during upload -->
+      <div id="sync-bar" style="display:none;flex-direction:column;gap:7px;background:#dbeafe;border:2px solid #93c5fd;border-radius:12px;padding:14px 18px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:18px;height:18px;border:2.5px solid #bae6fd;border-top-color:#1e40af;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0" id="sync-spinner"></div>
+          <span id="sync-msg" style="font-size:13px;color:#1e40af;font-weight:600;flex:1"></span>
+          <span id="sync-pct" style="font-size:12px;color:#1e40af;font-weight:700;min-width:38px;text-align:right"></span>
+        </div>
+        <!-- progress bar track -->
+        <div style="background:#bfdbfe;border-radius:99px;height:10px;overflow:hidden;width:100%">
+          <div id="sync-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#6366f1);border-radius:99px;transition:width .3s ease;"></div>
+        </div>
+      </div>
+
+      <div class="cbar">
+        <div class="sw">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="srch" placeholder="Search across all columns…" oninput="onSearch()"/>
+        </div>
+        <div class="rpp">Rows:
+          <select id="rsel" onchange="onRppChange()">
+            <option value="25">25</option><option value="50" selected>50</option>
+            <option value="100">100</option><option value="200">200</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+        <button class="btn" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn" id="change-file-btn" onclick="document.getElementById('finput-viewer').click()" title="Load a different Excel file">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Add / Change File
+        </button>
+        <button class="btn su" id="sync-btn" onclick="runSync()">🔄 Update Existing</button>
+      </div>
+
+      <div class="tw">
+        <div class="ts" id="tblwrap">
+          <div class="loading"><div class="sp"></div>Loading…</div>
+        </div>
+        <div class="pgn" id="pgn" style="display:none">
+          <div class="pi" id="pinfo">—</div>
+          <div style="display:flex;gap:14px;align-items:center">
+            <div class="pbs" id="pbs"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+// ─── USER CONFIG ─────────────────────────────────────────────────────────────
+var USERS = {
+  'kannurnorth': { password: 'north123', api: 'https://script.google.com/macros/s/AKfycbxLVNZqbacxHrPOw98D36uFi6sshFI3IeX4fqWvM4ZXR0ra3aZt_87dPJcZau8qpknX/exec', label: 'Kannur North' },
+  'kannursouth': { password: 'south 123', api: 'https://script.google.com/macros/s/BBfycbz6SOpVmvWm3McqzZSwpeOwUlaXGamO_VQCJRiozWCQg-RDp9JLIF5coJPmVo5XCgVR/exec', label: 'Kannur South' }
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+var wb=null, curSheet='', rawData=[], headers=[], filtered=[];
+var sortCol=-1, sortDir='asc', curPage=1, rpp=50;
+var fileName='', srcType='', apiUrl='';
+var gsSheetNames=[];
+var currentUser = null;
+
+var HT=[/^sr\.?\s*no\.?$/i,/^sl\.?\s*no\.?$/i,/^s\.?\s*no\.?$/i,/^gstin$/i,/^trade\s*name$/i,/^legal\s*name$/i,/^taxpayer/i,/^return/i,/^3b/i];
+var ET=[/^page\s*total$/i,/^grand\s*total$/i];
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function doLogin() {
+  var u = (document.getElementById('login-user').value || '').trim().toLowerCase();
+  var p = document.getElementById('login-pass').value;
+  var errEl = document.getElementById('login-err');
+  if (USERS[u] && USERS[u].password === p) {
+    errEl.style.display = 'none';
+    currentUser = u;
+    apiUrl = USERS[u].api;
+    document.getElementById('user-badge').style.display = 'flex';
+    document.getElementById('user-badge-name').textContent = USERS[u].label;
+    document.getElementById('login-pass').value = '';
+    goTo('pg-home');
+    fetchSheetNames();
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  apiUrl = '';
+  wb = null; rawData = []; headers = []; filtered = [];
+  gsSheetNames = [];
+  document.getElementById('user-badge').style.display = 'none';
+  document.getElementById('user-badge-name').textContent = '—';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-err').style.display = 'none';
+  // Reset viewer state
+  document.getElementById('upload-prompt').style.display = 'block';
+  document.getElementById('viewer-content').style.display = 'none';
+  goToLoginPage();
+}
+
+function goToLoginPage() {
+  ['pg-login','pg-home','pg-upload','pg-gsheet','pg-viewer','pg-reports'].forEach(function(p){
+    document.getElementById(p).classList.remove('on');
+  });
+  document.getElementById('pg-login').classList.add('on');
+  document.getElementById('hsub').textContent = 'Please sign in to continue';
+  ['bc1','bc2','bc3'].forEach(function(b){document.getElementById(b).classList.remove('on');});
+  document.getElementById('bc1').classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// Navigate to viewer page without opening file picker
+function goToViewer() {
+  goTo('pg-viewer');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function _initApp() {
+  try {
+    _wireUploadListeners();
+    goToLoginPage();
+    var loginInput = document.getElementById('login-user');
+    if (loginInput) loginInput.focus();
+  } catch(e) {
+    console.error('Init error:', e);
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _initApp);
+} else {
+  _initApp();
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+var SUBS={
+  'pg-login':'Please sign in to continue',
+  'pg-home':'Select a data source to begin',
+  'pg-upload':'Upload your Excel file',
+  'pg-gsheet':'Select a sheet tab to load',
+  'pg-viewer':'Browse & manage your data',
+  'pg-reports':'Live reports from Google Sheet'
+};
+function goTo(id){
+  // Guard: if not logged in, redirect to login (except for login page itself)
+  if (id !== 'pg-login' && !currentUser) { goToLoginPage(); return; }
+  ['pg-login','pg-home','pg-upload','pg-gsheet','pg-viewer','pg-reports'].forEach(function(p){
+    document.getElementById(p).classList.remove('on');
+  });
+  document.getElementById(id).classList.add('on');
+  var s={'pg-home':1,'pg-upload':2,'pg-gsheet':2,'pg-viewer':3,'pg-reports':2};
+  var c=s[id]||1;
+  ['bc1','bc2','bc3'].forEach(function(b,i){
+    document.getElementById(b).classList.toggle('on',i+1<=c);
+  });
+  document.getElementById('hsub').textContent=SUBS[id]||'';
+  window.scrollTo(0,0);
+  if(id==='pg-reports') loadReportData();
+}
+function viewerBack(){goTo('pg-home');}
+
+// ─── FETCH SHEET NAMES FROM APPS SCRIPT ──────────────────────────────────────
+function fetchSheetNames(){
+  if(!apiUrl)return;
+  var sel=document.getElementById('gs-tab-sel');
+  var loadBtn=document.getElementById('gs-load-btn');
+  if(!sel) return; // element not in DOM yet
+  sel.innerHTML='<option>Loading…</option>';
+  sel.disabled=true;
+  if(loadBtn) loadBtn.disabled=true;
+
+  gasPost({action:'getSheetNames'})
+    .then(function(res){
+      if(!res.ok) throw new Error(res.error||'Unknown error');
+      gsSheetNames=res.data;
+      sel.innerHTML='';
+      res.data.forEach(function(n){
+        var o=document.createElement('option');
+        o.value=n; o.textContent=n; sel.appendChild(o);
+      });
+      sel.disabled=false;
+      if(loadBtn) loadBtn.disabled=false;
+    })
+    .catch(function(e){
+      sel.innerHTML='<option>Error loading sheet names</option>';
+      var gserr=document.getElementById('gserr');
+      if(gserr) showErr('gserr','Could not load sheet names: '+e.message);
+    });
+}
+
+// ─── LOAD A SHEET TAB FROM APPS SCRIPT ───────────────────────────────────────
+function loadGSheetTab(){
+  var tab=document.getElementById('gs-tab-sel').value;
+  if(!tab){showErr('gserr','Please select a tab.');return;}
+  clrErr('gserr');
+  document.getElementById('gserr').innerHTML=
+    '<span style="font-size:13px;color:var(--accent)"><span class="spsm"></span>Loading "'+tab+'"…</span>';
+
+  gasPost({action:'getSheetData', sheet:tab})
+    .then(function(res){
+      clrErr('gserr');
+      if(!res.ok) throw new Error(res.error||'Unknown error');
+      var result=res.data;
+      if(!result.headers.length){
+        showErr('gserr','No table detected (needs a header row with Sr.No./Sl.No./S.No. or at least 3 filled columns).');
+        return;
+      }
+      srcType='gsheet'; curSheet=tab; fileName='GoogleSheet:'+tab;
+      headers=result.headers;
+      rawData=result.rows.map(function(row){
+        var obj={};
+        row.forEach(function(v,i){obj[i]=String(v);});
+        return obj;
+      });
+      document.getElementById('vfico').textContent='📊';
+      document.getElementById('vfname').textContent='Google Sheet — "'+tab+'"';
+      document.getElementById('vfmeta').textContent=
+        rawData.length+' rows · '+headers.length+' cols · Loaded '+new Date().toLocaleTimeString();
+      document.getElementById('st-sht').textContent=tab.length>14?tab.slice(0,14)+'…':tab;
+      document.getElementById('st-tot').textContent=rawData.length.toLocaleString();
+      document.getElementById('st-col').textContent=headers.length;
+      // Show table area, hide upload prompt
+      document.getElementById('upload-prompt').style.display='none';
+      document.getElementById('viewer-content').style.display='block';
+      buildGSheetTabs(tab);
+      sortCol=-1; sortDir='asc';
+      document.getElementById('srch').value='';
+      filtered=rawData.slice(); curPage=1;
+      goTo('pg-viewer');
+      updateSyncBtn();
+      renderTable();
+    })
+    .catch(function(e){showErr('gserr','Error: '+e.message);});
+}
+
+function buildGSheetTabs(activeTab){
+  var el=document.getElementById('stabs'); el.innerHTML='';
+  gsSheetNames.forEach(function(n){
+    var b=document.createElement('button');
+    b.className='stab'+(n===activeTab?' on':'');
+    b.textContent=n.length>18?n.slice(0,18)+'…':n; b.title=n;
+    b.onclick=function(){
+      document.getElementById('gs-tab-sel').value=n;
+      loadGSheetTab();
+    };
+    el.appendChild(b);
+  });
+}
+
+// ─── UPLOAD — LOCAL EXCEL ─────────────────────────────────────────────────────
+// (wired inside _initApp to guarantee DOM is ready)
+var dz = null;
+function _wireUploadListeners() {
+  document.getElementById('finput-viewer').addEventListener('change', function(e) {
+    if (e.target.files[0]) handleFile(e.target.files[0]);
+    e.target.value = '';
+  });
+  dz = document.getElementById('dz');
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('ov');});
+  dz.addEventListener('drop',function(e){
+    e.preventDefault();dz.classList.remove('ov');
+    if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);
+  });
+  document.getElementById('finput').addEventListener('change',function(e){
+    if(e.target.files[0])handleFile(e.target.files[0]); e.target.value='';
+  });
+  document.getElementById('dl-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeDlModal();
+  });
+}
+
+// ─── WEB WORKER XLSX PARSER ──────────────────────────────────────────────────
+// Runs XLSX.read() in a background thread so the UI never freezes
+var _xlsxWorker = null;
+var _workerPending = null; // { file, replacing }
+
+function _getWorkerCode() {
+  return [
+    "importScripts('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');",
+    "self.onmessage = function(e) {",
+    "  try {",
+    "    var arr  = e.data.arr;",
+    "    var wb2  = XLSX.read(arr, { type:'array', cellDates:false, dense:true });",
+    "    // Send back only SheetNames + raw sheet data (not the full workbook object)",
+    "    var sheets = {};",
+    "    wb2.SheetNames.forEach(function(n) {",
+    "      sheets[n] = XLSX.utils.sheet_to_json(wb2.Sheets[n], { header:1, defval:'', raw:false });",
+    "    });",
+    "    self.postMessage({ ok:true, sheetNames: wb2.SheetNames, sheets: sheets });",
+    "  } catch(ex) {",
+    "    self.postMessage({ ok:false, error: ex.message });",
+    "  }",
+    "};"
+  ].join('\n');
+}
+
+function _makeWorker() {
+  if (_xlsxWorker) { try { _xlsxWorker.terminate(); } catch(e){} }
+  var blob = new Blob([_getWorkerCode()], { type: 'application/javascript' });
+  var url  = URL.createObjectURL(blob);
+  _xlsxWorker = new Worker(url);
+  URL.revokeObjectURL(url);
+  return _xlsxWorker;
+}
+
+function handleFile(file){
+  var replacing = !!wb;
+  if(!file.name.match(/\.xlsx?$/i)){
+    showToast('⚠️ Please select an .xlsx or .xls file.', 'terr'); return;
+  }
+  fileName=file.name; srcType='upload';
+
+  // Show viewer immediately with progress bar so UI is never frozen/blank
+  document.getElementById('upload-prompt').style.display='none';
+  document.getElementById('viewer-content').style.display='block';
+  document.getElementById('tblwrap').innerHTML=
+    '<div class="loading" style="flex-direction:column;gap:16px;padding:60px 20px">' +
+    '<div class="sp"></div>' +
+    '<div style="font-size:13px;font-weight:600;color:var(--accent)">Reading file…</div>' +
+    '<div style="width:260px;background:#e2e8f0;border-radius:99px;height:8px;overflow:hidden;margin:0 auto">' +
+    '<div id="_parse-bar" style="height:100%;width:8%;background:linear-gradient(90deg,#3b82f6,#6366f1);border-radius:99px;transition:width .4s ease"></div>' +
+    '</div>' +
+    '<div id="_parse-msg" style="font-size:11px;color:var(--muted);font-family:JetBrains Mono,monospace">Initialising parser…</div>' +
+    '</div>';
+  document.getElementById('pgn').style.display='none';
+  document.getElementById('vfico').textContent='⏳';
+  document.getElementById('vfname').textContent=file.name;
+  document.getElementById('vfmeta').textContent='Parsing…';
+  goTo('pg-viewer');
+
+  // Animate the progress bar while worker is busy
+  var _pct = 8;
+  var _pInterval = setInterval(function() {
+    _pct = Math.min(_pct + (Math.random() * 4), 88);
+    var bar = document.getElementById('_parse-bar');
+    var msg = document.getElementById('_parse-msg');
+    if (bar) bar.style.width = _pct + '%';
+    if (msg) msg.textContent = _pct < 40 ? 'Reading cells…' : _pct < 70 ? 'Processing rows…' : 'Almost done…';
+  }, 300);
+
+  function _finishProgress(success) {
+    clearInterval(_pInterval);
+    var bar = document.getElementById('_parse-bar');
+    if (bar) { bar.style.width = '100%'; bar.style.background = success ? '#22c55e' : '#ef4444'; }
+  }
+
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var arr = ev.target.result;
+    var worker = _makeWorker();
+    worker.onmessage = function(evt) {
+      var res = evt.data;
+      if (!res.ok) {
+        _finishProgress(false);
+        setTimeout(function() {
+          document.getElementById('upload-prompt').style.display='block';
+          document.getElementById('viewer-content').style.display='none';
+          showToast('❌ Could not parse file: ' + res.error, 'terr');
+        }, 400);
+        return;
+      }
+      _finishProgress(true);
+      // Reconstruct a lightweight wb-compatible object from worker data
+      wb = {
+        SheetNames: res.sheetNames,
+        Sheets: {},
+        _parsedRows: res.sheets   // pre-parsed rows keyed by sheet name
+      };
+      // Store raw rows so parseExcelSheet can use them directly
+      _wbRawRows = res.sheets;
+
+      setTimeout(function() {
+        document.getElementById('vfico').textContent='📊';
+        document.getElementById('vfname').textContent=file.name;
+        document.getElementById('vfmeta').textContent=
+          (file.size/1024).toFixed(1)+' KB · '+res.sheetNames.length+' sheet(s) · Loaded '+new Date().toLocaleTimeString();
+        buildExcelTabs();
+        loadExcelSheet(res.sheetNames[0]);
+        if(replacing) showToast('📊 File replaced: '+file.name, 'tok');
+      }, 350);
+    };
+    worker.onerror = function(e) {
+      _finishProgress(false);
+      showToast('❌ Worker error: ' + e.message, 'terr');
+    };
+    // Transfer the ArrayBuffer to the worker (zero-copy transfer)
+    worker.postMessage({ arr: arr }, [arr]);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Raw rows cache filled by the worker
+var _wbRawRows = {};
+
+function buildExcelTabs(){
+  var el=document.getElementById('stabs'); el.innerHTML='';
+  wb.SheetNames.forEach(function(n){
+    var b=document.createElement('button');
+    b.className='stab'+(n===curSheet?' on':'');
+    b.textContent=n.length>18?n.slice(0,18)+'…':n; b.title=n;
+    b.onclick=function(){loadExcelSheet(n);};
+    el.appendChild(b);
+  });
+}
+
+function loadExcelSheet(name){
+  curSheet=name;
+  document.getElementById('st-sht').textContent=name.length>14?name.slice(0,14)+'…':name;
+  try{parseExcelSheet(name);buildExcelTabs();updateSyncBtn();}
+  catch(e){showErr('vwerr',e.message);}
+}
+
+// ─── EXCEL PARSING ────────────────────────────────────────────────────────────
+function isHT(v){return HT.some(function(r){return r.test(String(v).trim());});}
+function isET(v){return ET.some(function(r){return r.test(String(v).trim());});}
+
+function parseExcelSheet(name){
+  // Use pre-parsed rows from Web Worker if available, otherwise fall back to XLSX
+  var raw = (_wbRawRows && _wbRawRows[name]) ? _wbRawRows[name]
+            : XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:'', raw:false});
+  if(!raw.length){renderEmpty('Sheet is empty.');return;}
+  var hIdx=-1;
+  for(var i=0;i<raw.length;i++){if(isHT(raw[i][0])){hIdx=i;break;}}
+  if(hIdx===-1){
+    for(var i=0;i<Math.min(raw.length,5);i++){
+      if(raw[i].filter(function(c){return String(c).trim()!=='';}).length>=3){hIdx=i;break;}
+    }
+  }
+  if(hIdx===-1){renderEmpty('Could not detect a table in this sheet.');return;}
+  var dataRows=[];
+  for(var i=hIdx+1;i<raw.length;i++){
+    var c0=String(raw[i][0]||'').trim();
+    if(c0!==''&&isET(c0))break;
+    if(raw[i].every(function(c){return String(c).trim()==='';} ))continue;
+    dataRows.push(raw[i]);
+  }
+  var rawH=raw[hIdx].map(function(h){return String(h).trim();});
+  var maxC=rawH.length;
+  dataRows.forEach(function(r){if(r.length>maxC)maxC=r.length;});
+  var usedC=[];
+  for(var ci=0;ci<maxC;ci++){
+    if((rawH[ci]||'')!==''||dataRows.some(function(r){return String(r[ci]||'').trim()!=='';}))
+      usedC.push(ci);
+  }
+  headers=usedC.map(function(ci){return rawH[ci]||('Col '+(ci+1));});
+  rawData=dataRows.map(function(row){
+    var obj={};
+    usedC.forEach(function(ci,ji){obj[ji]=String(row[ci]||'').trim();});
+    return obj;
+  });
+  document.getElementById('st-tot').textContent=rawData.length.toLocaleString();
+  document.getElementById('st-col').textContent=headers.length;
+  sortCol=-1;sortDir='asc';
+  document.getElementById('srch').value='';
+  filtered=rawData.slice();curPage=1;renderTable();
+}
+
+// ─── TABLE RENDER ─────────────────────────────────────────────────────────────
+function setLoading(){
+  document.getElementById('tblwrap').innerHTML='<div class="loading"><div class="sp"></div>Parsing…</div>';
+  document.getElementById('pgn').style.display='none';
+}
+function renderTable(){
+  var q=document.getElementById('srch').value.toLowerCase().trim();
+  document.getElementById('st-shw').textContent=filtered.length.toLocaleString();
+  var rn=rpp==='all'?filtered.length:rpp;
+  var tp=Math.max(1,Math.ceil(filtered.length/rn));
+  if(curPage>tp)curPage=tp;
+  var st=(curPage-1)*rn;
+  var pr=filtered.slice(st,st+rn);
+  if(!filtered.length){renderEmpty('No matching records.');buildPgn(0,0,0);return;}
+  var h='<table><thead><tr><th class="rnh">#</th>';
+  headers.forEach(function(hd,i){
+    var ar=sortCol===i?(sortDir==='asc'?'▲':'▼'):'⇅';
+    var cl=sortCol===i?(sortDir==='asc'?'asc':'desc'):'';
+    h+='<th onclick="srt('+i+')">'+eh(hd)+' <span class="si '+cl+'">'+ar+'</span></th>';
+  });
+  h+='</tr></thead><tbody>';
+  pr.forEach(function(row,ri){
+    var absIdx=st+ri;
+    h+='<tr><td class="rn">'+(absIdx+1)+'</td>';
+    headers.forEach(function(_,ci){
+      var v=row[ci]||'';
+      var d=q&&v.toLowerCase().indexOf(q)>=0
+        ?v.replace(new RegExp('('+er(q)+')','gi'),'<mark>$1</mark>'):eh(v);
+      var cl='';
+      if(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(v)){
+        h+='<td class="gstin" title="Click to send this row to Google Sheet" onclick="sendRowToSheet('+absIdx+',this)">'+d+'</td>';
+      } else {
+        if(v!==''&&!isNaN(v.replace(/,/g,'')))cl='num';
+        h+='<td class="'+cl+'" title="'+eh(v)+'">'+d+'</td>';
+      }
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('tblwrap').innerHTML=h;
+  buildPgn(curPage,tp,filtered.length);
+  document.getElementById('pgn').style.display='flex';
+}
+function renderEmpty(msg){
+  document.getElementById('tblwrap').innerHTML=
+    '<div class="empty"><div class="ei">🔍</div>'+
+    '<div style="font-weight:600;margin-bottom:5px">'+(msg||'No records')+'</div>'+
+    '<div style="font-size:12px;color:#94a3b8">Sheet needs a header row with Sr.No./Sl.No./S.No.</div></div>';
+  document.getElementById('pgn').style.display='none';
+}
+function srt(col){
+  sortDir=sortCol===col?(sortDir==='asc'?'desc':'asc'):'asc'; sortCol=col;
+  filtered.sort(function(a,b){
+    var av=a[col]||'',bv=b[col]||'';
+    var an=parseFloat(av.replace(/,/g,'')),bn=parseFloat(bv.replace(/,/g,''));
+    var c=!isNaN(an)&&!isNaN(bn)?an-bn:av.localeCompare(bv);
+    return sortDir==='asc'?c:-c;
+  });
+  renderTable();
+}
+function onSearch(){
+  var q=document.getElementById('srch').value.toLowerCase().trim();
+  filtered=q?rawData.filter(function(r){
+    return Object.values(r).some(function(v){return v.toLowerCase().indexOf(q)>=0;});
+  }):rawData.slice();
+  if(sortCol>=0)filtered.sort(function(a,b){
+    var av=a[sortCol]||'',bv=b[sortCol]||'';
+    var an=parseFloat(av.replace(/,/g,'')),bn=parseFloat(bv.replace(/,/g,''));
+    var c=!isNaN(an)&&!isNaN(bn)?an-bn:av.localeCompare(bv);
+    return sortDir==='asc'?c:-c;
+  });
+  curPage=1;renderTable();
+}
+function onRppChange(){
+  var v=document.getElementById('rsel').value;
+  rpp=v==='all'?'all':parseInt(v);curPage=1;renderTable();
+}
+function buildPgn(page,total,count){
+  var rn=rpp==='all'?count:rpp;
+  var s=total?(page-1)*rn+1:0,e=Math.min(page*rn,count);
+  document.getElementById('pinfo').textContent=
+    total?'Showing '+s.toLocaleString()+'–'+e.toLocaleString()+' of '+count.toLocaleString()+' records':'No records';
+  var el=document.getElementById('pbs');el.innerHTML='';
+  function addB(l,p,d,a){
+    var b=document.createElement('button');b.className='pb'+(a?' on':'');
+    b.disabled=d;b.innerHTML=l;b.onclick=function(){curPage=p;renderTable();};el.appendChild(b);
+  }
+  addB('‹',page-1,page<=1,false);
+  prng(page,total).forEach(function(p){
+    if(p==='…'){var s=document.createElement('span');s.style.cssText='padding:0 3px;color:var(--muted);align-self:center';s.textContent='…';el.appendChild(s);}
+    else addB(p,p,false,p===page);
+  });
+  addB('›',page+1,page>=total,false);
+}
+function prng(c,t){
+  if(t<=7)return Array.from({length:t},function(_,i){return i+1;});
+  if(c<=4)return[1,2,3,4,5,'…',t];
+  if(c>=t-3)return[1,'…',t-4,t-3,t-2,t-1,t];
+  return[1,'…',c-1,c,c+1,'…',t];
+}
+function exportCSV(){
+  var rows=[headers.map(function(h){return'"'+h.replace(/"/g,'""')+'"';}).join(',')];
+  filtered.forEach(function(r){
+    rows.push(headers.map(function(_,i){return'"'+(r[i]||'').replace(/"/g,'""')+'"';}).join(','));
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download=(fileName.replace(/\.xlsx?$/i,'')||'export')+'_'+curSheet+'.csv';
+  a.click();
+}
+
+// ─── SYNC ────────────────────────────────────────────────────────────────────
+function setSyncBar(txt, state, pct) {
+  var bar  = document.getElementById('sync-bar');
+  var msg  = document.getElementById('sync-msg');
+  var spn  = document.getElementById('sync-spinner');
+  var fill = document.getElementById('sync-fill');
+  var pctEl= document.getElementById('sync-pct');
+  if (!bar) return;
+
+  msg.textContent = txt;
+
+  if (state === 'loading') {
+    bar.style.display = 'flex';
+    bar.style.background = '#dbeafe';
+    bar.style.borderColor = '#93c5fd';
+    msg.style.color = '#1e40af';
+    pctEl.style.color = '#1e40af';
+    spn.style.display = 'block';
+    spn.style.borderTopColor = '#1e40af';
+    var p = (pct !== undefined) ? Math.min(100, Math.max(0, pct)) : null;
+    if (p !== null) {
+      fill.style.width = p + '%';
+      fill.style.background = 'linear-gradient(90deg,#3b82f6,#6366f1)';
+      pctEl.textContent = Math.round(p) + '%';
+    } else {
+      // indeterminate — animate as pulsing fill
+      fill.style.width = '100%';
+      fill.style.background = 'linear-gradient(90deg,#93c5fd,#c7d2fe,#93c5fd)';
+      pctEl.textContent = '';
+    }
+  } else if (state === 'done') {
+    bar.style.background = '#dcfce7';
+    bar.style.borderColor = '#86efac';
+    msg.style.color = '#15803d';
+    pctEl.style.color = '#15803d';
+    spn.style.display = 'none';
+    fill.style.width = '100%';
+    fill.style.background = 'linear-gradient(90deg,#22c55e,#16a34a)';
+    pctEl.textContent = '100%';
+    setTimeout(function() { bar.style.display = 'none'; fill.style.width = '0%'; pctEl.textContent = ''; }, 9000);
+  } else {
+    bar.style.background = '#fee2e2';
+    bar.style.borderColor = '#fca5a5';
+    msg.style.color = '#b91c1c';
+    pctEl.style.color = '#b91c1c';
+    spn.style.display = 'none';
+    fill.style.width = '100%';
+    fill.style.background = '#fca5a5';
+    pctEl.textContent = '';
+  }
+}
+
+// ─── CORE HTTP HELPER (POST + JSON body) ─────────────────────────────────────
+// Why POST?
+//  1. Apps Script GET redirects strip CORS headers → ERR_FAILED / CORS block.
+//  2. Large payloads sent as GET query params exceed URL limits → 413 errors.
+// The Apps Script reads e.postData.contents and routes by payload.action.
+function gasPost(payload) {
+  return fetch(apiUrl, {
+    method:  'POST',
+    headers: { 'Content-Type': 'text/plain' }, // text/plain avoids CORS preflight OPTIONS
+    body:    JSON.stringify(payload),
+    redirect:'follow'
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.text();
+  })
+  .then(function(txt) {
+    var clean = txt.replace(/^\/\*.*?\*\/\s*/,'').replace(/^\s*throw\s+[^;]+;\s*/,'').trim();
+    return JSON.parse(clean);
+  });
+}
+// gasGet kept only for fetchSheetNames / loadGSheetTab which are still GET-safe (small payload)
+function gasGet(url) {
+  return fetch(url, { redirect: 'follow' })
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(function(txt) {
+      var clean = txt.replace(/^\/\*.*?\*\/\s*/,'').replace(/^\s*throw\s+[^;]+;\s*/,'').trim();
+      return JSON.parse(clean);
+    });
+}
+
+// ─── Detect mode from sheet name and update sync button label ─────────────────
+function getSyncMode() {
+  // Check both the sheet tab name and the file name
+  var src = curSheet + ' ' + fileName;
+  if (/3B_Non_Filers/i.test(src))  return '3b_non_filers';
+  if (/active/i.test(src))         return 'active';
+  if (/cancelled/i.test(src))      return 'cancelled';
+  if (/suspended/i.test(src))      return 'suspended';
+  return 'unknown';
+}
+
+function updateSyncBtn() {
+  var btn  = document.getElementById('sync-btn');
+  var mode = getSyncMode();
+  if (mode === 'active') {
+    btn.textContent = '📥 Add New (Active)';
+    btn.title = 'Appends new GSTINs not already in the Google Sheet';
+  } else if (mode === 'cancelled') {
+    btn.textContent = '🚫 Mark Cancelled';
+    btn.title = 'Marks matching LIVE rows as CANCELLED in the Google Sheet';
+  } else if (mode === 'suspended') {
+    btn.textContent = '⏸ Mark Suspended';
+    btn.title = 'Clears col P, then writes SUSPENDED in col P for matching GSTINs';
+  } else if (mode === '3b_non_filers') {
+    btn.textContent = '📋 Sync 3B Defaulters';
+    btn.title = 'Saves No. of GSTR-3B Defaulters → col T and Total SGST Paid → col U for matching GSTINs';
+  } else {
+    btn.textContent = '🔄 Update Existing';
+    btn.title = '';
+  }
+}
+
+function runSync() {
+  var btn  = document.getElementById('sync-btn');
+  var mode = getSyncMode();
+
+  // Guard checks
+  if (!apiUrl)         { setSyncBar('Error: API URL not configured.', 'error'); return; }
+  if (!rawData.length) { setSyncBar('Error: No data loaded yet.', 'error'); return; }
+
+  if (mode === 'unknown') {
+    setSyncBar('⚠️ Sheet name must contain "Active", "Cancelled", "Suspended" or "3B_Non_Filers" to use this button.', 'error');
+    return;
+  }
+
+  // ── 3B Non-Filers mode: find defaulters col and SGST col, send to sheet ──
+  if (mode === '3b_non_filers') {
+    var gsRe3b = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+    // Detect GSTIN column
+    var gci3b = -1;
+    for (var i = 0; i < headers.length; i++) {
+      if (/gstin/i.test(headers[i])) { gci3b = i; break; }
+    }
+    if (gci3b === -1) {
+      for (var ci = 0; ci < headers.length; ci++) {
+        var hits3b = 0;
+        for (var ri = 0; ri < Math.min(rawData.length, 30); ri++) {
+          if (gsRe3b.test((rawData[ri][ci] || '').trim())) hits3b++;
+        }
+        if (hits3b >= 3) { gci3b = ci; break; }
+      }
+    }
+    if (gci3b === -1) { setSyncBar('Error: GSTIN column not found.', 'error'); return; }
+    // Detect 'No of GSTR 3B Defaulters' column (col T target)
+    var dci3b = -1;
+    for (var i = 0; i < headers.length; i++) {
+      if (/defaulter/i.test(headers[i]) || /3b.*default/i.test(headers[i])) { dci3b = i; break; }
+    }
+    // Detect 'Total SGST Paid (Previous FY)' column (col U target)
+    var sci3b = -1;
+    for (var i = 0; i < headers.length; i++) {
+      if (/sgst/i.test(headers[i])) { sci3b = i; break; }
+    }
+    if (dci3b === -1) { setSyncBar('Error: "No of GSTR 3B Defaulters" column not found in sheet.', 'error'); return; }
+    if (sci3b === -1) { setSyncBar('Error: "Total SGST Paid" column not found in sheet.', 'error'); return; }
+    // Build payload: array of [gstin, defaulterCount, sgstPaid]
+    var rows3b = [];
+    rawData.forEach(function(obj) {
+      var gstin = (obj[gci3b] || '').trim();
+      if (!gstin) return;
+      rows3b.push([
+        gstin,
+        String(obj[dci3b] || ''),
+        String(obj[sci3b] || '')
+      ]);
+    });
+    btn.disabled = true;
+    btn.textContent = '⏳ Syncing…';
+    setSyncBar('⏳ Sending ' + rows3b.length.toLocaleString() + ' rows to Google Sheet…', 'loading', 0);
+    // Columns T & U are cleared inside process3BNonFilers on the Apps Script side
+    // Split into chunks
+    var CHUNK3B = 150;
+    var chunks3b = [];
+    for (var i = 0; i < rows3b.length; i += CHUNK3B) chunks3b.push(rows3b.slice(i, i + CHUNK3B));
+    var jobId3b = 'J3B' + Date.now();
+    var done3b = 0;
+    function resetBtn3b() { btn.disabled = false; updateSyncBtn(); }
+    function upload3bNext(idx) {
+      if (idx >= chunks3b.length) {
+        setSyncBar('⏳ Finalising in Google Sheet…', 'loading', 99);
+        gasPost({ action: 'finalizeSync', jobId: jobId3b, mode: '3b_non_filers', gstinColIdx: 0, colHeaders: ['GSTIN','ReturnDefault','SGSTPaid'] })
+          .then(function(res) {
+            resetBtn3b();
+            if (!res.ok) { setSyncBar('❌ Error: ' + (res.error || 'Unknown'), 'error'); return; }
+            var d = res.data;
+            setSyncBar('✅ Done!  Updated: ' + d.updated + '   Not found: ' + d.skipped + '   (Total: ' + d.total + ')', 'done');
+          })
+          .catch(function(e) { resetBtn3b(); setSyncBar('❌ Error: ' + e.message, 'error'); });
+        return;
+      }
+      done3b += chunks3b[idx].length;
+      var pct3b = Math.round((done3b / rows3b.length) * 95);
+      setSyncBar('⏳ Uploading… ' + done3b.toLocaleString() + ' / ' + rows3b.length.toLocaleString() + ' rows', 'loading', pct3b);
+      gasPost({ action: 'uploadChunk', jobId: jobId3b, chunkIdx: idx, chunk: chunks3b[idx] })
+        .then(function(res) {
+          if (!res.ok) { resetBtn3b(); setSyncBar('Error on chunk ' + idx + ': ' + (res.error || 'failed'), 'error'); return; }
+          upload3bNext(idx + 1);
+        })
+        .catch(function(e) { resetBtn3b(); setSyncBar('Network error: ' + e.message, 'error'); });
+    }
+    upload3bNext(0);
+    return;
+  }
+
+  // Auto-detect GSTIN column index (should be index 1 — 2nd column)
+  var gci = -1;
+  var gsRe = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+  for (var i = 0; i < headers.length; i++) {
+    if (/gstin/i.test(headers[i])) { gci = i; break; }
+  }
+  if (gci === -1) {
+    for (var ci = 0; ci < headers.length; ci++) {
+      var hits = 0;
+      for (var ri = 0; ri < Math.min(rawData.length, 30); ri++) {
+        if (gsRe.test((rawData[ri][ci] || '').trim())) hits++;
+      }
+      if (hits >= 3) { gci = ci; break; }
+    }
+  }
+  if (gci === -1) { setSyncBar('Error: GSTIN column not found.', 'error'); return; }
+
+  // Lock button
+  btn.disabled    = true;
+  btn.textContent = '⏳ Syncing…';
+  setSyncBar('⏳ Preparing ' + rawData.length.toLocaleString() + ' records…', 'loading', 0);
+
+  // Build 2D rows array
+  // For Active sheets: skip the row whose GSTIN column contains the value '2'
+  // (this is the duplicate header/summary row that appears as row 2 in the GST portal export)
+  var allRows = [];
+  var skippedRow2 = 0;
+  rawData.forEach(function(obj) {
+    var rowArr = headers.map(function(_, i) { return obj[i] || ''; });
+    if (mode === 'active' && String(rowArr[gci] || '').trim() === '2') {
+      skippedRow2++;
+      return;
+    }
+    allRows.push(rowArr);
+  });
+  if (skippedRow2 > 0) showToast('ℹ️ Skipped ' + skippedRow2 + ' row(s) where GSTIN = "2"', 'tinfo');
+
+  // Split into chunks of 150 rows each
+  var CHUNK  = 150;
+  var chunks = [];
+  for (var i = 0; i < allRows.length; i += CHUNK) {
+    chunks.push(allRows.slice(i, i + CHUNK));
+  }
+  var jobId = 'J' + Date.now();
+  var done  = 0;
+
+  function resetBtn() {
+    btn.disabled = false;
+    updateSyncBtn();
+  }
+
+  function uploadNext(idx) {
+    if (idx >= chunks.length) {
+      // All chunks uploaded — finalize
+      setSyncBar('⏳ Processing in Google Sheet… please wait', 'loading', 99);
+
+      gasPost({
+        action:      'finalizeSync',
+        jobId:       jobId,
+        gstinColIdx: gci,
+        colHeaders:  headers,
+        mode:        mode          // ← 'active' or 'cancelled'
+      })
+        .then(function(res) {
+          resetBtn();
+          if (!res.ok) { setSyncBar('❌ Error: ' + (res.error || 'Unknown'), 'error'); return; }
+          var d = res.data;
+          var msg = mode === 'cancelled'
+            ? '✅ Done!  Marked CANCELLED: ' + d.cancelled + '   Not found / already cancelled: ' + d.skipped + '   (Total rows: ' + d.total + ')'
+            : mode === 'suspended'
+            ? '✅ Done!  Marked SUSPENDED: ' + d.suspended + '   Not found in Sheet: ' + d.skipped + '   (Total rows: ' + d.total + ')'
+            : '✅ Done!  Added: ' + d.added + '   Skipped (already exist): ' + d.skipped + '   (Total rows: ' + d.total + ')';
+          setSyncBar(msg, 'done');
+        })
+        .catch(function(e) { resetBtn(); setSyncBar('❌ Error: ' + e.message, 'error'); });
+      return;
+    }
+
+    done += chunks[idx].length;
+    var pct = Math.round((done / allRows.length) * 95); // cap at 95% — last 5% is finalize
+    setSyncBar('⏳ Uploading… ' + done.toLocaleString() + ' / ' + allRows.length.toLocaleString() + ' rows', 'loading', pct);
+
+    gasPost({
+      action:   'uploadChunk',
+      jobId:    jobId,
+      chunkIdx: idx,
+      chunk:    chunks[idx]
+    })
+      .then(function(res) {
+        if (!res.ok) { resetBtn(); setSyncBar('Error on chunk ' + idx + ': ' + (res.error || 'failed'), 'error'); return; }
+        uploadNext(idx + 1);
+      })
+      .catch(function(e) { resetBtn(); setSyncBar('Network error: ' + e.message, 'error'); });
+  }
+
+  uploadNext(0);
+}
+
+// ─── SEND SINGLE ROW ON GSTIN CLICK ──────────────────────────────────────────
+var _sendingCell = null;
+
+function sendRowToSheet(rowIdx, cellEl) {
+  if (!apiUrl) { showToast('⚠️ API URL not configured.', 'terr'); return; }
+
+  // Only allowed when the sheet name contains "Active"
+  if (!/active/i.test(curSheet)) {
+    showToast('⚠️ Row insert only works for "Active" sheets. Current: "' + curSheet + '"', 'terr');
+    return;
+  }
+
+  var row = filtered[rowIdx];
+  if (!row) return;
+
+  var rowArr = headers.map(function(_, i) { return row[i] || ''; });
+  var gstin  = cellEl.textContent.trim();
+
+  // Block row where GSTIN = '2' (spurious row 2 from GST portal Active export)
+  if (gstin === '2') {
+    showToast('⚠️ Row skipped — GSTIN value "2" is not a valid GSTIN.', 'terr');
+    return;
+  }
+
+  // ── Col A (index 0): strip the value from the web page row.
+  //    The Apps Script will instead set col A = (last row's col A value) + 1.
+  rowArr[0] = '';
+
+  // ── Col S (index 18): do NOT send a value from the web page.
+  //    The Apps Script will copy col S from the row that is 4 positions above
+  //    the newly appended row (i.e. newRowNumber - 4).   ← was col Q index 16
+  rowArr[18] = '';
+
+  if (_sendingCell) _sendingCell.classList.remove('sending');
+  _sendingCell = cellEl;
+  cellEl.classList.add('sending');
+  showToast('⏳ Sending ' + gstin + ' to Sheet…', 'tinfo');
+
+  gasPost({
+    action:          'appendRow',
+    gstin:           gstin,
+    rowData:         rowArr,
+    headers:         headers,
+    autoSerialNum:   true,   // Apps Script: set col A = preceding row's col A + 1
+    colSOffset:      4       // Apps Script: set col S = value from (newRow - 4) in col S
+  })
+    .then(function(res) {
+      cellEl.classList.remove('sending');
+      if (!res.ok) { showToast('❌ ' + (res.error || 'Error sending row'), 'terr'); return; }
+      if (res.skipped) {
+        showToast('ℹ️ ' + gstin + ' already exists — row skipped.', 'tinfo');
+      } else {
+        showToast('✅ ' + gstin + ' appended to Sheet (col Q = LIVE)', 'tok');
+        cellEl.style.background = '#bbf7d0';
+        setTimeout(function() { cellEl.style.background = ''; }, 1800);
+      }
+    })
+    .catch(function(e) {
+      cellEl.classList.remove('sending');
+      showToast('❌ Network error: ' + e.message, 'terr');
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ─── LIVE REPORT (new full-table implementation) ──────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Sheet column mapping (0-based index in data returned by getReportData)
+// A=0 Sr.No, B=1 GSTIN, C=2 Trade/Legal Name, D=3 Assigned To, E=4 Mobile,
+// F=5 Email, G=6 Eff.Date, H=7 Type of Taxpayer, I=8 Constitution of Business,
+// J=9, K=10, L=11 HSN Code, M=12 Address, N=13, O=14, P=15,
+// Q=16 Status(LIVE/CANCELLED), R=17 Suspended, S=18 Officer/Name
+//
+// Sheet column mapping (0-based index in data returned by getReportData)
+// A=0 Sr.No, B=1 GSTIN, C=2 Trade/Legal Name,
+// D=3 = EMAIL data in sheet, E=4 Mobile,
+// F=5 = ASSIGNED TO data in sheet, G=6 Eff.Date,
+// H=7 Type of Taxpayer, I=8 Constitution of Business,
+// J=9, K=10, L=11 HSN Code, M=12 Address, N=13, O=14, P=15,
+// Q=16 Status(LIVE/CANCELLED), R=17 Suspended, S=18 Officer/Name
+//
+// Display order:
+//   Sr.No(A=0), GSTIN(B=1), Trade/Legal Name(C=2), Address(O=14),
+//   Email Id(D=3), Mobile(E=4), Officer(S=18), Assigned To(F=5),
+//   Type of Taxpayer(H=7), Constitution of Business(I=8),
+//   HSN Code(N=13), Status/LIVE(Q=16), Effective Date(G=6)
+// Address from col O (index 14). HSN Code from col N (index 13).
+// Email Id reads col D (index 3). Assigned To reads col F (index 5).
+// 0=GSTIN,1=TradeName,2=Address,3=EmailId,4=Mobile,5=Officer,6=AssignedTo,
+// 7=TypeOfTaxpayer,8=ConstitutionOfBusiness,9=ReturnDefault(T=19),
+// 10=SGSTPaidLastYear(U=20),11=HSNCode(N=13),12=LIVE(Q=16),13=EffDate(G=6)
+var LR_COL_INDICES = [1, 2, 14, 3, 4, 18, 5, 7, 8, 19, 20, 13, 16, 6];
+var LR_COL_LABELS  = ['GSTIN', 'Trade Name / Legal Name', 'Address of Principal Place of Business', 'Email Id', 'Mobile No.', 'Officer', 'Assigned To', 'Type of Taxpayer', 'Constitution of Business', 'Return Default', 'SGST Paid Last Year', 'HSN Code', 'LIVE', 'Effective Date of Registration'];
+// Index of the STATUS column within the display array (LR_COL_INDICES position of Q=16)
+var LR_STATUS_CI = 12; // 0-based index in display array where Status/LIVE column sits
+// HSN Code is at display index 11 — force text to avoid scientific notation
+var LR_HSN_CI = 11;
+
+var _lrRawData   = [];   // all rows from sheet (mapped to display column order)
+var _lrFiltered  = [];   // after search/sort
+var _lrSortCol   = -1;
+var _lrSortDir   = 'asc';
+var _lrPage      = 1;
+var _lrRpp       = 50;
+var _lrLoading   = false;
+var _lrEditRow   = -1;   // index in _lrFiltered currently being edited
+var _lrSheetRows = [];   // raw full rows (for sheetRow reference for updateRow)
+
+// Called by goTo('pg-reports')
+function loadReportData() {
+  loadLiveReport(false);
+}
+
+function loadLiveReport(force) {
+  if (_lrLoading) return;
+  if (!force && _lrRawData.length) { lrRenderTable(); return; }
+  if (!apiUrl) { showErr('lr-load-err', 'Not connected to Google Sheet. Please log in.'); return; }
+  _lrLoading = true;
+  clrErr('lr-load-err');
+  document.getElementById('lr-tblwrap').innerHTML = '<div class="loading"><div class="sp"></div>Fetching from Google Sheet…</div>';
+  document.getElementById('lr-pgn').style.display = 'none';
+  document.getElementById('lr-stat').textContent = '';
+
+  gasPost({ action: 'getReportData' })
+    .then(function(res) {
+      _lrLoading = false;
+      if (!res.ok) { showErr('lr-load-err', res.error || 'Failed to load data'); document.getElementById('lr-tblwrap').innerHTML = '<div class="empty"><div class="ei">⚠️</div>Could not load data</div>'; return; }
+      var data = res.data; // { headers:[], rows:[[...]] }
+      _lrSheetRows = data.rows; // keep original for sheetRow index (row 1-based = index+2 since header is row 1)
+      // Map to display column order
+      _lrRawData = data.rows.map(function(r, idx) {
+        var mapped = LR_COL_INDICES.map(function(ci, di) {
+          var v = r[ci] !== undefined ? r[ci] : '';
+          if (di === LR_HSN_CI && v !== '') {
+            var n = Number(v);
+            if (!isNaN(n) && isFinite(n)) return n.toFixed(0);
+          }
+          return String(v);
+        });
+        mapped._sheetRow = idx + 2; // 1-based sheet row (row 1 = header)
+        return mapped;
+      });
+      _lrFiltered = _lrRawData.slice();
+      _lrSortCol = -1; _lrSortDir = 'asc'; _lrPage = 1;
+      document.getElementById('lr-srch').value = '';
+      lrPopulateFilters();
+      lrRenderTable();
+    })
+    .catch(function(e) {
+      _lrLoading = false;
+      showErr('lr-load-err', 'Error: ' + e.message);
+      document.getElementById('lr-tblwrap').innerHTML = '<div class="empty"><div class="ei">⚠️</div>Network error</div>';
+    });
+}
+
+function lrSearch() {
+  lrApplyFilters();
+}
+
+function lrRppChange() {
+  var v = document.getElementById('lr-rsel').value;
+  _lrRpp = v === 'all' ? 'all' : parseInt(v);
+  _lrPage = 1;
+  lrRenderTable();
+}
+
+// ─── FILTER DROPDOWNS ────────────────────────────────────────────────────────
+// Column positions in LR_COL_INDICES display array (0-based):
+// 0=GSTIN,1=TradeName,2=Address,3=EmailId,4=Mobile,5=Officer,6=AssignedTo,
+// 7=TypeOfTaxpayer,8=ConstitutionOfBusiness,9=ReturnDefault,
+// 10=SGSTPaid,11=HSNCode,12=LIVE,13=EffDate
+var LR_FILTER_MAP = {
+  'lr-f-assignedto':    6,
+  'lr-f-officer':       5,
+  'lr-f-taxpayertype':  7,
+  'lr-f-constitution':  8,
+  'lr-f-live':         12,
+  'lr-f-returndefault': 9
+};
+
+function lrPopulateFilters() {
+  Object.keys(LR_FILTER_MAP).forEach(function(selId) {
+    if (selId === 'lr-f-returndefault') return; // static upto-N options, skip auto-populate
+    var ci = LR_FILTER_MAP[selId];
+    var sel = document.getElementById(selId);
+    if (!sel) return;
+    var firstOpt = sel.options[0].text; // preserve "All – …" label
+    var vals = {};
+    _lrRawData.forEach(function(r) {
+      var v = (r[ci] || '').trim();
+      if (v) vals[v] = true;
+    });
+    var sorted = Object.keys(vals).sort(function(a, b) { return a.localeCompare(b); });
+    sel.innerHTML = '<option value="">' + firstOpt + '</option>';
+    sorted.forEach(function(v) {
+      var o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+  });
+}
+
+function lrHighlightDefault(sel) {
+  if (sel.value) {
+    sel.style.background    = '#d1fae5'; // light green
+    sel.style.color         = '#1e3a5f'; // navy blue
+    sel.style.borderColor   = '#6ee7b7';
+    sel.style.fontWeight    = '700';
+  } else {
+    sel.style.background    = '#fff';
+    sel.style.color         = '';
+    sel.style.borderColor   = '';
+    sel.style.fontWeight    = '';
+  }
+}
+
+function lrApplyFilters() {
+  var q = document.getElementById('lr-srch').value.toLowerCase().trim();
+  var filters = {};
+  var returnDefaultMax   = null; // upto_N mode
+  var returnDefaultExact = null; // exact_N mode
+  Object.keys(LR_FILTER_MAP).forEach(function(selId) {
+    var v = (document.getElementById(selId).value || '').trim();
+    if (!v) return;
+    if (selId === 'lr-f-returndefault') {
+      if (v.indexOf('upto_') === 0) {
+        returnDefaultMax = parseFloat(v.replace('upto_', ''));
+      } else if (v.indexOf('exact_') === 0) {
+        returnDefaultExact = parseFloat(v.replace('exact_', ''));
+      }
+    } else {
+      filters[LR_FILTER_MAP[selId]] = v.toLowerCase();
+    }
+  });
+
+  _lrFiltered = _lrRawData.filter(function(r) {
+    // text search
+    if (q && !r.some(function(v) { return String(v).toLowerCase().indexOf(q) >= 0; })) return false;
+    // exact-match dropdown filters
+    for (var ci in filters) {
+      if ((r[ci] || '').toLowerCase() !== filters[ci]) return false;
+    }
+    // return default filter — upto N (<=) or exactly N (==)
+    var rdCI = LR_FILTER_MAP['lr-f-returndefault'];
+    if (returnDefaultMax !== null) {
+      var rdVal = parseFloat((r[rdCI] || '').replace(/,/g, ''));
+      if (isNaN(rdVal) || rdVal > returnDefaultMax) return false;
+    }
+    if (returnDefaultExact !== null) {
+      var rdVal2 = parseFloat((r[rdCI] || '').replace(/,/g, ''));
+      if (isNaN(rdVal2) || rdVal2 !== returnDefaultExact) return false;
+    }
+    return true;
+  });
+
+  if (_lrSortCol >= 0) lrApplySort();
+  _lrPage = 1;
+  _lrEditRow = -1;
+  lrRenderTable();
+}
+
+function lrClearFilters() {
+  Object.keys(LR_FILTER_MAP).forEach(function(selId) {
+    document.getElementById(selId).selectedIndex = 0;
+  });
+  // Reset highlight on all filter selects
+  ['lr-f-assignedto','lr-f-taxpayertype','lr-f-officer','lr-f-live','lr-f-returndefault','lr-f-constitution'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) lrHighlightDefault(el);
+  });
+  document.getElementById('lr-srch').value = '';
+  _lrFiltered = _lrRawData.slice();
+  if (_lrSortCol >= 0) lrApplySort();
+  _lrPage = 1;
+  _lrEditRow = -1;
+  lrRenderTable();
+}
+
+function lrApplySort() {
+  var ci = _lrSortCol;
+  _lrFiltered.sort(function(a, b) {
+    var av = a[ci] || '', bv = b[ci] || '';
+    var an = parseFloat(av.replace(/,/g,'')), bn = parseFloat(bv.replace(/,/g,''));
+    var c = (!isNaN(an) && !isNaN(bn)) ? an - bn : av.localeCompare(bv);
+    return _lrSortDir === 'asc' ? c : -c;
+  });
+}
+
+function lrSort(ci) {
+  if (_lrSortCol === ci) {
+    _lrSortDir = _lrSortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    _lrSortCol = ci; _lrSortDir = 'asc';
+  }
+  lrApplySort();
+  _lrPage = 1;
+  _lrEditRow = -1;
+  lrRenderTable();
+}
+
+var _lrSearchActive = false;
+function lrRenderTable() {
+  var q = document.getElementById('lr-srch').value.toLowerCase().trim();
+  _lrSearchActive = !!q;
+  var rn = _lrRpp === 'all' ? _lrFiltered.length : _lrRpp;
+  var tp = Math.max(1, Math.ceil(_lrFiltered.length / (rn || 1)));
+  if (_lrPage > tp) _lrPage = tp;
+  var st = (_lrPage - 1) * (rn || _lrFiltered.length);
+  var pr = _lrFiltered.slice(st, st + (rn || _lrFiltered.length));
+
+  document.getElementById('lr-stat').textContent =
+    _lrFiltered.length.toLocaleString() + ' of ' + _lrRawData.length.toLocaleString() + ' records';
+
+  if (!_lrFiltered.length) {
+    document.getElementById('lr-tblwrap').innerHTML = '<div class="empty"><div class="ei">🔍</div>No matching records</div>';
+    document.getElementById('lr-pgn').style.display = 'none';
+    return;
+  }
+
+  var h = '<table><thead><tr><th class="rnh">#</th>';
+  LR_COL_LABELS.forEach(function(lbl, ci) {
+    var ar = _lrSortCol === ci ? (_lrSortDir === 'asc' ? '▲' : '▼') : '⇅';
+    var cl = _lrSortCol === ci ? (_lrSortDir === 'asc' ? 'asc' : 'desc') : '';
+    h += '<th onclick="lrSort(' + ci + ')">' + eh(lbl) + ' <span class="si ' + cl + '">' + ar + '</span></th>';
+  });
+  h += '<th style="width:52px;background:var(--hbg);text-align:center;font-size:10px;color:#94a3b8">Edit</th>';
+  h += '</tr></thead><tbody>';
+
+  pr.forEach(function(row, ri) {
+    var absIdx = st + ri;
+    var sheetRow = row._sheetRow;
+    var isEditing = (_lrEditRow === absIdx);
+    var rowBg = isEditing ? 'background:#fffbeb;outline:2px solid #f59e0b;outline-offset:-2px;' : '';
+
+    h += '<tr style="' + rowBg + '">';
+    h += '<td class="rn">' + (absIdx + 1) + '</td>';
+
+    row.forEach(function(v, ci) {
+      var d = q && v.toLowerCase().indexOf(q) >= 0
+        ? v.replace(new RegExp('(' + er(q) + ')', 'gi'), '<mark>$1</mark>') : eh(v);
+
+      if (isEditing && ci > 0) {
+        // Editable cell (all except first column which is Sr.No)
+        var statusStyle = '';
+        if (ci === LR_STATUS_CI) { // Status/LIVE col
+          if (v.toUpperCase() === 'LIVE') statusStyle = 'background:#d1fae5;color:#065f46;font-weight:700;';
+          else if (v.toUpperCase() === 'CANCELLED') statusStyle = 'background:#fee2e2;color:#991b1b;font-weight:700;';
+        }
+        h += '<td style="padding:4px 6px;' + statusStyle + '">' +
+          '<input type="text" value="' + eh(v) + '" ' +
+          'style="width:100%;border:1px solid #f59e0b;border-radius:4px;padding:4px 6px;font-family:\'JetBrains Mono\',monospace;font-size:11px;background:#fffef0;outline:none;min-width:60px" ' +
+          'data-ci="' + ci + '" data-abs="' + absIdx + '" class="lr-edit-inp" />' +
+          '</td>';
+      } else {
+        var cls = '';
+        if (ci === LR_STATUS_CI) { // Status/LIVE col
+          if (v.toUpperCase() === 'LIVE') cls = 'style="color:#065f46;font-weight:700;background:#d1fae5;border-radius:3px;padding:2px 6px"';
+          else if (v.toUpperCase() === 'CANCELLED') cls = 'style="color:#991b1b;font-weight:700;background:#fee2e2;border-radius:3px;padding:2px 6px"';
+        }
+        h += '<td title="' + eh(v) + '"><span ' + cls + '>' + d + '</span></td>';
+      }
+    });
+
+    if (isEditing) {
+      h += '<td style="text-align:center;padding:4px 6px">' +
+        '<button onclick="lrSaveRow(' + absIdx + ',' + sheetRow + ')" title="Save changes" ' +
+        'style="background:#059669;border:none;color:#fff;border-radius:5px;padding:5px 8px;font-size:12px;cursor:pointer;font-weight:700">✓</button>' +
+        ' <button onclick="lrCancelEdit()" title="Cancel" ' +
+        'style="background:#e2e8f0;border:none;color:#475569;border-radius:5px;padding:5px 7px;font-size:12px;cursor:pointer">✕</button>' +
+        '</td>';
+    } else {
+      var editBtn = _lrSearchActive
+        ? '<button onclick="lrEditRow(' + absIdx + ')" title="Edit row" style="background:#eff6ff;border:1px solid #bfdbfe;color:var(--accent);border-radius:5px;padding:5px 8px;font-size:13px;cursor:pointer" title="Edit (search active — update still works)">✎</button>'
+        : '<button onclick="lrEditRow(' + absIdx + ')" title="Edit this row" style="background:#f8fafc;border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:5px 8px;font-size:13px;cursor:pointer;transition:all .15s" onmouseover="this.style.background=\'#eff6ff\';this.style.color=\'var(--accent)\';this.style.borderColor=\'#bfdbfe\'" onmouseout="this.style.background=\'#f8fafc\';this.style.color=\'var(--muted)\';this.style.borderColor=\'var(--border)\'">✎</button>';
+      h += '<td style="text-align:center;padding:4px 6px">' + editBtn + '</td>';
+    }
+    h += '</tr>';
+  });
+
+  h += '</tbody></table>';
+  document.getElementById('lr-tblwrap').innerHTML = h;
+  lrBuildPgn(_lrPage, tp, _lrFiltered.length);
+  document.getElementById('lr-pgn').style.display = 'flex';
+}
+
+function lrEditRow(absIdx) {
+  _lrEditRow = absIdx;
+  lrRenderTable();
+  // Scroll to the editing row
+  setTimeout(function() {
+    var inp = document.querySelector('.lr-edit-inp');
+    if (inp) inp.focus();
+  }, 50);
+}
+
+function lrCancelEdit() {
+  _lrEditRow = -1;
+  lrRenderTable();
+}
+
+function lrSaveRow(absIdx, sheetRow) {
+  var row = _lrFiltered[absIdx];
+  if (!row) return;
+
+  // Gather edited values from inputs
+  var inputs = document.querySelectorAll('.lr-edit-inp');
+  var updates = [];
+  var changed = false;
+
+  inputs.forEach(function(inp) {
+    var ci = parseInt(inp.getAttribute('data-ci'));
+    var newVal = inp.value;
+    var oldVal = row[ci];
+    // Map display column index back to sheet column (1-based)
+    var sheetColIdx = LR_COL_INDICES[ci]; // 0-based sheet array index
+    var sheetCol1based = sheetColIdx + 1;  // 1-based
+    if (newVal !== oldVal) {
+      updates.push({ col: sheetCol1based, value: newVal });
+      changed = true;
+    }
+  });
+
+  if (!changed) {
+    _lrEditRow = -1;
+    lrRenderTable();
+    showToast('ℹ️ No changes detected.', 'tinfo');
+    return;
+  }
+
+  // Show saving indicator
+  var saveBtn = document.querySelector('button[onclick="lrSaveRow(' + absIdx + ',' + sheetRow + ')"]');
+  if (saveBtn) { saveBtn.textContent = '⏳'; saveBtn.disabled = true; }
+
+  gasPost({ action: 'updateRow', sheetRow: sheetRow, updates: updates })
+    .then(function(res) {
+      if (!res.ok) {
+        showToast('❌ ' + (res.error || 'Update failed'), 'terr');
+        if (saveBtn) { saveBtn.textContent = '✓'; saveBtn.disabled = false; }
+        return;
+      }
+      // Apply changes to local data
+      inputs.forEach(function(inp) {
+        var ci = parseInt(inp.getAttribute('data-ci'));
+        row[ci] = inp.value;
+        // Also update in _lrRawData
+        var rawRow = _lrRawData.find(function(r) { return r._sheetRow === sheetRow; });
+        if (rawRow) rawRow[ci] = inp.value;
+      });
+      _lrEditRow = -1;
+      lrRenderTable();
+      var bar = document.getElementById('lr-update-bar');
+      bar.style.display = 'flex';
+      bar.innerHTML = '✅ Row updated successfully in Google Sheet (sheet row ' + sheetRow + ')';
+      setTimeout(function() { bar.style.display = 'none'; }, 5000);
+      showToast('✅ Row updated in Sheet', 'tok');
+    })
+    .catch(function(e) {
+      showToast('❌ Network error: ' + e.message, 'terr');
+      if (saveBtn) { saveBtn.textContent = '✓'; saveBtn.disabled = false; }
+    });
+}
+
+function lrBuildPgn(page, total, count) {
+  var rn = _lrRpp === 'all' ? count : _lrRpp;
+  var s = total ? (page - 1) * rn + 1 : 0, e = Math.min(page * rn, count);
+  document.getElementById('lr-pinfo').textContent =
+    total ? 'Showing ' + s.toLocaleString() + '–' + e.toLocaleString() + ' of ' + count.toLocaleString() + ' records' : 'No records';
+  var el = document.getElementById('lr-pbs'); el.innerHTML = '';
+  function addB(l, p, d, a) {
+    var b = document.createElement('button'); b.className = 'pb' + (a ? ' on' : '');
+    b.disabled = d; b.innerHTML = l;
+    b.onclick = function() { _lrEditRow = -1; _lrPage = p; lrRenderTable(); };
+    el.appendChild(b);
+  }
+  addB('‹', page - 1, page <= 1, false);
+  prng(page, total).forEach(function(p) {
+    if (p === '…') { var s2 = document.createElement('span'); s2.style.cssText = 'padding:0 3px;color:var(--muted);align-self:center'; s2.textContent = '…'; el.appendChild(s2); }
+    else addB(p, p, false, p === page);
+  });
+  addB('›', page + 1, page >= total, false);
+}
+
+// ─── DOWNLOAD MODAL ───────────────────────────────────────────────────────────
+function openDownloadModal() {
+  if (!_lrRawData.length) { showToast('⚠️ No data loaded. Refresh first.', 'terr'); return; }
+  var list = document.getElementById('dl-col-list');
+  list.innerHTML = '';
+  LR_COL_LABELS.forEach(function(lbl, ci) {
+    var id = 'dlc_' + ci;
+    var wrap = document.createElement('label');
+    wrap.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;padding:4px 6px;border-radius:5px;transition:background .12s';
+    wrap.onmouseover = function() { this.style.background = '#eff6ff'; };
+    wrap.onmouseout  = function() { this.style.background = ''; };
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.id = id; cb.value = ci; cb.checked = true;
+    cb.style.accentColor = 'var(--accent)';
+    wrap.appendChild(cb);
+    var span = document.createElement('span'); span.textContent = lbl;
+    wrap.appendChild(span);
+    list.appendChild(wrap);
+  });
+  document.getElementById('dl-modal').classList.add('on');
+}
+function closeDlModal() { document.getElementById('dl-modal').classList.remove('on'); }
+function dlSelectAll()  { document.querySelectorAll('#dl-col-list input[type=checkbox]').forEach(function(c){c.checked=true;}); }
+function dlSelectNone() { document.querySelectorAll('#dl-col-list input[type=checkbox]').forEach(function(c){c.checked=false;}); }
+
+function dlGetSelectedCols() {
+  var cols = [];
+  document.querySelectorAll('#dl-col-list input[type=checkbox]:checked').forEach(function(c) {
+    cols.push(parseInt(c.value));
+  });
+  return cols;
+}
+
+function dlExcel() {
+  var cols = dlGetSelectedCols();
+  if (!cols.length) { showToast('⚠️ Select at least one column.', 'terr'); return; }
+  var hdrs = cols.map(function(ci) { return LR_COL_LABELS[ci]; });
+  var rows = _lrFiltered.map(function(r) {
+    return cols.map(function(ci) { return r[ci] || ''; });
+  });
+
+  var wb2 = XLSX.utils.book_new();
+  var ws = XLSX.utils.aoa_to_sheet([hdrs].concat(rows));
+  // Style header row width
+  ws['!cols'] = cols.map(function() { return { wch: 20 }; });
+  XLSX.utils.book_append_sheet(wb2, ws, 'Live Report');
+  XLSX.writeFile(wb2, 'Live_Report_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  closeDlModal();
+  showToast('✅ Excel downloaded', 'tok');
+}
+
+function dlPDF() {
+  var cols = dlGetSelectedCols();
+  if (!cols.length) { showToast('⚠️ Select at least one column.', 'terr'); return; }
+  closeDlModal();
+  var hdrs = cols.map(function(ci) { return LR_COL_LABELS[ci]; });
+  var rows = _lrFiltered.map(function(r, i) {
+    return [i + 1].concat(cols.map(function(ci) { return r[ci] || ''; }));
+  });
+
+  // Build printable HTML and open in new tab
+  var colW = Math.max(60, Math.floor(700 / (cols.length + 1)));
+  var thStyle = 'background:#1e3a5f;color:#e2e8f0;padding:7px 10px;text-align:left;font-size:10px;white-space:nowrap;border:1px solid #2d4a6e;';
+  var tdStyle = 'padding:6px 10px;font-size:10px;border:1px solid #e2e8f0;font-family:monospace;max-width:' + colW + 'px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+  var trOdd  = 'background:#f7faff;';
+  var trEven = 'background:#fff;';
+
+  var tableHTML = '<table style="width:100%;border-collapse:collapse">';
+  tableHTML += '<thead><tr><th style="' + thStyle + '">#</th>';
+  hdrs.forEach(function(h) { tableHTML += '<th style="' + thStyle + '">' + eh(h) + '</th>'; });
+  tableHTML += '</tr></thead><tbody>';
+  rows.forEach(function(r, i) {
+    var bg = i % 2 === 0 ? trEven : trOdd;
+    tableHTML += '<tr style="' + bg + '">';
+    r.forEach(function(v) { tableHTML += '<td style="' + tdStyle + '">' + eh(String(v)) + '</td>'; });
+    tableHTML += '</tr>';
+  });
+  tableHTML += '</tbody></table>';
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    '<title>Live Report</title>' +
+    '<style>body{font-family:Arial,sans-serif;padding:20px;} h2{font-size:16px;margin-bottom:4px} .meta{font-size:11px;color:#64748b;margin-bottom:16px} @media print{button{display:none}}</style>' +
+    '</head><body>' +
+    '<h2>📊 GST Live Report</h2>' +
+    '<div class="meta">Generated: ' + new Date().toLocaleString() + ' &nbsp;·&nbsp; ' + _lrFiltered.length + ' records</div>' +
+    '<button onclick="window.print()" style="margin-bottom:14px;padding:7px 18px;background:#1a56db;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">🖨 Print / Save as PDF</button>' +
+    tableHTML +
+    '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else showToast('⚠️ Pop-up blocked. Allow pop-ups for PDF.', 'terr');
+  showToast('✅ PDF preview opened in new tab', 'tok');
+}
+
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+var tT=null;
+function showToast(msg,cls){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast '+(cls||'tinfo')+' on';
+  clearTimeout(tT);tT=setTimeout(function(){el.classList.remove('on');},3800);
+}
+function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function er(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function showErr(id,msg){document.getElementById(id).innerHTML='<div class="err">⚠️ '+msg+'</div>';}
+function clrErr(id){document.getElementById(id).innerHTML='';}
+</script>
+</body>
+</html>
