@@ -1,0 +1,3489 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>External Form</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <style>
+#modalOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); /* dark transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+ div .labelDesign{
+  font-style: italic; font-size: 18pt; color:rgb(255, 255, 255); font-family: 'Times New Roman', Times, serif;
+}
+ div .labelDesign1{
+  font-style: italic; font-size: 18pt; color:rgb(92, 92, 95); font-family: 'Times New Roman', Times, serif;
+}
+#sumCol1, #sumCol2, #sumCol3, #sumCol4, #sumCol5, #sumCol6, #sumCol7, #sumCol8, #sumCol9, #sumCol10, #sumCol11, #sumCol12{
+	font-weight: bold;
+}
+.labelInfo{
+  text-align: center; font-weight: normal; font-style: italic; font-size: 11pt; color:rgb(92, 92, 95); font-family: 'Times New Roman', Times, serif;
+}
+.InputBlueG{
+  background-color: #6898a5; font-weight: bold;
+}
+#modalBox {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+#loadingOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+#loadingBox {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+table input {
+  width: 100%;       /* fills the entire cell */
+  box-sizing: border-box; /* ensures padding/border don’t overflow */
+    text-align: center;
+    min-width: 2cm;
+}
+table, thead, tr, td {
+  text-align: center;
+}
+#field1::placeholder {
+  text-transform:none;}
+body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f4f6f8;
+      justify-content: center;   /* Centers horizontally */
+      align-items: center;       /* Centers vertically */
+      min-height: 100vh;         /* Full viewport height */
+    }
+    #field151::placeholder,
+    #field152::placeholder,
+    #field153::placeholder,
+    #field154::placeholder,
+    #field155::placeholder,
+    #field156::placeholder {
+      font-style: italic;
+    color:rgb(30, 105, 143)}
+
+      #field151:focus::placeholder,
+      #field152:focus::placeholder,
+      #field153:focus::placeholder,
+      #field154:focus::placeholder,
+      #field155:focus::placeholder,
+      #field156:focus::placeholder{
+        color:white;
+      }
+
+      .Tablestyle{
+              width: 80%;
+      max-width: 1000px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      margin: 15px auto;
+      }
+    .tile {
+      width: 80%;
+      max-width: 1000px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      margin: 15px auto;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-row1 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* two equal columns */
+      gap: 20px;                      /* spacing between columns */
+    }
+    .form-row2 {
+      display: grid;
+      grid-template-columns: 1fr; /* two equal columns */
+      gap: 20px;  
+      margin-top: 20px;                    /* spacing between columns */
+    }
+
+    .form-row3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr; /* two equal columns */
+      column-gap: 20px; /* spacing between columns */ 
+      row-gap: 1px;                     /* spacing between columns */
+    }
+
+    .form-group1 {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #333;
+      font-size: 12pt;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+
+
+.button-container, .button-container1 {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  gap: 20px; /* spacing between buttons */
+  
+}
+.button-container{
+margin: 15px 0px 15px -90px;
+}
+
+.button-container1{
+margin: 15px 0px 15px -0px;
+}
+
+#saveBtn, #clearBtn {
+  padding: 12px 40px;
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+
+    #searchBtn {
+      display: block;
+      margin: 25px auto 0;
+      padding: 12px 40px;
+      background: #0078d7;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+#searchBtn:hover,
+#saveBtn:hover,
+#clearBtn:hover {
+  background: #005fa3;
+  transform: translateY(-2px);
+}
+
+
+
+
+
+
+
+
+
+.tax-tile {
+  width: 80%;
+  max-width: 1000px;
+  background: #f4fdcfbd;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  margin: 15px 7% 15px 12%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tile-title {
+  font-style: italic;
+  font-size: 18pt;
+  color: rgb(54, 54, 54);
+  font-family: 'Times New Roman', Times, serif;
+  display: block;          /* ensures it behaves like a heading */
+  text-align: center;      /* centers the text */
+  margin-bottom: 10px;
+}
+
+.tile-title1 {
+  font-style: italic;
+  font-size: 15pt;
+  color: rgb(54, 54, 54);
+  font-family: 'Times New Roman', Times, serif;
+  display: block;          /* ensures it behaves like a heading */
+  text-align: center;      /* centers the text */
+  margin-bottom: 10px;
+}
+
+
+.regime-options {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.regime-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+/* Sub-tile styling */
+.sub-tile {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.sub-title {
+  font-size: 14pt;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Horizontal row for Old/New Regime */
+.scheme-row {
+  display: flex;
+  gap: 20px;
+}
+
+/* Executive-style buttons */
+#Statement, #StatementNew, #Form12B, #Form16 {
+  flex: 1;
+  padding: 12px 20px;
+  background: #dde8e7b0;
+  color: #560000;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(2,0,0,.55);
+  text-align: center;
+}
+
+#Statement:hover, #StatementNew:hover, #Form12B:hover, #Form16:hover {
+  background: #a6e5e0b0;
+  color: #920000;
+  box-shadow: 0 4px 12px rgba(2,2,21,.8);
+  transform: translateY(1px);
+}
+
+/* Horizontal row for forms */
+.button-row {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+/* Responsive adjustments */
+@media (max-width: 700px) {
+  .scheme-row {
+    flex-direction: column;
+  }
+  .button-row {
+    flex-direction: column;
+  }
+  #Statement, #StatementNew, #Form12B, #Form16, .tile, .Tablestyle {
+    width: 100%;
+  }
+
+  .button-container {  margin: 15px 0px 15px -5px;}
+  .button-container, .button-container1 {  margin: 15px 0px 15px -5px;}
+}
+
+
+    /* Responsive adjustments */
+
+        @media (max-width: 1200px) {
+      .tile {
+        width: 85%;
+        margin: 15px 5%;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .tile {
+        width: 95%;
+        margin: 15px 1%;
+      }
+      .form-row3 { grid-template-columns: 1fr 1fr; /* one column on small screens */ }
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+      }
+      .form-row1 { grid-template-columns: 1fr; /* one column on small screens */ }
+      .form-row3 { grid-template-columns: 1fr; /* one column on small screens */ }
+      label {
+      font-weight: normal;
+      margin-bottom: 5px;
+      font-size: 10pt;
+    }
+     div .labelDesign, div .labelDesign1{
+  font-size: 13pt; ;
+}
+    }
+  </style>
+</head>
+<body>
+  <!-- Modal Overlay -->
+<!-- Modal Overlay -->
+<div id="modalOverlay" style="display:none;">
+  <div id="modalBox">
+    <p id="modalMessage"></p>
+    <button id="modalOk">OK</button>
+  </div>
+</div>
+
+<div id="loadingOverlay" style="display:none;"> 
+<div id="loadingBox"> <p>Loading...</p> </div> </div>
+
+<div  style="margin-bottom:20rem">
+    <div style="text-align: center;"><br><label class="labelDesign1">Income Tax Calculator</label><br><br></div>
+
+<form id="dataForm">
+    
+    <div class="tile">
+        <div style="text-align: center;"><label class="labelDesign1">Personal Information</label><br><br></div>
+         <div class="form-row">
+          <div class="form-group">
+            <label>PAN No.<sup style="color:red; font-size: 12pt;">*</sup></label>
+            <input type="text" id="field1" placeholder="PAN No." style="text-transform: uppercase;">
+          </div>
+          <div class="form-group">
+            <label>Select Year<sup style="color:red; font-size: 12pt;">*</sup></label>
+            <select id="field2">
+              <option value="2025-26">2025-26</option>
+              <option value="2024-25">2024-25</option>
+              <option value="2023-24">2023-24</option>
+              
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mobile No.<sup style="color:red; font-size: 12pt;">*</sup></label>
+            <input type="text" id="field3" placeholder="Enter Mobile No.">
+          </div>
+          <div style="text-align: center;"><label class="labelInfo">If the details are already saved, it can be fetched using your PAN number, financial year, and registered mobile number.</label></div>
+
+        </div>
+        <button type="button" id="searchBtn">Search</button>
+    </div>
+
+
+
+
+    <div class="tile" >
+        <div class="form-row3">
+          
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="field211" placeholder="Name"><br>
+          </div>
+
+          <div class="form-group">
+            <label>Designation</label>
+            <input type="text" id="field5" placeholder="Designation"><br>
+          </div>
+
+          <div class="form-group">
+            <label>Office Address</label>
+            <input type="text" id="field6" placeholder="Office">
+          </div>
+
+          <div class="form-group">
+            <label>Select Category</label>
+            <select id="field4">
+                <option value="">Individual (Age: below 60 years)</option>
+                <option value="Senior">Senior Citizen (Age: 60 - 79 years)</option>
+                <option value="SuperSenior">Super Senior Citizen (Age: 80 years or more)</option>
+            </select>
+          </div>
+
+           <div class="form-group">
+            <label>PEN Number</label>
+            <input type="text" id="field212" placeholder="PEN">
+          </div>
+
+          <div class="form-group">
+            <label>Male/Female</label>
+            <select id="field213">
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+          </div>
+        </div>
+    </div>
+<br>
+    
+<div style="text-align: center;"><label  class="labelDesign1"><span id="outputText1"></span></label></div>
+         
+
+ 
+
+    
+<!-- New block: fields 7–156 in a 13 × 12 table --> 
+ <table style="border-collapse:collapse" class="TableClass Tablestyle"> 
+  
+<thead>
+    <td style="padding-left: 8px;padding-top: 8px;">Month</td><td>Pay</td><td>DA</td><td>HRA</td><td>Others</td><td>Total</td><!--<td>GPF sub</td><td>GIS</td><td>SLI</td><td>LIC</td><td>Other deduction</td><td>Deduction Total</td><td>Net Salary</td>-->
+</thead>
+
+<tbody> 
+<tr><td>Mar</td><td><input type="text" id="field7"></td><td><input type="text" id="field8"></td><td><input type="text" id="field9"></td><td><input type="text" id="field10"></td><td><input type="text" id="field11" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field12"></td><td><input type="text" id="field13"></td><td><input type="text" id="field14"></td><td><input type="text" id="field15"></td><td><input type="text" id="field16"></td><td><input type="text" id="field17" readonly value="0"></td><td><input type="text" id="field18" readonly value="0"></td></tr>
+<tr><td>Apr</td><td><input type="text" id="field19"></td><td><input type="text" id="field20"></td><td><input type="text" id="field21"></td><td><input type="text" id="field22"></td><td><input type="text" id="field23" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field24"></td><td><input type="text" id="field25"></td><td><input type="text" id="field26"></td><td><input type="text" id="field27"></td><td><input type="text" id="field28"></td><td><input type="text" id="field29" readonly value="0"></td><td><input type="text" id="field30" readonly value="0"></td></tr>
+<tr><td>May</td><td><input type="text" id="field31"></td><td><input type="text" id="field32"></td><td><input type="text" id="field33"></td><td><input type="text" id="field34"></td><td><input type="text" id="field35" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field36"></td><td><input type="text" id="field37"></td><td><input type="text" id="field38"></td><td><input type="text" id="field39"></td><td><input type="text" id="field40"></td><td><input type="text" id="field41" readonly value="0"></td><td><input type="text" id="field42" readonly value="0"></td></tr>
+<tr><td>Jun</td><td><input type="text" id="field43"></td><td><input type="text" id="field44"></td><td><input type="text" id="field45"></td><td><input type="text" id="field46"></td><td><input type="text" id="field47" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field48"></td><td><input type="text" id="field49"></td><td><input type="text" id="field50"></td><td><input type="text" id="field51"></td><td><input type="text" id="field52"></td><td><input type="text" id="field53" readonly value="0"></td><td><input type="text" id="field54" readonly value="0"></td></tr>
+<tr><td>Jul</td><td><input type="text" id="field55"></td><td><input type="text" id="field56"></td><td><input type="text" id="field57"></td><td><input type="text" id="field58"></td><td><input type="text" id="field59" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field60"></td><td><input type="text" id="field61"></td><td><input type="text" id="field62"></td><td><input type="text" id="field63"></td><td><input type="text" id="field64"></td><td><input type="text" id="field65" readonly value="0"></td><td><input type="text" id="field66" readonly value="0"></td></tr>
+<tr><td>Aug</td><td><input type="text" id="field67"></td><td><input type="text" id="field68"></td><td><input type="text" id="field69"></td><td><input type="text" id="field70"></td><td><input type="text" id="field71" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field72"></td><td><input type="text" id="field73"></td><td><input type="text" id="field74"></td><td><input type="text" id="field75"></td><td><input type="text" id="field76"></td><td><input type="text" id="field77" readonly value="0"></td><td><input type="text" id="field78" readonly value="0"></td></tr>
+<tr><td>Sep</td><td><input type="text" id="field79"></td><td><input type="text" id="field80"></td><td><input type="text" id="field81"></td><td><input type="text" id="field82"></td><td><input type="text" id="field83" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field84"></td><td><input type="text" id="field85"></td><td><input type="text" id="field86"></td><td><input type="text" id="field87"></td><td><input type="text" id="field88"></td><td><input type="text" id="field89" readonly value="0"></td><td><input type="text" id="field90" readonly value="0"></td></tr>
+<tr><td>Oct</td><td><input type="text" id="field91"></td><td><input type="text" id="field92"></td><td><input type="text" id="field93"></td><td><input type="text" id="field94"></td><td><input type="text" id="field95" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field96"></td><td><input type="text" id="field97"></td><td><input type="text" id="field98"></td><td><input type="text" id="field99"></td><td><input type="text" id="field100"></td><td><input type="text" id="field101" readonly value="0"></td><td><input type="text" id="field102" readonly value="0"></td></tr>
+<tr><td>Nov</td><td><input type="text" id="field103"></td><td><input type="text" id="field104"></td><td><input type="text" id="field105"></td><td><input type="text" id="field106"></td><td><input type="text" id="field107" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field108"></td><td><input type="text" id="field109"></td><td><input type="text" id="field110"></td><td><input type="text" id="field111"></td><td><input type="text" id="field112"></td><td><input type="text" id="field113" readonly value="0"></td><td><input type="text" id="field114" readonly value="0"></td></tr>
+<tr><td>Dec</td><td><input type="text" id="field115"></td><td><input type="text" id="field116"></td><td><input type="text" id="field117"></td><td><input type="text" id="field118"></td><td><input type="text" id="field119" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field120"></td><td><input type="text" id="field121"></td><td><input type="text" id="field122"></td><td><input type="text" id="field123"></td><td><input type="text" id="field124"></td><td><input type="text" id="field125" readonly value="0"></td><td><input type="text" id="field126" readonly value="0"></td></tr>
+<tr><td>Jan</td><td><input type="text" id="field127"></td><td><input type="text" id="field128"></td><td><input type="text" id="field129"></td><td><input type="text" id="field130"></td><td><input type="text" id="field131" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field132"></td><td><input type="text" id="field133"></td><td><input type="text" id="field134"></td><td><input type="text" id="field135"></td><td><input type="text" id="field136"></td><td><input type="text" id="field137" readonly value="0"></td><td><input type="text" id="field138" readonly value="0"></td></tr>
+<tr><td>Feb</td><td><input type="text" id="field139"></td><td><input type="text" id="field140"></td><td><input type="text" id="field141"></td><td><input type="text" id="field142"></td><td><input type="text" id="field143" readonly value="0"></td></tr><tr style="display: none;"><td><input type="text" id="field144"></td><td><input type="text" id="field145"></td><td><input type="text" id="field146"></td><td><input type="text" id="field147"></td><td><input type="text" id="field148"></td><td><input type="text" id="field149" readonly value="0"></td><td><input type="text" id="field150" readonly value="0"></td></tr>
+<tr style="font-weight: bold;">
+    <td>Total</td><td><input type="text" id="sumCol1" readonly value="0"></td> <td><input type="text" id="sumCol2" readonly value="0"></td>  <td><input type="text" id="sumCol3" readonly value="0"></td>  <td><input type="text" id="sumCol4" readonly value="0"></td>  <td><input type="text" id="sumCol5" readonly value="0"></td> </tr><tr style="display: none;"> <td><input type="text" id="sumCol6" readonly value="0"></td>  <td><input type="text" id="sumCol7" readonly value="0"></td>  <td><input type="text" id="sumCol8" readonly value="0"></td>  <td><input type="text" id="sumCol9" readonly value="0"></td>  <td><input type="text" id="sumCol10" readonly value="0"></td>  <td><input type="text" id="sumCol11" readonly value="0"></td>  <td><input type="text" id="sumCol12" readonly value="0"></td></tr>
+</tr>
+</tbody> 
+</table> <!-- Remaining fields151–210 --> 
+
+
+
+<div class="tile" style="background-color: #6898a5;">
+    <div style="text-align: center;"><label class="labelDesign">Arrears received and other Income</label><br><br></div>
+
+
+    <div class="form-row1">
+      <div class="form-group1">
+        <label>DA Arrear</label>
+        <input type="text" id="field151" placeholder="0">
+      </div>
+      <div class="form-group1">
+        <label>Surrender of Earned Leave</label>
+        <input type="text" id="field152" placeholder="0">
+      </div>
+      <div class="form-group1">
+        <label>Pay revision arrear</label>
+        <input type="text" id="field153" placeholder="0">
+      </div>
+      <div class="form-group1">
+        <label>Festival Allowance / Bonus / Ex-gratia and Incentive</label>
+        <input type="text" id="field154" placeholder="0">
+      </div>
+      <div class="form-group1">
+        <label>Any Other Arrears</label>
+        <input type="text" id="field155" placeholder="0">
+      </div>
+      <div class="form-group1">
+        <label>Less: Excess Pay drawn, Dies non, etc.</label>
+        <input type="text" id="field156" placeholder="0">
+      </div>
+    </div>
+    <div class="form-row2">
+        <div class="form-group1">
+            <label>Other salary income, if any:</label>
+            <table style="margin:0">
+                <tr>
+                    <td style="padding-right: 10px;">
+                        <input type="text" id="field157" placeholder="Description" style=" text-align: left;"><br>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field158" placeholder="Amount" style=" text-align: left;"><br>
+                    </td>
+                </tr>
+            </table>
+          </div>
+          <div class="form-group1">
+            <label>Any other income (Business, Capital Gains or Other Sources):</label>
+            <table style="margin:0">
+                <tr>
+                    <td style="padding-right: 10px;">
+                        <input type="text" id="field159" placeholder="Description" style=" text-align: left;"><br>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field160" placeholder="Amount" style=" text-align: left;"><br>
+                    </td>
+                </tr>
+            </table>
+
+             <table style="margin:10px 0 0 0">
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">A. Sum of all arrears received and other income</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field161" readonly value="0" class="InputBlueG"><br>
+                    </td>
+                </tr>
+
+              </table>
+              <table>
+                <thead>
+                  <th>
+                    
+                  </th>
+                  <th>
+                    Old Regime
+                  </th>
+                  <th>
+                    New Regime
+                  </th>
+
+                </thead>
+                  <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">B. Total Salary Income</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                      <input type="text" id="TotalSalary1" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+                  </td>
+                    <td style="padding-left: 10px;">
+                      <input type="text" id="TotalSalary1New" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+                  </td>
+
+  
+                </tr>
+            </table>
+          </div>
+    </div>
+</div>
+
+
+<div class="tile" style="background-color: #ad9595d1;">
+    <div style="text-align: center;"><label  class="labelDesign">Deduct HRA if you pay rent</label><br></div>
+     <div><label style="text-align: center; font-weight: normal; font-style: italic; font-size: 11pt; color:rgb(255, 0, 0); font-family: 'Times New Roman', Times, serif;">Individuals opting for the New Tax Regime are not required to fill out this block.</label><br></div>
+     <div class="form-row2">
+        <div class="form-group1">            
+            <table style="margin:0">
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:80%">
+                        <label style="text-align: left;">Total Rent paid for the financial year</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field162" placeholder="0" style=" text-align: center;"><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">Actual HRA received during the year</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field163" readonly value="0" style=" text-align: center; background-color: #ad9595d1;"><br>
+                    </td>
+                  </tr>
+                    <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">Total salary received during the year (Basic pay + DA only)</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field164" readonly value="0" style=" text-align: center; background-color: #ad9595d1;"><br>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">Rent paid in excess of 10% of salary</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="HRA1" readonly value="0" style=" text-align: center;background-color: #ad9595d1;"><br>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">40% of Salary</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="HRA2" readonly value="0" style=" text-align: center; background-color: #ad9595d1;"><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:50%">
+                        <label style="text-align: left;">Amount eligible for deduction (Least of the above)</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="HRA3" readonly value="0" style=" text-align: center; background-color: #ad9595d1; font-weight: bold; "><br>
+                    </td>
+                </tr>
+            </table>
+            <table>
+              <thead>
+                <th>
+                  
+                </th>
+                <th>
+                  Old Regime
+                </th>
+                <th>
+                  New Regime
+                </th>
+
+              </thead>
+                <tr>
+                  <td style="padding-right: 10px;text-align: left;width:50%">
+                      <label style="text-align: left;">Balance Salary Income</label>
+                  </td>
+                  <td style="padding-left: 10px;">
+                    <input type="text" id="TotalSalary2" readonly value="0" style="background-color: #ad9595d1; font-weight: bold;"><br>
+                </td>
+                  <td style="padding-left: 10px;">
+                    <input type="text" id="TotalSalary2New" readonly value="0" style="background-color: #ad9595d1; font-weight: bold;"><br>
+                </td>
+
+
+              </tr>
+          </table>
+          </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="tile" style="background-color: #869eb1;">
+    <div style="text-align: center;"><br><label  class="labelDesign">Deductions under 80C, 80CCC, 80CCD (Max : Rs. 1.5 Lakh)</label><br><br></div>
+    <div><label style="text-align: center; font-weight: normal; font-style: italic; font-size: 11pt; color:rgb(255, 0, 0); font-family: 'Times New Roman', Times, serif;">Individuals opting for the New Tax Regime are not required to fill out this block.</label><br></div>
+     <div class="form-row2">
+        <div class="form-group1">            
+            <table style="margin:0">
+              <tr style="display: none;">
+                <td style="padding-right: 10px;text-align: left;width:80%">
+                    <label style="text-align: left;">1. (a) Life Insurance premia (Salary Deduction)</label>
+                </td>
+                <td style="padding-left: 10px;">
+                    <input type="text" id="field186" readonly style=" background-color: #6898a5;"><br>
+                </td>
+            </tr>
+            <tr>
+              <td style="padding-right: 10px;text-align: left;width:80%">
+                  <label style="text-align: left; ">1. Life Insurance premia of self, spouse or children (Other than Salary Deduction)</label>
+              </td>
+              <td style="padding-left: 10px;">
+                <input type="text" id="field214" ><br>
+            </td>
+            <td style="padding-left: 10px; display:none">
+              <input type="text" id="field215" ><br>
+          </td>
+          </tr>
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;">
+                        <label style="text-align: left;">2. Purchase of NSC VIII issue</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field187" ><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 10px;text-align: left">
+                        <label style="text-align: left;">3. Contribution to GPF (Subscription, DA Arrear, Pay Revision Arrear, etc.)</label>
+                    </td>
+                        <td style="padding-left: 10px;">
+                    <input type="text" id="field188"><br>
+                </td>
+            </tr>
+            <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">4. Contribution to SLI, GIS, FBS, GPAIS, etc. (Total)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field189"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">5. Term deposit with Scheduled Bank for a fixed period of not less than 5 years</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field190"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">6. Purchase of tax saving units of Mutual Fund or UTI</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field191"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">7. Tution fees for full-time education to any 2 children</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field192"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">8. Housing Loan Repayment (Principal) and Stamp duty paid for purchase of property</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field193"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">9. Contribution to PPF account of Self, Spouse or Children</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field194"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">10. Five year Time Deposit in Post Office</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field195" ><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">11. Contribution to NPS (Max : 10% of Basic + DA)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field196"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">12. Payment to Annuity Plan of Pension fund like LIC</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field197"><br>
+            </td>
+        </tr>
+       
+</table><br>
+<label style="text-align: left;">13. Any Other</label>
+           
+<table style="margin:0">
+               
+        <tr>
+            <td style="text-align: left; width:1%">
+                <label style="text-align: left;">i.</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left; width:78%">
+                <input type="text" id="field198" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field199"><br>
+            </td>
+        </tr>
+        <tr>
+          <td style="text-align: left;">
+                <label style="text-align: left;">ii.</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left">
+                <input type="text" id="field200" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field201"><br>
+            </td>
+        </tr>
+        <tr>
+          <td style="text-align: left;">
+                <label style="text-align: left;">iii.</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left">
+                <input type="text" id="field202" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field203"><br>
+            </td>
+        </tr>  
+        <tr>
+          <td style="text-align: left; width:1%">
+                <label style="text-align: left;">iv.</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left">
+                <input type="text" id="field204" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field205"><br>
+            </td>
+        </tr>
+            </table>
+
+            <table style="margin:0">
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:80%">
+                        <label style="text-align: left;">Total deductions (Sum of Sl. No. 1 to 13 (iv))</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field206" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;">
+                        <label style="text-align: left;">Total eligible deduction (Max 1.5 Lakhs)</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field207"  readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+                    </td>
+                </tr>
+      </table>
+      <table>
+        <thead>
+          <th>
+            
+          </th>
+          <th>
+            Old Regime
+          </th>
+          <th>
+            New Regime
+          </th>
+
+        </thead>
+          <tr>
+            <td style="padding-right: 10px;text-align: left;width:50%">
+                <label style="text-align: left;">Balance Salary Income</label>
+            </td>
+            <td style="padding-left: 10px;">
+              <input type="text" id="TotalSalary3" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+          </td>
+            <td style="padding-left: 10px;">
+              <input type="text" id="TotalSalary3New" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+          </td>
+
+
+        </tr>
+    </table>
+                
+          </div>
+          
+    </div>
+    
+</div>
+
+
+
+
+
+
+
+<div class="tile" style="background-color: #869eb1;">
+    <div style="text-align: center;"><label  class="labelDesign">Deductions</label><br></div>
+     <div class="form-row2">
+        <div class="form-group1">            
+            <table style="margin:0">
+
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:80%">
+                        <label style="text-align: left;">1. Professional Tax Paid</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field166"><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 10px;text-align: left">
+                        <label style="text-align: left;">2. Housing Loan Interest - Max : Rs. 2 Lakh (Additional Rs. 1.5 Lakh under Section 80EEA)</label>
+                    </td>
+                        <td style="padding-left: 10px;">
+                    <input type="text" id="field167" ><br>
+                </td>
+            </tr>
+            <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">3. Mediclaim (maximum of Rs. 25,000 / 50,000 + parents Rs. 25,000 / 50,000)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field168"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">4. Medical treatment of mentally or physically handicapped dependents (Max : Rs. 1.25 Lakh)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field169"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">5. Medical treatment for specified deseases (Max : Rs. 1 Lakh)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field170" ><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">6. Interest paid for Education Loan taken for higher education (Max : No Limit)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field171"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">7. Donation to various charitable and other funds including PM's National Relief Fund (Max : No Limit)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field172"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">8. Deduction for person with disability (Max: Rs. 75,000; if disability over 80% Rs. 1.25 lakh)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field173"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">9. Interest paid for Electric Vehicle Loan (Max : Rs. 1.5 Lakh)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field174"><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">10. Interest income from SB account, Fixed deposit, Post office, ... (Max : Rs.10,000/- ; Rs.50,000/- for senior citizens)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field175" ><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left">
+                <label style="text-align: left;">11. NPS - Remaining Contribution (Max: Rs. 50,000/- ; above the limit of Rs 1.5 Lakh provided in section 80C)</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field176"><br>
+            </td>
+        </tr>
+</table><br>
+<label style="text-align: left;">12. Any Other</label>
+           
+<table style="margin:0">
+        <tr>
+          <td style="text-align: left; width:1%">
+                <label style="text-align: left;">(i)</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left; width: 78%;">
+                <input type="text" id="field177" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field178" ><br>
+            </td>
+        </tr>
+        
+        <tr>
+          <td style="text-align: left;">
+                <label style="text-align: left;">(ii)</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left">
+                <input type="text" id="field179" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field180"><br>
+            </td>
+        </tr>
+</table><br>
+<label style="text-align: left;">13. Both OLD and NEW Regime Deductions</label>
+           
+<table style="margin:0">
+  <tr>
+    <td style="padding-right: 10px;text-align: left; width: 1%;">
+      <label style="text-align: left;">(i)</label>
+  </td>
+
+  <td style="padding-right: 10px;text-align: left; width: 78%;">
+    <label style="text-align: left;">Conveyance allowance for work-related travel.</label>
+</td>
+    <td style="padding-left: 10px;">
+        <input type="text" id="field165"><br>
+    </td>
+</tr>
+                <tr>
+                   <td style="text-align: left; width:1%">
+                <label style="text-align: left;">(ii)</label>
+            </td>
+               <td style="padding-right: 10px;text-align: left ">
+                <label style="text-align: left;"> NPS - Employer's Contribution : [Max : 10% of (basic + DA) for OLD regime, 14% for NEW Regime] - Maximum limit: Rs. 7.5 Lakh</label>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field181" ><br>
+            </td>
+        </tr>
+        <tr>
+           <td style="text-align: left;">
+                <label style="text-align: left;">(iii)</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left">
+                <input type="text" id="field182" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field183" ><br>
+            </td>
+        </tr>
+        <tr>
+          <td style="text-align: left;">
+                <label style="text-align: left;">(iv)</label>
+            </td>
+            <td style="padding-right: 10px;text-align: left">
+                <input type="text" id="field184" placeholder="Description" style=" text-align: left; "><br>
+            </td>
+            <td style="padding-left: 10px;">
+                <input type="text" id="field185" ><br>
+            </td>
+        </tr>
+
+        <tr>
+                   <td style="text-align: left; width:80%" colspan="2">
+                
+                <label style="text-align: left;"> 15. Total (Sum of Sl. No. 1 to 14 (iii))</label>
+            </td>
+            <td style="padding-left: 10px;">
+              <input type="text" id="field216" readonly value="0" style="display:none">
+                <input type="text" id="field209" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br> 
+                
+            </td>
+        </tr>
+
+		
+  </table>
+  <table>
+    <thead>
+      <th>
+        
+      </th>
+      <th>
+        Old Regime
+      </th>
+      <th>
+        New Regime
+      </th>
+
+    </thead>
+    <tr>
+      <td style="padding-right: 10px;text-align: left;width:50%">
+          <label style="text-align: left;">Standard Deduction</label>
+      </td>
+      <td style="padding-left: 10px;">
+        <input type="text" id="STDOLD" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+    </td>
+      <td style="padding-left: 10px;">
+        <input type="text" id="STDNEW" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+    </td>
+
+
+
+  </tr>
+
+</table>
+<table>
+  <thead>
+    <th>
+      
+    </th>
+    <th>
+      Old Regime
+    </th>
+    <th>
+      New Regime
+    </th>
+
+  </thead>
+
+
+</tr>
+    <tr>
+      <td style="padding-right: 10px;text-align: left;width:50%">
+          <label style="text-align: left;">Net taxable Income</label>
+      </td>
+      <td style="padding-left: 10px;">
+        <input type="text" id="TotalSalary4" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+    </td>
+      <td style="padding-left: 10px;">
+        <input type="text" id="TotalSalary4New" readonly value="0" style="background-color: #6898a5; font-weight: bold;"><br>
+    </td>
+
+
+  </tr>
+</table>
+          </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="tile" style="background-color: #869eb1;">
+    <div style="text-align: center;"><label  class="labelDesign">Tax deducted from salary, Advance tax</label></div>
+     <div class="form-row2">
+        <div class="form-group1">            
+            <table style="margin:0">
+                <tr>
+                    <td style="padding-right: 10px;text-align: left;width:80%">
+                        <label style="text-align: left;">Income tax deducted from salary, Advance tax paid</label>
+                    </td>
+                    <td style="padding-left: 10px;">
+                        <input type="text" id="field208"  style=" text-align: left;"><br>
+                    </td>
+                </tr>
+               
+
+</table>
+</div>
+</div>
+</div>
+
+<div class="tile" style="background-color: #c0ccd5;">
+    <div style="text-align: center;"><label  class="labelDesign1"><p id="outputText"></p></label></div>
+     <div class="form-row2">
+        <div class="form-group1">   
+</table>
+           
+<table style="margin:0; background-color: #edf7ff;" >
+               <tr colspan="3">
+<label style="text-align:center;"></label>
+               </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                
+            </td>
+            <td style="border: 1px solid; width:15%; ;">
+                Old Regime
+            </td>
+            <td style="border: 1px solid; width:15%; ;">
+                New Regime
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                1. Net Taxable Income
+            </td>
+           <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old1" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new1" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+        </tr>
+         <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                2. Tax on Total Income
+            </td>
+           <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old2" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new2" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                3. Surcharge
+            </td>
+           <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old4" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new4" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+        </tr>
+                 <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                4. Less: Rebate under Sec. 87A
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old3" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new3" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+        </tr>
+ 
+                 <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                5. Health and Education Cess - 4% of (2+3-4)
+            </td>
+             <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old5" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new5" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+        </tr>
+          
+                 <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+               6. Total Tax Payable (2+3-4+5)
+            </td>
+             <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old6" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new6" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+          </tr>
+          <tr>
+     <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+         7. Less: Relief for arrears of salary (Attach Form 10 E)
+     </td>
+       <td style="border: 1px solid; width:15%;">
+         <input type="text" id="field210" style=" text-align: center;"><br>
+     </td>
+     <td style="border: 1px solid; width:15%;">
+         <input type="text" id="field219" style=" text-align: center;"><br>
+     </td>
+ </tr>
+
+</tr>
+<tr>
+<td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+8. Balance (6-7)
+</td>
+<td style="border: 1px solid; width:15%;">
+<input type="text" id="old10" readonly style=" text-align: center; font-weight: bold ;background-color: #edf7ff;;"><br>
+</td>
+<td style="border: 1px solid; width:15%;">
+<input type="text" id="new10" readonly style=" text-align: center; font-weight: bold;background-color: #edf7ff;"><br>
+</td>
+</tr>
+
+
+                 <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid;">
+                9. Tax deducted from salary
+            </td>
+             <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old7" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="new7" readonly style=" text-align: center;background-color: #edf7ff;"><br>
+            </td>
+        </tr>
+                 <tr>
+            <td style="padding-right: 10px;text-align: left; width:70%; border: 1px solid; font-weight: bold ;">
+               10. Balance Tax to be paid (6-7-8)
+            </td>
+           
+            <td style="border: 1px solid; width:15%;">
+                <input type="text" id="old9" readonly style=" text-align: center; background-color: #edf7ff; font-weight: bold ;"><br>
+            </td>
+            <td style="border: 1px solid; width:15%; font-weight: bold;">
+                <input type="text" id="new9" readonly style=" text-align: center; background-color: #edf7ff; font-weight: bold ;"><br>
+            </td>
+        </tr>
+                
+                </table>
+                
+          </div>
+          
+    </div>
+    
+</div>
+
+<div class="button-container1">
+  <button type="button" id="saveBtn">Save</button>
+  <button type="button" id="clearBtn">Clear</button>
+  </div>
+  <div style="text-align: center;display:none; " id="taxTileLabel"><label class="labelInfo" style="color: red;">Update changes for further use</label><br></div>
+  <div style="text-align: center;" id="taxTileLabel2"><label class="labelDesign1" style="color: red;">Save the data to enable the printout option.<br></label></div>
+  
+<div class="button-container">
+
+  <div class="tax-tile" id="taxTile" style="display:none;">
+
+    <!-- Main Title -->
+    <label class="tile-title">Downloads</label>
+  
+ 
+  
+    <!-- Horizontal group for Old/New Regime -->
+    <div class="scheme-row">
+      <div class="sub-tile">
+        <label class="tile-title1">Statement type</label>
+        <label>
+          <input type="radio" name="regime" id="field217" value="new">
+          Anticipatory
+        </label>
+        <label>
+          <input type="radio" name="regime" id="field218" value="old">
+          Final
+        </label>
+      </div>
+      <!-- Sub-tile: Old Regime -->
+      <div class="sub-tile">
+        <label class="sub-title">Old Tax Regime</label>
+        <button type="button" onclick="generatePDF()" id="Statement">Statement Download ⬇️</button>
+      </div>
+  
+      <!-- Sub-tile: New Regime -->
+      <div class="sub-tile">
+        <label class="sub-title" style="color: green;">New Tax Regime</label>
+        <button type="button" onclick="generatePDFNew()" id="StatementNew">Statement Download ⬇️</button>
+      </div>
+    </div>
+  
+    <!-- Sub-tile: Forms -->
+    <div class="sub-tile" style="display: none;" >
+      <label class="sub-title">Download Forms</label>
+      <div class="button-row">
+        <button type="button" id="Form12B">Form 12B ⬇️</button>
+        <button type="button" id="Form16">Form 16</button>
+      </div>
+    </div>
+  
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+
+</div>
+
+</form>
+
+</div>
+
+<hr>
+
+<div style="text-align: center; "><label class="labelInfo" style="color: rgb(0, 0, 0);">Contact<br>Mob: 9744012007<br>e-mail: gstcell.com@gmail.com</label></div>
+<div><label class="labelInfo" style="color: rgb(0, 0, 0);">Team GST Cell, <br>www.gstcell.com</label><br></div>
+ 
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbx9Vy69x4ftaTLirAbM8XMJWQmyvtWUhgzQrabJdgRKkDpXkgP3eh0eRmH0QP7-gW3n_g/exec"; // Replace with deployed Apps Script URL
+
+// --- Helpers ---
+function disableForm(disabled = true) {
+  document.querySelectorAll("input, select, button").forEach(el => el.disabled = disabled);
+}
+
+// --- Form Data ---
+function getFormData() {
+  const data = {};
+  for (let i = 1; i <= 220; i++) {
+    const field = document.getElementById("field" + i);
+    if (field) data["field" + i] = field.value;
+  }
+  return data;
+}
+
+// --- Save / Update ---
+function showTaxTile() {
+  document.getElementById("taxTile").style.display = "block";
+  document.getElementById("taxTileLabel").style.display = "block";
+  document.getElementById("taxTileLabel2").style.display = "none";
+}
+
+// --- Save / Update ---
+function hideTaxTile() {
+  document.getElementById("taxTile").style.display = "none";
+  document.getElementById("taxTileLabel").style.display = "none";
+  document.getElementById("taxTileLabel2").style.display = "block";
+}
+// Restrict spaces in field1
+document.getElementById("field1").addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\s+/g, "").toUpperCase();
+});
+
+// --- Save / Update ---
+document.getElementById("saveBtn").addEventListener("click", () => {
+  let field1 = document.getElementById("field1")?.value.trim();
+  const field2 = document.getElementById("field2")?.value.trim();
+  const field3 = document.getElementById("field3")?.value.trim();
+  const TotalSalary4 = document.getElementById("TotalSalary4")?.value.trim();
+  const TotalSalary4New = document.getElementById("TotalSalary4New")?.value.trim();
+  const STDNEW = document.getElementById("STDNEW")?.value.trim();
+  const STDOLD = document.getElementById("STDOLD")?.value.trim();
+
+
+
+  // Validation checks for PAN and Phone
+  if (!field1) {
+    showModal("PAN details missing!");
+    return;
+  }
+  if (!field3) {
+    showModal("Phone number is missing!");
+    return;
+  }
+
+  // Collect all form data
+  const data = getFormData();
+
+  showTaxTile(); // ✅ reveal after successful save
+   // Convert PAN to uppercase before validation and saving
+  if (field1) field1 = field1.toUpperCase();
+
+  // Check if only the restricted fields have values
+  const restrictedFields = ["TotalSalary4","TotalSalary4New","field1","field2","field3","STDNEW","STDOLD"];
+  const hasExtraData = Object.keys(data).some(k => {
+    if (restrictedFields.includes(k)) return false;
+    const val = data[k].trim();
+    return val !== "" && val !== "0";
+  });
+
+  if (!hasExtraData) {
+    showModal("Please add details to save.");
+    return;
+  }
+
+  const action = document.getElementById("saveBtn").textContent === "Update" ? "update" : "save";
+  if (action === "update") data.row = window.currentRow;
+
+  showModal(action === "save" ? "Saving..." : "Updating...");
+  sendData(action, data);
+});
+
+
+
+
+
+// --- Search ---
+document.getElementById("searchBtn").addEventListener("click", () => {
+  let field1 = document.getElementById("field1")?.value.trim();
+  const field3 = document.getElementById("field3")?.value.trim();
+
+  if (!field1) {
+    showModal("PAN details missing!");
+    return;
+  }
+  if (!field3) {
+    showModal("Phone number is missing!");
+    return;
+  }
+
+  // Normalize PAN to uppercase before searching
+  field1 = field1.toUpperCase();
+  document.getElementById("field1").value = field1;
+
+  const data = getFormData();
+  sendData("search", data, result => {
+    if (result !== "Not found") {
+      let res;
+      try {
+        res = JSON.parse(result);
+      } catch (e) {
+        showModal("Error parsing search result.");
+        return;
+      }
+
+      // Populate fields silently
+      for (let i = 1; i <= 220; i++) {
+        const field = document.getElementById("field" + i);
+        if (field && res["field" + i] !== undefined) field.value = res["field" + i];
+      }
+
+      window.currentRow = res.row;
+      document.getElementById("saveBtn").textContent = "Update";
+
+      updateColumnSums();
+        showTaxTile(); // ✅ reveal after successful save
+      showModal("Record fetched successfully!");
+    } else {
+      // Clear all fields except field1, field2, and field3
+      for (let i = 1; i <= 220; i++) {
+        if (i === 1 || i === 2 || i === 3) continue; // keep PAN, Name, Phone
+        const field = document.getElementById("field" + i);
+        if (field) field.value = "";
+      }
+
+      window.currentRow = null;
+      document.getElementById("saveBtn").textContent = "Save";
+      updateColumnSums();
+      showModal("Details not entered yet. Please add the details.");
+    }
+  });
+});
+
+
+
+
+// --- Reset Save Button when editing field1 ---
+document.getElementById("field1").addEventListener("input", () => {
+  document.getElementById("saveBtn").textContent = "Save";
+});
+
+// --- Send Data ---
+// --- Send Data ---
+function sendData(action, data, callback) {
+  // Show appropriate modal based on action
+  if (action === "search") {
+    showModal("Searching...");
+  } else if (action === "save") {
+    showModal("Saving...");
+  } else if (action === "update") {
+    showModal("Updating...");
+  }
+
+  const params = new URLSearchParams({ action, ...data });
+  fetch(scriptURL, { method: "POST", body: params })
+    .then(res => res.text())
+    .then(text => {
+      hideLoading();
+      if (action !== "search") showModal(text);
+      if (callback) callback(text);
+    })
+    .catch(err => {
+      hideLoading();
+      showModal("Error: " + err.message);
+    });
+}
+
+
+// --- Modal ---
+function showModal(message) {
+  const modalMessage = document.getElementById("modalMessage");
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalOk = document.getElementById("modalOk");
+
+  modalMessage.textContent = message;
+  modalOverlay.style.display = "flex";
+
+  // Hide OK button during running states
+  if (message === "Searching..." || message === "Saving..." || message === "Updating...") {
+    modalOk.style.display = "none";
+  } else {
+    modalOk.textContent = "OK";
+    modalOk.style.display = "inline-block";
+    modalOk.onclick = hideModal;
+  }
+
+  // Disable form while modal is active
+  document.querySelectorAll("input, select, button").forEach(el => {
+    el.disabled = el.id !== "modalOk";
+  });
+}
+
+
+
+
+function hideModal() {
+  document.getElementById("modalOverlay").style.display = "none";
+  disableForm(false);
+}
+
+// --- Loading Overlay ---
+function showLoading() {
+  const modalMessage = document.getElementById("modalMessage");
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalOk = document.getElementById("modalOk");
+
+  modalMessage.textContent = "Searching...";
+  modalOverlay.style.display = "flex";
+
+  // Hide OK button for searching
+  modalOk.style.display = "none";
+
+  disableForm(true);
+}
+
+
+
+function hideLoading() {
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalOk = document.getElementById("modalOk");
+
+  modalOverlay.style.display = "none";
+  modalOk.style.display = "inline-block"; // restore OK button for other modals
+  disableForm(false);
+}
+
+
+// --- Clear Button ---
+document.getElementById("clearBtn").addEventListener("click", () => {
+  for (let i = 1; i <= 220; i++) {
+    if (i === 2) continue; // Skip clearing field2
+    const field = document.getElementById("field" + i);
+    if (field) field.value = "";
+  }
+  document.getElementById("saveBtn").textContent = "Save";
+  window.currentRow = null;
+
+  // Reset totals after clearing
+  updateColumnSums();
+  hideTaxTile();
+});
+
+
+
+// --- Row Calculations ---
+function setupRowCalculations(startId) {
+  const f = [];
+  for (let i = 0; i < 12; i++) f[i] = document.getElementById("field" + (startId + i));
+  function updateRow() {
+    const sum1 = (parseFloat(f[0].value)||0)+(parseFloat(f[1].value)||0)+(parseFloat(f[2].value)||0)+(parseFloat(f[3].value)||0);
+    f[4].value = sum1;
+    const sum2 = (parseFloat(f[5].value)||0)+(parseFloat(f[6].value)||0)+(parseFloat(f[7].value)||0)+(parseFloat(f[8].value)||0)+(parseFloat(f[9].value)||0);
+    f[10].value = sum2;
+    f[11].value = sum1 - sum2;
+  }
+  [f[0],f[1],f[2],f[3],f[5],f[6],f[7],f[8],f[9]].forEach(el => el.addEventListener("input", updateRow));
+}
+for (let startId = 7; startId <= 139; startId += 12) {
+  setupRowCalculations(startId);
+}
+
+
+const field162 = document.getElementById("field162");
+const field163 = document.getElementById("field163");
+const field164 = document.getElementById("field164");
+const field186 = document.getElementById("field186");
+const field206 = document.getElementById("field206");
+const field209 = document.getElementById("field209");
+const field210 = document.getElementById("field210");
+const field214 = document.getElementById("field214");
+const field215 = document.getElementById("field215");
+const field216 = document.getElementById("field216");
+const field219 = document.getElementById("field219");
+const field207 = document.getElementById("field207");
+const field161 = document.getElementById("field161");
+const HRA1 = document.getElementById("HRA1");
+const HRA2 = document.getElementById("HRA2");
+const HRA3 = document.getElementById("HRA3");
+const field208 = document.getElementById("field208");
+const old7 = document.getElementById("old7");
+const new7 = document.getElementById("new7");
+const STDNEW = document.getElementById("STDNEW");  // only once
+const STDOLD = document.getElementById("STDOLD");  // only once
+const old1 = document.getElementById("old1");
+const new1 = document.getElementById("new1");
+const new2 = document.getElementById("new2");
+const old2 = document.getElementById("old2");
+const new3 = document.getElementById("new3");
+const old3 = document.getElementById("old3");
+const field2 = document.getElementById("field2");
+const old5 = document.getElementById("old5");
+const new5 = document.getElementById("new5");
+const old6 = document.getElementById("old6");
+const new6 = document.getElementById("new6");
+const old9 = document.getElementById("old9");
+const new9 = document.getElementById("new9");
+const sumCol5 = document.getElementById("sumCol5"); 
+const totalSalary1 = document.getElementById("TotalSalary1");
+const totalSalary2 = document.getElementById("TotalSalary2");
+const totalSalary3 = document.getElementById("TotalSalary3");
+const totalSalary4 = document.getElementById("TotalSalary4");
+const totalSalary1New = document.getElementById("TotalSalary1New");
+const totalSalary2New = document.getElementById("TotalSalary2New");
+const totalSalary3New = document.getElementById("TotalSalary3New");
+const totalSalary4New = document.getElementById("TotalSalary4New");
+const new4 = document.getElementById("new4");
+const old4 = document.getElementById("old4");
+const new10 = document.getElementById("new10");
+const old10 = document.getElementById("old10");
+
+const fields = {};
+[151, 152, 153, 154, 155, 156, 158, 160].forEach(num => {
+  fields[`field${num}`] = document.getElementById(`field${num}`);
+});
+
+
+function updateColumnSums() {
+  const sums = Array(12).fill(0);
+
+  // Calculate sums across all rows
+  for (let rowStart = 7; rowStart <= 139; rowStart += 12) {
+    for (let col = 0; col < 12; col++) {
+      const field = document.getElementById("field" + (rowStart + col));
+      if (field) sums[col] += parseFloat(field.value) || 0;
+    }
+  }
+
+  // Update totals row
+  for (let col = 0; col < 12; col++) {
+    const sumField = document.getElementById("sumCol" + (col + 1));
+    if (sumField) sumField.value = sums[col];
+  }
+
+  // Sync field163 and field164 if field162 has data
+  const val162 = parseFloat(field162.value) || 0;
+  if (val162 > 0) {
+    field163.value = document.getElementById("sumCol3").value;
+    field164.value = (parseFloat(document.getElementById("sumCol1").value) || 0) +
+                     (parseFloat(document.getElementById("sumCol2").value) || 0);
+  } else {
+    field163.value = 0;
+    field164.value = 0;
+  }
+
+  // Always mirror sumCol9 into field186
+  const sumCol9 = document.getElementById("sumCol9");
+  if (sumCol9 && field186) {
+    field186.value = sumCol9.value;
+  }
+
+  // field206 = sum of field186..197 + field199, field201, field203, field205
+  if (field206) {
+    let total206 = 0;
+    for (let i = 186; i <= 197; i++) {
+      const f = document.getElementById("field" + i);
+      if (f) total206 += parseFloat(f.value) || 0;
+    }
+    [199, 201, 203, 205, 214].forEach(id => {
+      const f = document.getElementById("field" + id);
+      if (f) total206 += parseFloat(f.value) || 0;
+    });
+    field206.value = total206;
+
+    // field207 mirrors field206 up to 150000
+    if (field207) {
+      field207.value = total206 <= 150000 ? total206 : 150000;
+    }
+  }
+
+  // field209 = sum of field165..176 + field178, field180, field181, field183, field185
+  if (field209) {
+    let total209 = 0;
+    for (let i = 165; i <= 176; i++) {
+      const f = document.getElementById("field" + i);
+      if (f) total209 += parseFloat(f.value) || 0;
+    }
+    [178, 180, 181, 183, 185].forEach(id => {
+      const f = document.getElementById("field" + id);
+      if (f) total209 += parseFloat(f.value) || 0;
+    });
+    field209.value = total209;
+  }
+
+// field161 = sum of field151..155 + field158 + field160 - field156
+if (field161) {
+  let total161 = 0;
+  for (let i = 151; i <= 155; i++) {
+    const f = document.getElementById("field" + i);
+    if (f) total161 += parseFloat(f.value) || 0;
+  }
+  [158, 160].forEach(id => {
+    const f = document.getElementById("field" + id);
+    if (f) total161 += parseFloat(f.value) || 0;
+  });
+  const f156 = document.getElementById("field156");
+  if (f156) total161 -= parseFloat(f156.value) || 0;
+  field161.value = total161;
+}
+
+  // HRA1 = field162 - 10% of field164 (rounded)
+  if (HRA1) {
+    const val162 = parseFloat(field162.value) || 0;
+    const val164 = parseFloat(field164.value) || 0;
+    const hraCalc = val162 - (0.1 * val164);
+    HRA1.value = Math.round(hraCalc);
+  }
+
+  // HRA2 = 40% of field164 (rounded)
+  if (HRA2) {
+    const val164 = parseFloat(field164.value) || 0;
+    HRA2.value = Math.round(0.4 * val164);
+  }
+
+  // HRA3 = least of field162, field163, HRA1, HRA2
+// --- HRA3 calculation ---
+if (HRA3) {
+  const val162 = parseFloat(field162?.value) || 0;
+  const val163 = parseFloat(field163?.value) || 0;
+  const valHRA1 = parseFloat(HRA1?.value) || 0;
+  const valHRA2 = parseFloat(HRA2?.value) || 0;
+
+  let result = Math.min(val162, val163, valHRA1, valHRA2);
+
+  // clamp to zero if negative
+  HRA3.value = result < 0 ? 0 : result;
+}
+
+
+  // Mirror field208 into old7 and new7
+  if (field208) {
+    const val208 = field208.value;
+    if (old7) old7.value = val208;
+    if (new7) new7.value = val208;
+  }
+
+// STDNEW logic based on field4 selection
+if (sumCol5 && field4 && STDNEW) {
+  if (sumCol5.value === "") {
+    STDNEW.value = 0;
+  } else if (field4.value === "") {
+    STDNEW.value = 75000;
+  } else {
+    STDNEW.value = 75000;
+  }
+}
+//DTDNEW
+if (sumCol5 && STDOLD) {
+  if (sumCol5.value === "") {
+    STDOLD.value = 0;
+  } else {
+    STDOLD.value = 50000;
+  }
+}
+
+  // --- old1 calculation ---
+  if (old1) {
+    const valSumCol5 = parseFloat(document.getElementById("sumCol5")?.value) || 0;
+    const val161 = parseFloat(field161?.value) || 0;
+    const valHRA3 = parseFloat(HRA3?.value) || 0;
+    const val209 = parseFloat(field209?.value) || 0;
+    const val207 = parseFloat(field207?.value) || 0;
+
+    let result = valSumCol5 + val161 - valHRA3 - 50000 - val209 - val207;
+    old1.value = result < 0 ? 0 : Math.round(result / 10) * 10;
+  }
+
+  // --- new1 calculation ---
+// --- new1 calculation ---
+if (new1) {
+  const valSumCol5 = parseFloat(document.getElementById("sumCol5")?.value) || 0;
+  const valfield165 = parseFloat(document.getElementById("field165")?.value) || 0;
+  const valfield181 = parseFloat(document.getElementById("field181")?.value) || 0;
+  const valfield183 = parseFloat(document.getElementById("field183")?.value) || 0;
+  const valfield185 = parseFloat(document.getElementById("field185")?.value) || 0;
+  const valSTDNEW   = parseFloat(STDNEW?.value) || 0;
+  const valfield151 = parseFloat(field151?.value) || 0;
+  const valfield152 = parseFloat(field152?.value) || 0;
+  const valfield153 = parseFloat(field153?.value) || 0;
+  const valfield154 = parseFloat(field154?.value) || 0;
+  const valfield155 = parseFloat(field155?.value) || 0;
+  const valfield156 = parseFloat(field156?.value) || 0;
+  const valfield158 = parseFloat(field158?.value) || 0;
+  const valfield160 = parseFloat(field160?.value) || 0;
+
+  let result = valSumCol5 - valSTDNEW 
+               + valfield151 + valfield152 + valfield153 
+               + valfield154 + valfield155 - valfield156 
+               + valfield158 + valfield160 - valfield165
+               - valfield181 - valfield183 - valfield185;
+
+new1.value = result < 0 ? 0 : Math.round(result / 10) * 10;
+
+}
+
+
+// --- new2 calculation ---
+const new2 = document.getElementById("new2");
+if (new2) {
+  const valNew1 = parseFloat(new1?.value) || 0;
+  let result = 0;
+  if (field2?.value === "2025-26") {
+  if (valNew1 <= 400000) {
+    result = valNew1 * 0.0;
+  } else if (valNew1 <= 800000) {
+    result = (valNew1 - 400000) * 0.05;
+  } else if (valNew1 <= 1200000) {
+    result = 20000 + (valNew1 - 800000) * 0.10;
+  } else if (valNew1 <= 1600000) {
+    result = 60000 + (valNew1 - 1200000) * 0.15; //10 to 12
+  } else if (valNew1 <= 2000000) {
+    result = 120000 + (valNew1 - 1600000) * 0.20; //12 to 15
+  } else if (valNew1 <= 2400000) {
+    result = 200000 + (valNew1 - 2000000) * 0.25; //15 to 50
+  } else {
+    result = 300000 + (valNew1 - 2400000) * 0.30; // aboveo 200 add 25% cess
+  }
+  new2.value = result < 0 ? 0 : Math.round(result);
+
+ } else if (field2?.value === "2024-25") {
+  if (valNew1 <= 300000) {
+    result = valNew1 * 0.0;
+  } else if (valNew1 <= 700000) {
+    result = (valNew1 - 300000) * 0.05;
+  } else if (valNew1 <= 1000000) {
+    result = 20000 + (valNew1 - 700000) * 0.10;
+  } else if (valNew1 <= 1200000) {
+    result = 50000 + (valNew1 - 1000000) * 0.15; //10 to 12
+  } else if (valNew1 <= 1500000) {
+    result = 80000 + (valNew1 - 1200000) * 0.20; //12 to 15
+  } else {
+    result = 140000 + (valNew1 - 1500000) * 0.30; // aboveo 200 add 25% cess
+  }
+
+  new2.value = result < 0 ? 0 : Math.round(result);
+
+} else if (field2?.value === "2023-24") {
+  if (valNew1 <= 300000) {
+    result = valNew1 * 0.0;
+  } else if (valNew1 <= 600000) {
+    result = (valNew1 - 300000) * 0.05;
+  } else if (valNew1 <= 900000) {
+    result = 15000 + (valNew1 - 600000) * 0.10;
+  } else if (valNew1 <= 1200000) {
+    result = 45000 + (valNew1 - 900000) * 0.15; //10 to 12
+  } else if (valNew1 <= 1500000) {
+    result = 90000 + (valNew1 - 1200000) * 0.20; //12 to 15
+  } else {
+    result = 150000 + (valNew1 - 1500000) * 0.30; // aboveo 200 add 25% cess
+  }
+
+  new2.value = result < 0 ? 0 : Math.round(result);
+}
+}
+// --- old2 calculation ---
+// --- old2 calculation ---
+if (old2) {
+  const valold1 = parseFloat(old1?.value) || 0;
+  let result = 0;
+
+  if (field4?.value === "") {
+    // Normal slab
+    if (valold1 <= 300000) {
+      result = valold1 * 0.0;
+    } else if (valold1 <= 500000) {
+      result = (valold1 - 250000) * 0.05;
+    } else if (valold1 <= 1000000) {
+      result = 12500 + (valold1 - 500000) * 0.20;
+    } else {
+      result = 112500 + (valold1 - 1000000) * 0.30; // above 500 add 37% cess
+    }
+  } else if (field4?.value === "Senior") {
+    // Senior slab
+    if (valold1 <= 300000) {
+      result = valold1 * 0.0;
+    } else if (valold1 <= 500000) {
+      result = (valold1 - 300000) * 0.05;
+    } else if (valold1 <= 1000000) {
+      result = 10000 + (valold1 - 500000) * 0.20;
+    } else {
+      result = 110000 + (valold1 - 1000000) * 0.30; // above 500 add 37% cess
+    }
+  } else if (field4?.value === "SuperSenior") {
+    // SuperSenior slab
+    if (valold1 <= 500000) {
+      result = valold1 * 0.0;
+    } else if (valold1 <= 1000000) {
+      result = (valold1 - 500000) * 0.20;
+    } else {
+      result = 100000 + (valold1 - 1000000) * 0.30; // above 500 add 37% cess
+    }
+  }
+
+  old2.value = result < 0 ? 0 : Math.round(result);
+}
+
+// --- new3 calculation ---
+if (new3) {
+  const valNew1 = parseFloat(new1?.value) || 0;
+  const valNew2 = parseFloat(new2?.value) || 0;
+  let result = 0;
+
+  if (field2?.value === "2025-26") {
+    // Rule set for 2025-26
+    if (valNew1 > 1200000 || valNew2 === 0) {
+      result = 0;
+    } else {
+      result = valNew2;
+    }
+  } else {
+    // Rule set for other years
+    if (valNew1 > 700000 || valNew2 === 0) {
+      result = 0;
+    } else {
+      result = valNew2;
+    }
+  }
+
+  new3.value = result;
+}
+
+
+// --- old3 calculation ---
+if (old3) {
+  const valOld1 = parseFloat(old1?.value) || 0;
+  const valOld2 = parseFloat(old2?.value) || 0;
+
+  let result = 0;
+  if (valOld1 > 500000 || valOld2 === 0) {
+    result = 0;
+  } else {
+    result = valOld2;
+  }
+
+  old3.value = result;
+}
+
+// --- old5 calculation ---
+if (old5) {
+  const valOld2 = parseFloat(old2?.value) || 0;
+  const valOld4 = parseFloat(old4?.value) || 0;
+  const valOld3 = parseFloat(old3?.value) || 0;
+
+  let result = (valOld2 + valOld4 - valOld3) * 0.04;
+
+  // clamp to zero if negative, round result
+  old5.value = result < 0 ? 0 : Math.round(result);
+}
+// --- new5 calculation ---
+if (new5) {
+  const valNew2 = parseFloat(new2?.value) || 0;
+  const valNew4 = parseFloat(new4?.value) || 0;
+  const valNew3 = parseFloat(new3?.value) || 0;
+
+  let result = (valNew2 + valNew4 - valNew3) * 0.04;
+
+  // clamp to zero if negative, round result
+  new5.value = result < 0 ? 0 : Math.round(result);
+}
+// --- old6 calculation ---
+if (old6) {
+  const valOld2 = parseFloat(old2?.value) || 0;
+  const valOld4 = parseFloat(old4?.value) || 0;
+  const valOld3 = parseFloat(old3?.value) || 0;
+  const valOld5 = parseFloat(old5?.value) || 0;
+  let result = valOld2 + valOld4 - valOld3 + valOld5;
+  // clamp to zero if negative
+  old6.value = result < 0 ? 0 : Math.round(result);
+}
+
+// --- new6 calculation ---
+if (new6) {
+  const valNew2 = parseFloat(new2?.value) || 0;
+  const valNew4 = parseFloat(new4?.value) || 0;
+  const valNew3 = parseFloat(new3?.value) || 0;
+  const valNew5 = parseFloat(new5?.value) || 0;
+  let result = valNew2 + valNew4 - valNew3 + valNew5;
+  // clamp to zero if negative
+  new6.value = result < 0 ? 0 : Math.round(result);
+}
+
+// --- new10 calculation ---
+if (new10) {
+  const valNew6 = parseFloat(new6?.value) || 0;
+  const valfield219 = parseFloat(field219?.value) || 0;
+  let result = valNew6 - valfield219;
+  // clamp to zero if negative
+  new10.value = result < 0 ? 0 : Math.round(result);
+}
+
+if (old10) {
+  const valOld6 = parseFloat(old6?.value) || 0;
+  const valfield210 = parseFloat(field210?.value) || 0;
+  let result = valOld6 - valfield210;
+  // clamp to zero if negative
+  old10.value = result < 0 ? 0 : Math.round(result);
+}
+
+// --- old9 calculation ---
+if (old9) {
+  const valOld10 = parseFloat(old10?.value) || 0;
+  const valOld7 = parseFloat(old7?.value) || 0;
+
+  let result = valOld10 - valOld7;
+
+  // clamp to zero if negative
+  old9.value = Math.round(result);
+}
+
+// --- new9 calculation ---
+if (new9) {
+  const valNew10 = parseFloat(new10?.value) || 0;
+  const valNew7 = parseFloat(new7?.value) || 0;
+
+  let result = valNew10 - valNew7;
+
+  // clamp to zero if negative
+  new9.value = Math.round(result);
+}
+
+if (sumCol5 && field161 && totalSalary1 && totalSalary1New) 
+{ const valSumCol5 = parseFloat(sumCol5.value) || 0; 
+	const valField161 = parseFloat(field161.value) || 0; 
+	totalSalary1.value = valSumCol5 + valField161; 
+  totalSalary1New.value = valSumCol5 + valField161; 
+}
+
+if (HRA3 && totalSalary1 && totalSalary2  && totalSalary2New) {
+  const valHRA3 = parseFloat(HRA3.value) || 0;
+  const valTotalSalary1 = parseFloat(totalSalary1.value) || 0;
+  totalSalary2.value = valTotalSalary1 - valHRA3;
+  totalSalary2New.value = valTotalSalary1;
+}
+
+if (field207 && totalSalary2 && totalSalary2New && totalSalary3 && totalSalary3New) {
+  const valfield207 = parseFloat(field207.value) || 0;
+  const valTotalSalary2 = parseFloat(totalSalary2.value) || 0;
+  const valtotalSalary2New = parseFloat(totalSalary2New.value) || 0;
+  totalSalary3.value = valTotalSalary2 - valfield207;
+  totalSalary3New.value = valtotalSalary2New;
+}
+
+// Salary calculation
+if (field209 && totalSalary3 && totalSalary4 && STDOLD) {
+  const valfield209 = parseFloat(field209.value) || 0;
+  const valTotalSalary3 = parseFloat(totalSalary3.value) || 0;
+  const valSTDOLD = parseFloat(STDOLD.value) || 0;
+
+  totalSalary4.value = valTotalSalary3 - valfield209 - valSTDOLD;
+}
+
+
+// Field sum calculation
+if (field186 && field214 && field215) {
+  const valfield186 = parseFloat(field186.value) || 0;
+  const valfield214 = parseFloat(field214.value) || 0;
+
+  field215.value = valfield186 + valfield214;
+}
+
+if (field165 && field181 && field183 && field185 && field216) {
+  const valfield165 = parseFloat(field165.value) || 0;
+  const valfield181 = parseFloat(field181.value) || 0;
+  const valfield183 = parseFloat(field183.value) || 0;
+  const valfield185 = parseFloat(field185.value) || 0;
+
+  const valfield216 = valfield165 + valfield181 + valfield183 + valfield185;
+
+  field216.value = valfield216;
+}
+
+
+// Salary calculation for totalSalary4New
+if (totalSalary3New && field216 && STDNEW && totalSalary4New) { 
+  const valTotalSalary3New = parseFloat(totalSalary3New.value) || 0; 
+  const valfield216 = parseFloat(field216.value) || 0; 
+  const valSTDNEW = parseFloat(STDNEW.value) || 0; 
+  totalSalary4New.value = valTotalSalary3New - valfield216 - valSTDNEW; }
+
+
+
+  if (totalSalary4New && new4) { 
+    const valTotalSalary = parseFloat(totalSalary4New.value) || 0; 
+    let result = 0; 
+    if (valTotalSalary < 5000000) { result = 0; } 
+    else if (valTotalSalary > 20000000) { result = valTotalSalary * 0.2; } 
+    else if (valTotalSalary > 10000000) { result = valTotalSalary * 0.15; } 
+    else if (valTotalSalary > 5000000) { result = valTotalSalary * 0.1; } 
+    new4.value = Math.round(result); 
+  
+  }
+
+  if (totalSalary4 && old4) { 
+    const valTotalSalaryold = parseFloat(totalSalary4.value) || 0; 
+    let result = 0; 
+    if (valTotalSalaryold < 5000000) { result = 0; } 
+    else if (valTotalSalaryold > 20000000) { result = valTotalSalaryold * 0.2; } 
+    else if (valTotalSalaryold > 10000000) { result = valTotalSalaryold * 0.15; } 
+    else if (valTotalSalaryold > 5000000) { result = valTotalSalaryold * 0.1; } 
+    old4.value = Math.round(result); 
+  
+  }
+
+
+
+}
+
+
+
+// --- Attach listeners ---
+document.addEventListener("DOMContentLoaded", () => {
+  const attachListeners = (ids, event = "input") => {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener(event, updateColumnSums);
+    });
+  };
+
+  // Row fields (rows of 12 from 7 to 139)
+  for (let rowStart = 7; rowStart <= 139; rowStart += 12) {
+    const rowIds = Array.from({ length: 12 }, (_, i) => "field" + (rowStart + i));
+    attachListeners(rowIds);
+  }
+
+  // Special fields
+  attachListeners(
+    [...Array.from({ length: 12 }, (_, i) => "field" + (186 + i)), "field199", "field201", "field203", "field205", "field214"]
+  ); // for 206/207
+
+  attachListeners(
+    [...Array.from({ length: 12 }, (_, i) => "field" + (165 + i)), "field178", "field180", "field181", "field183", "field185"]
+  ); // for 209
+
+  attachListeners(["field151","field152","field153","field154","field155","field156","field158","field160"]); // for 161
+  attachListeners(["field162","field163","field164"]); // HRA1, HRA2, HRA3
+
+  // Direct field dependencies
+  attachListeners(["field208"]); // old7/new7 mirror
+  attachListeners(["field4"], "change"); // STDNEW updates
+
+  // old1 dependencies
+  attachListeners(["sumCol5","field161","HRA3","field209","field207"]);
+
+  // new1 dependencies
+  attachListeners(["sumCol5","STDNEW"]);
+
+  // new2 / old2
+  attachListeners(["new1"]);
+  attachListeners(["old1"]);
+  attachListeners(["old1","field4"], "change"); // old2 extra dependency
+
+  // new3 / old3
+  attachListeners(["new1","new2","field2"]); // new3
+  attachListeners(["old1","old2"]); // old3
+
+  // old5 / new5
+  attachListeners(["old2","old4","old3"]); // old5
+  attachListeners(["new2","new4","new3"]); // new5
+
+  // old6 / new6
+  attachListeners(["old2","old4","old3","old5"]); // old6
+  attachListeners(["new2","new4","new3","new5"]); // new6
+
+  // old9 / new9
+  attachListeners(["old6","old7","field210"]); // old9
+  attachListeners(["new6","new7","field219"]); // new9
+
+  attachListeners(["sumCol5", "field161"]);
+  attachListeners(["totalSalary1"]);
+  attachListeners(["totalSalary2"]);
+  attachListeners(["totalSalary3"]);
+  attachListeners(["STDOLD"]);
+  attachListeners(["field165", "field181", "field183", "field185"]);
+  attachListeners(["totalSalary3New", "field216", "STDNEW"]);
+  attachListeners(["totalSalary4New"]);
+// ✅ Hide tax tile whenever any input or select changes (excluding taxTile internal elements)
+const excludeIds = ["field217", "field218", "Statement", "StatementNew", "Form12B", "Form16"];
+
+document.querySelectorAll("input, select, button").forEach(el => {
+  if (excludeIds.includes(el.id)) return; // ✅ skip these
+  el.addEventListener("input", hideTaxTile);
+  el.addEventListener("change", hideTaxTile);
+});
+  
+});
+
+
+
+
+
+
+// Special case for field175
+const field175 = document.getElementById("field175");
+const field4 = document.getElementById("field4");
+field175.addEventListener("input", () => {
+  const selected = field4.value;
+  const maxAmount = selected === "" ? 10000 : 50000;
+  let value = parseFloat(field175.value) || 0;
+  if (value > maxAmount) {
+    alert("Maximum allowed amount is " + maxAmount);
+    field175.value = maxAmount;
+  }
+});
+
+
+
+// --- Validation ---
+const limits = {
+  field167: 350000,
+  field169: 125000,
+  field170: 100000,
+  field173: 125000,
+  field174: 150000,
+  field176: 50000,
+  field181: 750000
+};
+Object.keys(limits).forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("input", () => {
+    let value = parseFloat(el.value) || 0;
+    if (value > limits[id]) {
+      alert("Maximum allowed amount is " + limits[id]);
+      el.value = limits[id];
+    }
+  });
+});
+
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const fieldText = document.getElementById("field2");
+    const outputText = document.getElementById("outputText");
+    const outputText1 = document.getElementById("outputText1");
+    // Display the default selected option on page load
+    outputText.textContent = "Income Tax " + fieldText.value + ": Details" ;
+    outputText1.textContent = "Income details " + fieldText.value ;
+
+    // (Optional) Update live if user changes selection
+    field2.addEventListener("change", () => {
+      outputText.textContent = "Income Tax " + fieldText.value + ": Details" ;
+      outputText1.textContent = "Income details " + fieldText.value ;
+    });
+  });
+
+
+
+  function generatePDF() {
+  const field1 = document.getElementById("field1")?.value.trim();
+  const field3 = document.getElementById("field3")?.value.trim();
+  const regimeNew = document.getElementById("field217")?.checked;
+  const regimeOld = document.getElementById("field218")?.checked;
+
+  // Validation: Tax regime selection
+  if (!regimeNew && !regimeOld) {
+    showModal("👈 Please select statement type!");
+    return;
+  }
+
+  // Validation: Mandatory PAN and Phone
+  if (!field1 || !field3) {
+    showModal("Mandatory fields such as PAN and phone number are missing!");
+    return;
+  }
+
+  // If validations pass, continue with PDF generation
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+
+
+
+
+
+// Collect all field values dynamically
+const fields = {};
+
+// Collect field1 through field220
+for (let i = 1; i <= 220; i++) {
+  const el = document.getElementById("field" + i);
+  fields["field" + i] = el ? el.value : "";
+}
+
+// Collect HRA1, HRA2, HRA3
+["HRA1", "HRA2", "HRA3"].forEach(id => {
+  const el = document.getElementById(id);
+  fields[id] = el ? el.value : "";
+});
+
+// Collect STDNEW, STDOLD
+["STDNEW", "STDOLD"].forEach(id => {
+  const el = document.getElementById(id);
+  fields[id] = el ? el.value : "";
+});
+
+// Collect STDNEW, STDOLD
+["old10", "new10"].forEach(id => {
+  const el = document.getElementById(id);
+  fields[id] = el ? el.value : "";
+});
+
+// Collect sumCol1 through sumCol12
+for (let i = 1; i <= 12; i++) {
+  const el = document.getElementById("sumCol" + i);
+  fields["sumCol" + i] = el ? el.value : "";
+}
+
+// Collect TotalSalary1 through TotalSalary4
+for (let i = 1; i <= 4; i++) {
+  const el = document.getElementById("TotalSalary" + i);
+  fields["TotalSalary" + i] = el ? el.value : "";
+}
+
+// Collect old1 through old9
+for (let i = 1; i <= 10; i++) {
+  const el = document.getElementById("old" + i);
+  fields["old" + i] = el ? el.value : "";
+}
+
+// Collect new1 through new9
+for (let i = 1; i <= 10; i++) {
+  const el = document.getElementById("new" + i);
+  fields["new" + i] = el ? el.value : "";
+}
+
+  // Title
+doc.setFontSize(14);
+doc.setFont("times", "normal");
+const pageWidth = doc.internal.pageSize.getWidth();
+// Common header lines
+// Common header lines
+doc.text("INCOME TAX CALCULATION STATEMENT", pageWidth / 2, 20, { align: "center" });
+doc.text("Financial Year " + fields.field2 + " (Old tax regime)", pageWidth / 2, 28, { align: "center" });
+
+// Conditional third line with italics and reduced line height
+if (document.getElementById("field217").checked) {
+  // Anticipatory selected
+  doc.setFont("times", "italic"); // switch to italic
+  doc.text("(Anticipatory)", pageWidth - 20, 32, { align: "right" }); // reduced Y for tighter spacing
+  doc.setFont("times", "normal"); // reset font
+} else if (document.getElementById("field218").checked) {
+  // Final selected
+  doc.setFont("times", "italic");
+  doc.text("(Final)", pageWidth - 20, 32, { align: "right" });
+  doc.setFont("times", "normal");
+}
+
+// Basic details table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: 36, // start below the title
+  body: [
+    ['Name', fields.field211, 'Mobile', fields.field3],
+    ['PEN No.', fields.field212, 'Designation', fields.field5],
+    ['PAN No.', fields.field1, 'Office Address', fields.field6]
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 11,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'top',
+    lineWidth: 0,   // border thickness ~1px
+    lineColor: [0,0,0,0.5] // black border
+  },
+  columnStyles: {
+    0: { cellWidth: 20 },
+    1: { cellWidth: 60, fontStyle: 'bold' },
+    2: { cellWidth: 35, },
+    3: { cellWidth: 65, fontStyle: 'bold' }
+  }
+});
+
+
+
+// Salary income table (dynamic rows with months)
+const months = [
+  "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+  "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Total"
+];
+
+const salaryRows = [
+  [months[0], fields.field7, fields.field8, fields.field9, fields.field10, fields.field11],
+  [months[1], fields.field19, fields.field20, fields.field21, fields.field22, fields.field23],
+  [months[2], fields.field31, fields.field32, fields.field33, fields.field34, fields.field35],
+  [months[3], fields.field43, fields.field44, fields.field45, fields.field46, fields.field47],
+  [months[4], fields.field55, fields.field56, fields.field57, fields.field58, fields.field59],
+  [months[5], fields.field67, fields.field68, fields.field69, fields.field70, fields.field71],
+  [months[6], fields.field79, fields.field80, fields.field81, fields.field82, fields.field83],
+  [months[7], fields.field91, fields.field92, fields.field93, fields.field94, fields.field95],
+  [months[8], fields.field103, fields.field104, fields.field105, fields.field106, fields.field107],
+  [months[9], fields.field115, fields.field116, fields.field117, fields.field118, fields.field119],
+  [months[10], fields.field127, fields.field128, fields.field129, fields.field130, fields.field131],
+  [months[11], fields.field139, fields.field140, fields.field141, fields.field142, fields.field143],
+  [{ content: months[12], styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol1, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol2, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol3, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol4, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol5, styles: { fontStyle: 'bold', fontSize: 10 } }] // optional Feb row if needed
+];
+
+// Heading above salary income table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+
+// Left‑aligned heading
+doc.text(
+  "1. Salary Income",
+  16, // x‑coordinate (left margin)
+  doc.lastAutoTable.finalY + 6, // y‑coordinate (below previous table)
+  { align: "left", fontStyle: 'bold' }
+);
+
+// Centered subheading
+doc.setFont(undefined, 'normal');
+doc.setFontSize(11);
+doc.text(
+  "(a) Pay and allowance drawn, excluding Conveyance allowance",
+  16, // center horizontally
+  doc.lastAutoTable.finalY + 12, // a bit further down
+  { align: "left" }
+);
+
+// Salary income table
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 16,
+  head: [['Month', 'Pay', 'DA', 'HRA', 'Others', 'Total']],
+  body: salaryRows,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    cellPadding: { top: 1, bottom: 1 }, 
+    halign: 'center',
+    valign: 'middle',
+    textColor: 0,
+    lineWidth: 0.2,   // border thickness ~1px
+    lineColor: [0,0,0] // black border
+  },
+  headStyles: { 
+    fillColor: null, 
+    textColor: 0, 
+    fontStyle: 'bold', 
+    halign: 'center',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 30 }, // Month
+    1: { cellWidth: 30 }, // Pay
+    2: { cellWidth: 30 }, // DA
+    3: { cellWidth: 30 }, // HRA
+    4: { cellWidth: 30 }, // Others
+    5: { cellWidth: 30 }  // Total
+  }
+});
+
+// Helper to generate serials (a), (b), (c)...
+function getSerial1(index) {
+  const alphabet = 'bcdefghijklmnopqrstuvwxyz';
+  return `(${alphabet[index]})`;
+}
+const hraDifference1 = (Number(fields.field151) || 0) + (Number(fields.field153) || 0) + (Number(fields.field155) || 0);
+const ThreeTotal = (Number(fields.sumCol5) || 0) + (Number(fields.field161) || 0);
+// Build dynamic body rows
+const bodyRows = [
+  [getSerial1(0), 'Leave Surrender', fields.field152],
+  [getSerial1(1), 'Festival Allowance / Bonus / Ex-gratia and Incentive', fields.field154],
+  [getSerial1(2), 'Pay Revision Arrears, DA Arrears, Other Arrears', hraDifference1],
+  [getSerial1(3), 'Less: Excess Pay drawn, Dies non, etc.', fields.field156]
+];
+
+// Conditionally add extra rows if values > 0
+if (fields.field158> 0) {
+  bodyRows.push([getSerial1(bodyRows.length), fields.field157, fields.field158]);
+}
+if (fields.field160 > 0) {
+  bodyRows.push([getSerial1(bodyRows.length), fields.field159, fields.field160]);
+}
+
+// Add final rows
+bodyRows.push([{ content: '2', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: 'Sum of arrears received and other income', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: fields.field161, styles: { fontStyle: 'bold', fontSize: 10 } }
+]);
+
+bodyRows.push([
+  { content: '3. Total Salary (1(a)+2)', colSpan: 2, styles: { halign: 'Left', fontStyle: 'bold' } },
+  { content: ThreeTotal, styles: { halign: 'right', fontStyle: 'bold', fontSize: 10 } }
+]);
+
+// Render table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: doc.lastAutoTable ? doc.lastAutoTable.finalY + 1 : 36,
+  body: bodyRows,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+ 
+
+});
+
+// Bold heading below table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+doc.text(
+  "4. Deduction u/s 10 (13) (A) of the Income tax Act, if residing in rented house",
+  16,
+  doc.lastAutoTable.finalY + 6,
+  { align: "left" }
+);
+doc.setFont(undefined, 'normal');
+
+// Calculate HRA3 - HRA1
+const BalanceAfterHra = (Number(ThreeTotal) || 0) - (Number(fields.HRA3) || 0);
+
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 9,
+  body: [
+    ['(i)', 'Total rent paid', fields.field162],
+    ['(ii)', 'Rent paid in excess of 10% of salary', fields.HRA1],
+    ['(iii)', '40 % of salary', fields.HRA2],
+    ['(iv)', 'Least of the above (actual amount deductable)', { content: fields.HRA3, styles: { fontStyle: 'bold', fontSize: 10 } }],
+    [
+      { content: '5. Balance Income (3-4(iv))', colSpan: 2, styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: BalanceAfterHra, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }
+    ]
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+ 
+
+});
+
+// Bold heading below table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+doc.text(
+  "6. Less:",
+  16,
+  doc.lastAutoTable.finalY + 6,
+  { align: "left" }
+);
+doc.setFont(undefined, 'normal');
+
+// Calculate HRA3 - HRA1
+const hraDifference3 = (Number(fields.field165) || 0) + (Number(fields.field166) || 0) + (Number(fields.field167) || 0) + 50000;
+const Balance8 = BalanceAfterHra - hraDifference3;
+
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 9,
+  body: [
+    ['(i)', 'Standard deduction', fields.STDOLD],
+    ['(ii)', 'Conveyance Allowance', fields.field165],
+    ['(iii)', 'Professional Tax Paid', fields.field166],
+    ['(iv)', 'Housing Loan Interest - Max : Rs. 2 Lakh (Additional Rs. 1.5 Lakh under Section 80EEA)', fields.field167],
+    [
+      { content: '7. Sub-total', colSpan: 2, styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: hraDifference3, styles: { fontStyle: 'bold', fontSize: 10 } }
+      
+    ],
+     [
+      { content: '8. Balance Income (5-7)', colSpan: 2, styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: Balance8, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right' } }
+    ]
+    
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+ 
+
+});
+
+// Helper to generate serials (a), (b), (c)...
+function getSerial(index) {
+  const alphabet1 = 'abcdefghijklmnopqrstuvwxyz';
+  return `(${alphabet1[index]})`;
+}
+
+// Build dynamic body rows
+const bodyRowsDed = [
+  [getSerial(0), 'Life Insurance premia of self, spouse or children', fields.field215 ],
+  [getSerial(1), 'Purchase of NSC VIII issue', fields.field187 ],
+  [getSerial(2), 'Contribution to GPF (Subscription, DA Arrear, Pay Revision Arrear, etc.)', fields.field188 ],
+  [getSerial(3), 'Contribution to SLI, GIS, FBS, GPAIS, etc. (Total)', fields.field189 ],
+  [getSerial(4), 'Term deposit with Scheduled Bank for a fixed period of not less than 5 years', fields.field190 ],
+  [getSerial(5), 'Purchase of tax saving units of Mutual Fund or UTI', fields.field191 ],
+  [getSerial(6), 'Tution fees for full-time education to any 2 children', fields.field192 ],
+  [getSerial(7), 'Housing Loan Repayment (Principal) and Stamp duty paid for purchase of property', fields.field193 ],
+  [getSerial(8), 'Contribution to PPF account of Self, Spouse or Children', fields.field194 ],
+  [getSerial(9), 'Five year Time Deposit in Post Office', fields.field195 ],
+  [getSerial(10), 'Contribution to NPS (Max : 10% of Basic + DA)', fields.field196 ],
+  [getSerial(11), 'Payment to Annuity Plan of Pension fund like LIC', fields.field197 ]
+];
+
+const ded80cccd = Balance8 - (Number(fields.field207) || 0);
+
+// Bold heading below table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+doc.text(
+  "9 Deductions under section 80C, 80CCC, 80CCD [Limited to. Rs. 1,50,000/-]",
+  16,
+  doc.lastAutoTable.finalY + 6,
+  { align: "left" }
+);
+doc.setFont(undefined, 'normal');
+
+
+// Conditionally add extra rows if values > 0
+if (fields.field199 > 0) {
+  bodyRowsDed.push([ getSerial(bodyRowsDed.length), fields.field198, fields.field199]);
+}
+if (fields.field201 > 0) {
+  bodyRowsDed.push([ getSerial(bodyRowsDed.length), fields.field200, fields.field201]);
+}
+if (fields.field203 > 0) {
+  bodyRowsDed.push([ getSerial(bodyRowsDed.length), fields.field202, fields.field203]);
+}
+if (fields.field205 > 0) {
+  bodyRowsDed.push([ getSerial(bodyRowsDed.length), fields.field204, fields.field205]);
+}
+
+// Add final rows
+bodyRowsDed.push([ { content: '10.', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+{ content: 'Sum of deductions under section 80C, 80CCC, 80CCD', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+{ content: fields.field206, styles: { fontStyle: 'bold', fontSize: 10 } }
+]);
+
+// Add final rows
+bodyRowsDed.push([ { content: '11.', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: 'Eligible amount for deduction [Limited to. Rs. 1,50,000/-]', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: fields.field207, styles: { fontStyle: 'bold', fontSize: 10 } }
+]);
+
+bodyRowsDed.push([
+  { content: '12. Balance (8-11)', colSpan: 2, styles: { halign: 'Left', fontStyle: 'bold' } },
+  { content: ded80cccd, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right'} },
+]);
+
+// Render table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: doc.lastAutoTable ? doc.lastAutoTable.finalY + 11 : 36,
+  body: bodyRowsDed,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+  
+
+});
+
+
+// Helper to generate serials (a), (b), (c)...
+function getSerial(index) {
+  const alphabet2 = 'abcdefghijklmnopqrstuvwxyz';
+  return `(${alphabet2[index]})`;
+}
+
+// Build dynamic body rows
+const bodyRowsDeduction = [
+  [getSerial(0), 'Mediclaim (maximum of Rs. 25,000 / 50,000 + parents Rs. 25,000 / 50,000)', 
+  {content: fields.field168 }
+],
+  [getSerial(1), 'Medical treatment of mentally or physically handicapped dependents (Max : Rs. 1.25 Lakh)', 
+  {content: fields.field169 }
+  ],
+  [getSerial(2), 'Medical treatment for specified deseases (Max : Rs. 1 Lakh)', 
+  {content: fields.field170 }
+  ],
+  [getSerial(3), 'Interest paid for Education Loan taken for higher education (Max : No Limit)', 
+  {content: fields.field171 }
+  ],
+  [getSerial(4), 'Donation to various charitable and other funds including PMs National Relief Fund (Max : No Limit)', 
+  {content: fields.field172 }
+  ],
+  [getSerial(5), 'Deduction for person with disability (Max: Rs. 75,000; if disability over 80% Rs. 1.25 lakh)', 
+  {content: fields.field173, cstyles: { cellPadding: { right: 30 } }}
+  ],
+  [getSerial(6), 'Interest paid for Electric Vehicle Loan (Max : Rs. 1.5 Lakh)', 
+  {content: fields.field174 }
+  ],
+  [getSerial(7), 'Interest income from SB account, Fixed deposit, Post office, ... (Max : Rs.10,000/- ; Rs.50,000/- for senior citizens)', 
+  {content: fields.field175 }
+  ],
+  [getSerial(8), 'NPS - Remaining Contribution (Max: Rs. 50,000/- ; above the limit of Rs 1.5 Lakh provided in section 80C)	', 
+  {content: fields.field176 }
+  ],
+];
+const hraDifference6 = (Number(fields.field209) || 0) - (Number(fields.field165) || 0) - (Number(fields.field166) || 0) - (Number(fields.field167) || 0);
+
+// Bold heading below table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+doc.text(
+  "13. Other deductions",
+  16,
+  doc.lastAutoTable.finalY + 6,
+  { align: "left" }
+);
+doc.setFont(undefined, 'normal');
+
+// Conditionally add extra rows if values > 0
+if (fields.field178 > 0) {  bodyRowsDeduction.push([getSerial(bodyRowsDeduction.length), fields.field177, { content: fields.field178, }]);
+}
+if (fields.field180 > 0) {  bodyRowsDeduction.push([getSerial(bodyRowsDeduction.length), fields.field179, { content: fields.field180  }]);
+}
+if (fields.field181 > 0) {  bodyRowsDeduction.push([getSerial(bodyRowsDeduction.length), 'NPS - Employers Contribution : [Max : 10% of (basic + DA) for OLD regime, 14% for NEW Regime]', { content: fields.field181  }]);
+}
+if (fields.field183 > 0) {  bodyRowsDeduction.push([getSerial(bodyRowsDeduction.length), fields.field182, { content: fields.field183  }]);
+}
+if (fields.field185 > 0) {  bodyRowsDeduction.push([getSerial(bodyRowsDeduction.length), fields.field184, { content: fields.field185  }]);
+}
+// Add final rows
+bodyRowsDeduction.push([ { content: '14.', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+{ content: 'Sum of above deductions', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+{ content: hraDifference6, styles: { fontStyle: 'bold', fontSize: 10} }
+]);
+
+bodyRowsDeduction.push([
+  { content: '15 Balance taxable income (12-14) (Rounded off to nearest multiple of 10)', colSpan: 2, styles: { halign: 'Left', fontStyle: 'bold' } },
+  { content: fields.TotalSalary4, styles: { fontStyle: 'bold', fontSize: 10, halign: 'right'  } }
+]);
+// Render table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: doc.lastAutoTable ? doc.lastAutoTable.finalY + 11 : 36,
+  body: bodyRowsDeduction,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+});
+
+// Calculate HRA3 - HRA1
+const HRADifference = (Number(fields.HRA3) || 0) - (Number(fields.HRA1) || 0);
+const Rebate = (Number(fields.old2) || 0) - (Number(fields.old3) || 0);
+
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 4,
+  body: [
+    ['16', 'Tax on balance Taxable Income', fields.old2],
+    ['17', 'Less: Rebate for the Income upto 5 Lakhs u/s 87 A (Max Rs. 12,500/-)', fields.old3],
+    ['18', 'Income tax after Rebate ( 16-17 )', Rebate, ''],
+    ['19', 'Surcharge [ 10% of (16) if (16) > 50 lakh; 15% >1 crore; 25% >2 crore; 37% >5 crore ]', fields.old4],
+    ['20', 'Health and Education Cess [ @ 4% of (18 + 19) ]', fields.old5],
+    ['21', 'Total Tax Payable ( 18 + 19 + 20 )', fields.old6],
+    ['22', 'Less: Relief for arrears of salary u/s. 89(1)', fields.field210],
+    ['23', 'Balance Tax Payable ( 21 - 22 )', fields.old10],
+    ['24', 'Income tax deducted from salary, Advance tax paid', fields.old7],
+    [
+      { content: '25', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: 'Balance Income Tax to be paid', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: fields.old9, styles: { fontStyle: 'bold', fontSize: 10 } }
+    ]
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Description
+    2: { cellWidth: 30, halign: 'center'}, // Value
+  }
+});
+
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 1,
+  body: [
+
+    [{ content: '(I, ' + fields.field211 + ', ' + fields.field5 +', ' + fields.field6 + ' do hereby declare that what is stated above is true to the best of my information and belief)', colSpan: 3, styles: { align: 'justify'} }],
+    [ 'Place:', '',''],
+    [ 'Date:', { content: 'Signature:', styles: { halign: 'left', textColor: [200, 200, 200], cellPadding: { left: 10, right: 0, top: 0, bottom: 0 } } }, ''],
+    [ '', { content: fields.field211 , styles: { halign: 'center' } }, { content: 'Controlling Officer', styles: { halign: 'center', textColor: [150, 150, 150] } }],
+    [ '', { content: fields.field5, styles: { halign: 'center' } }, { content: 'Address', styles: { halign: 'center', textColor: [150, 150, 150] } }],
+    [ '', { content: fields.field6, styles: { halign: 'center' } }, '' ]
+  
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    textColor: 0, 
+    valign: 'middle', 
+    lineWidth: 0,
+    lineColor: [255,255,255] // white
+
+  },
+  columnStyles: {
+    0: { cellWidth: 40},   // Serial number
+    1: { cellWidth: 70 },  // Description
+    2: { cellWidth: 70}, // Value
+  }
+});
+
+const hra3El = document.getElementById("HRA3");
+const hra3Value = hra3El ? parseFloat(hra3El.value) : 0;
+
+if (hra3Value > 0) {
+  doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 1,
+    body: [
+      [{ content: 'DECLARATION', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }],
+      [{ content: '(Cases in which the amount of HRA drawn is excluded from the Gross Salary)', colSpan: 3, styles: { halign: 'center' } }],
+      [{ content: '(I, ' + fields.field211 + ', ' + fields.field5 + ', ' + fields.field6 + ', Do hereby declare that I am actually incurring expenditure towards payment of rent of my residential accomodation to House No ..................... Place ........................................... And that the amount of rent actually paid by me during ' + fields.field2 + ' is Rs. ' + fields.field162 + '/-)', colSpan: 3, styles: { halign: 'justify', lineHeight: 15 } }],
+      ['Place:', '', ''],
+      ['Date:', '', { content: 'Signature:', styles: { halign: 'left', textColor: [200, 200, 200] } }],
+      ['', '', { content: fields.field211, styles: { halign: 'center' } }],
+      ['', '', { content: fields.field5, styles: { halign: 'center' } }],
+      ['', '', { content: fields.field6, styles: { halign: 'center' } }]
+    ],
+    theme: 'grid',
+    styles: { 
+      fontSize: 10, 
+    lineHeight:1.5,
+      textColor: 0, 
+      valign: 'middle', 
+      lineWidth: 0,
+      lineColor: [255, 255, 255] // white
+    },
+    columnStyles: {
+      0: { cellWidth: 80 },
+      1: { cellWidth: 30 },
+      2: { cellWidth: 70, halign: 'center' }
+    }
+  });
+}
+// ✅ Add watermark text on the last page - bottom left
+const pageHeight = doc.internal.pageSize.getHeight();
+const totalPages = doc.internal.getNumberOfPages();
+doc.setPage(totalPages); // go to last page
+doc.setFontSize(8);
+doc.setFont("times", "italic");
+doc.setTextColor(150, 150, 150); // grey color
+doc.text("-- www.gstcell.com --", 14, pageHeight - 8); // bottom left
+doc.setTextColor(0, 0, 0); // reset color
+
+  // Save PDF
+  doc.save("Income_Tax_" + fields.field2 + ".pdf");
+
+
+}
+
+
+
+
+
+
+
+
+function generatePDFNew() {
+  const field1 = document.getElementById("field1")?.value.trim();
+  const field3 = document.getElementById("field3")?.value.trim();
+  const regimeNew = document.getElementById("field217")?.checked;
+  const regimeOld = document.getElementById("field218")?.checked;
+
+  // Validation: Tax regime selection
+  if (!regimeNew && !regimeOld) {
+    showModal("👈 Please select statement type!");
+    return;
+  }
+
+  // Validation: Mandatory PAN and Phone
+  if (!field1 || !field3) {
+    showModal("Mandatory fields such as PAN and phone number are missing!");
+    return;
+  }
+
+  // If validations pass, continue with PDF generation
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+
+
+// Collect all field values dynamically
+const fields = {};
+
+// Collect field1 through field220
+for (let i = 1; i <= 220; i++) {
+  const el = document.getElementById("field" + i);
+  fields["field" + i] = el ? el.value : "";
+}
+
+// Collect HRA1, HRA2, HRA3
+["HRA1", "HRA2", "HRA3"].forEach(id => {
+  const el = document.getElementById(id);
+  fields[id] = el ? el.value : "";
+});
+
+// Collect STDNEW, STDOLD
+["STDNEW", "STDOLD"].forEach(id => {
+  const el = document.getElementById(id);
+  fields[id] = el ? el.value : "";
+});
+
+// Collect STDNEW, STDOLD
+["old10", "new10"].forEach(id => {
+  const el = document.getElementById(id);
+  fields[id] = el ? el.value : "";
+});
+
+// Collect sumCol1 through sumCol12
+for (let i = 1; i <= 12; i++) {
+  const el = document.getElementById("sumCol" + i);
+  fields["sumCol" + i] = el ? el.value : "";
+}
+
+// Collect TotalSalary1 through TotalSalary4
+for (let i = 1; i <= 4; i++) {
+  const el = document.getElementById("TotalSalary" + i +"New");
+  fields["TotalSalary" + i +"New"] = el ? el.value : "";
+}
+
+// Collect TotalSalary1 through TotalSalary4
+for (let i = 1; i <= 4; i++) {
+  const el = document.getElementById("TotalSalary" + i );
+  fields["TotalSalary" + i ] = el ? el.value : "";
+}
+
+// Collect old1 through old9
+for (let i = 1; i <= 10; i++) {
+  const el = document.getElementById("old" + i);
+  fields["old" + i] = el ? el.value : "";
+}
+
+// Collect new1 through new9
+for (let i = 1; i <= 10; i++) {
+  const el = document.getElementById("new" + i);
+  fields["new" + i] = el ? el.value : "";
+}
+
+
+
+
+  // Title
+doc.setFontSize(14);
+doc.setFont("times", "normal");
+const pageWidth = doc.internal.pageSize.getWidth();
+// Common header lines
+doc.text("INCOME TAX CALCULATION STATEMENT", pageWidth / 2, 20, { align: "center" });
+doc.text("Financial Year " + fields.field2 + " (New tax regime)", pageWidth / 2, 28, { align: "center" });
+
+// Conditional third line with italics and reduced line height
+if (document.getElementById("field217").checked) {
+  // Anticipatory selected
+  doc.setFont("times", "italic"); // switch to italic
+  doc.text("(Anticipatory)", pageWidth - 20, 32, { align: "right" }); // reduced Y for tighter spacing
+  doc.setFont("times", "normal"); // reset font
+} else if (document.getElementById("field218").checked) {
+  // Final selected
+  doc.setFont("times", "italic");
+  doc.text("(Final)", pageWidth - 20, 32, { align: "right" });
+  doc.setFont("times", "normal");
+}
+// Basic details table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: 36, // start below the title
+  body: [
+    ['Name', fields.field211, 'Mobile', fields.field3],
+    ['PEN No.', fields.field212, 'Designation', fields.field5],
+    ['PAN No.', fields.field1, 'Office Address', fields.field6]
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 11,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'top',
+    lineWidth: 0,   // border thickness ~1px
+    lineColor: [0,0,0,0.5] // black border
+  },
+  columnStyles: {
+    0: { cellWidth: 20 },
+    1: { cellWidth: 60, fontStyle: 'bold' },
+    2: { cellWidth: 35, },
+    3: { cellWidth: 65, fontStyle: 'bold' }
+  }
+});
+
+
+
+// Salary income table (dynamic rows with months)
+const months = [
+  "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+  "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Total"
+];
+
+const salaryRows = [
+  [months[0], fields.field7, fields.field8, fields.field9, fields.field10, fields.field11],
+  [months[1], fields.field19, fields.field20, fields.field21, fields.field22, fields.field23],
+  [months[2], fields.field31, fields.field32, fields.field33, fields.field34, fields.field35],
+  [months[3], fields.field43, fields.field44, fields.field45, fields.field46, fields.field47],
+  [months[4], fields.field55, fields.field56, fields.field57, fields.field58, fields.field59],
+  [months[5], fields.field67, fields.field68, fields.field69, fields.field70, fields.field71],
+  [months[6], fields.field79, fields.field80, fields.field81, fields.field82, fields.field83],
+  [months[7], fields.field91, fields.field92, fields.field93, fields.field94, fields.field95],
+  [months[8], fields.field103, fields.field104, fields.field105, fields.field106, fields.field107],
+  [months[9], fields.field115, fields.field116, fields.field117, fields.field118, fields.field119],
+  [months[10], fields.field127, fields.field128, fields.field129, fields.field130, fields.field131],
+  [months[11], fields.field139, fields.field140, fields.field141, fields.field142, fields.field143],
+  [{ content: months[12], styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol1, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol2, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol3, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol4, styles: { fontStyle: 'bold', fontSize: 10 } }, 
+  { content: fields.sumCol5, styles: { fontStyle: 'bold', fontSize: 10 } }] // optional Feb row if needed
+];
+
+// Heading above salary income table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+
+// Left‑aligned heading
+doc.text(
+  "1. Salary Income",
+  16, // x‑coordinate (left margin)
+  doc.lastAutoTable.finalY + 6, // y‑coordinate (below previous table)
+  { align: "left", fontStyle: 'bold' }
+);
+
+// Centered subheading
+doc.setFont(undefined, 'normal');
+doc.setFontSize(12); // increase size here
+doc.text(
+  "(a) Pay and allowance drawn, excluding Conveyance allowance",
+  16, // center horizontally
+  doc.lastAutoTable.finalY + 12, // a bit further down
+  { align: "left" }
+);
+
+
+
+
+// Salary income table
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 16,
+  head: [['Month', 'Pay', 'DA', 'HRA', 'Others', 'Total']],
+  body: salaryRows,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    cellPadding: { top: 1, bottom: 1 }, 
+    halign: 'center',
+    valign: 'middle',
+    textColor: 0,
+    lineWidth: 0.2,   // border thickness ~1px
+    lineColor: [0,0,0] // black border
+  },
+  headStyles: { 
+    fillColor: null, 
+    textColor: 0, 
+    fontStyle: 'bold', 
+    halign: 'center',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 30 }, // Month
+    1: { cellWidth: 30 }, // Pay
+    2: { cellWidth: 30 }, // DA
+    3: { cellWidth: 30 }, // HRA
+    4: { cellWidth: 30 }, // Others
+    5: { cellWidth: 30 }  // Total
+  }
+});
+
+
+
+
+
+// Helper to generate serials (a), (b), (c)...
+function getSerial1(index) {
+  const alphabet = 'bcdefghijklmnopqrstuvwxyz';
+  return `(${alphabet[index]})`;
+}
+const hraDifference1 = (Number(fields.field151) || 0) + (Number(fields.field153) || 0) + (Number(fields.field155) || 0);
+const ThreeTotal = (Number(fields.sumCol5) || 0) + (Number(fields.field161) || 0);
+// Build dynamic body rows
+const bodyRows = [
+  [getSerial1(0), 'Leave Surrender', fields.field152],
+  [getSerial1(1), 'Festival Allowance / Bonus / Ex-gratia and Incentive', fields.field154],
+  [getSerial1(2), 'Pay Revision Arrears, DA Arrears, Other Arrears', hraDifference1],
+  [getSerial1(3), 'Less: Excess Pay drawn, Dies non, etc.', fields.field156]
+];
+
+// Conditionally add extra rows if values > 0
+if (fields.field158> 0) {
+  bodyRows.push([getSerial1(bodyRows.length), fields.field157, fields.field158]);
+}
+if (fields.field160 > 0) {
+  bodyRows.push([getSerial1(bodyRows.length), fields.field159, fields.field160]);
+}
+
+// Add final rows
+bodyRows.push([{ content: '2', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: 'Sum of arrears received and other income', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: fields.field161, styles: { fontStyle: 'bold', fontSize: 10 } }
+]);
+
+bodyRows.push([
+  { content: '3. Total Salary (1(a)+2)', colSpan: 2, styles: { halign: 'Left', fontStyle: 'bold' } },
+  { content: ThreeTotal, styles: { halign: 'right', fontStyle: 'bold', fontSize: 10 } }
+]);
+
+// Render table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: doc.lastAutoTable ? doc.lastAutoTable.finalY + 1 : 36,
+  body: bodyRows,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+ 
+
+});
+
+
+
+
+
+// Bold heading below table
+doc.setFont(undefined, 'bold');
+doc.setFontSize(11);
+doc.text(
+  "4. Deductions:",
+  16,
+  doc.lastAutoTable.finalY + 6,
+  { align: "left" }
+);
+doc.setFont(undefined, 'normal');
+
+
+
+
+
+
+
+// Helper to generate serials (a), (b), (c)...
+function getSerial1(index) {
+  const alphabet = 'bcdefghijklmnopqrstuvwxyz';
+  return `(${alphabet[index]})`;
+}
+const TotalDeductionNew = (Number(fields.field216) || 0) + (Number(fields.STDNEW) || 0) ;
+
+// Build dynamic body rows
+const bodyRowsDedNew = [
+  ['(i)', 'Standard deduction', fields.STDNEW],
+  ['(ii)', 'Conveyance Allowance', fields.field165],
+  ['(iii)', 'NPS - Employers Contribution :', fields.field181],
+];
+
+// Conditionally add extra rows if values > 0
+if (fields.field183> 0) {
+  bodyRowsDedNew.push([getSerial1(bodyRowsDedNew.length), fields.field182, fields.field183]);
+}
+if (fields.field183 > 0) {
+  bodyRowsDedNew.push([getSerial1(bodyRowsDedNew.length), fields.field184, fields.field185]);
+}
+
+// Add final rows
+bodyRowsDedNew.push([{ content: '5', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: 'Sub-total', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+  { content: TotalDeductionNew, styles: { fontStyle: 'bold', fontSize: 10 } }
+]);
+
+bodyRowsDedNew.push([
+  { content: '6. Net taxable Income (3-5)', colSpan: 2, styles: { halign: 'Left', fontStyle: 'bold' } },
+  { content: fields.TotalSalary4New, styles: { halign: 'right', fontStyle: 'bold', fontSize: 10 } }
+]);
+
+// Render table
+doc.setFontSize(11);
+doc.autoTable({
+  startY: doc.lastAutoTable ? doc.lastAutoTable.finalY + 9 : 36,
+  body: bodyRowsDedNew,
+  theme: 'grid',
+  styles: { 
+    fontSize: 10,
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Name / PAN
+    2: { cellWidth: 30, halign: 'center'  },   // Label
+  },
+ 
+
+});
+
+
+
+
+
+
+// Calculate HRA3 - HRA1
+const Rebate = (Number(fields.new2) || 0) - (Number(fields.new3) || 0);
+
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 4,
+  body: [
+    ['7', 'Tax on balance Taxable Income', fields.new2],
+    ['8', 'Less: Rebate for the Income upto 12 Lakhs u/s 87 A (Max Rs. 60,000/-)', fields.new3],
+    ['9', 'Income tax after Rebate ( 7-8 )', Rebate, ''],
+    ['10', 'Surcharge [ 10% of (7) if (7) > 50 lakh; 15% >1 crore; 25% >2 crore; 37% >5 crore ]', fields.new4],
+    ['11', 'Health and Education Cess [ @ 4% of (9+10) ]', fields.new5],
+    ['12', 'Total Tax Payable ( 9 + 10 + 11 )', fields.new6],
+    ['13', 'Less: Relief for arrears of salary u/s. 89(1)', fields.field219],
+    ['14', 'Balance Tax Payable ( 12-13 )', fields.new10],
+    ['15', 'Income tax deducted from salary, Advance tax paid', fields.new7],
+    [
+      { content: '15', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: 'Balance Income Tax to be paid', styles: { halign: 'left', fontStyle: 'bold', fontSize: 10 } },
+      { content: fields.new9, styles: { fontStyle: 'bold', fontSize: 10 } }
+    ]
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 10, 
+    halign: 'left',
+    textColor: 0, 
+    valign: 'middle',
+    lineWidth: 0.2,
+    lineColor: [0,0,0]
+  },
+  columnStyles: {
+    0: { cellWidth: 10 },   // Serial number
+    1: { cellWidth: 140 },  // Description
+    2: { cellWidth: 30, halign: 'center'}, // Value
+  }
+});
+
+
+
+
+doc.autoTable({
+  startY: doc.lastAutoTable.finalY + 1,
+  body: [
+    [ { content: 'DECLARATION', colSpan: 3, styles: { halign: 'center' } }],
+    [{ content: '(I, ' + fields.field211 + ', ' + fields.field5 +', ' + fields.field6 + ' do hereby declare that what is stated above is true to the best of my information and belief)', colSpan: 3, styles: { align: 'justify'} }],
+    [ 'Place:', '',''],
+    [ 'Date:', { content: 'Signature:', styles: { halign: 'left', textColor: [200, 200, 200], cellPadding: { left: 10, right: 0, top: 0, bottom: 0 } } }, ''],
+    [ '', { content: fields.field211 , styles: { halign: 'center' } }, { content: 'Controlling Officer', styles: { halign: 'center', textColor: [150, 150, 150] } }],
+    [ '', { content: fields.field5, styles: { halign: 'center' } }, { content: 'Address', styles: { halign: 'center', textColor: [150, 150, 150] } }],
+    [ '', { content: fields.field6, styles: { halign: 'center' } }, '' ]
+  
+  ],
+  theme: 'grid',
+  styles: { 
+    fontSize: 11, 
+    lineHeight:1.5,
+    textColor: 0, 
+    valign: 'middle', 
+    lineWidth: 0,
+    lineColor: [255,255,255] // white
+
+  },
+  columnStyles: {
+    0: { cellWidth: 40},   // Serial number
+    1: { cellWidth: 70 },  // Description
+    2: { cellWidth: 70}, // Value
+  }
+});
+
+
+// ✅ Add watermark text on the last page - bottom left
+const pageHeight = doc.internal.pageSize.getHeight();
+const totalPages = doc.internal.getNumberOfPages();
+doc.setPage(totalPages); // go to last page
+doc.setFontSize(8);
+doc.setFont("times", "italic");
+doc.setTextColor(150, 150, 150); // grey color
+doc.text("-- www.gstcell.com --", 14, pageHeight - 8); // bottom left
+doc.setTextColor(0, 0, 0); // reset color
+
+
+  // Save PDF
+  doc.save("Income_Tax_" + fields.field2 + ".pdf");
+}
+</script>
+
+
+</body>
+</html>
