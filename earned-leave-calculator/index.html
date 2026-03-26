@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-6346584862129842">
+<title>Earned Leave Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://gistcdn.githack.com/binutaxes/e523432e203b6d00419131187945e1f2/raw/917a882230837861bdc39d4c9dc17ee3dd023e58/Chat.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://gistcdn.githack.com/binutaxes/2c6693a70b0eb092b779dba0bbed6bb6/raw/f10c482e52091eac02c4a4f4b0ada204fd063f7c/Chat.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ALL STYLES SCOPED UNDER #da-calc — safe to embed anywhere
+   ═══════════════════════════════════════════════════════════ */
+
+#da-calc {
+  --dac-navy:      #0d2240;
+  --dac-navy-mid:  #163660;
+  --dac-gold:      #c8922a;
+  --dac-gold-lt:   #e8b84b;
+  --dac-cream:     #faf7f2;
+  --dac-white:     #ffffff;
+  --dac-slate:     #4a5568;
+  --dac-slate-lt:  #718096;
+  --dac-border:    #ddd5c8;
+  --dac-success:   #2d6a4f;
+  --dac-danger:    #c0392b;
+  --dac-row-even:  #f5f0e8;
+  --dac-row-hover: #ede6d6;
+  --dac-shadow:    0 4px 24px rgba(13,34,64,0.10);
+  --dac-shadow-lg: 0 8px 40px rgba(13,34,64,0.16);
+
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--dac-cream);
+  color: var(--dac-navy);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(200,146,42,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(13,34,64,0.06) 0%, transparent 50%);
+  box-sizing: border-box;
+}
+
+#da-calc *, #da-calc *::before, #da-calc *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── HEADER ── */
+#da-calc .dac-header {
+  background: linear-gradient(135deg, var(--dac-navy) 0%, var(--dac-navy-mid) 100%);
+  padding: 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--dac-shadow-lg);
+}
+#da-calc .dac-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    90deg, transparent, transparent 60px,
+    rgba(200,146,42,0.04) 60px, rgba(200,146,42,0.04) 61px
+  );
+}
+#da-calc .dac-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--dac-gold), var(--dac-gold-lt), var(--dac-gold), transparent);
+}
+#da-calc .dac-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  color: var(--dac-white);
+  letter-spacing: 0.02em;
+  position: relative;
+  margin: 0; padding: 0;
+}
+#da-calc .dac-header p {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* ── CONTAINER ── */
+#da-calc .dac-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+/* ── TILES ── */
+#da-calc .dac-tile {
+  background: var(--dac-white);
+  border-radius: 12px;
+  box-shadow: var(--dac-shadow);
+  margin-bottom: 28px;
+  overflow: hidden;
+  border: 1px solid var(--dac-border);
+  animation: dac-fadeUp 0.4s ease both;
+}
+@keyframes dac-fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#da-calc .dac-tile-header {
+  background: linear-gradient(135deg, var(--dac-navy) 0%, var(--dac-navy-mid) 100%);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 10px;
+}
+#da-calc .dac-tile-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--dac-white);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0; padding: 0;
+}
+#da-calc .dac-tile-header .dac-icon {
+  width: 28px; height: 28px;
+  background: rgba(200,146,42,0.25);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+#da-calc .dac-tile-body { padding: 24px; }
+
+/* ── BUTTONS ── */
+#da-calc .dac-btn-row {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px;
+}
+#da-calc .dac-btn {
+  padding: 10px 22px;
+  border: none; border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+  display: inline-flex; align-items: center; gap: 7px;
+  text-decoration: none;
+  line-height: 1;
+}
+#da-calc .dac-btn-primary {
+  background: linear-gradient(135deg, var(--dac-navy), var(--dac-navy-mid));
+  color: var(--dac-white);
+  box-shadow: 0 3px 10px rgba(13,34,64,0.3);
+}
+#da-calc .dac-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(13,34,64,0.4);
+}
+#da-calc .dac-btn-secondary {
+  background: var(--dac-cream);
+  color: var(--dac-slate);
+  border: 1.5px solid var(--dac-border);
+}
+#da-calc .dac-btn-secondary:hover { background: var(--dac-border); }
+#da-calc .dac-btn-gold {
+  background: linear-gradient(135deg, var(--dac-gold), var(--dac-gold-lt));
+  color: var(--dac-white);
+  box-shadow: 0 3px 10px rgba(200,146,42,0.35);
+}
+#da-calc .dac-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(200,146,42,0.45);
+}
+#da-calc .dac-btn-success {
+  background: linear-gradient(135deg, #2d6a4f, #40916c);
+  color: white;
+  box-shadow: 0 3px 10px rgba(45,106,79,0.3);
+}
+#da-calc .dac-btn-success:hover { transform: translateY(-1px); }
+#da-calc .dac-btn-danger {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: white;
+  box-shadow: 0 3px 10px rgba(192,57,43,0.3);
+}
+#da-calc .dac-btn-danger:hover { transform: translateY(-1px); }
+#da-calc .dac-btn-sm {
+  padding: 5px 12px; font-size: 0.82rem; border-radius: 5px;
+}
+
+/* ── TOAST ── */
+#da-calc .dac-toast {
+  position: fixed; top: 20px; right: 20px; z-index: 100000;
+  background: var(--dac-navy); color: white;
+  padding: 14px 20px; border-radius: 10px;
+  box-shadow: var(--dac-shadow-lg); font-size: 0.9rem;
+  max-width: 380px; display: none;
+}
+#da-calc .dac-toast.dac-show {
+  display: flex; align-items: center; gap: 10px;
+  animation: dac-toastIn 0.3s ease both;
+}
+#da-calc .dac-toast.dac-error   { background: var(--dac-danger); }
+#da-calc .dac-toast.dac-warning { background: var(--dac-gold); }
+@keyframes dac-toastIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (min-width: 701px) and (max-width: 1000px) {
+  #da-calc .dac-form-row-1 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── SITE LAYOUT ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans 3', sans-serif; background: #f0ece4; }
+
+/* Sidebar */
+#site-sidebar {
+  position: fixed; top: 0; left: 0; height: 100vh; width: 240px;
+  background: linear-gradient(180deg, #0d2240 0%, #163660 100%);
+  display: flex; flex-direction: column;
+  box-shadow: 4px 0 20px rgba(13,34,64,0.18);
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+#site-sidebar .sidebar-brand {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid rgba(200,146,42,0.3);
+}
+#site-sidebar .sidebar-brand a {
+  text-decoration: none;
+  display: block;
+}
+#site-sidebar .sidebar-brand .brand-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  color: #e8b84b;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+#site-sidebar .sidebar-brand .brand-tagline {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+#site-sidebar nav { flex: 1; padding: 16px 0; }
+#site-sidebar nav ul { list-style: none; }
+#site-sidebar nav ul li a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+#site-sidebar nav ul li a:hover,
+#site-sidebar nav ul li a.active {
+  color: #e8b84b;
+  background: rgba(200,146,42,0.1);
+  border-left-color: #c8922a;
+}
+#site-sidebar nav ul li a .nav-icon {
+  font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0;
+}
+#site-sidebar .sidebar-footer-note {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(200,146,42,0.2);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* Hamburger toggle */
+#sidebar-toggle {
+  display: none;
+  position: fixed; top: 14px; left: 14px; z-index: 1100;
+  background: #0d2240;
+  border: none; border-radius: 8px;
+  width: 42px; height: 42px;
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+#sidebar-toggle span {
+  display: block; width: 22px; height: 2px;
+  background: #e8b84b; border-radius: 2px;
+  transition: all 0.3s;
+}
+#sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 999;
+}
+
+/* Main content area */
+#site-main {
+  margin-left: 240px;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+#site-main #da-calc {
+  flex: 1;
+}
+
+/* ── FOOTER ── */
+#site-footer {
+  background: linear-gradient(135deg, #0d2240 0%, #163660 100%);
+  color: rgba(255,255,255,0.8);
+  padding: 40px 32px 24px;
+  position: relative;
+  overflow: hidden;
+  margin-left: 0;
+}
+#site-footer::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, #c8922a, #e8b84b, #c8922a, transparent);
+}
+#site-footer .footer-grid {
+  max-width: 900px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+#site-footer .footer-section h3 {
+  font-family: 'Playfair Display', serif;
+  color: #e8b84b;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+#site-footer .footer-section p,
+#site-footer .footer-section a {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.8;
+  text-decoration: none;
+  display: block;
+}
+#site-footer .footer-section a:hover { color: #e8b84b; }
+#site-footer .footer-section .contact-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 6px;
+}
+#site-footer .footer-section .contact-item .ci-icon {
+  color: #c8922a; font-size: 0.9rem; margin-top: 2px; flex-shrink: 0;
+}
+#site-footer .footer-bottom {
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(200,146,42,0.2);
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.04em;
+}
+
+/* ── EL CALCULATOR STYLES (scoped inside #da-calc) ── */
+#da-calc .el-section{background:var(--dac-white);border:1px solid var(--dac-border);border-radius:8px;padding:20px;margin-bottom:20px;}
+#da-calc .el-section-title{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#0969da;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;}
+
+/* ── el-flex-row: grid layout, full-width fields ── */
+#da-calc .el-flex-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;align-items:end;width:100%;}
+#da-calc .el-field{display:flex;flex-direction:column;gap:6px;width:100%;}
+#da-calc .el-field label{font-size:12px;font-weight:500;color:#57606a;letter-spacing:.3px;}
+#da-calc .el-field input[type="text"],#da-calc .el-field input[type="date"],#da-calc .el-field input[type="number"],#da-calc .el-field select{
+  background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;color:#1f2328;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 12px;outline:none;
+  transition:border-color .15s;width:100%;min-width:0;box-sizing:border-box;}
+#da-calc .el-field input[type="number"]{width:100%;}
+#da-calc .el-field input:focus,#da-calc .el-field select:focus{border-color:#0969da;}
+
+/* ── Opening balance — inline fraction display (desktop) ── */
+#da-calc .el-ob-group{display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;}
+/* Whole days field — auto width, not stretched */
+#da-calc .el-ob-group > .el-field{width:auto;flex-shrink:0;}
+#da-calc .el-ob-group > .el-field input[type="number"]{width:80px !important;}
+#da-calc .el-ob-sep{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:300;color:#8c959f;line-height:1;flex-shrink:0;margin-top:14px;}
+/* Fraction: num on top, divider, den below */
+#da-calc .el-ob-frac{display:inline-flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;}
+#da-calc .el-ob-frac .el-frac-label{font-size:10px;color:#8c959f;letter-spacing:.3px;margin-bottom:3px;}
+#da-calc .el-ob-frac input{width:64px;background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;color:#1f2328;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:7px 8px;outline:none;text-align:center;transition:border-color .15s;}
+#da-calc .el-ob-frac input:focus{border-color:#0969da;}
+#da-calc .el-frac-divider{width:64px;height:2px;background:#57606a;border-radius:1px;margin:3px 0;}
+#da-calc .el-ob-frac .el-frac-bot-label{font-size:10px;color:#8c959f;letter-spacing:.3px;margin-top:3px;}
+#da-calc .el-ob-preview-wrap{display:flex;flex-direction:column;gap:4px;align-items:center;padding-bottom:2px;}
+#da-calc .el-ob-preview-wrap .el-pv-label{font-size:10px;color:#8c959f;letter-spacing:.5px;text-transform:uppercase;}
+#da-calc .el-ob-preview{font-family:'IBM Plex Mono',monospace;font-size:14px;color:#1a7f37;font-weight:700;padding:7px 16px;background:rgba(26,127,55,.07);border:1px solid rgba(26,127,55,.25);border-radius:6px;min-width:80px;text-align:center;}
+
+/* 1/22 checkbox */
+#da-calc .el-chk-row{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:10px 14px;background:rgba(9,105,218,.05);border:1px solid rgba(9,105,218,.2);border-radius:6px;width:100%;flex-wrap:wrap;box-sizing:border-box;}
+#da-calc .el-chk-row input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:#0969da;flex-shrink:0;margin-top:2px;}
+#da-calc .el-chk-row label{font-size:13px;font-weight:500;color:#1f2328;cursor:pointer;flex-shrink:0;}
+#da-calc .el-chk-note{font-size:11px;color:#57606a;line-height:1.5;}
+
+/* ── Leave rows — desktop: flexbox, all in ONE row ── */
+#da-calc .el-leave-rows{width:100%;}
+#da-calc .el-leave-header-row{
+  display:flex;gap:8px;padding:0 0 8px;
+  border-bottom:1px solid #d0d7de;margin-bottom:10px;
+}
+#da-calc .el-leave-header-row span{
+  font-size:11px;font-weight:600;color:#8c959f;
+  letter-spacing:.5px;text-transform:uppercase;
+}
+/* Each header span matches the flex children below */
+#da-calc .el-leave-header-row span:nth-child(1){flex:2 1 0;min-width:0;}
+#da-calc .el-leave-header-row span:nth-child(2){flex:1 1 0;min-width:0;}
+#da-calc .el-leave-header-row span:nth-child(3){flex:1 1 0;min-width:0;}
+#da-calc .el-leave-header-row span:nth-child(4){width:42px;flex-shrink:0;}
+
+/* Desktop leave row — single flex row */
+#da-calc .el-leave-row{
+  display:flex;gap:8px;margin-bottom:8px;
+  align-items:center;width:100%;
+}
+/* type-row: select gets flex:2, remove button is flex-end item */
+#da-calc .el-leave-row .el-mob-type-row{
+  flex:2 1 0;min-width:0;
+  display:flex;align-items:center;gap:8px;
+}
+#da-calc .el-leave-row .el-mob-type-row select{
+  flex:1;min-width:0;width:100%;
+}
+/* Cap the leave type selector at 10cm on desktop */
+#da-calc .el-leave-row .el-mob-type-row select{max-width:10cm;}
+/* Hide the remove button inside type-row on desktop — moved to end */
+#da-calc .el-leave-row .el-mob-type-row .el-btn-remove{display:none;}
+
+/* dates-row: two equal date fields */
+#da-calc .el-leave-row .el-mob-dates-row{
+  flex:2 1 0;min-width:0;
+  display:flex;gap:8px;align-items:center;
+}
+#da-calc .el-leave-row .el-mob-date-field{
+  flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;gap:0;
+}
+#da-calc .el-leave-row .el-mob-date-field label{display:none;}
+#da-calc .el-leave-row .el-mob-date-field input[type="date"]{width:100%;}
+
+/* Remove button at the very end — fixed width */
+#da-calc .el-leave-row > span[id^="el-dc-"]{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:#1a7f37;font-weight:600;white-space:nowrap;
+  flex-shrink:0;
+}
+/* Standalone remove button (outside type-row wrapper — appended after mob-dates-row) */
+#da-calc .el-leave-row > .el-btn-remove{
+  flex-shrink:0;width:42px;height:34px;
+}
+
+#da-calc .el-leave-row select,
+#da-calc .el-leave-row input[type="date"]{
+  background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;
+  color:#1f2328;font-family:'IBM Plex Mono',monospace;font-size:12px;
+  padding:7px 10px;outline:none;width:100%;
+  transition:border-color .15s;box-sizing:border-box;
+}
+#da-calc .el-leave-row select:focus,
+#da-calc .el-leave-row input[type="date"]:focus{border-color:#0969da;}
+
+/* Surrender row — ef-wrap takes dates-row slot */
+#da-calc .el-leave-row .el-effect-date-wrap{
+  flex:2 1 0;min-width:0;
+  display:flex;gap:8px;align-items:flex-end;
+}
+#da-calc .el-leave-row .el-effect-date-wrap > div{
+  flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;gap:4px;
+}
+#da-calc .el-leave-row .el-effect-date-wrap label{
+  font-size:11px;color:#57606a;font-weight:500;white-space:nowrap;
+}
+#da-calc .el-effect-date-wrap input[type="date"]{
+  background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;
+  color:#1f2328;font-family:'IBM Plex Mono',monospace;
+  font-size:12px;padding:7px 10px;outline:none;width:100%;min-width:0;
+}
+#da-calc .el-effect-date-wrap input[type="number"]{
+  background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;
+  color:#1f2328;font-family:'IBM Plex Mono',monospace;
+  font-size:12px;padding:7px 10px;outline:none;width:100%;
+}
+#da-calc .el-btn-remove{background:transparent;border:1px solid #d0d7de;border-radius:6px;color:#cf222e;cursor:pointer;font-size:16px;height:34px;width:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+#da-calc .el-btn-remove:hover{background:rgba(207,34,46,.1);border-color:#cf222e;}
+#da-calc .el-btn-add{background:transparent;border:1px dashed #0969da;border-radius:6px;color:#0969da;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;padding:8px 16px;margin-top:10px;transition:all .15s;letter-spacing:.5px;}
+#da-calc .el-btn-add:hover{background:rgba(9,105,218,.08);}
+
+/* ── Insert-between row separator ── */
+#da-calc .el-insert-sep{
+  display:flex;align-items:center;gap:6px;
+  margin:2px 0;opacity:0;
+  transition:opacity .2s;
+}
+#da-calc .el-leave-rows:hover .el-insert-sep,
+#da-calc .el-insert-sep:focus-within{opacity:1;}
+#da-calc .el-insert-sep .el-insert-line{flex:1;height:1px;background:#d0d7de;}
+#da-calc .el-btn-insert{
+  background:#fff;border:1.5px solid #0969da;border-radius:50%;
+  color:#0969da;cursor:pointer;font-size:14px;font-weight:700;
+  width:22px;height:22px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;line-height:1;padding:0;
+}
+#da-calc .el-btn-insert:hover{background:#0969da;color:#fff;}
+#da-calc .el-btn-calc{background:#0969da;border:none;border-radius:6px;color:#fff;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;padding:10px 28px;letter-spacing:.5px;transition:opacity .15s;}
+#da-calc .el-btn-calc:hover{opacity:.85;}
+#da-calc .el-btn-pdf{background:#fff;border:1.5px solid #1a7f37;border-radius:6px;color:#1a7f37;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;padding:10px 20px;letter-spacing:.5px;transition:all .15s;display:inline-flex;align-items:center;gap:7px;}
+#da-calc .el-btn-pdf:hover{background:rgba(26,127,55,.08);}
+#da-calc .el-btn-pdf:disabled{opacity:.6;cursor:not-allowed;}
+
+/* ── Results ── */
+#da-calc .el-report-header{display:flex;justify-content:flex-start;flex-wrap:wrap;gap:20px;padding:14px 18px;background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;margin-bottom:20px;}
+#da-calc .el-rh-item{display:flex;flex-direction:column;gap:3px;}
+#da-calc .el-rh-label{font-size:10px;color:#8c959f;font-weight:600;letter-spacing:.8px;text-transform:uppercase;}
+#da-calc .el-rh-value{font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1f2328;font-size:13px;}
+#da-calc .el-year-block{margin-bottom:28px;}
+#da-calc .el-year-label{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#1a7f37;margin-bottom:10px;padding:4px 10px;background:rgba(26,127,55,.08);border-left:3px solid #1a7f37;border-radius:0 4px 4px 0;display:inline-block;}
+#da-calc .el-result-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+/* ── Light gray-blue table heading ── */
+#da-calc .el-result-table th{background:#e8edf5;border:1px solid #c8d3e3;color:#3a5070;font-size:9.5px;font-weight:700;letter-spacing:.6px;padding:8px 8px;text-align:center;text-transform:uppercase;}
+#da-calc .el-result-table td{border:1px solid #d0d7de;color:#1f2328;padding:6px 8px;text-align:center;vertical-align:middle;word-wrap:break-word;overflow-wrap:break-word;}
+#da-calc .el-result-table tr:nth-child(even) td{background:#f7f9fc;}
+#da-calc .el-result-table tr:hover td{background:#edf1f8;}
+#da-calc .el-hl-earn{color:#1a7f37;font-weight:600;}
+#da-calc .el-hl-taken{color:#cf222e;}
+#da-calc .el-hl-bal{color:#0969da;font-weight:700;}
+#da-calc .el-mixed{font-style:italic;}
+#da-calc .el-recalc-row td{background:rgba(207,34,46,.06) !important;color:#cf222e !important;font-weight:600;}
+#da-calc .el-recalc-row td.el-mixed{font-style:italic;}
+#da-calc .el-note-row td{font-style:italic;color:#8c959f;font-size:10.5px;background:rgba(0,0,0,.015);}
+#da-calc #el-error-msg{color:#cf222e;font-size:12px;font-family:'IBM Plex Mono',monospace;display:none;}
+#da-calc #el-result-section{overflow-x:auto;}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — Tablet & Mobile
+   ══════════════════════════════════════════════ */
+
+/* ── Tablet (≤1024px) ── */
+@media(max-width:1024px){
+  #site-sidebar { width: 220px; }
+  #site-main { margin-left: 220px; }
+}
+
+/* ── Mobile & Tablet portrait (≤900px) — slide-out sidebar ── */
+@media(max-width:900px){
+  #sidebar-toggle { display: flex !important; }
+  #site-sidebar { transform: translateX(-100%); width: 260px; }
+  #site-sidebar.open { transform: translateX(0); }
+  #site-main { margin-left: 0; }
+  #sidebar-overlay.show { display: block; }
+  #da-calc .dac-header { padding: 20px 20px 20px 64px; }
+  #site-footer { margin-left: 0; }
+  #site-footer .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+  #da-calc .dac-container { padding: 20px 14px; }
+  #da-calc .dac-tile-body { padding: 16px; }
+  #da-calc .dac-tile-header { padding: 12px 16px; }
+}
+
+/* ── Mobile forms (≤768px) ── */
+@media(max-width:768px){
+  /* Employee details & service period — single column */
+  #da-calc .el-flex-row { grid-template-columns: 1fr; gap: 12px; }
+  #da-calc .el-field { width: 100%; }
+  #da-calc .el-field input[type="text"],
+  #da-calc .el-field input[type="number"],
+  #da-calc .el-field select { width: 100%; min-width: 0 !important; }
+
+  /* ── Date fields: 80% width with calendar icon ── */
+  #da-calc .el-field.el-date-field { width: 80%; }
+  #da-calc .el-date-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  #da-calc .el-date-input-wrap::before {
+    content: '📅';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+  }
+  #da-calc .el-date-input-wrap input[type="date"] {
+    padding-left: 34px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  /* Opening balance — compact single row on mobile */
+  #da-calc .el-ob-group {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    overflow: hidden;
+  }
+  #da-calc .el-ob-group > .el-field {
+    width: auto;
+    flex-shrink: 1; /* allow shrinking if needed */
+    margin-top: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+  #da-calc .el-ob-group > .el-field label {
+    font-size: 10px;
+  }
+  #da-calc .el-ob-group > .el-field input[type="number"] {
+    width: 60px !important;
+    padding: 6px 6px !important;
+    font-size: 12px !important;
+  }
+  /* + sign — smaller on mobile, nudged to fraction midline */
+  #da-calc .el-ob-sep {
+    padding-bottom: 0;
+    flex-shrink: 0;
+    font-size: 16px;
+    align-self: center;
+    margin-top: 16px;
+  }
+  /* Fraction inputs — smaller on mobile */
+  #da-calc .el-ob-frac {
+    flex-shrink: 0;
+  }
+  #da-calc .el-ob-frac input {
+    width: 52px !important;
+    padding: 5px 6px !important;
+    font-size: 12px !important;
+  }
+  #da-calc .el-frac-divider { width: 52px; }
+  #da-calc .el-ob-frac .el-frac-label,
+  #da-calc .el-ob-frac .el-frac-bot-label { font-size: 9px; }
+  /* Preview box — compact */
+  #da-calc .el-ob-preview-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-bottom: 0;
+    flex-shrink: 1;
+  }
+  #da-calc .el-ob-preview-wrap .el-pv-label { font-size: 9px; }
+  #da-calc .el-ob-preview {
+    font-size: 12px !important;
+    padding: 5px 10px !important;
+    min-width: 50px !important;
+  }
+  #da-calc .el-chk-row { width: 100%; }
+
+  /* ── Mobile leave row ── */
+  #da-calc .el-leave-header-row { display: none; }
+  #da-calc .el-leave-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 10px 10px 10px;
+    background: #f6f8fb;
+    border: 1px solid #c8d3e3;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    position: relative;
+  }
+  /* Type-row: select with explicit right margin to avoid overlapping the absolute remove button */
+  #da-calc .el-leave-row .el-mob-type-row {
+    display: flex;
+    align-items: center;
+    /* leave space: 10px right-padding + 34px button + 6px gap = 50px */
+    padding-right: 50px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  #da-calc .el-leave-row .el-mob-type-row select {
+    width: 100%;
+    min-width: 0;
+    background: #f0f2f5; border: 1px solid #d0d7de;
+    border-radius: 6px; color: #1f2328;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    padding: 8px 10px; outline: none;
+    box-sizing: border-box;
+  }
+  /* Remove button: absolute top-right, inside the card padding */
+  #da-calc .el-leave-row > .el-btn-remove {
+    position: absolute !important;
+    top: 10px; right: 10px;
+    width: 34px; height: 34px;
+  }
+
+  /* FROM + TO side by side */
+  #da-calc .el-leave-row .el-mob-dates-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px; width: 100%; box-sizing: border-box;
+  }
+  #da-calc .el-leave-row .el-mob-date-field {
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 0; overflow: hidden;
+  }
+  #da-calc .el-leave-row .el-mob-date-field:first-child label {
+    font-size: 10px; font-weight: 700; color: #0969da;
+    letter-spacing: .6px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 4px; white-space: nowrap;
+  }
+  #da-calc .el-leave-row .el-mob-date-field:first-child label::before { content: '📅'; font-size: 11px; }
+  #da-calc .el-leave-row .el-mob-date-field:last-child label {
+    font-size: 10px; font-weight: 700; color: #1a7f37;
+    letter-spacing: .6px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 4px; white-space: nowrap;
+  }
+  #da-calc .el-leave-row .el-mob-date-field:last-child label::before { content: '📅'; font-size: 11px; }
+  #da-calc .el-leave-row .el-mob-date-field input[type="date"] {
+    width: 100%; background: #f0f2f5; border: 1px solid #d0d7de;
+    border-radius: 6px; color: #1f2328;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    padding: 6px 4px; outline: none; box-sizing: border-box; min-width: 0;
+  }
+  #da-calc .el-leave-row .el-mob-date-field input[type="date"]:focus { border-color: #0969da; }
+
+  /* Day count pill */
+  #da-calc .el-leave-row > span[id^="el-dc-"] {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: #1a7f37; font-weight: 600; padding: 3px 8px;
+    background: rgba(26,127,55,.08); border-radius: 4px; align-self: flex-start;
+  }
+
+  /* Surrender: WEF + Days on ONE row */
+  #da-calc .el-leave-row .el-effect-date-wrap {
+    display: grid; grid-template-columns: 55% 1fr;
+    gap: 10px; width: 100%; align-items: end; box-sizing: border-box;
+  }
+  #da-calc .el-leave-row .el-effect-date-wrap > div {
+    display: flex; flex-direction: column; gap: 4px; min-width: 0;
+  }
+  #da-calc .el-leave-row .el-effect-date-wrap > div label {
+    font-size: 10px !important; font-weight: 700 !important;
+    color: #57606a !important; letter-spacing: .4px !important;
+    text-transform: uppercase; white-space: nowrap;
+  }
+  #da-calc .el-effect-date-wrap input[type="date"],
+  #da-calc .el-effect-date-wrap input[type="number"] {
+    width: 100%; min-width: 0; font-size: 11px; padding: 6px 8px; box-sizing: border-box;
+  }
+
+  /* Result table */
+  #da-calc .el-result-table { font-size: 10px; }
+  #da-calc .el-result-table th { font-size: 8px; padding: 5px 4px; }
+  #da-calc .el-result-table td { font-size: 9px; padding: 4px 4px; }
+  #da-calc .el-report-header { gap: 12px; }
+  #da-calc .el-btn-calc, #da-calc .el-btn-pdf { width: 100%; justify-content: center; }
+  #el-toast { left: 12px !important; right: 12px !important; max-width: none !important; }
+}
+
+@media(max-width:480px){
+  #da-calc .dac-header h1 { font-size: 1.1rem; }
+  #da-calc .dac-header p { font-size: 0.72rem; }
+  #da-calc .dac-container { padding: 14px 10px; }
+  #da-calc .dac-tile-body { padding: 12px 10px; }
+  #da-calc .el-result-table { font-size: 9px; }
+  #da-calc .el-result-table th { font-size: 7px; padding: 4px 3px; }
+  #da-calc .el-result-table td { font-size: 8px; padding: 3px 3px; }
+  #da-calc #el-result-section { overflow-x: auto; }
+  #da-calc #el-result-content { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #site-footer .footer-grid { grid-template-columns: 1fr; }
+  #site-footer { padding: 28px 16px 16px; }
+  #da-calc .el-ob-group { flex-direction: column; align-items: flex-start; }
+  #da-calc .el-ob-sep { display: none; }
+  /* On very small screens date fields take full width */
+  #da-calc .el-field.el-date-field { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HAMBURGER TOGGLE (mobile) ══ -->
+<button id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ══ SIDEBAR ══ -->
+<aside id="site-sidebar">
+  <div class="sidebar-brand">
+    <a href="https://www.gstcell.com" target="_blank">
+      <div class="brand-name">GSTCell</div>
+      <div class="brand-tagline">Tax &amp; Finance Tools</div>
+    </a>
+  </div>
+  <nav>
+    <ul>
+      <li>
+        <a href="https://www.gstcell.com" target="_blank">
+          <span class="nav-icon">🏠</span> Home
+        </a>
+      </li>
+      <li>
+        <a href="https://www.gstcell.com/incometax" target="_blank">
+          <span class="nav-icon">📋</span> Income Tax 2025
+        </a>
+      </li>
+            <li>
+        <a href="https://www.gstcell.com/incometax-2026" target="_blank">
+          <span class="nav-icon">📋</span> Income Tax 2026<span style="color: red;">(New)</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.gstcell.com/sli-calculator" target="_blank">
+          <span class="nav-icon">🧮</span> SLI Calculator
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer-note">gstcell.com</div>
+</aside>
+
+<!-- ══ OVERLAY (mobile) ══ -->
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div id="site-main">
+
+<!-- ═══════════════════════════════════════════════════
+     ROOT WRAPPER — all IDs/classes prefixed with dac-
+     ═══════════════════════════════════════════════════ -->
+<div id="da-calc">
+
+  <!-- HEADER -->
+  <div class="dac-header">
+    <h1>📋 Earned Leave Calculator</h1>
+    <p>Earned Leave Statement — Kerala State Government Employees</p>
+  </div>
+
+  <div class="dac-container">
+
+    <!-- ══════════ EARNED LEAVE CALCULATOR TILE ══════════ -->
+    <div class="dac-tile">
+      <div class="dac-tile-header">
+        <div class="dac-icon">📋</div>
+        <h2>Employee Details</h2>
+      </div>
+      <div class="dac-tile-body">
+        <div class="el-flex-row">
+          <div class="el-field"><label>Name of Employee</label><input type="text" id="emp-name" placeholder="Full name"></div>
+          <div class="el-field"><label>PEN No.</label><input type="text" id="emp-pen" placeholder="PEN number"></div>
+          <div class="el-field"><label>Designation</label><input type="text" id="emp-desig" placeholder="Designation"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dac-tile">
+      <div class="dac-tile-header">
+        <div class="dac-icon">⚖️</div>
+        <h2>Opening Balance — Earned Leave in Credit</h2>
+      </div>
+      <div class="dac-tile-body">
+        <div class="el-ob-group">
+          <div class="el-field"><label>Whole Days</label><input type="number" id="ob-whole" min="0" step="1" value="0" oninput="elUpdateOBPreview()"></div>
+          <div class="el-ob-frac">
+            <span class="el-frac-label">Numerator</span>
+            <input type="number" id="ob-num" min="0" step="1" value="0" oninput="elUpdateOBPreview()">
+            <div class="el-frac-divider"></div>
+            <input type="number" id="ob-den" min="1" step="1" value="11" oninput="elUpdateOBPreview()">
+            <span class="el-frac-bot-label">Denominator</span>
+          </div>
+          <div class="el-ob-preview-wrap">
+            <span class="el-pv-label">= Preview</span>
+            <div class="el-ob-preview" id="ob-preview">0</div>
+          </div>
+        </div>
+        <p style="margin-top:10px;font-size:11px;color:#8c959f;">Earned leave already in credit at the start date. Leave as 0 if starting fresh.</p>
+        <div class="el-chk-row">
+          <input type="checkbox" id="chk-122" onchange="elUpdateOBPreview()">
+          <label for="chk-122">First year is <strong>1/22</strong></label>
+          <span class="el-chk-note">— EL earned as 1 day per 22 days of duty in the first service year. After 3 years, a recalculation entry is automatically added showing the difference (1/11 − 1/22).</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dac-tile">
+      <div class="dac-tile-header">
+        <div class="dac-icon">📅</div>
+        <h2>Service Period</h2>
+      </div>
+      <div class="dac-tile-body">
+        <div class="el-flex-row">
+          <div class="el-field el-date-field">
+            <label>Start Date</label>
+            <div class="el-date-input-wrap"><input type="date" id="start-date"></div>
+          </div>
+          <div class="el-field el-date-field">
+            <label>Stop Date</label>
+            <div class="el-date-input-wrap"><input type="date" id="stop-date"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dac-tile">
+      <div class="dac-tile-header">
+        <div class="dac-icon">🗓️</div>
+        <h2>Leave Entries</h2>
+      </div>
+      <div class="dac-tile-body">
+        <div class="el-leave-rows">
+          <div class="el-leave-header-row">
+            <span>Leave Type</span><span>From Date</span><span>To Date</span><span></span>
+          </div>
+          <div id="el-leave-list"></div>
+        </div>
+        <button class="el-btn-add" onclick="elAddLeaveRow()">+ Add Leave</button>
+      </div>
+    </div>
+
+    <div class="dac-tile">
+      <div class="dac-tile-body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <button class="el-btn-calc" onclick="elCalculate()">Calculate Earned Leave</button>
+        <span id="el-error-msg"></span>
+      </div>
+    </div>
+
+    <!-- ══════════ EL RESULTS TILE ══════════ -->
+    <div class="dac-tile" id="el-result-section" style="display:none;">
+      <div class="dac-tile-header">
+        <div class="dac-icon">📄</div>
+        <h2>Earned Leave Statement</h2>
+      </div>
+      <div class="dac-tile-body">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+          <button class="el-btn-pdf" id="btn-download-pdf" onclick="elDownloadPDF()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download PDF
+          </button>
+        </div>
+        <div id="el-result-content"></div>
+      </div>
+    </div>
+
+  </div><!-- /dac-container -->
+</div><!-- /#da-calc -->
+
+
+
+<!-- ══ COMMUNITY CHAT SECTION ══ -->
+<div id="chat-section">
+  <div class="chat-tile">
+
+    <!-- Header -->
+    <div class="chat-tile-header">
+      <h2>
+        <span class="chat-header-icon">💬</span>
+        Let's discuss &#128512;
+      </h2>
+      <button class="chat-open-btn" onclick="openChatModal('main', null, null)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Post a Comment
+      </button>
+    </div>
+
+    <!-- Chat feed -->
+    <div class="chat-feed" id="chatFeed">
+      <div class="chat-loading">
+        <span class="chat-spinner"></span> Loading messages…
+      </div>
+    </div>
+
+    <!-- Live refresh bar -->
+    <div class="chat-refresh-bar">
+      <span><span class="chat-refresh-dot"></span> Live — refreshes every 15 seconds</span>
+      <span id="chatLastRefresh"></span>
+    </div>
+
+  </div>
+</div><!-- /#chat-section -->
+
+
+<!-- ══ CHAT POPUP MODAL ══ -->
+<div class="chat-modal-overlay" id="chatModal">
+  <div class="chat-modal">
+
+    <!-- Modal header -->
+    <div class="chat-modal-head">
+      <h3 id="chatModalTitle">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Post a Comment
+      </h3>
+      <button class="chat-modal-close" onclick="closeChatModal()">✕</button>
+    </div>
+
+    <!-- Modal body -->
+    <div class="chat-modal-body">
+
+      <!-- Context preview (shown when replying) -->
+      <div class="chat-modal-context" id="chatModalContext"></div>
+
+      <!-- Name field -->
+      <label class="chat-field-label">Your Name</label>
+      <input
+        type="text"
+        class="chat-name-input"
+        id="chatNameInput"
+        placeholder="Enter your name…"
+        maxlength="60"
+        autocomplete="name"
+      />
+
+      <!-- Message field -->
+      <label class="chat-field-label">Message</label>
+      <textarea
+        class="chat-text-area"
+        id="chatTextInput"
+        placeholder="Write your message here…"
+        maxlength="800"
+      ></textarea>
+
+      <!-- Action buttons -->
+      <div class="chat-modal-footer">
+        <button class="chat-cancel-btn" onclick="closeChatModal()">Cancel</button>
+        <button class="chat-post-btn" id="chatPostBtn" onclick="submitChat()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Post
+        </button>
+      </div>
+
+    </div><!-- /.chat-modal-body -->
+  </div><!-- /.chat-modal -->
+</div><!-- /.chat-modal-overlay -->
+
+
+
+
+
+<!-- ══ FOOTER ══ -->
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div class="footer-section">
+      <h3>🏛️ About GSTCell</h3>
+      <p>GSTCell provides free and reliable tax,  finance and other information to all citizens of India. Our tools are designed for ease of use.</p>
+    </div>
+    <div class="footer-section">
+      <h3>📬 Contact Us</h3>
+      <div class="contact-item">
+        <span class="ci-icon">✉️</span>
+        <span ><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c5b4f485f595050125f53517c5b515d5550125f5351">[email&#160;protected]</a></span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">📞</span>
+        <a href="tel:+919744012007">+91 9744012007</a>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">📍</span>
+        <span style="color:rgba(255,255,255,0.65);font-size:0.88rem;">Kachani, Thiruvananthapuram, Kerala</span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">🌐</span>
+        <a href="https://www.gstcell.com" target="_blank">www.gstcell.com</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 GSTCell &nbsp;|&nbsp; All Rights Reserved &nbsp;|&nbsp;
+    <a href="https://www.gstcell.com" target="_blank" style="color:rgba(200,146,42,0.6);text-decoration:none;">www.gstcell.com</a>
+  </div>
+</footer>
+
+</div><!-- /#site-main -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── CONFIG Chat ────────────────────────────────────────────────────
+const CHAT_API       = 'https://script.google.com/macros/s/AKfycbxWLd5d_5d8dr7X-pt7MNOPFEcU6hsyLbeNDPBBcEKxni8y5jX4C_7wvAQXTdTXicqS/exec';
+
+// ─────────────────────────────────────────────────────────────
+</script>
+<script>
+/* ══ SIDEBAR TOGGLE ══ */
+function toggleSidebar() {
+  const sidebar = document.getElementById('site-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+document.querySelectorAll('#site-sidebar nav a').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 900) {
+      document.getElementById('site-sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('show');
+    }
+  });
+});
+</script>
+
+
+<!-- ══ EARNED LEAVE CALCULATOR JS ══ -->
+
+<script>
+(function(){
+'use strict';
+
+/* ── EL Toast — self-contained, no dependency on DA calculator ── */
+function elShowToast(msg, type) {
+  var t = document.getElementById('el-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'el-toast';
+    t.style.cssText = [
+      'position:fixed','top:20px','right:20px','z-index:100000',
+      'padding:13px 20px','border-radius:10px','font-size:0.9rem',
+      'font-weight:600','color:#fff','max-width:380px',
+      'box-shadow:0 4px 20px rgba(0,0,0,0.2)','display:none',
+      'align-items:center','gap:10px',
+      'animation:elToastIn 0.3s ease both',
+      'font-family:Source Sans 3,sans-serif'
+    ].join(';');
+    var style = document.createElement('style');
+    style.textContent = '@keyframes elToastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}';
+    document.head.appendChild(style);
+    document.body.appendChild(t);
+  }
+  t.style.background = (type === 'error') ? '#c0392b' : '#9a6700';
+  t.textContent = (type === 'error' ? '⚠ ' : 'ℹ ') + msg;
+  t.style.display = 'flex';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 4500);
+}
+
+let elLeaveRowCount = 0;
+
+const EL_LEAVE_TYPES = [
+  {value:'CL',  label:'Commuted Leave'},
+  {value:'STL', label:'Study Leave'},
+  {value:'MDL', label:'Absent'},
+  {value:'HPL', label:'Half Pay Leave'},
+  {value:'ML',  label:'Maternity Leave'},
+  {value:'PL',  label:'Paternity Leave'},
+  {value:'EL',  label:'Earned Leave'},
+  {value:'LWA', label:'Leave Without Allowance'},
+  {value:'SEL', label:'Surrender of Earned Leave'},
+];
+
+/* ── Helpers ── */
+function elParseDate(s){if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function elFmtDate(dt){if(!dt)return'';return`${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;}
+function elAddDays(dt,n){const d=new Date(dt);d.setDate(d.getDate()+n);return d;}
+function elDiffDays(a,b){return Math.round((b-a)/86400000)+1;}
+
+function elToMixed(val,denom){
+  denom=denom||11;
+  if(val===0||!val||isNaN(val))return'0';
+  const neg=val<0; val=Math.abs(val);
+  const whole=Math.floor(val);
+  const num=Math.round((val-whole)*denom);
+  let res;
+  if(num>=denom)res=String(whole+1);
+  else if(num===0)res=String(whole);
+  else if(whole===0)res=`${num}/${denom}`;
+  else res=`${whole}\u00a0${num}/${denom}`;
+  return neg?`\u2212${res}`:res;
+}
+
+function elShowError(msg){const el=document.getElementById('el-error-msg');el.textContent=msg;el.style.display=msg?'inline':'none';}
+
+/* ── Opening Balance ── */
+function elUpdateOBPreview(){document.getElementById('ob-preview').textContent=elToMixed(elGetOpeningBalance());}
+window.elUpdateOBPreview = elUpdateOBPreview;
+
+function elGetOpeningBalance(){
+  const w=parseInt(document.getElementById('ob-whole').value)||0;
+  const n=parseInt(document.getElementById('ob-num').value)||0;
+  const d=parseInt(document.getElementById('ob-den').value)||11;
+  return d>0?w+n/d:w;
+}
+
+/* ── Leave Rows ── */
+
+function elMakeSep(afterId){
+  const sep=document.createElement('div');
+  sep.className='el-insert-sep';
+  sep.dataset.afterId=afterId;
+  sep.innerHTML=`<div class="el-insert-line"></div><button class="el-btn-insert" title="Insert leave entry here" onclick="elInsertLeaveRowAfter('${afterId}')">+</button><div class="el-insert-line"></div>`;
+  return sep;
+}
+
+function elAddLeaveRow(){
+  elLeaveRowCount++;
+  const id=`el-lr-${elLeaveRowCount}`;
+  const div=document.createElement('div');
+  div.className='el-leave-row'; div.id=id; div.dataset.isSurrender='false';
+  div.innerHTML=elBuildRowHTML(id,false);
+  const list=document.getElementById('el-leave-list');
+  list.appendChild(div);
+  list.appendChild(elMakeSep(id));
+}
+window.elAddLeaveRow = elAddLeaveRow;
+
+function elInsertLeaveRowAfter(afterId){
+  elLeaveRowCount++;
+  const id=`el-lr-${elLeaveRowCount}`;
+  const div=document.createElement('div');
+  div.className='el-leave-row'; div.id=id; div.dataset.isSurrender='false';
+  div.innerHTML=elBuildRowHTML(id,false);
+  const list=document.getElementById('el-leave-list');
+  // Find the existing separator that sits after afterId
+  const existingSep=list.querySelector(`.el-insert-sep[data-after-id="${afterId}"]`);
+  if(existingSep){
+    // Desired order: [afterId row] [sepBetween → inserts after afterId] [newRow] [existingSep repurposed → inserts after newRow]
+    // 1. Build a new separator that inserts after afterId (sits between afterId and newRow)
+    const sepBetween=elMakeSep(afterId);
+    // 2. Insert newRow before existingSep  →  [..., afterId, existingSep, ...] becomes [..., afterId, newRow, existingSep, ...]
+    list.insertBefore(div,existingSep);
+    // 3. Insert sepBetween before newRow  →  becomes [..., afterId, sepBetween, newRow, existingSep, ...]
+    list.insertBefore(sepBetween,div);
+    // 4. Repurpose existingSep to now belong to newRow
+    existingSep.dataset.afterId=id;
+    existingSep.querySelector('.el-btn-insert').onclick=function(){elInsertLeaveRowAfter(id);};
+  } else {
+    list.appendChild(div);
+    list.appendChild(elMakeSep(id));
+  }
+}
+window.elInsertLeaveRowAfter = elInsertLeaveRowAfter;
+
+function elBuildRowHTML(id,isSurrender){
+  const opts=EL_LEAVE_TYPES.map(lt=>`<option value="${lt.value}"${lt.value==='SEL'&&isSurrender?' selected':''}>${lt.label}</option>`).join('');
+  if(isSurrender){
+    return `
+      <div class="el-mob-type-row">
+        <select onchange="elOnTypeChange('${id}',this.value)">${opts}</select>
+      </div>
+      <div class="el-effect-date-wrap">
+        <div>
+          <label style="font-size:10px;color:#57606a;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">W.E.F Date</label>
+          <input type="date" class="el-wef-date" style="background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;color:#1f2328;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 10px;outline:none;width:100%;">
+        </div>
+        <div>
+          <label style="font-size:10px;color:#57606a;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Days</label>
+          <input type="number" class="el-sel-days" min="1" step="1" placeholder="No. of days" style="background:#f0f2f5;border:1px solid #d0d7de;border-radius:6px;color:#1f2328;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 10px;outline:none;width:100%;">
+        </div>
+      </div>
+      <button class="el-btn-remove" onclick="elRemoveLeaveRow('${id}')">&#x2715;</button>`;
+  }
+  return `
+    <div class="el-mob-type-row">
+      <select onchange="elOnTypeChange('${id}',this.value)">${opts}</select>
+    </div>
+    <div class="el-mob-dates-row">
+      <div class="el-mob-date-field">
+        <label>From</label>
+        <input type="date" class="el-from-date" onchange="elUpdateDayCount('${id}')">
+      </div>
+      <div class="el-mob-date-field">
+        <label>To</label>
+        <input type="date" class="el-to-date" onchange="elUpdateDayCount('${id}')">
+      </div>
+    </div>
+    <button class="el-btn-remove" onclick="elRemoveLeaveRow('${id}')">&#x2715;</button>
+    <span id="el-dc-${id}" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#1a7f37;font-weight:600;display:none;"></span>`;
+}
+
+function elUpdateDayCount(id){
+  const row=document.getElementById(id); if(!row)return;
+  const fromVal=row.querySelector('.el-from-date')?.value;
+  const toVal=row.querySelector('.el-to-date')?.value;
+  const dcEl=document.getElementById('el-dc-'+id);
+  const selEl=row.querySelector('select');
+  const leaveType=selEl?selEl.value:'';
+
+  if(!fromVal||!toVal){if(dcEl)dcEl.style.display='none';return;}
+  const fromDt=elParseDate(fromVal);
+  const toDt=elParseDate(toVal);
+  if(toDt<fromDt){if(dcEl)dcEl.style.display='none';return;}
+
+  const days=elDiffDays(fromDt,toDt);
+
+  if(leaveType==='ML'&&days>180){
+    elShowToast('Maximum leave available for Maternity Leave is 180 days.', 'warning');
+    row.querySelector('.el-to-date').value='';
+    if(dcEl)dcEl.style.display='none';
+    return;
+  }
+  if(leaveType==='PL'&&days>10){
+    elShowToast('Maximum leave available for Paternity Leave is 10 days.', 'warning');
+    row.querySelector('.el-to-date').value='';
+    if(dcEl)dcEl.style.display='none';
+    return;
+  }
+  if(leaveType==='CL'){
+    const use122=document.getElementById('chk-122').checked;
+    if(use122){
+      const startStr=document.getElementById('start-date').value;
+      if(startStr){
+        const startDt=elParseDate(startStr);
+        const threeYearMark=new Date(startDt.getFullYear()+3,startDt.getMonth(),startDt.getDate());
+        if(fromDt<threeYearMark){
+          elShowToast('Commuted Leave is available only after three years of date of joining.', 'warning');
+          row.querySelector('.el-from-date').value='';
+          row.querySelector('.el-to-date').value='';
+          if(dcEl)dcEl.style.display='none';
+          return;
+        }
+      }
+    }
+  }
+
+  // All validations passed — show day count
+  if(dcEl){dcEl.textContent=days+' day'+(days===1?'':'s');dcEl.style.display='inline';}
+}
+window.elUpdateDayCount = elUpdateDayCount;
+
+function elOnTypeChange(id,val){
+  const row=document.getElementById(id);if(!row)return;
+  const isSurrender=val==='SEL';
+  if(isSurrender&&row.dataset.isSurrender==='false'){row.dataset.isSurrender='true';row.innerHTML=elBuildRowHTML(id,true);}
+  else if(!isSurrender&&row.dataset.isSurrender==='true'){row.dataset.isSurrender='false';row.innerHTML=elBuildRowHTML(id,false);row.querySelector('select').value=val;}
+  else{
+    const fromVal=row.querySelector('.el-from-date')?.value;
+    const toVal=row.querySelector('.el-to-date')?.value;
+    if(fromVal&&toVal)elUpdateDayCount(id);
+  }
+}
+window.elOnTypeChange = elOnTypeChange;
+
+function elRemoveLeaveRow(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const list=document.getElementById('el-leave-list');
+  // Separator that follows this row
+  const sepAfter=list.querySelector('.el-insert-sep[data-after-id="'+id+'"]');
+  // Separator immediately before this row (if any)
+  let sepBefore=el.previousElementSibling;
+  if(sepBefore&&!sepBefore.classList.contains('el-insert-sep'))sepBefore=null;
+  if(sepAfter&&sepBefore){
+    // Row is in the middle — remove the trailing sep; the leading sep already targets the correct predecessor
+    sepAfter.remove();
+  } else if(sepAfter){
+    // Row is first — remove its trailing sep
+    sepAfter.remove();
+  } else if(sepBefore){
+    // Row is last — remove its leading sep
+    sepBefore.remove();
+  }
+  el.remove();
+}
+window.elRemoveLeaveRow = elRemoveLeaveRow;
+
+/* ── Main Calculate ── */
+function elCalculate(){
+  elShowError('');
+  document.getElementById('el-result-section').style.display='none';
+
+  const startStr=document.getElementById('start-date').value;
+  const stopStr =document.getElementById('stop-date').value;
+  if(!startStr||!stopStr){elShowError('Please select both Start and Stop dates.');return;}
+
+  const startDt=elParseDate(startStr);
+  const stopDt =elParseDate(stopStr);
+  if(stopDt<=startDt){elShowError('Stop date must be after Start date.');return;}
+
+  const use122=document.getElementById('chk-122').checked;
+  const openingBalance=elGetOpeningBalance();
+
+  const firstYearEnd=use122?new Date(startDt.getFullYear()+1,startDt.getMonth(),startDt.getDate()-1):null;
+  const threeYearEnd=use122?new Date(startDt.getFullYear()+3,startDt.getMonth(),startDt.getDate()-1):null;
+
+  const leaveInputRows=Array.from(document.getElementById('el-leave-list').children);
+  const leaves=[];
+  for(const row of leaveInputRows){
+    const sel=row.querySelector('select');if(!sel)continue;
+    const type=sel.value;
+    if(type==='SEL'){
+      const wef=row.querySelector('.el-wef-date')?.value;
+      if(!wef){elShowError('A Surrender row is missing the W.E.F. date.');return;}
+      const wefDt=elParseDate(wef);
+      if(wefDt<startDt||wefDt>stopDt){elShowError('W.E.F. date must be within start–stop range.');return;}
+      const sv=row.querySelector('.el-sel-days')?.value;
+      const selDays=sv?parseInt(sv,10):null;
+      if(selDays!==null&&(isNaN(selDays)||selDays<1)){elShowError('Days Surrendered must be a positive integer.');return;}
+      leaves.push({type,wefDt,fromDt:null,toDt:null,selDays});
+    } else {
+      const fromStr=row.querySelector('.el-from-date')?.value;
+      const toStr  =row.querySelector('.el-to-date')?.value;
+      if(!fromStr||!toStr){elShowError('Each leave row must have From and To dates.');return;}
+      const fromDt=elParseDate(fromStr);const toDt=elParseDate(toStr);
+      if(fromDt<startDt||toDt>stopDt){elShowError('Leave dates must be within start–stop range.');return;}
+      if(toDt<fromDt){elShowError('"To" date cannot be before "From" date.');return;}
+      leaves.push({type,fromDt,toDt,wefDt:null});
+    }
+  }
+
+  leaves.sort((a,b)=>{
+    const da=a.type==='SEL'?a.wefDt:a.fromDt;
+    const db=b.type==='SEL'?b.wefDt:b.fromDt;
+    return da-db;
+  });
+
+  const normalLeaves=leaves.filter(l=>l.type!=='SEL');
+  const selEvents   =leaves.filter(l=>l.type==='SEL');
+
+  let cursor=startDt;
+  const intervals=[];
+  for(const lv of normalLeaves){
+    if(cursor<lv.fromDt)intervals.push({kind:'duty',from:cursor,to:new Date(lv.fromDt.getTime()-86400000)});
+    intervals.push({kind:'leave',from:lv.fromDt,to:lv.toDt,leaveType:lv.type});
+    cursor=elAddDays(lv.toDt,1);
+  }
+  if(cursor<=stopDt)intervals.push({kind:'duty',from:cursor,to:stopDt});
+
+  // Collect SEL W.E.F. dates — each one forces a duty split: duty ends on wef-1, resumes from wef
+  const selWefTimes=new Set(selEvents.map(l=>l.wefDt.getTime()));
+
+  function splitInterval(iv){
+    const breakpoints=new Set();
+    // Never split a leave interval at year boundaries — only duty intervals need year splits
+    if(iv.kind==='duty'){
+      // Financial year ends on 31-Mar. Collect all 31-Mar boundaries within this interval.
+      function fyEndDates(from,to){
+        // Returns array of Date(year,2,31) for each FY end that lies strictly between from and to
+        const ends=[];
+        // The FY ending in a given calendar year y is 31-Mar-y
+        // We need to check years from from.getFullYear() to to.getFullYear()+1 to be safe
+        for(let y=from.getFullYear();y<=to.getFullYear()+1;y++){
+          const fyEnd=new Date(y,2,31); // March 31
+          if(fyEnd>from&&fyEnd<to)ends.push(fyEnd);
+        }
+        return ends;
+      }
+      if(use122&&firstYearEnd){
+        if(firstYearEnd>=iv.from&&firstYearEnd<iv.to)breakpoints.add(firstYearEnd.getTime());
+        const afterStart=(firstYearEnd>=iv.from)?elAddDays(firstYearEnd,1):iv.from;
+        if(afterStart<=iv.to){
+          fyEndDates(new Date(afterStart.getTime()-1),iv.to).forEach(d=>breakpoints.add(d.getTime()));
+        }
+      } else {
+        fyEndDates(iv.from,iv.to).forEach(d=>breakpoints.add(d.getTime()));
+      }
+      // Split duty intervals at threeYearEnd
+      if(threeYearEnd&&threeYearEnd>=iv.from&&threeYearEnd<iv.to)
+        breakpoints.add(threeYearEnd.getTime());
+      // Split duty intervals at the day BEFORE each SEL W.E.F. date that falls within this interval:
+      // earning stops on wef-1 (one duty row), then a fresh duty row starts from wef onwards.
+      for(const wefT of selWefTimes){
+        const dayBefore=new Date(wefT-86400000);
+        // Split only if wef itself is strictly inside this duty interval (not at its very start)
+        if(dayBefore>=iv.from&&dayBefore<iv.to)breakpoints.add(dayBefore.getTime());
+      }
+    }
+    const sorted=[...breakpoints].sort((a,b)=>a-b);
+    const parts=[];let cur=new Date(iv.from);
+    for(const bp of sorted){
+      const bpDt=new Date(bp);
+      parts.push({...iv,from:new Date(cur),to:new Date(bpDt)});
+      cur=elAddDays(bpDt,1);
+    }
+    parts.push({...iv,from:new Date(cur),to:new Date(iv.to)});
+    return parts;
+  }
+
+  const splitIntervals=[];
+  for(const iv of intervals)splitInterval(iv).forEach(p=>splitIntervals.push(p));
+
+  let bal=openingBalance;
+  let firstYearELEarned=0,firstYearELAt11=0,recalcInserted=false,inFirstYear=use122;
+  const tableRows=[];
+
+  if(openingBalance>0)tableRows.push({kind:'opening',date:startDt,balance:openingBalance,year:startDt.getFullYear()});
+
+  let selIdx=0;
+  for(const iv of splitIntervals){
+    // Insert recalc row ONLY before a duty interval, never mid-leave
+    if(use122&&!recalcInserted&&threeYearEnd&&iv.from>threeYearEnd&&iv.kind==='duty'){
+      const diff=firstYearELAt11-firstYearELEarned;
+      bal+=diff;
+      if(bal>300)bal=300;
+      tableRows.push({kind:'recalc',date:elAddDays(threeYearEnd,1),diff,newBal:bal,year:elAddDays(threeYearEnd,1).getFullYear()});
+      recalcInserted=true;
+    }
+    const totalDays=elDiffDays(iv.from,iv.to);
+    if(iv.kind==='duty'){
+      const isFirstYearSeg=use122&&inFirstYear&&(firstYearEnd&&iv.to<=firstYearEnd);
+      if(use122&&inFirstYear&&firstYearEnd&&iv.from>firstYearEnd)inFirstYear=false;
+      const rate=(use122&&isFirstYearSeg)?22:11;
+      const earnedExact=totalDays/rate;
+      // For first-year (1/22) segments: store the exact decimal in row.earned so display
+      // can Math.round it correctly. The balance and firstYearELEarned use Math.round
+      // so the running total is the properly rounded credited amount.
+      const earnedForBal=(use122&&isFirstYearSeg)?Math.round(earnedExact):earnedExact;
+      const earned=earnedExact; // always store exact; display rounds for 1/22 rows
+      if(use122&&isFirstYearSeg){firstYearELEarned+=earnedForBal;firstYearELAt11+=totalDays/11;}
+      bal+=earnedForBal;
+      if(bal>300)bal=300;
+      tableRows.push({kind:'duty',from:iv.from,to:iv.to,totalDays,earned,rate,cumul:bal,elTaken:0,balance:bal,year:iv.from.getFullYear()});
+      // Attach SEL to the duty row that ends on wef-1 (i.e. wef is the day after iv.to)
+      while(selIdx<selEvents.length&&elAddDays(iv.to,1).getTime()===selEvents[selIdx].wefDt.getTime()){
+        const sel=selEvents[selIdx];
+        const deducted=sel.selDays!==null?Math.min(sel.selDays,bal):bal;
+        bal-=deducted;
+        tableRows.push({kind:'sel',wefDt:sel.wefDt,selDays:sel.selDays,deducted,balBefore:bal+deducted,balAfter:bal,year:sel.wefDt.getFullYear()});
+        selIdx++;
+      }
+    } else {
+      while(selIdx<selEvents.length&&selEvents[selIdx].wefDt<iv.from){
+        const sel=selEvents[selIdx];
+        const deducted=sel.selDays!==null?Math.min(sel.selDays,bal):bal;
+        bal-=deducted;
+        tableRows.push({kind:'sel',wefDt:sel.wefDt,selDays:sel.selDays,deducted,balBefore:bal+deducted,balAfter:bal,year:sel.wefDt.getFullYear()});
+        selIdx++;
+      }
+      const elTaken=iv.leaveType==='EL'?totalDays:0;
+      const prevBal=bal;
+      bal-=elTaken;
+      tableRows.push({kind:'leave',from:iv.from,to:iv.to,totalDays,earned:0,rate:11,cumul:prevBal,elTaken,balance:bal,leaveType:iv.leaveType,year:iv.from.getFullYear()});
+    }
+  }
+  if(use122&&!recalcInserted&&threeYearEnd&&threeYearEnd<=stopDt){
+    const diff=firstYearELAt11-firstYearELEarned;
+    bal+=diff;
+    if(bal>300)bal=300;
+    tableRows.push({kind:'recalc',date:elAddDays(threeYearEnd,1),diff,newBal:bal,year:elAddDays(threeYearEnd,1).getFullYear()});
+  }
+  while(selIdx<selEvents.length){
+    const sel=selEvents[selIdx];
+    const deducted=sel.selDays!==null?Math.min(sel.selDays,bal):bal;
+    bal-=deducted;
+    tableRows.push({kind:'sel',wefDt:sel.wefDt,selDays:sel.selDays,deducted,balBefore:bal+deducted,balAfter:bal,year:sel.wefDt.getFullYear()});
+    selIdx++;
+  }
+
+  function getYrKey(row){
+    let dt;
+    if(row.kind==='sel')dt=row.wefDt;
+    else if(row.kind==='opening'||row.kind==='recalc')dt=row.date||new Date(row.year,0,1);
+    else dt=row.from;
+    if(use122&&firstYearEnd&&dt<=firstYearEnd)return'FIRST_YEAR';
+    // Financial year: Apr 1 of fyStart to Mar 31 of fyStart+1
+    const m=dt.getMonth(); // 0=Jan … 3=Apr … 11=Dec
+    const y=dt.getFullYear();
+    const fyStart=(m>=3)?y:y-1; // Apr(3)–Dec belong to FY starting that year; Jan–Mar to previous
+    return`${fyStart}-${fyStart+1}`;
+  }
+
+  const yearGroups={},yearOrder=[];
+  for(const row of tableRows){
+    const yr=getYrKey(row);
+    if(!yearGroups[yr]){yearGroups[yr]=[];yearOrder.push(yr);}
+    yearGroups[yr].push(row);
+  }
+
+  const empName =document.getElementById('emp-name').value.trim()||'—';
+  const empPen  =document.getElementById('emp-pen').value.trim()||'—';
+  const empDesig=document.getElementById('emp-desig').value.trim()||'—';
+
+  let html=`<div class="el-report-header">
+    <div class="el-rh-item"><span class="el-rh-label">Name</span><span class="el-rh-value">${empName}</span></div>
+    <div class="el-rh-item"><span class="el-rh-label">PEN No.</span><span class="el-rh-value">${empPen}</span></div>
+    <div class="el-rh-item"><span class="el-rh-label">Designation</span><span class="el-rh-value">${empDesig}</span></div>
+    <div class="el-rh-item"><span class="el-rh-label">Period</span><span class="el-rh-value">${elFmtDate(startDt)} &mdash; ${elFmtDate(stopDt)}</span></div>
+    <div class="el-rh-item"><span class="el-rh-label">Opening EL Balance</span><span class="el-rh-value" style="color:#1a7f37;">${elToMixed(openingBalance)} days</span></div>
+    ${use122?`<div class="el-rh-item"><span class="el-rh-label">First Year Rate</span><span class="el-rh-value" style="color:#9a6700;">1/22 (probationer)</span></div>`:''}
+  </div>`;
+
+  for(const yr of yearOrder){
+    const yrLabel=(yr==='FIRST_YEAR')
+      ?`First Year &nbsp;(${elFmtDate(startDt)} &mdash; ${elFmtDate(firstYearEnd)}) &nbsp;<span style="color:#9a6700;font-size:11px;">@ 1/22</span>`
+      :(()=>{const [fyS,fyE]=yr.split(`-`);return`Financial Year ${fyS}-${fyE.slice(2)}`;})();
+    html+=`<div class="el-year-block">
+      <div class="el-year-label">${yrLabel}</div>
+      <div style="overflow-x:auto;">
+      <table class="el-result-table" style="table-layout:fixed;width:100%;min-width:600px;">
+        <colgroup>
+          <col style="width:10%;"><col style="width:10%;"><col style="width:7%;">
+          <col style="width:12%;"><col style="width:12%;"><col style="width:10%;">
+          <col style="width:10%;"><col style="width:10%;"><col style="width:11%;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2">Period<br>From</th>
+            <th rowspan="2">Period<br>To</th>
+            <th rowspan="2">Total<br>Days</th>
+            <th rowspan="2">Leave Earned<br>(Days&nbsp;&divide;&nbsp;Rate)</th>
+            <th rowspan="2">Total Leave<br>(B/F + Earned)</th>
+            <th colspan="2" style="background:rgba(9,105,218,.08);color:#0969da;">Earned Leave Details</th>
+            <th rowspan="2">EL Taken /<br>Deducted</th>
+            <th rowspan="2">Balance<br>Leave</th>
+          </tr>
+          <tr>
+            <th style="background:rgba(9,105,218,.06);color:#0969da;">EL From</th>
+            <th style="background:rgba(9,105,218,.06);color:#0969da;">EL To</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    for(const row of yearGroups[yr]){
+      if(row.kind==='opening'){
+        html+=`<tr style="background:rgba(9,105,218,.04);">
+          <td colspan="4" style="text-align:left;color:#0969da;font-style:italic;padding:6px 10px;">
+            &#9733; Opening Balance brought forward as on ${elFmtDate(row.date)}
+          </td>
+          <td class="el-hl-bal el-mixed">${elToMixed(row.balance)}</td>
+          <td colspan="2" style="color:#8c959f;">—</td>
+          <td style="color:#8c959f;">—</td>
+          <td class="el-hl-bal el-mixed">${elToMixed(row.balance)}</td>
+        </tr>`;
+        continue;
+      }
+      if(row.kind==='recalc'){
+        const diffDisp=elToMixed(row.diff);
+        html+=`<tr class="el-recalc-row">
+          <td colspan="3" style="text-align:left;padding:6px 10px;">
+            &#9650; Recalculation vide GO(P)No.75/2007/Fin Dated 27/02/2007: First-year EL upgraded from 1/22 to 1/11 w.e.f. ${elFmtDate(row.date)}
+          </td>
+          <td class="el-mixed">+&nbsp;${diffDisp}</td>
+          <td class="el-mixed">${elToMixed(row.newBal)}</td>
+          <td colspan="2">—</td>
+          <td>—</td>
+          <td class="el-mixed">${elToMixed(row.newBal)}</td>
+        </tr>`;
+        continue;
+      }
+      if(row.kind==='sel')continue;
+      if(row.kind==='leave'&&row.leaveType==='EL')continue;
+      if(row.kind==='leave'&&row.leaveType!=='EL'){
+        const lvName=EL_LEAVE_TYPES.find(l=>l.value===row.leaveType)?.label||row.leaveType;
+        html+=`<tr class="el-note-row">
+          <td colspan="9" style="text-align:left;padding:5px 10px;">
+            ${lvName} for ${row.totalDays} days for the period from ${elFmtDate(row.from)} to ${elFmtDate(row.to)}
+          </td>
+        </tr>`;
+        continue;
+      }
+      // Duty row
+      const rowList=yearGroups[yr];
+      const rowIdx=rowList.indexOf(row);
+      const nextRow=rowList[rowIdx+1]||null;
+      const selNext=(nextRow&&nextRow.kind==='sel')?nextRow:null;
+      let elNext=null;
+      for(let ni=rowIdx+1;ni<rowList.length;ni++){
+        if(rowList[ni].kind==='sel')continue;
+        if(rowList[ni].kind==='leave'&&rowList[ni].leaveType==='EL')elNext=rowList[ni];
+        break;
+      }
+      const rateLabel=row.rate===22?' <span style="color:#9a6700;font-size:9px;">(1/22)</span>':'';
+      // If checkbox is checked and this is a 1/22 first-year row, show earned as decimal rounded to 0 dp
+      const earnedDisplay=row.rate===22?String(Math.round(row.earned)):elToMixed(row.earned,row.rate);
+      if(elNext){
+        html+=`<tr>
+          <td>${elFmtDate(row.from)}</td><td>${elFmtDate(row.to)}</td>
+          <td>${row.totalDays}</td>
+          <td class="el-hl-earn el-mixed">${earnedDisplay}${rateLabel}</td>
+          <td class="el-mixed">${elToMixed(elNext.cumul)}</td>
+          <td class="el-hl-taken">${elFmtDate(elNext.from)}</td>
+          <td class="el-hl-taken">${elFmtDate(elNext.to)}</td>
+          <td class="el-hl-taken">${elNext.elTaken}</td>
+          <td class="el-hl-bal el-mixed">${elToMixed(elNext.balance)}</td>
+        </tr>`;
+      } else if(selNext){
+        const info=selNext.selDays!==null?`${selNext.selDays}`:'all';
+        html+=`<tr style="background:rgba(154,103,0,.04);">
+          <td>${elFmtDate(row.from)}</td><td>${elFmtDate(row.to)}</td>
+          <td>${row.totalDays}</td>
+          <td class="el-hl-earn el-mixed">${earnedDisplay}${rateLabel}</td>
+          <td class="el-mixed">${elToMixed(row.cumul)}</td>
+          <td colspan="2" style="color:#9a6700;font-style:italic;font-size:10.5px;text-align:center;">
+            Earned leave surrendered w.e.f. ${elFmtDate(selNext.wefDt)} for ${info} days
+          </td>
+          <td class="el-hl-taken el-mixed">${elToMixed(selNext.deducted)}</td>
+          <td class="el-hl-bal el-mixed">${elToMixed(selNext.balAfter)}</td>
+        </tr>`;
+      } else {
+        html+=`<tr>
+          <td>${elFmtDate(row.from)}</td><td>${elFmtDate(row.to)}</td>
+          <td>${row.totalDays}</td>
+          <td class="el-hl-earn el-mixed">${earnedDisplay}${rateLabel}</td>
+          <td class="el-mixed">${elToMixed(row.cumul)}</td>
+          <td style="color:#8c959f;">—</td><td style="color:#8c959f;">—</td>
+          <td>0</td>
+          <td class="el-hl-bal el-mixed">${elToMixed(row.balance)}</td>
+        </tr>`;
+      }
+    }
+    html+=`</tbody></table></div></div>`;
+  }
+
+  document.getElementById('el-result-content').innerHTML=html;
+  document.getElementById('el-result-section').style.display='block';
+  document.getElementById('el-result-section').scrollIntoView({behavior:'smooth'});
+}
+window.elCalculate = elCalculate;
+
+/* ── Download PDF ── */
+async function elDownloadPDF(){
+  const btn=document.getElementById('btn-download-pdf');
+  btn.disabled=true;
+  btn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Generating…`;
+
+  try{
+    // Collect data from rendered result
+    const empName =document.getElementById('emp-name').value.trim()||'—';
+    const empPen  =document.getElementById('emp-pen').value.trim()||'—';
+    const empDesig=document.getElementById('emp-desig').value.trim()||'—';
+    const startStr=document.getElementById('start-date').value;
+    const stopStr =document.getElementById('stop-date').value;
+    const periodStr=(startStr&&stopStr)?`${startStr.split('-').reverse().join('/')} – ${stopStr.split('-').reverse().join('/')}`:'';
+
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+    const PW=doc.internal.pageSize.getWidth();
+
+    // ── Title block ──
+    doc.setFillColor(13,34,64);
+    doc.rect(0,0,PW,52,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(255,255,255);
+    doc.text('Earned Leave Statement',PW/2,22,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(200,200,200);
+    doc.text('Kerala State Government Employees',PW/2,36,{align:'center'});
+
+    // ── Employee header row ──
+    doc.setFillColor(240,242,245);doc.rect(0,52,PW,28,'F');
+    doc.setTextColor(90,100,110);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    const labels=[['NAME',40],['PEN NO.',160],['DESIGNATION',260],['PERIOD',380],['OPENING EL BALANCE',560]];
+    labels.forEach(([l,x])=>doc.text(l,x,63));
+    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(20,30,40);
+    const vals=[[empName,40],[empPen,160],[empDesig,260],[periodStr,380]];
+    vals.forEach(([v,x])=>doc.text(String(v),x,75));
+    doc.setTextColor(26,127,55);doc.setFont('helvetica','bold');
+    doc.text('0 days',560,75);
+    doc.setTextColor(20,30,40);
+
+    let startY=92;
+
+    // ── Collect table blocks from rendered HTML ──
+    const yearBlocks=document.getElementById('el-result-content').querySelectorAll('.el-year-block');
+
+    yearBlocks.forEach(block=>{
+      const label=block.querySelector('.el-year-label');
+      const table=block.querySelector('table');
+      if(!label||!table)return;
+
+      // Year label bar
+      doc.setFillColor(230,244,234);
+      doc.rect(0,startY,PW,16,'F');
+      doc.setDrawColor(26,127,55);doc.setLineWidth(3);
+      doc.line(0,startY,0,startY+16);
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(26,127,55);
+      doc.text(label.innerText||label.textContent,10,startY+11);
+      startY+=20;
+
+      // Build rows from the rendered table
+      const headRows=[];
+      table.querySelectorAll('thead tr').forEach(tr=>{
+        const cells=[];
+        tr.querySelectorAll('th').forEach(th=>{
+          cells.push({content:(th.innerText||th.textContent).trim(),
+            rowSpan:parseInt(th.getAttribute('rowspan')||1),
+            colSpan:parseInt(th.getAttribute('colspan')||1)});
+        });
+        headRows.push(cells);
+      });
+
+      const bodyRows=[];
+      table.querySelectorAll('tbody tr').forEach(tr=>{
+        const isRecalc=tr.classList.contains('el-recalc-row');
+        const isNote=tr.classList.contains('el-note-row');
+        const cells=[];
+        tr.querySelectorAll('td').forEach(td=>{
+          cells.push({
+            content:(td.innerText||td.textContent).trim(),
+            colSpan:parseInt(td.getAttribute('colspan')||1),
+            styles:{}
+          });
+        });
+        bodyRows.push({cells,isRecalc,isNote});
+      });
+
+      // autoTable
+      doc.autoTable({
+        startY,
+        head:[['Period\nFrom','Period\nTo','Total\nDays','Leave Earned\n(Days÷Rate)','Total Leave\n(B/F+Earned)','EL From','EL To','EL Taken /\nDeducted','Balance\nLeave']],
+        body:bodyRows.map(r=>{
+          if(r.isNote){
+            return[{content:r.cells.map(c=>c.content).join(''),colSpan:9,
+              styles:{fontStyle:'italic',textColor:[140,149,159],fontSize:8,fillColor:[250,250,250]}}];
+          }
+          if(r.isRecalc){
+            const txt=r.cells[0]?.content||'';
+            const earned=r.cells[1]?.content||'';
+            const total=r.cells[2]?.content||'';
+            const bal=r.cells[4]?.content||'';
+            return[
+              {content:txt,colSpan:3,styles:{fontStyle:'bold',textColor:[180,30,30],fillColor:[255,240,240],fontSize:7.5}},
+              {content:earned,styles:{fontStyle:'bold',textColor:[180,30,30],fillColor:[255,240,240]}},
+              {content:total,styles:{fontStyle:'italic',textColor:[180,30,30],fillColor:[255,240,240]}},
+              {content:'—',styles:{textColor:[180,30,30],fillColor:[255,240,240]}},
+              {content:'—',styles:{textColor:[180,30,30],fillColor:[255,240,240]}},
+              {content:'—',styles:{textColor:[180,30,30],fillColor:[255,240,240]}},
+              {content:bal,styles:{fontStyle:'bold',textColor:[180,30,30],fillColor:[255,240,240]}}
+            ];
+          }
+          return r.cells.map((c,i)=>{
+            let s={};
+            if(i===3)s={fontStyle:'bold',textColor:[26,127,55]};
+            if(i===5||i===6||i===7)s={textColor:[180,30,30]};
+            if(i===8)s={fontStyle:'bold',textColor:[9,105,218]};
+            return{content:c.content,colSpan:c.colSpan||1,styles:s};
+          });
+        }),
+        styles:{fontSize:8.5,cellPadding:4,valign:'middle',halign:'center',overflow:'linebreak'},
+        headStyles:{fillColor:[13,34,64],textColor:[255,255,255],fontStyle:'bold',fontSize:7.5,halign:'center'},
+        columnStyles:{0:{halign:'center'},1:{halign:'center'},2:{halign:'center'}},
+        alternateRowStyles:{fillColor:[248,250,252]},
+        pageBreak:'auto',
+        rowPageBreak:'avoid',
+        didDrawPage:function(data){
+          const ph=doc.internal.pageSize.getHeight();
+          const pg=doc.internal.getCurrentPageInfo().pageNumber;
+          const tot=doc.internal.getNumberOfPages();
+          doc.setFontSize(7);doc.setTextColor(160,160,160);doc.setFont('helvetica','normal');
+          doc.text('www.gstcell.com',40,ph-8);
+          doc.text(`Page ${pg} of ${tot}`,PW-60,ph-8);
+          doc.setTextColor(20,30,40);
+        }
+      });
+      startY=doc.lastAutoTable.finalY+14;
+    });
+
+    const eName=(document.getElementById('emp-name').value.trim()||'earned_leave').replace(/\s+/g,'_');
+    doc.save(`${eName}_EL_Statement.pdf`);
+  }catch(err){
+    console.error(err);
+    elShowToast('PDF generation failed: ' + err.message, 'error');
+  }
+
+  btn.disabled=false;
+  btn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
+}
+window.elDownloadPDF = elDownloadPDF;
+
+function elLoadScript(src){
+  return new Promise(function(resolve,reject){
+    const s=document.createElement('script');
+    s.src=src;s.onload=resolve;s.onerror=reject;
+    document.head.appendChild(s);
+  });
+}
+
+})();
+</script>
+</body>
+</html>
