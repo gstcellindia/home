@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css">
+
+    <!----------------------Link for social media buttons----------------------->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!----------------------Link for social media buttons end------------------->
+<style>
+
+
+
+
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1px 0;
+}
+
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+    color: #333;
+    font-size: 1.5em;
+    text-align: center;
+    line-height: 100vh; /* Vertically center the text */
+    z-index: 1000;
+    display: none; /* Hidden by default */
+}
+
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.category-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+.category-container h2 {
+    background-color: #555;
+    color: white;
+    padding: 5px;
+    border-radius: 8px;
+}
+
+article {
+    background: white;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+article img {
+    max-width: 100%; /* Ensures images don't exceed the container width */
+    max-height: 300px; /* Sets a maximum height for images */
+    height: auto; /* Maintains aspect ratio */
+    margin-bottom: 15px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+
+article p {
+    text-align: justify;
+    text-indent: 2em; /* Adds indentation to the beginning of each paragraph */
+}
+
+
+.references {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+text1 {
+    font-style: italic;
+    color: blue;
+    border: none;
+    margin: 10px auto;
+    cursor: pointer;
+    text-align: center;
+    
+}
+
+text1:hover {
+    color: rgb(0, 0, 179);
+}
+
+button {
+    display: block;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px auto;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+.pressrelease {
+    display: inline-block;
+    background-color: #007BFF;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    text-decoration: none;
+    text-align: center;
+    font-size: 20px;
+}
+
+@media (max-width: 800px) {
+    main {
+        flex-direction: column;
+
+    gap: 5px;
+    padding: 5px;
+    }
+    .category-container {
+        flex: 1 0 100%;
+    }
+    h1{font-size: 15pt;}
+
+    article {
+    padding: 8px;
+}
+}
+
+</style>
+
+
+<Title>
+		News
+</Title>
+
+<script nonce="ECIwX+IFRK0=">
+  /* Firefox needs this to prevent FOUT */
+</script>
+</head>
+
+<body>
+
+
+
+
+<!-------------------------------------Nav Start--------------------------------------->
+<!-- Created By CodingNepal - www.codingnepalweb.com -->
+
+<!-------------------------------------Nav end----------------------------------------->
+  
+		
+<div id="loading">Loading, please wait...</div>
+<header>
+  <h1>Informations</h1>
+</header>
+<main id="articles-container">
+    <!-- Categories and articles will be dynamically loaded here -->
+</main>
+
+</body>
+
+
+
+
+<!-------------------------------------ISSUED BY STATE------------------------------->
+<script>
+ const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1qyS5zd921dGTeDQLBdbVoZXIrteZYBVt7GgP9UTKl48/gviz/tq?tqx=out:json';
+
+async function fetchArticles() {
+    try {
+        const loadingScreen = document.getElementById('loading');
+        loadingScreen.style.display = "block"; // Show the loading message
+
+        const response = await fetch(SHEET_URL);
+        const text = await response.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2)); // Parse the Google Sheets JSON
+
+        const articlesContainer = document.getElementById('articles-container');
+
+        json.table.rows.forEach(row => {
+            const title = row.c[1]?.v || "Untitled";
+
+            // Check if the heading matches "സംസ്ഥാന നികുതി കമ്മീഷണറുടെ പത്രക്കുറിപ്പ്"
+            if (title === "തിരഞ്ഞെടുപ്പ് ജോലികളിൽ നിന്ന് ഒഴിവാക്കി") {
+                const category = row.c[0]?.v || "Uncategorized";
+                const paragraphs = row.c.slice(2, 16).map(cell => cell?.v || "").filter(Boolean);
+                const imageUrl = row.c[16]?.v;
+                const refText1 = row.c[17]?.v;
+                const refLink1 = row.c[18]?.v;
+                const refText2 = row.c[19]?.v;
+                const refLink2 = row.c[20]?.v;
+                const shareLink = row.c[21]?.v;
+
+                const article = document.createElement('article');
+
+                const heading = document.createElement('h3');
+                heading.textContent = title;
+                article.appendChild(heading);
+
+                if (imageUrl) {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = "Article Image";
+                    img.style.maxWidth = "100%";
+                    img.style.maxHeight = "300px";
+                    img.style.objectFit = "cover";
+                    article.appendChild(img);
+                }
+
+                // Display all paragraphs without "Read more/Show less"
+                paragraphs.forEach(paragraph => {
+                    const p = document.createElement('p');
+                    p.textContent = paragraph;
+                    article.appendChild(p);
+                });
+
+                // References
+                const references = document.createElement('div');
+                references.classList.add('references');
+
+                if (refText1 && refLink1) {
+                     // Add PDF icon after the link
+    const pdfIcon1 = document.createElement('i');
+    pdfIcon1.className = "fa fa-file-pdf-o"; // FontAwesome class
+    pdfIcon1.style.fontSize = "14px"; // Set font size
+    pdfIcon1.style.color = "red"; // Set color to red
+    pdfIcon1.style.marginLeft = "5px"; // Add spacing
+    references.appendChild(pdfIcon1);
+
+    const ref1 = document.createElement('a');
+    ref1.href = refLink1;
+    ref1.textContent = refText1;
+    ref1.target = "_blank";
+    references.appendChild(document.createTextNode(" "));
+    references.appendChild(ref1);
+
+   
+}
+
+if (refText2 && refLink2) {
+     // Add PDF icon after the link
+     const pdfIcon2 = document.createElement('i');
+    pdfIcon2.className = "fa fa-file-pdf-o"; // FontAwesome class
+    pdfIcon2.style.fontSize = "14px"; // Set font size
+    pdfIcon2.style.color = "red"; // Set color to red
+    pdfIcon2.style.marginLeft = "5px"; // Add spacing
+    references.appendChild(document.createTextNode(" | "));
+    references.appendChild(pdfIcon2);
+    
+    const ref2 = document.createElement('a');
+    ref2.href = refLink2;
+    ref2.textContent = refText2;
+    ref2.target = "_blank";
+    references.appendChild(document.createTextNode(" "));
+    references.appendChild(ref2);
+
+   
+}
+
+
+                article.appendChild(references);
+
+                // Social media buttons
+                if (shareLink) {
+                    const socialMediaContainer = document.createElement('div');
+                    socialMediaContainer.style.display = "flex";
+                    socialMediaContainer.style.gap = "10px";
+                    socialMediaContainer.style.marginTop = "10px";
+
+                    const platforms = [
+                        { name: "Facebook", url: `https://www.facebook.com/sharer.php?u=${encodeURIComponent(shareLink)}`, icon: "fab fa-facebook" },
+                        { name: "WhatsApp", url: `https://api.whatsapp.com/send?text=${encodeURIComponent(shareLink)}`, icon: "fab fa-whatsapp" },
+                        { name: "Gmail", url: `mailto:?body=${encodeURIComponent(shareLink)}`, icon: "fas fa-envelope" },
+                        { name: "Instagram", url: `https://www.instagram.com/?url=${encodeURIComponent(shareLink)}`, icon: "fab fa-instagram" },
+                        { name: "LinkedIn", url: `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(shareLink)}`, icon: "fab fa-linkedin" },
+                        { name: "X", url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}`, icon: "fab fa-twitter" }
+                    ];
+
+                    platforms.forEach(platform => {
+                    const button = document.createElement('a');
+                    button.href = platform.url;
+                    button.target = "_blank";
+                    button.title = platform.name;
+
+                    // Apply the .pressrelease class
+                    button.classList.add('pressrelease');
+
+                    const icon = document.createElement('i');
+                    icon.className = platform.icon;
+                    button.appendChild(icon);
+
+                    socialMediaContainer.appendChild(button);
+                });
+
+                    article.appendChild(socialMediaContainer);
+                }
+
+                articlesContainer.appendChild(article);
+            }
+        });
+
+        loadingScreen.style.display = "none"; // Hide the loading message after loading
+    } catch (error) {
+        console.error("Error fetching articles:", error);
+        const loadingScreen = document.getElementById('loading');
+        loadingScreen.textContent = "Failed to load content. Please try again later.";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', fetchArticles);
+
+      </script>
+
+ 
+
+</html>
