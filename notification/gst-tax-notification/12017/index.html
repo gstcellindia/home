@@ -1,0 +1,789 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+img{
+  width: 300px;
+  height: 200px;
+}
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 30px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 40pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  display:none;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: white;
+  text-align: justify;
+  border-radius: 6px;
+  padding: 5px 6px;
+  /* Position the tooltip */
+  position: relative;
+  z-index: 1;
+  top: 0;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  display:block;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+u {    
+    border-bottom: 1px dotted blue;
+    text-decoration: none;
+}
+.table{
+              color: white;
+              border-collapse: collapse;
+              width:auto;
+              border: 1px solid white;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .table td{
+              border: 1px solid white;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+            }
+            .table th{
+              border: 1px solid white;
+              text-align: justify;
+            }
+            .table1{
+              border-collapse: collapse;
+              width:auto;
+              border: 1px solid black;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .table1 td{
+              border: 1px solid black;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+            }
+            .table1 th{
+              border: 1px solid black;
+              text-align: justify;
+            }
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+}
+table, td, th {
+					  font-size: 12pt;
+}
+img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+.tooltip .tooltiptext {
+  font-size: 12px}
+}
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+}
+img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.table1{
+					  font-size: 10px;
+}
+.table1 td{
+					  font-size: 10px;
+}
+.table1 th{
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+}
+img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+ 
+
+    <div class="paper" style="overflow-x:auto;"> 
+     
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br>കേരള സർക്കാർ
+          <br>Government of Kerala<br> 2017
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt=""></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2015-17
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold;">കേരള ഗസറ്റ്</SPAN><SPAN style="font-family: 'Times New Roman'; font-weight: bold;"><br>KERALA GAZETTE<BR></span><SPAN class="gzhead2"><SPAN style="font-weight: bold; line-height: 5REM;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;">വാല്യം 6<BR> Vol. VI</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;">തിരുവനന്തപുരം<br> ചൊവ്വ<br><br>Thiruvananthapuram<br> Tuesday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2017 ‍ആഗസ്ത് 1<BR>
+                      <ins>1<sup>st</sup> August 2017</ins><BR>
+                      1192 കർക്കടകം 16<BR>
+                        <ins>16<sup>th</sup> Karkadakam 1192 </ins><BR>
+                      1939 ശ്രാവണം 10<BR>
+                      10<sup>th</sup> Sravana 1939</TD>
+                    <td style="text-align: right;">നമ്പർ<br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">31</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead"><span style="font-weight: bold;font-size: 2.2REM;">PART III<br>Commissionerate of Commercial Taxes</span><BR>NOTIFICATION<BR>
+         
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                No. 1/2017—State Tax.</TD>
+                <td style="text-align: right;">  Thiruvananthapuram, 6<SUP>th</SUP> July, 2017. </TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold">No. 1/2017.—</span>In pursuance of the first proviso to rule 46 of the Kerala Goods and Services Tax Rules, 2017, the Commissioner, on the recommendations of the Council, hereby notifies that a registered person having annual turnover in the preceding financial year as specified in column (2) of the Table below shall mention the digits of Harmonised System of Nomenclature (HSN) Codes, as specified in the corresponding entry in column (3) of the said Table, in a tax invoice issued by him under the said rules.</p>
+
+     
+      <table>
+           
+        <!--row2-->
+        <tr style="border-bottom:1pt solid black;">	
+          <td colspan="3" style="text-align: center; ">Table</TD>
+         
+        </tr>	
+        <!--row-->	
+        <tr style="border-bottom:1pt solid black;">	
+          <td  style="text-align: right; font-style: italic;">Serial Number</TD>
+          <td style="text-align: center; font-style: italic;">Aggregate Turnover in the preceding Financial Year</TD>
+          <td style="text-align: center; font-style: italic;">Number of Digits of Harmonised System of Nomenclature 
+            Code (HSN Code)</TD>
+        </tr>
+           <!--row-->	
+           <tr style="border-bottom:1pt solid black;">	
+            <td  style="text-align: right; font-style: italic;">(1)</TD>
+            <td style="text-align: center; font-style: italic;">(2)</TD>
+            <td style="text-align: center; font-style: italic;">(3)</TD>
+          </tr>	
+            <!--row-->	
+            <tr style="border-bottom:0pt solid black;">	
+              <td  style="text-align: right; font-style: italic;">1</TD>
+              <td style="text-align: center; font-style: italic;">Up to rupees five crores</TD>
+              <td style="text-align: center; font-style: italic;">4</TD>
+            </tr>	
+            <tr style="border-bottom:1pt solid black;">	
+              <td  style="text-align: right; font-style: italic;">2</TD>
+              <td style="text-align: center; font-style: italic;">more than rupees five crores</TD>
+              <td style="text-align: center; font-style: italic;">6</TD>
+            </tr>	
+           
+            
+       
+        </table>
+
+        <p class="sropara"><u>Provided that a registered person having aggregate turnover up to five crores rupees in
+          the previous financial year may not mention the number of digits of HSN Code, as specified
+          in the corresponding entry in column (3) of the said Table in a tax invoice issued by him
+          under the said rules in respect of supplies made to unregistered persons.</u>
+          <sup style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1SWH41-PTzUlIFeTy4DQQ6lpXwvj5l2VX" target="_blank"><span style="color:blue">78/2020-Cetral Tax</span></a>
+            (<a href="https://docs.google.com/uc?id=1x1sPcbxIKvoBm3YO6KwES2Z5NAaT6vsO" target="_blank"><span style="color:blue">11/2020-State Tax</span></a>
+           )]</sup> 
+          </p><span class="tooltip sropara"><ins style="color:red"><sup>(Touch here to see the original table)</sup></ins> <span class="tooltiptext sropara" style="text-indent: 3rem;">
+         
+         
+          <table class="table">
+           
+            <!--row2-->
+            <tr style="border-bottom:1pt solid rgb(255, 255, 255);">	
+              <td colspan="3" style="text-align: center; ">Table</TD>
+             
+            </tr>	
+            <!--row-->	
+            <tr style="border-bottom:1pt solid rgb(255, 255, 255);">	
+              <td  style="text-align: right; font-style: italic;">Serial Number</TD>
+              <td style="text-align: center; font-style: italic;">Aggregate Turnover in the preceding Financial Year</TD>
+              <td style="text-align: center; font-style: italic;">Number of Digits of HSN Code</TD>
+            </tr>
+               <!--row-->	
+               <tr style="border-bottom:1pt solid rgb(255, 255, 255);">	
+                <td  style="text-align: right; font-style: italic;">(1)</TD>
+                <td style="text-align: center; font-style: italic;">(2)</TD>
+                <td style="text-align: center; font-style: italic;">(3)</TD>
+              </tr>	
+                <!--row-->	
+                <tr style="border-bottom:0pt solid rgb(255, 255, 255);">	
+                  <td  style="text-align: right; font-style: italic;">1</TD>
+                  <td style="text-align: center; font-style: italic;">Upto rupees one crore fifty lakhs</TD>
+                  <td style="text-align: center; font-style: italic;">Nil</TD>
+                </tr>	
+                 <!--row-->	
+                 <tr style="border-bottom:0pt solid rgb(255, 255, 255);">	
+                  <td  style="text-align: right; font-style: italic;">2</TD>
+                  <td style="text-align: center; font-style: italic;">more than rupees one crore fifty lakhs and upto rupees five crores</TD>
+                  <td style="text-align: center; font-style: italic;">2</TD>
+                </tr>	
+                <tr style="border-bottom:1pt solid rgb(255, 255, 255);">	
+                  <td  style="text-align: right; font-style: italic;">3</TD>
+                  <td style="text-align: center; font-style: italic;">more than rupees five crores</TD>
+                  <td style="text-align: center; font-style: italic;">4</TD>
+                </tr>	
+               
+                
+           
+            </table>
+            
+         </span></span>
+
+
+<p class="sropara"><u>Provided further that for class of supply as specified in column (2) and whose HSN Code as specified in column (3) of the Table below, a registered person shall mention eight number of digits of HSN Codes in a tax invoice issued by him under the said rules –</u></p>
+         <span>
+          <table class="table1"  style="width: 50%;">
+            <thead>
+              <tr>
+                <th style="text-align: center; width: 5%;">Sl. No.</th>
+                <th style="text-align: center; width: 20%">Chemical name</th>
+                <th style="text-align: center; width: 10%">HSN Code</th>
+              </tr>
+              <tr>
+                <th style="text-align: center;">(1)</th>
+                <th style="text-align: center;">(2)</th>
+                <th style="text-align: center;">(3)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <TR>	
+                <TD><U>1</U></TD>
+                <TD><U>Mixture of (5-ethyl-2-methyl-2-oxido-1,3,2-dioxaphosphinan-5-yl) methyl methyl  methylphosphonate (CAS RN 41203-81-0) and Bis [(5-Ethyl-2-methyl-2-oxido-1,3,2-dioxaphosphinan-5-yl)methyl] methylphosphonate (CAS RN42595-45-9)</U></TD>
+                <TD><U><u>38249100</u></U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>2</U></TD>
+                <TD><U>Dimethyl propylphosphonate</U></TD>
+                <TD><U>29313200</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>3</U></TD>
+                <TD><U>(5-Ethyl-2-methyl-2-oxido-1,3,2-dioxaphosphinan-5-yl)methyl methyl methylphosphonate</U></TD>
+                <TD><U>29313600</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>4</U></TD>
+                <TD><U>Bis[(5-Ethyl-2-methyl-2-oxido-1,3,2-dioxaphosphinan-5-yl)methyl] methylphosphonate</U></TD>
+                <TD><U>29313700</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>5</U></TD>
+                <TD><U>2,4,6-Tripropyl-1,3,5,2,4,6-trioxatriphosphinane 2,4,6-trioxide</U></TD>
+                <TD><U>29313500</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>6</U></TD>
+                <TD><U>Dimethyl methylphosphonate</U></TD>
+                <TD><U>29313100</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>7</U></TD>
+                <TD><U>Diethyl ethylphosphonate</U></TD>
+                <TD><U>29313300</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>8</U></TD>
+                <TD><U>Methylphosphonic acid with ( aminoiminomethyl) urea ( 1: 1)</U></TD>
+                <TD><U>29313800</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>9</U></TD>
+                <TD><U>Sodium 3-(trihydroxysilyl) propyl methylphosphonate</U></TD>
+                <TD><U>29313400</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>10</U></TD>
+                <TD><U>2,2-Diphenyl-2-hydroxyacetic acid</U></TD>
+                <TD><U>29181700</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>11</U></TD>
+                <TD><U>2-(N,N-Diisopropylamino)ethylchloride hydrochloride</U></TD>
+                <TD><U>29211400</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>12</U></TD>
+                <TD><U>2-(N,N-Dimethylamino)ethylchloride hydrochloride</U></TD>
+                <TD><U>29211200</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>13</U></TD>
+                <TD><U>2-(N,N-Diethylamino)ethylchloride hydrochloride</U></TD>
+                <TD><U>29211300</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>14</U></TD>
+                <TD><U>2-(N,N-Diisopropylamino)ethanol</U></TD>
+                <TD><U>29221800</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>15</U></TD>
+                <TD><U>2-(N,N-Diethylamino )ethanethiol</U></TD>
+                <TD><U>29306000</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>16</U></TD>
+                <TD><U>Bis(2-hydroxyethyl)sulfide</U></TD>
+                <TD><U>29307000</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>17</U></TD>
+                <TD><U>2-(N,N-Dimethylamino)ethanethiol</U></TD>
+                <TD><U>29309092</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>18</U></TD>
+                <TD><U>Product from the reaction of Methylphosphonic acid and l,3,5-Triazine-2,4,6- triamine</U></TD>
+                <TD><U>As applicable</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>19</U></TD>
+                <TD><U>3-Quinuclidinol</U></TD>
+                <TD><U>29333930</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>20</U></TD>
+                <TD><U>R-(- )-3-Quinuclidinol</U></TD>
+                <TD><U>29333930</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>21</U></TD>
+                <TD><U>3,9-Dimethyl-2,4,8,10-tetraoxa-3,9-diphosphaspiro [5.5] undecane 3,9- dioxide</U></TD>
+                <TD><U>29313900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>22</U></TD>
+                <TD><U>Propylphosphonic dichloride</U></TD>
+                <TD><U>29313900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>23</U></TD>
+                <TD><U>Methylphosphonic dichloride</U></TD>
+                <TD><U>29313900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>24</U></TD>
+                <TD><U>Diphenyl methylphosphonate</U></TD>
+                <TD><U>29313900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>25</U></TD>
+                <TD><U>O-(3-chloropropyl)O-[4-nitro-3-(trifluoromethyl)phenyl] methylphosphonothionate</U></TD>
+                <TD><U>29313900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>26</U></TD>
+                <TD><U>Methylphosphonic acid</U></TD>
+                <TD><U>29313900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>27</U></TD>
+                <TD><U>Product from the reaction of methylphosphonic acid and 1,2-ethanediamine</U></TD>
+                <TD><U>As applicable</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>28</U></TD>
+                <TD><U>Phosphonic acid,methyl-, polyglycol ester (Exolit OP 560 TP)</U></TD>
+                <TD><U>38249900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>29</U></TD>
+                <TD><U>Phosphonic acid,methyl-,polyglycol ester (Exolit OP 560)</U></TD>
+                <TD><U>38249900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>30</U></TD>
+                <TD><U>Bis (polyoxyethylene) methylphosphonate</U></TD>
+                <TD><U>39072090</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>31</U></TD>
+                <TD><U>Poly(1,3-phenylene methyl phosphonate)</U></TD>
+                <TD><U>39119090</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>32</U></TD>
+                <TD><U>Dimethylmethylphosphonate, polymer with oxirane and phosphorus oxide</U></TD>
+                <TD><U>38249900</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>33</U></TD>
+                <TD><U>Carbonyl dichloride</U></TD>
+                <TD><U>28121100</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>34</U></TD>
+                <TD><U>Cyanogen chloride</U></TD>
+                <TD><U>28531000</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>35</U></TD>
+                <TD><U>Hydrogen cyanide</U></TD>
+                <TD><U>28111200</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>36</U></TD>
+                <TD><U>Trichloronitromethane</U></TD>
+                <TD><U>29049100</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>37</U></TD>
+                <TD><U>Phosphorus oxychloride</U></TD>
+                <TD><U>28121200</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>38</U></TD>
+                <TD><U>Phosphorus trichloride</U></TD>
+                <TD><U>28121300</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>39</U></TD>
+                <TD><U>Phosphorus pentachloride</U></TD>
+                <TD><U>28121400</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>40</U></TD>
+                <TD><U>Trimethyl phosphite</U></TD>
+                <TD><U>29202300</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>41</U></TD>
+                <TD><U>Triethyl phosphite</U></TD>
+                <TD><U>29202400</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>42</U></TD>
+                <TD><U>Dimethyl phosphite</U></TD>
+                <TD><U>29202100</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>43</U></TD>
+                <TD><U>Diethyl phosphite</U></TD>
+                <TD><U>29202200</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>44</U></TD>
+                <TD><U>Sulfur monochloride</U></TD>
+                <TD><U>28121500</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>45</U></TD>
+                <TD><U>Sulfur dichloride</U></TD>
+                <TD><U>28121600</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>46</U></TD>
+                <TD><U>Thionyl chloride</U></TD>
+                <TD><U>28121700</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>47</U></TD>
+                <TD><U>Ethyldiethanolamine</U></TD>
+                <TD><U>29221720</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>48</U></TD>
+                <TD><U>Methyldiethanolamine</U></TD>
+                <TD><U>29221710</U></TD>
+              </TR>	
+              <TR>	
+                <TD><U>49</U></TD>
+                <TD><U>Triethanolamine</U></TD>
+                <TD><U>29221500</U></TD>
+              </TR>	
+              
+            </tbody>
+          </table>
+        
+        </span>
+        
+        <br><sup style="color:Rgb(6, 32, 182)">inserted as per [<a href="https://docs.google.com/uc?id=1CK9kK6LgOHwq__D6fbOXo2vqB9a91fJA" target="_blank"><span style="color:blue">90/2020-Cetral Tax</span></a>
+          (<a href="https://docs.google.com/uc?id=1i8tsls8Uh2fgTkNb1fkgnjYRsN1Mh-RG" target="_blank"><span style="color:blue">13/2020-State Tax</span></a>
+         )]</sup>
+     
+
+
+
+
+        <p class="sropara"><span style="font-weight: bold">2. </span> This notification shall be deemed to have come into force on the 1<sup>st</sup> day of July 2017.</p>
+  
+        <p class="parasign">   Sd/-,<br>COMMISSIONER.<br>
+          </p> 
+        
+
+
+  </div>
+
+
+
+    
+</body>
+
+</html>
