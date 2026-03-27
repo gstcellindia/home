@@ -1,0 +1,514 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+img{
+  width: 300px;
+  height: 200px;
+}
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 30px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 40pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.sropara1{
+  text-indent: -40px;
+  text-align: justify; 
+  text-justify: inter-word;
+  margin-left: 80px;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  display:none;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: white;
+  text-align: justify;
+  border-radius: 6px;
+  padding: 5px 6px;
+  /* Position the tooltip */
+  position: relative;
+  z-index: 1;
+  top: 0;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  display:block;
+}
+
+
+.tooltip1 {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted rgb(0, 4, 224);
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip1 .tooltiptext1 {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 90, 102);
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 6px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -160px;
+  left:0;
+}
+
+.tooltip1:hover .tooltiptext1 {
+  visibility: visible;
+}
+.tooltip1 .tooltiptext2 {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 90, 102);
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 6px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -50px;
+  left:0;
+}
+
+.tooltip1:hover .tooltiptext2 {
+  visibility: visible;
+}
+
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+u {    
+    border-bottom: 1px dotted blue;
+    text-decoration: none;
+}
+.table{
+              color: white;
+              border-collapse: collapse;
+              width:auto;
+              border: 1px solid white;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .table td{
+              border: 1px solid white;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+            }
+            .table th{
+              border: 1px solid white;
+              text-align: justify;
+            }
+            .table1{
+              border-collapse: collapse;
+              width:auto;
+              border: 1px solid black;
+              text-align: center;
+              padding: 5px 5px 5px 5px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .table1 td{
+              border: 1px solid black;
+              text-align: center;
+              padding: 5px 5px 5px 5px;
+            }
+            .table1 th{
+              border: 1px solid black;
+              text-align: center;
+            }
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+}
+table, td, th {
+					  font-size: 12pt;
+}
+img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+
+
+
+}
+
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+}
+img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.table1{
+					  font-size: 10px;
+}
+.table1 td{
+					  font-size: 10px;
+}
+.table1 th{
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+}
+img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+ 
+
+    <div class="paper" style="overflow-x:auto;"> 
+     
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br>കേരള സർക്കാർ
+          <br>Government of Kerala<br> 2019
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt="Swimming fish"></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2018-20
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold;">കേരള ഗസറ്റ്</SPAN><br>KERALA GAZETTE<BR><SPAN class="gzhead2"><SPAN style="font-weight: bold;">അസാധാരണം</SPAN><BR>EXTRAORDINARY</SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;">വാല്യം 8<BR> Vol. VIII</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;">തിരുവനന്തപുരം<br>വെള്ളി<br><br>Thiruvananthapuram<br> Friday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2019 സെപ്തംബർ 20<BR>
+                      <ins>20<sup>th</sup> September 2019</ins><BR>
+                      1195 കന്നി 4<BR>
+                        <ins>4<sup>th</sup> Kanni 1195</ins><BR>
+                      1941 ഭാദ്രം 29<BR>
+                      29<sup>th</sup>  Bhadra 1941</TD>
+                    <td style="text-align: right;">നമ്പർ<br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">2204</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead">GOVERNMENT OF KERALA
+        <br><span style="font-weight: bold;">Taxes (B) Department</span>
+        <br>NOTIFICATION<br> 
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                G.O.(P)No.141/2019/TAXES.</TD>
+                <td style="text-align: right;">  Dated, Thiruvananthapuram, 20<sup>th</sup> September, 2019<br>
+                  4<sup>th</sup> Kanni, 1195.</TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold">S.R.O. No.659/2019.— </span>In exercise of the powers conferred by section 128 of the Kerala State Goods and Services Tax
+      Act, 2017 (20 of 2017) (hereafter in this notification referred to as the said Act), the Government of
+      Kerala, on the recommendations of the Council, hereby waives the amount of late fee payable under
+      section 47 of the said Act, by the following class of taxpayers: – </p>
+
+
+      <span class="tooltip sropara1" >
+        <p>(i) The registered persons whose principal place of business is in the districts of Idukki,
+          Malappuram, Wayanad and Kozhikode, having aggregate turnover of more than 1.5 crorerupees in the preceding financial year or the current financial year, who have furnished,
+          electronically through the common portal, details of outward supplies in FORM GSTR-1
+          of the Kerala Goods and Services Tax Rules, 2017, for the month of July, 2019, on or
+          before the  
+       <span class="tooltip1" style="color: blue;">11<sup>th</sup> day of October<sup style="color:blue">[<a href="https://docs.google.com/uc?id=1Pyc0wbiW1dc3037bZlNVA1SQeQPOTMwZ" target="_blank"><span style="color:blue">48/2019-Cetral Tax</span></a> (<a href="https://docs.google.com/uc?id=1-amYeTEWhdyP6MsLOQclhJ01o_-LjjK0" target="_blank"><span style="color:blue">S.R.O. 894/2019</span></a>)]</sup><span class="tooltiptext2"> <b>20<sup>th</sup> day of
+          September</b> <sup>(<b style="color: rgb(255, 154, 154);">Original text.)</b></sup></sup> </span></span>, 2019;</p></span>
+    
+          <span class="tooltip sropara1" >
+            <p>(ii) The Input Service Distributors whose principal place of business is in the districts of
+              Idukki, Malappuram, Wayanad and Kozhikode, who have furnished, electronically
+              through the common portal, return in FORM GSTR-6 of the Kerala Goods and Services
+              Tax Rules, 2017, for the month of July, 2019, on or before the 20th September, 2019.</p></span>
+        
+   
+        
+
+
+
+
+
+  <p class="parasign">   By order of the Governor,<br>RAJESH KUMAR SINGH.,<br>Principal Secretary to Government.<br>
+          </p> 
+          <p class="parahead">  Explanatory Note</p> 
+          <p class="sropara">(This does not form part of the notification, but is intended to indicate its general purport.)</p> 
+          <p class="sropara"> On recommendation of the Goods and Services Tax Council, the Government of Kerala had
+            decided to waive the late fees in certain cases for the month of July, 2019 for FORM GSTR-1 and
+            GSTR-6 provided the said returns are furnished by 20th September, 2019</p>
+          <p class="sropara">The notification is intended to achieve the above object.</p>  
+
+
+  </div>
+
+
+
+    
+</body>
+
+</html>
