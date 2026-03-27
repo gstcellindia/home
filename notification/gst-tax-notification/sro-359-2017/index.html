@@ -1,0 +1,866 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+img{
+  width: 300px;
+  height: 200px;
+}
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 30px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 40pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  display:none;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: white;
+  text-align: justify;
+  border-radius: 6px;
+  padding: 5px 6px;
+  /* Position the tooltip */
+  position: relative;
+  z-index: 1;
+  top: 0;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  display:block;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+u {    
+    border-bottom: 1px dotted blue;
+    text-decoration: none;
+}
+.table{
+              color: white;
+              border-collapse: collapse;
+              width:auto;
+              border: 1px solid white;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .table td{
+              border: 1px solid white;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+            }
+            .table th{
+              border: 1px solid white;
+              text-align: justify;
+            }
+            .table1{
+              border-collapse: collapse;
+              width:auto;
+              border: 1px solid black;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            .table1 td{
+              border: 1px solid black;
+              text-align: justify;
+              padding: 5px 5px 5px 5px;
+            }
+            .table1 th{
+              border: 1px solid black;
+              text-align: justify;
+            }
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+}
+table, td, th {
+					  font-size: 12pt;
+}
+img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+.tooltip .tooltiptext {
+  font-size: 12px}
+}
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+}
+img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.table1{
+					  font-size: 10px;
+}
+.table1 td{
+					  font-size: 10px;
+}
+.table1 th{
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+}
+img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+ 
+
+    <div class="paper" style="overflow-x:auto;"> 
+     
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br>കേരള സർക്കാർ
+          <br>Government of Kerala<br> 2017
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt="Swimming fish"></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2015-17
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold;">കേരള ഗസറ്റ്</SPAN><br>KERALA GAZETTE<BR><SPAN class="gzhead2"><SPAN style="font-weight: bold;">അസാധാരണം</SPAN><BR>EXTRAORDINARY</SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;">വാല്യം 6<BR> Vol. VI</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;">തിരുവനന്തപുരം<br> വെള്ളി<br><br>Thiruvananthapuram<br> Friday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2017 ‍ജൂൺ 30<BR>
+                      <ins>30<sup>th</sup> June 2017</ins><BR>
+                      1192 മിഥുനം 16<BR>
+                        <ins>16<sup>th</sup> Midhunam 1192 </ins><BR>
+                      1939 ആഷാഢം 9<BR>
+                      9<sup>th</sup> Ashadhd 1939</TD>
+                    <td style="text-align: right;">നമ്പർ<br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">1349</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead">GOVERNMENT OF KERALA
+        <br><span style="font-weight: bold;">Taxes (B) Department</span>
+        <br>NOTIFICATION<br> 
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                G. O. (P) No. 61/2017/TAXES.</TD>
+                <td style="text-align: right;">  Dated, Thiruvananthapuram, 30<sup>th</sup> June 2017<br>
+                  16<sup>th</sup> Midhunam 1192.</TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold">S.R.O. No.359/2017.— </span>In exercise of the powers conferred by
+      sub-sections (1) and (3) of section 50 sub-section (12) of section 54 and
+      section 56 of the Kerala Goods and Services Tax Ordinance, 2017 (11 of
+      2017), the Government of Kerala, on the recommendations of the Council,
+      hereby fixes the rate of interest per annum, for the purposes of the said
+      sections as specified in column (2) of the Table below, as mentioned in
+      the corresponding entry in column (3) of the said Table.</p>
+
+     
+      <table>
+           
+        <!--row2-->
+        <tr style="border-bottom:1pt solid black;">	
+          <td colspan="3" style="text-align: center; ">Table</TD>
+         
+        </tr>	
+        <!--row-->	
+        <tr style="border-bottom:1pt solid black;">	
+          <td  style="text-align: right; font-style: italic;">Sl. No.</TD>
+          <td style="text-align: center; font-style: italic;">Section</TD>
+          <td style="text-align: center; font-style: italic;">Rate of interest (in per cent)</TD>
+        </tr>
+           <!--row-->	
+           <tr style="border-bottom:1pt solid black;">	
+            <td  style="text-align: right; font-style: italic;">(1)</TD>
+            <td style="text-align: center; font-style: italic;">(2)</TD>
+            <td style="text-align: center; font-style: italic;">(3)</TD>
+          </tr>	
+            <!--row-->	
+            <tr style="border-bottom:0pt solid black;">	
+              <td  style="text-align: right; font-style: italic;">1</TD>
+              <td style="text-align: center; font-style: italic;">Sub-section (1) of section 50</TD>
+              <td style="text-align: center; font-style: italic;">18</TD>
+            </tr>	
+            <tr style="border-bottom:0pt solid black;">	
+              <td  style="text-align: right; font-style: italic;">2</TD>
+              <td style="text-align: center; font-style: italic;">Sub-section (3) of section 50</TD>
+              <td style="text-align: center; font-style: italic;"><a style="color:white">24 KFA 2022</a><del style="color:red">24</del>18
+
+<a href="https://docs.google.com/uc?id=173vAys_DAnPCMhrv1-v7wzkzWtiXdeG1" target="_blank"><span style="color:blue">KFA 2022</span></a>
+
+</TD>
+            </tr>	
+            <tr style="border-bottom:0pt solid black;">	
+              <td  style="text-align: right; font-style: italic;">3</TD>
+              <td style="text-align: center; font-style: italic;">Sub-section (12) of section 54</TD>
+              <td style="text-align: center; font-style: italic;">6</TD>
+            </tr>	
+            <tr style="border-bottom:0pt solid black;">	
+              <td  style="text-align: right; font-style: italic;">4</TD>
+              <td style="text-align: center; font-style: italic;">Section 56</TD>
+              <td style="text-align: center; font-style: italic;">6</TD>
+            </tr>	
+             <!--row-->	
+           <tr style="border-bottom:1pt solid black;">	
+            <td  style="text-align: right; font-style: italic;">5</TD>
+            <td style="text-align: center; font-style: italic;">Proviso to section 56</TD>
+            <td style="text-align: center; font-style: italic;">9</TD>
+          </tr>	
+        
+       
+        </table>
+
+        <p class="sropara"><u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Provided that the rate of interest per annum shall be as specified in column (3) of the Table
+          given below for the period mentioned therein, for the class of registered persons mentioned in the
+          corresponding entry in column (2) of the said Table, who are <del style="color: red;">required to furnish the returns in FORM
+          GSTR-3B, but fail to furnish the said return along with payment of tax</del> <ins>liable to pay tax but fail to do so <sup style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1xsYbjuC3dv4vXugEVrJbbi1ZJigW5T0m" target="_blank"><span style="color:blue">18/2021-Cetral Tax</span></a>(<a href="https://docs.google.com/uc?id=1dshOmaxUfXgcv1SfJW6NzonG2NNhK4IB" target="_blank"><span style="color:blue">S.R.O. 662/2021</span></a>)]</sup></ins> for the months mentioned in the
+          corresponding entry in column (4) of the said Table by the due date, namely:-</u></p><span>
+          <p class="parahead"><u>Table</u></p>
+          <table class="table1">
+            <thead>
+              <tr>
+                <th width="5%"><u>Sl. No.</u></th>
+                <th width="40%"><u>Class of registered person</u></th>
+                <th width="40%"><u>Rate of interest</u></th>
+                <th width="15%"><u>Tax period</u></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><u>(1)<u></td>
+                <td><u>(2)<u></td>
+                <td><u>(3)<u></td>
+                <td><u>(4)<u></td>
+              </tr>
+              <tr>
+                <td><u>1<u></td>
+                <td><u>Taxpayers having an aggregate turnover of
+                  more than rupees 5 crores in the preceding
+                  financial year <u></td>
+                <td><u>Nil for first 15 days
+                  from the due date,
+                  and 9 per cent
+                  thereafter till 24th
+                  day of June, 2020<u></td>
+                <td><u>February, 2020, March,
+                  2020, April, 2020<u></td>
+                  
+              </tr>
+              <tr>
+                <td rowspan="6">2<u></td>
+                <td rowspan="6">Taxpayers having an aggregate turnover of
+                  up to rupees 5 crores in the preceding financial
+                  year.<u></td>
+                <td><u>Nil till the 30th day
+                  of June, 2020, and 9
+                  per cent thereafter
+                  till the 30th day of
+                  September, 2020<u></td>
+                <td><u>February, 2020<u></td>
+               
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 3rd day of
+                  July, 2020, and 9 per
+                  cent thereafter till
+                  the 30th day of
+                  September, 2020<u></td>
+                <td><u>March, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 6th day of
+                  July, 2020, and 9 per
+                  cent thereafter till
+                  the 30th day of
+                  September, 2020<u></td>
+                <td><u>April, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 12th day
+                  of September, 2020,
+                  and 9 per cent
+                  thereafter till the
+                  30th day of
+                  September, 2020<u></td>
+                <td><u>May, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 23rd day
+                  of September, 2020,
+                  and 9 per cent
+                  thereafter till the
+                  30th day of
+                  September, 2020<u></td>
+                <td><u>June, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 27th day
+                  of September, 2020,
+                  and 9 per cent
+                  thereafter till the
+                  30th day of
+                  September, 2020<u></td>
+                <td><u>July, 2020<u></td>
+              </tr>              
+            </tbody>
+          </table>
+        
+        </span><sup style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1ehK7gaoRcr0yldahQuylY5IiqW_mZ0CJ" target="_blank"><span style="color:blue">substituted as per notification No.51/2020-Cetral Tax</span></a>
+          (<a href="https://docs.google.com/uc?id=1V__4nG-KaSHvMeyHMxc9TjRazZj8Y8Ls" target="_blank"><span style="color:blue">S.R.O. 654/2020</span></a>
+         )]</sup><br><span class="tooltip sropara"><ins style="color:red">(Touch here to see the text before amendment)</ins> <span class="tooltiptext sropara" style="text-indent: 3rem;"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Provided that, the rate of interest per annum shall be as specified in column (3) of the Table given below, for the class of registered persons, mentioned in the corresponding entry in column (2) of the said Table, who are required to furnish the returns in FORM GSTR-3B, but fail to furnish the said return along with payment of tax  for the months mentioned in the corresponding entry in column (4) of the said Table by the due date, but furnish the said return according to the condition mentioned in the corresponding entry in column (5) of the said Table, namely:
+         
+         
+          <p class="parahead">Table</p>
+         <table class="table">
+          <thead>
+            <tr>
+              <th>Sl.  No.</th>
+              <th>Class of registered person</th>
+              <th>Rate of interest</th>
+              <th>Tax period</th>
+              <th>Condition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>(1)</td>
+              <td>(2)</td>
+              <td>(3)</td>
+              <td>(4)</td>
+              <td>(5)</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Taxpayers having an
+                aggregate turnover of more
+                than rupees 5 crores in the
+                preceding financial year </td>
+              <td>Nil for first 15
+                days from the
+                due date, and 9
+                per cent
+                thereafter</td>
+              <td>February, 2020,
+                March, 2020,
+                April, 2020</td>
+                <td>If return in FORM
+                  GSTR-3B is furnished on
+                  or before the 24th day of
+                  June, 2020 </td>
+            </tr>
+            <tr>
+              <td rowspan="2">2</td>
+              <td rowspan="2">Taxpayers having an
+                aggregate turnover of more
+                than rupees 1.5 crores and
+                up to rupees five crores in
+                the preceding financial year</td>
+              <td rowspan="2">Nil</td>
+              <td>February, 2020,
+                March, 2020</td>
+              <td>If return in FORM
+                GSTR-3B is furnished on
+                or before the 29th day of
+                June, 2020</td>
+            </tr>
+            <tr>
+              
+              <td>April, 2020</td>
+              <td>If return in FORM
+                GSTR-3B is furnished on
+                or before the 30th day of
+                June, 2020</td>
+            </tr>
+            <tr>
+              <td rowspan="3">3</td>
+              <td rowspan="3">Taxpayers having an
+                aggregate turnover of up to
+                rupees 1.5 crores in the
+                preceding financial year</td>
+              <td rowspan="3">Nil</td>
+              <td>February, 2020 </td>
+              <td>If return in FORM
+                GSTR-3B is furnished on
+                or before the 30th day of
+                June, 2020</td>
+            </tr>
+            <tr>
+              
+              <td>March, 2020</td>
+              <td>If return in FORM
+                GSTR-3B is furnished on
+                or before the 3rd day of
+                July, 2020 </td>
+            </tr>
+            <tr>
+              
+              <td>April, 2020</td>
+              <td>If return in FORM
+                GSTR-3B is furnished on
+                or before the 6th day of
+                July, 2020.</td>
+            </tr>
+          </tbody>
+        </table>
+       
+        <sup style="color:Rgb(6, 32, 182)"><a href="https://docs.google.com/uc?id=15H6dWkPnPlIJ6cCkaoPKMBOgN9rtcGZJ" target="_blank"><span style="color:rgb(124, 246, 255)">[This was inserted w.e.f.20<sup>th</sup> March, 2020 as per notification No.31/2020-Cetral Tax</span></a>
+          <a href="https://docs.google.com/uc?id=1bRLMMT2xf8c11FslaJjshFbXgz4_VmUp" target="_blank"><span style="color:rgb(124, 246, 255)">(S.R.O. 354/2020)]</span></a></a>
+         </sup></span></span>
+
+<br><br>
+
+         <span>
+          <table class="table1">
+          
+            <tbody>
+              <tr>
+                <td width="5%"><u>3<u></td>
+                <td width="40%"><u>Taxpayers having an aggregate turnover of more than rupees 5 crores in the preceding financial year<u></td>
+                <td width="40%"><u>9 per cent for the first 15 days from the due date and 18 per cent thereafter<u></td>
+                <td width="15%"><u>March, 2021, April, 2021 and May, 2021<u></td>
+                  
+              </tr>
+              <tr>
+                <td rowspan="3">4<u></td>
+                <td  rowspan="3"><u>Taxpayers having an aggregate turnover of up to rupees 5 crores in the preceding financial year who are liable to furnish the return as specified under sub-section (1) of section 39<u></td>
+                <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 45 days, and 18 per cent thereafter<u></td>
+                <td><u>March, 2021<u></td>
+               
+              </tr>
+              <tr>
+                
+                <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 30 days, and 18 per cent thereafter<u></td>
+                    <td><u>April, 2021<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 15 days, and 18 per cent thereafter<u></td>
+                <td><u>May, 2021<u></td>
+              </tr>
+              <tr>
+                <td rowspan="3">5<u></td>
+                <td  rowspan="3"><u>Taxpayers having an aggregate turnover of up to rupees 5 crores in the preceding financial year who are liable to furnish the return as specified under proviso to sub-section (1) of section 39<u></td>
+                <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 45 days, and 18 per cent thereafter<u></td>
+                <td><u>March, 2021<u></td>
+               
+              </tr>
+              <tr>
+                
+                <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 30 days, and 18 per cent thereafter<u></td>
+                    <td><u>April, 2021<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 15 days, and 18 per cent thereafter<u></td>
+                <td><u>May, 2021<u></td>
+              </tr>
+              <tr>
+                <td><u>6<u></td>
+                <td><u>Taxpayers who are liable to furnish the return as specified under sub-section (2) of section 39<u></td>
+                  <td><u>Nil for the first 15 days from the due date, 9 per cent for the next 45 days, and 18 per cent thereafter<u></td>
+                    <td><u>Quarter ending March, 2021<u></td>
+              </tr>
+                         
+            </tbody>
+          </table>
+        
+        </span><sup style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1xsYbjuC3dv4vXugEVrJbbi1ZJigW5T0m" target="_blank"><span style="color:blue">substituted as per Notification No. 18/2021-Cetral Tax</span></a>
+          (<a href="https://docs.google.com/uc?id=1dshOmaxUfXgcv1SfJW6NzonG2NNhK4IB" target="_blank"><span style="color:blue">S.R.O. 662/2021</span></a>
+         )]</sup><br><span class="tooltip sropara"><ins style="color:red">(Touch here to see the text before amendment)</ins> <span class="tooltiptext sropara" style="text-indent: 3rem;">
+         <table class="table">
+          <thead>
+            <tr>
+              <th>(1)</th>
+              <th>(2)</th>
+              <th>(3)</th>
+              <th>(4)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>3</td>
+              <td>Taxpayers having an aggregate turnover of more than rupees 5 crores in the preceding financial year</td>
+              <td>9 per cent for the first 15 days from the due date and 18 per cent thereafter</td>
+              <td>March, 2021, April, 2021</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Taxpayers having an aggregate turnover of up to rupees 5 crores in the preceding financial year who are liable to furnish the return as specified under sub-section (1) of section 39</td>
+              <td>Nil for the first 15 days from the due date, 9 per cent for the next 15 days, and 18 per cent thereafter</td>
+              <td>March, 2021, April, 2021</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Taxpayers having an aggregate turnover of up to rupees 5 crores in the preceding financial year who are liable to furnish the return as specified under proviso to sub-section (1) of section 39</td>
+              <td>Nil for the first 15 days from the due date, 9 per cent for the next 15 days, and 18 per cent thereafter</td>
+              <td>March, 2021, April, 2021</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Taxpayers who are liable to furnish the return as specified under sub-section (2) of section 39</td>
+              <td>Nil for the first 15 days from the due date, 9 per cent for the next 15 days, and 18 per cent thereafter</td>
+              <td>Quarter ending March, 2021.</td>
+            </tr>
+          </tbody>
+        </table>
+       
+        <span style="color:Rgb(6, 32, 182)"><a href="https://docs.google.com/uc?id=1GI5322_scVt6Rc4IQBs5M7DVnM30hydM" target="_blank"><span style="color:rgb(124, 219, 248)">[This was inserted w.e.f.18<sup>th</sup> April, 2021 as per notification No.8/2021-Cetral Tax</span></a>
+        <a href="https://docs.google.com/uc?id=10QCwbuMMhBQ5aViDMGaB6o7hzHlHwoJx" target="_blank"><span style="color:rgb(124, 219, 248)">(S.R.O. 562/2021)]</span></a></a>
+      </span></span></span>
+         
+      <br><br>
+<span class="tooltip sropara"><u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Provided that the rate of interest per annum shall be as specified in column (3) of the Table given below for the period mentioned therein, for the class of registered persons mentioned in the corresponding entry in column (2) of the said Table, who are required to furnish the returns in FORM GSTR-3B, but fail to furnish the said return along with payment of tax for the months mentioned in the corresponding entry in column (4) of the said Table by the due date,  namely:--</u><span>
+          <p class="parahead"><u>Table</u></p>
+          <table class="table1">
+            <thead>
+              <tr>
+                <th width="5%"><u>Sl. No.</u></th>
+                <th width="40%"><u>Class of registered person</u></th>
+                <th width="40%"><u>Rate of interest</u></th>
+                <th width="15%"><u>Tax period</u></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><u>(1)<u></td>
+                <td><u>(2)<u></td>
+                <td><u>(3)<u></td>
+                <td><u>(4)<u></td>
+              </tr>
+              <tr>
+                <td><u>1<u></td>
+                <td><u>Taxpayers having an aggregate turnover of more than rupees 5 crores in the preceding financial year<u></td>
+                <td><u>Nil for first 15 days from the due date, and 9 per cent thereafter till 24th day of June, 2020<u></td>
+                <td><u>February, 2020, March 2020, April, 2020<u></td>
+                  
+              </tr>
+              <tr>
+                <td rowspan="6">2<u></td>
+                <td rowspan="6">Taxpayers having an aggregate turnover of up to rupees 5 crores in the preceding financial year.<u></td>
+                <td><u>Nil till the 30th day of June, 2020, and 9 per cent thereafter till the 30th day of September, 2020<u></td>
+                <td><u>February, 2020<u></td>
+               
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 3rd day of July, 2020, and 9 per cent thereafter till the 30th day of September, 2020<u></td>
+                <td><u>March, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 6th day of July, 2020, and 9 per cent thereafter till the 30th day of September, 2020<u></td>
+                <td><u>April, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 12th day of September, 2020, and 9 per cent thereafter till the 30th day of September, 2020<u></td>
+                <td><u>May, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 23rd day of September, 2020, and 9 per cent thereafter till the 30th day of September, 2020<u></td>
+                <td><u>June, 2020<u></td>
+              </tr>
+              <tr>
+                
+                <td><u>Nil till the 27th  day of September, 2020, and 9 per cent thereafter till the 30th day of September, 2020<u></td>
+                <td><u>July, 2020<u></td>
+              </tr>              
+            </tbody>
+          </table>
+        
+        </span><span class="tooltiptext sropara" style="text-indent: 3rem;">
+       
+        <span style="color:Rgb(6, 32, 182)"><a href="https://docs.google.com/uc?id=1ehK7gaoRcr0yldahQuylY5IiqW_mZ0CJ" target="_blank"><span style="color:rgb(124, 246, 255)">[This proviso was inserted w.e.f.24<sup>th</sup> June, 2020 as per notification No.51/2020-Cetral Tax</span></a>
+        <a href="https://docs.google.com/uc?id=1V__4nG-KaSHvMeyHMxc9TjRazZj8Y8Ls" target="_blank"><span style="color:rgb(124, 246, 255)">(S.R.O. 654/2020)]</span></a></a>
+         </span></span></span>
+
+
+
+
+        <p class="sropara"><span style="font-weight: bold">2. </span> This notification shall be deemed to have come into force on the 1<sup>st</sup> day of July 2017.</p>
+  
+        <p class="parasign">   By order of the Governor,<br>MINHAJ ALAM,<br>Secretary to Government.<br>
+          </p> 
+          <p class="parahead">  Explanatory Note</p> 
+          <p class="sropara">(This does not form part of the notification, but is intended to indicate its general purport.)</p> 
+          <p class="sropara">The Government of Kerala, on the recommendations of the Goods
+            and Services Tax Council, has decided to fix the rate of interest per
+            annum, for the purpose of sub-sections (1) and (3) of section 50,
+            sub-section (12) of section 54 and section 56 of the Kerala Goods and
+            Service Tax Ordinance, 2017 (11 of 2017).</p>
+          <p class="sropara">The notification is intended to achieve the above object.</p>  
+
+
+  </div>
+
+
+
+    
+</body>
+
+</html>
