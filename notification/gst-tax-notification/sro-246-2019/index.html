@@ -1,0 +1,510 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+img{
+  width: 300px;
+  height: 200px;
+}
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 30px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 40pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted rgb(0, 4, 224);
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 6px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+}
+table, td, th {
+					  font-size: 12pt;
+}
+img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+}
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+}
+img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+}
+img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+ 
+
+    <div class="paper" style="overflow-x:auto;"> 
+     
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br>കേരള സർക്കാർ
+          <br>Government of Kerala<br> 2019
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt="Swimming fish"></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2018-20
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold;">കേരള ഗസറ്റ്</SPAN><br>KERALA GAZETTE<BR><SPAN class="gzhead2"><SPAN style="font-weight: bold;">അസാധാരണം</SPAN><BR>EXTRAORDINARY</SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;">വാല്യം 8<BR> Vol. VIII</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;">തിരുവനന്തപുരം<br> ശനി<br><br>Thiruvananthapuram<br> Saturday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2019 മാർച്ച് 30<BR>
+                      <ins>30<sup>th</sup> March 2019</ins><BR>
+                        1194 മീനം 16<BR>
+                          <ins>16<sup>th</sup> Meenam 1194 </ins><BR>
+                            1941 ചൈത്രം 9<BR>
+                          9<sup>th</sup> Chaithra 1941</TD>
+                    <td style="text-align: right;">നമ്പർ<br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">872</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead">GOVERNMENT OF KERALA
+        <br><span style="font-weight: bold;">Taxes (B) Department</span>
+        <br>NOTIFICATION<br> 
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                G. O. (P) No. 56/2019/TAXES.</TD>
+                <td style="text-align: right;">  Dated, Thiruvananthapuram, 30<sup>th</sup> March 2019<br>
+                  16<sup>th</sup> Meenam 1194</TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold">S.R.O. No.246/2019.— </span>In exercise of the powers conferred under
+      the proviso to sub-section (1) of section 10 of the Kerala State Goods and
+      Services Tax Act, 2017 (20 of 2017) (hereinafter referred to as the said
+      Act), and the supersession of the notification issued under G. O. (P)
+      No. 60/2017/TAXES dated 30<sup>th</sup> June, 2017 and published as S.R.O.
+      No. 358/2017 in the Kerala Gazette Extraordinary No. 1348 dated 30<sup>th</sup> June, 2017, except as things done or omitted to be done before such
+      supersession, the Government of Kerala, on the recommendations of the
+      Council, hereby specifies that an eligible registered person, whose aggregate
+      turnover in the preceding financial year did not exceed one crore and fifty
+      lakh rupees, may opt to pay, in lieu of the tax payable by him under sub-
+      section (1) of section 9 of the said Act, an amount of tax as prescribed
+      under rule 7 of the Kerala Goods and Services Tax Rules, 2017:</p>
+
+      <p class="sropara">Provided that the registered person shall not be eligible to opt for
+composition levy under sub-section (1) of section 10 of the said Act, if
+such person is a manufacturer of the goods, the description of which is
+specified in column (3) of the Table below and falling under the tariff
+item, sub-heading, heading of chapter, as the case may be, as specified in
+the corresponding entry in column (2) of the said Table, namely:—</p>
+
+   
+
+          <table>
+         
+              <!--row2-->
+              <tr style="border-bottom:1pt solid black;">	
+                <td colspan="3" style="text-align: center;">TABLE</TD>
+               
+              </tr>	
+              <!--row-->	
+              <tr style="border-bottom:1pt solid black;">	
+                  <td  style="text-align: center; font-style: italic;">Sl. No.</TD>
+                  <td style="text-align: center; font-style: italic;">Tariff item, sub-heading, heading or chapter</TD>
+                  <td style="text-align: center; font-style: italic;">Description</TD>
+                 
+                </tr>	
+                <!--row-->	
+                 <!--row-->	
+              <tr style="border-bottom:1pt solid black;">	
+                  <td  style="text-align: center;">(1) </TD>
+                  <td style="text-align: center;">(2) </TD>
+                  <td style="text-align: center;">(3) </TD>
+                 
+                </tr>	
+                 <!--row-->	
+              <tr style="border-bottom:1pt solid black;">	
+                  <td>1 </TD>
+                  <td>2105 00 00</TD>
+                  <td>Ice cream and other edible ice, whether or not containing coccoa</TD>
+                 
+                </tr>
+                 <!--row-->	
+              <tr style="border-bottom:1pt solid black;">	
+                <td>2</TD>
+                <td>2106 90 20</TD>
+                <td>Pan masala.</TD>
+               
+              </tr>	
+               <!--row-->	
+               <tr style="border-bottom:1pt solid black; color: red;">	
+                <td>2A</TD>
+                <td>2202 10 10</TD>
+                <td>Aerated Water.<sup><a href="https://docs.google.com/uc?id=18FnJyF1NYldVFqVv3LJO9p5NV7u7bjOJ" target="_blank"><span style="color:blue">43/2019-Cetral Tax</span></a> <span style="color: black;">[</span><a href="https://docs.google.com/uc?id=1aJsninUSXHO0gfHKOZeyDrg4sLyoufw3" target="_blank"><span style="color:blue">S.R.O. 846/2019</span></a><span style="color: black;">]</span></sup></TD>
+               
+              </tr>	
+              <!--row-->	
+              <tr style="border-bottom:1pt solid black;">	
+                  <td>3</TD>
+                  <td>24</TD>
+                  <td>All goods, ie. tobacco and manufactured tobacco substitutes.</TD>
+                 
+                </tr>
+                <!--row-->	
+              <tr style="border-bottom:1pt solid red; color: rgb(0, 66, 20);">	
+                  <td>4</TD>
+                  <td>6815</TD>
+					<td><DEL>Fly ash bricks or fly ash aggregate with 90 per cent or more fly ash content; Fly ash blocks.</DEL><INS> Fly ash bricks; Fly ash aggregates; Fly ash blocks </INS><sup><a href="https://docs.google.com/uc?id=1lEWW5x4mLdZpPMY5lcWuMciKNxow6G1H" target="_blank"><span style="color:blue"> 16/2022-Cetral Tax</span></a> <span style="color: black;">[</span><a href="https://docs.google.com/uc?id=1pusLuIoeU0CTn1l2UzRoz_EgphFreniv" target="_blank"><span style="color:blue">S.R.O. 713/2022</span></a><span style="color: black;">]</span></sup></TD>
+               
+                </tr>
+                <!--row-->	
+              <tr style="border-bottom:1pt solid red; color: red;">	
+                  <td>5</TD>
+                  <td>6901 00 10</TD>
+                  <td>Bricks of fossil meals or similar siliceous earths</TD>
+                 
+                </tr>
+                <!--row-->	
+              <tr style="border-bottom:1pt solid red; color: red;">	
+                <td>6</TD>
+                <td>6904 10 00</TD>
+                <td>Building bricks</TD>
+               
+              </tr>	
+               <!--row-->	
+               <tr style="border-bottom:1pt solid red; color: red;">	
+                <td>7</TD>
+                <td>6905 10 00</TD>
+                <td>Earthen or roofing tiles.<sup><a href="https://docs.google.com/uc?id=1AOcHensoYhgI-vPg3JcSW1yvlgvbBi7C" target="_blank"><span style="color:blue">4/2022-Cetral Tax</span></a> <span style="color: black;">[</span><a href="https://docs.google.com/uc?id=16O-mFdylWPnI5ny07bc7XP5F4NymPZT-" target="_blank"><span style="color:blue">S.R.O. 326/2022</span></a><span style="color: black;">]</span></sup></TD>
+               
+              </tr>	
+                
+              </table>
+
+
+
+    
+     
+      <ul class="counter-incrementroman"><a class="sropara" style="font-style: italic;">Explanation.—</a>
+        <li>In this Table, “tariff item”, “sub-heading”, “heading”
+          and “chapter” shall mean respectively a tariff item, sub-heading, heading
+          and chapters as specified in the First Schedule to the Customs Tariff Act,
+          1975 (Central Act 51 of 1975).</li>
+        <li>The rules for the interpretation of the First Schedule to the said
+          Customs Tariff Act, 1975 (Central Act 51of 1975), including the Section
+          and Chapter Notes and the General Explanatory Notes of the First
+          Schedule shall, so far as may be, apply to theS interpretation of this
+          notification.</li>
+
+      </ul>
+    
+
+     <p class="sropara">This notification shall come into force on the 1<sup>st</sup> day of April, 2019.</p>
+  <p class="parasign">   By order of the Governor,<br>
+    VENUGOPAL. P,<br>
+    Secretary to Government.<br>
+  </p> 
+  <p class="parahead">  Explanatory Note</p> 
+  <p class="sropara">(This does not form part of the notification, but is intended to indicate its general purport.)</p> 
+  <p class="sropara">As per the proviso to sub-section (1) of section 10, the Government
+    may, by notification, increase the aggregate turnover limit of an eligible
+    registered person for opting composition levy. Accordingly, on the
+    recommendation of the Goods and Services Tax Council, Government of
+    Kerala have decided to increase this limit to Rupees One Crore and fifty
+    lakh, rescinding the notification issued under G. O. (P) No. 60/2017/
+    TAXES, dated 30th June, 2017 and published as S.R.O. No. 358/2017 in
+    the Kerala Gazette Extraordinary No. 1348 dated 30th June, 2017. Further,
+    as per clause (e) of sub-section (2) of section 10, the manufacturers of
+    certain goods to be notified by the Government on the recommendation of
+    the Council shall not be eligible for opting composition levy under
+    section 10. Government have decided to notify such manufacturers under
+    this clause.</p>
+  <p class="sropara">The notification is intended to achieve the above object.</p>
+
+      
+  </div>
+
+
+
+    
+</body>
+
+</html>
