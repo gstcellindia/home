@@ -1,0 +1,436 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+.scrolltext{
+        text-decoration: none;
+        color: rgb(86, 169, 19); 
+        font-weight: bold;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 13pt;
+        margin-left: 80%;
+      }
+.scrolltext:visited{
+        color: rgb(169, 46, 19); 
+      }
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 50px 100px 300px 60px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+  margin-left: 10%; 
+  margin-right: 10%;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+.img{
+  width:300;
+  height:200;
+}
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 3.5rem;
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted rgb(0, 4, 224);
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 6px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+  
+  margin-left: 5%; 
+  margin-right: 5%;
+
+}
+.scrolltext{
+  font-size: 10pt;
+        margin-left: 70%;
+      }
+table, td, th {
+					  font-size: 12pt;
+}
+.img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+}
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+  margin-left: 0%; 
+  margin-right: 0%;
+}
+.img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+}
+.img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+  <a href="https://docs.google.com/uc?id=1jk_oRhI5nH8iovjD9C-hT42ladCFCGac" target="_blank"><span class="scrolltext">Download </span><img src="https://lh3.googleusercontent.com/d/1ruxW6o-Ai9bApYa7tYFyjPiqZ-d9a7q0" alt="IMG" width="18" height="20"></a><br><br>
+    <div class="paper" style="overflow-x:auto;"> 
+      
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br><span style="font-family: meera;">കേരള സർക്കാർ</span>
+          <br>Government of Kerala<br> 2020
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt="img" class="img"></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2018-20
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold; font-family: meera; ">കേരള ഗസറ്റ്</SPAN><br><SPAN style="font-family: 'Times New Roman', Times, serif; ">KERALA GAZETTE</SPAN><BR><SPAN class="gzhead2" style="font-weight: bold; font-family: meera; ">അസാധാരണം</SPAN><BR><SPAN class="gzhead2" style="font-family: 'Times New Roman', Times, serif; ">EXTRAORDINARY</SPAN></SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold; font-family: meera; ">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR><SPAN style="font-family: 'Times New Roman', Times, serif; ">PUBLISHED BY AUTHORITY</SPAN></SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;"><span style="font-family: meera;">വാല്യം</span> 9<BR> Vol. IX</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;"><span style="font-family: meera;">തിരുവനന്തപുരം<br> വ്യാഴം</span><br><br>Thiruvananthapuram<br> Thursday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2020 <span style="font-family: meera;">മേയ്</span> 14<BR>
+                      <ins>14<sup>th</sup> May 2020</ins><BR>
+                      1195 <span style="font-family: meera;">മേടം</span> 31<BR>
+                        <ins>31<sup>th</sup> Medam 1195 </ins><BR>
+                      1942 <span style="font-family: meera;">വൈശാഖം</span> 24<BR>
+                      24<sup>th</sup> Vaisakha 1942</TD>
+                    <td style="text-align: right;"><span style="font-family: meera;">നമ്പർ</span><br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">1178</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead">GOVERNMENT OF KERALA
+        <br><span style="font-weight: bold;">Taxes (B) Department</span>
+        <br>NOTIFICATION<br> 
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                G.O.(P) No.66/2020/TAXES.</TD>
+                <td style="text-align: right;">  Dated, Thiruvananthapuram, 14<sup>th</sup> May, 2020<br>
+                  31<sup>th</sup> Medam, 1195.</TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold"><a href="https://docs.google.com/uc?id=1_e_-PG0BhcIhX48zi4Qq0E6JV2YDvYxt" target="_blank"><span style="color:blue">S.R.O. No.316/2020</span></a>.— </span>In exercise of the powers conferred by sub-rule (4) of rule 48 of the Kerala Goods and Services
+      Tax Rules, 2017 (hereinafter referred as said rules), the Government of Kerala on the recommendations
+      of the Council, and in supersession of the notification issued under G.O.(P) No. 218/2019/TAXES,
+      dated 31<sup>st</sup> December, 2019 and published as S.R.O. No.1033/2019 in the Kerala Gazette Extraordinary
+      No.3272 dated 31 st December, 2019, except as respects things done or omitted to be done before such
+      supersession, hereby notifies registered person, other than <span class="tooltip" style="color: black;">a government department, a local authority,<span class="tooltiptext"> inserted </span></span><sup style="color:Rgb(6, 32, 182); font-size: 10pt;"><i>[<a href="https://docs.google.com/uc?id=1xsYbjuC3dv4vXugEVrJbbi1ZJigW5T0m" target="_blank"><span style="color:blue">23/2021-Cetral Tax</span></a> (<a href="https://docs.google.com/uc?id=1hXuiEiXozatKmFGz06CVqBlgiAOTEQX9" target="_blank"><span style="color:blue">S.R.O. 667/2021</span></a>)]</i></sup> <span class="tooltip" style="color: black;">a Special Economic Zone unit and<span class="tooltiptext"> inserted </span></span><sup style="color:Rgb(6, 32, 182)"><i>[<a href="https://docs.google.com/uc?id=1Me6LmHYadTydX-q9SKx9o-ZioNCWqwiB" target="_blank"><span style="color:blue; font-size: 10pt">61/2020-Cetral Tax</span></a> (<a href="https://docs.google.com/uc?id=1qdWLBbc9eOl9oTIN9VS6_O-zoh5rDMlR" target="_blank"><span style="color:blue; font-size: 10pt">S.R.O. 686/2020</span></a>)]</sup></i>those referred to in sub-rules (2), (3), (4) and (4A) of rule 54 of the said rules, whose aggregate turnover in <span class="tooltip" style="color: black;">any preceding financial year from 2017-18 onwards<span class="tooltiptext"> a financial year <sup>(before amendment)</sup></span></span><sup style="color:Rgb(6, 32, 182)"><i>[<a href="https://docs.google.com/uc?id=1H8WGw5mb4N1XCngvwHZyFmV5YNvHS7lP" target="_blank"><span style="color:blue; font-size: 10pt">70/2020-Cetral Tax</span></a> (<a href="https://docs.google.com/uc?id=1h-qNq1RYDoc8guFiTmhBUVu3gF8baiMr" target="_blank"><span style="color:blue; font-size: 10pt">S.R.O. 925/2020</span></a>)]</i></sup>
+          exceeds 
+          <span class="tooltip" style="color: black;">five crore rupees<span class="tooltiptext" style="width:auto; min-width: 15rem;"> 
+
+            one hundred crore rupees <sup> <span style="color:rgb(233, 111, 111)">(This was amended as under)</span>  </sup><br>
+            <br>
+            five hundred crore rupees <sup><a href="https://docs.google.com/uc?id=1Me6LmHYadTydX-q9SKx9o-ZioNCWqwiB" target="_blank"><span style="color:rgb(33, 241, 241)">[61/2020-Cetral Tax</span></a>
+             <a href="https://docs.google.com/uc?id=1qdWLBbc9eOl9oTIN9VS6_O-zoh5rDMlR" target="_blank"><span style="color:rgb(33, 241, 241)">(S.R.O. 686/2020)]</span></a>
+             <span style="color:rgb(233, 111, 111)">(further amended as under)</span> </sup>
+             <br><br>
+             one hundred crore rupees <sup><a href="https://docs.google.com/uc?id=1IR_-n0IqBCzUI6SrhldaJUfIzXdMzvfm" target="_blank"><span style="color:rgb(33, 241, 241)">[88/2020-Cetral Tax</span></a>
+              <a href="https://docs.google.com/uc?id=1odELbtzd24DhfzACFBr03GeXC_Q2_G91" target="_blank"><span style="color:rgb(33, 241, 241)">(S.R.O. 938/2020)] </span></a>
+             <span style="color:rgb(233, 111, 111)">(further amended as under)</span> </sup>
+
+             <br><br>
+            fifty crore rupees <sup><a href="https://docs.google.com/uc?id=1OxxsqezCwkosDnrp6zC_L53_iHKIjyDx" target="_blank"><span style="color:rgb(33, 241, 241)">[5/2021-Cetral Tax</span></a>
+             <a href="https://docs.google.com/uc?id=1-9qOID3ocRcR1Kk6bk7TWAU5lSKeU-zJ" target="_blank"><span style="color:rgb(33, 241, 241)">(S.R.O. 351/2021)] </span></a>
+            <span style="color:rgb(233, 111, 111)">(further amended as under)</span> </sup>
+
+            <br><br>
+            twenty crore rupees <sup><a href="https://docs.google.com/uc?id=1c08HZSY2zzdsT0nttAaJS9lFQwIwphM5" target="_blank"><span style="color:rgb(33, 241, 241)">[1/2022-Cetral Tax</span></a>
+             <a href="https://docs.google.com/uc?id=1SvNCKZ_njd3v1su__ndKD2jRIF0FE6dk" target="_blank"><span style="color:rgb(33, 241, 241)">(S.R.O. 291/2022)] </span></a>
+            <span style="color:rgb(233, 111, 111)">(further amended as under)</span> </sup>
+           
+            <br><br>
+            ten crore rupees <sup><a href="https://docs.google.com/uc?id=1yY4joOh_O0lN-hTu_T7DonQBd1CcFhSA" target="_blank"><span style="color:rgb(33, 241, 241)">[17/2022-Cetral Tax</span></a>
+             <a href="https://docs.google.com/uc?id=1CpRaQDxQ__y4BUppDAxehamhpjKE6G_L" target="_blank"><span style="color:rgb(33, 241, 241)">(S.R.O. 941/2022)] </span></a>
+            <span style="color:rgb(233, 111, 111)">w.e.f. 01/10/2022 (before present amendment)</span> </sup>
+           
+            
+            </span></span><sup style="color:Rgb(6, 32, 182); font-size: 10pt">[<a href="https://docs.google.com/uc?id=1WuBRqu1e5CmpKqsWIOyMk5rxV-R7a0J1" target="_blank"><span style="color:blue"><i>10/2022-Cetral Tax</i></span></a>
+             (<a href="" target="_blank"><span style="color:blue"></span></a>
+            <i>)]</i></sup>, as a class of registered person who shall prepare invoice and other prescribed documents,
+      in terms of sub-rule (4) of rule 48 of the said rules in respect of supply of goods or services or both to a
+      registered person.</p>
+      
+      <p class="sropara">2.	This notification shall come into force on the 1<sup>st</sup> October, 2020.</p>
+  <p class="parasign">   By order of the Governor,<br>R. RAJAGOPAL.,<br>Additional Secretary to Government.<br>
+  </p> 
+  <p class="parahead">  Explanatory Note</p> 
+  <p class="sropara">(This does not form part of the notification, but is intended to indicate its general purport.)</p> 
+  <p class="sropara">On the recommendation of the Goods and Services Tax Council, the Government of Kerala
+    have decided to exempt certain class of registered persons from issuing e-invoices and the date for
+    implementation of e-invoicing extended to 1<sup>st</sup> day of October, 2020.</p>
+  <p class="sropara">The notification is intended to achieve the above object.</p>  
+  </div>
+
+
+
+    
+</body>
+
+</html>
