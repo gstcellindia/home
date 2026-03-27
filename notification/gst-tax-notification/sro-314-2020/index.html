@@ -1,0 +1,420 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+.grid-container {
+  display: grid;
+  grid-gap: 0px;
+  grid-template-columns: 35% 30% 30%;
+  padding: 0px;
+}
+
+.grid-item {
+  border: 0px solid rgba(0, 0, 0, 0.8);
+  padding: 0px;
+  font-size: 13pt;
+  text-align: center;
+  line-height: 1;
+}
+
+img{
+  width: 300px;
+  height: 200px;
+}
+
+    table, td, th {
+					  border-collapse: collapse;
+					  font-size: 15pt;
+					  text-align: justify;
+					  padding: 5px 5px 5px 5px;
+                     font-family: 'Times New Roman', Times, serif;
+					}
+    table{
+        width:100%
+    }
+
+    .paper {
+  background: #fff;
+  padding: 30px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15pt;
+}
+
+.paper,
+.paper::before,
+.paper::after {
+  /* Styles to distinguish sheets from one another */
+  box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+  border: 1px solid rgb(83, 83, 83);
+}
+
+
+.paper::before {
+  right: 15px;
+  top: 0;
+  transform: rotate(-1deg);
+  z-index: -1;
+}
+
+
+
+.paper1 {
+  background: #fff;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  line-height: 1.6;;
+}
+.parahead{
+text-align: center;
+
+}
+.paraheadgz{
+text-align: center;
+
+}
+.gzhead1{
+text-align: center;
+font-size: 40pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead2{
+text-align: center;
+text-align: center;
+font-size: 30pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.gzhead3{
+text-align: center;
+text-align: center;
+font-size: 20pt; 
+font-family: meera; 
+margin-top: 0; 
+margin-bottom: 0;
+line-height: 1;
+
+}
+.paradate{
+text-align: right;
+font-style: italic;
+
+}
+.sropara{
+  text-indent: 40px;
+  text-align: justify; 
+  text-justify: inter-word;
+
+}
+.subpara{
+  text-align: justify; 
+  text-justify: inter-word;
+
+}    
+.parasign{
+text-align: right;
+
+}
+
+  /*Serial Number model 1 */       
+ul.counter-increment li { counter-increment: my-sec-counter; display: table-row; } 
+ul.counter-increment li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify; }
+  /*Serial Number model 2 */   
+  ul.counter-increment1 li { counter-increment: my-sec-counter; display: table-row;   text-indent: 10px; } 
+ul.counter-increment1 li::before { content: "(" counter(my-sec-counter, lower-alpha) ") "; display: table-cell; padding-right: 5px; text-align: justify;   text-indent: 40px;}
+
+  /*Serial Number model 3 */   
+  ul.counter-incrementroman li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementroman li::before { content: "(" counter(my-sec-counter, lower-roman) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Serial Number model 4 */   
+  ul.counter-incrementnumber li { counter-increment: my-sec-counter; display: table-row;} 
+ul.counter-incrementnumber li::before { content: "(" counter(my-sec-counter) ") "; display: table-cell; padding-right: 5px; text-align: justify;}
+
+  /*Tooltil (popup) */  
+.tooltip {
+  position: relative;
+  display: inline-block;
+  text-indent: 0px;
+  color: rgb(0, 0, 0);
+}
+
+.tooltip .tooltiptext {
+  display:none;
+  width: auto;
+  height: auto;
+  background-color: rgb(0, 19, 102);
+  color: #fff;
+  text-align: justify;
+  border-radius: 6px;
+  padding: 5px 6px;
+  font-size: 12pt;
+  /* Position the tooltip */
+  position: relative;
+  z-index: 1;
+  top: 0;
+  left:0;
+}
+
+.tooltip:hover .tooltiptext {
+  display:block;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 5rem; 
+  font-family: 'Arial Narrow';
+}
+u {    
+    border-bottom: 1px dotted blue;
+    text-decoration: none;
+}
+@media (max-width:1000px){
+        
+  .paper {
+  background: #fff;
+  padding: 25px;
+  line-height: 1.5;
+  font-size: 15pt;
+}
+.grid-container {
+  grid-template-columns: 27% auto auto;
+}
+}
+@media (max-width:768px){
+        .paper {
+  background: #fff;
+  padding: 20px;
+  line-height: 1.3;
+  font-size: 12pt;
+}
+table, td, th {
+					  font-size: 12pt;
+}
+img{
+  width: 210px;
+  height: 140px;
+}
+.gzhead1{
+font-size: 30pt; 
+
+}
+.gzhead2{
+font-size: 20pt; 
+
+}
+.gzhead3{
+font-size: 10pt; 
+}
+.paraheadgz{
+  font-size: 12px;
+}
+.symbolgz{
+  text-align: left; 
+  font-size: 3rem; 
+}
+.tooltip .tooltiptext {
+  font-size: 12px}
+}
+
+@media (max-width:500px){
+.paper {
+  background: #fff;
+  padding: 15px;
+  line-height: 1.1;
+  font-size: 10pt;
+}
+img{
+  width: 144px;
+  height: 96px;
+}
+.paraheadgz{
+  font-size: 9px;
+}
+
+.gzhead1{
+font-size: 20pt; 
+
+}
+.gzhead2{
+font-size: 10pt; 
+
+}
+.gzhead3{
+font-size: 7pt; 
+}
+table, td, th {
+					  font-size: 10px;
+}
+.symbolgz{
+  font-size: 2rem; 
+
+}
+}
+
+@media (max-width:300px){
+        .paper {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+  line-height: 1.3;
+  font-size: 8pt;
+  font-size: 10px;
+}
+img{
+  width: 150px;
+  height: 100px;
+}
+}
+
+</style>
+
+
+</head>
+
+<body>
+ 
+
+    <div class="paper" style="overflow-x:auto;"> 
+     
+      <div class="grid-container">
+        <div class="grid-item">  <p class="paraheadgz"><br><br>&copy;
+          <br>കേരള സർക്കാർ
+          <br>Government of Kerala<br> 2020
+  
+      </p></div>
+        <div class="grid-item"><img src="https://lh3.googleusercontent.com/d/1uPbNnpwKOWaUSsh5vWT2gx8mZYXjwF-L" alt="Swimming fish"></div>
+        <div class="grid-item">  <p class="paraheadgz"><br><br>Regn.No. KERBIL/2012/45073
+          <br><ins>dated 05-09-2012 with RNI</ins>
+        <br>  Reg No.KL/TV(N)/634/2018-20
+      </p></div>  
+      </div>
+
+      <p class="gzhead1"><SPAN style="font-weight: bold;">കേരള ഗസറ്റ്</SPAN><br>KERALA GAZETTE<BR><SPAN class="gzhead2"><SPAN style="font-weight: bold;">അസാധാരണം</SPAN><BR>EXTRAORDINARY</SPAN><BR><SPAN class="gzhead3"><SPAN style="font-weight: bold;">ആധികാരികമായി പ്രസിദ്ധപ്പെടുത്തുന്നത്</SPAN><BR>PUBLISHED BY AUTHORITY</SPAN></p>
+
+
+        <table>
+           
+          <!--row2-->
+          <tr style="border-bottom:3pt solid black;">	
+            <td colspan="3" style="text-align: center;"></TD>
+           
+          </tr>	
+          <!--row-->	
+          <tr style="border-bottom:3pt solid black;">	
+              <td  style="text-align: right;">വാല്യം 9<BR> Vol. IX</TD>
+                <td class="symbolgz">&#125;</TD>
+              <td style="text-align: center;">തിരുവനന്തപുരം<br> വ്യാഴം<br><br>Thiruvananthapuram<br> Thursday</TD>
+                  <td style="text-align: center; font-style: italic;">
+                    2020 മേയ് 14<BR>
+                      <ins>14<sup>th</sup> May 2020</ins><BR>
+                      1195 മേടം 31<BR>
+                        <ins>31<sup>th</sup> Medam 1195 </ins><BR>
+                      1942 വൈശാഖം 24<BR>
+                      24<sup>th</sup> Vaisakha 1942</TD>
+                    <td style="text-align: right;">നമ്പർ<br> No.</TD>
+                      <td class="symbolgz">&#125;</TD>
+                      <td style="text-align: left; ">1176</TD>
+             
+            </tr>	
+          
+         
+          </table>
+    <p class="parahead">GOVERNMENT OF KERALA
+        <br><span style="font-weight: bold;">Taxes (B) Department</span>
+        <br>NOTIFICATION<br> 
+
+
+        <table>
+          <tr>	
+              <td  style="text-align: left;">
+                G.O.(P) No.64/2020/TAXES.</TD>
+                <td style="text-align: right;">  Dated, Thiruvananthapuram, 14<sup>th</sup> May, 2020<br>
+                  31<sup>th</sup> Medam, 1195.</TD>
+            </tr>	
+          </table>
+    </p>
+
+
+    
+    <p class="sropara">
+      <span style="font-weight: bold">S.R.O. No.314/2020.— </span>In exercise of the powers conferred by section 148 of the Kerala State Goods and Services Tax
+      Act, 2017 (20 of 2017) (hereinafter referred to as the said Act), the Government of Kerala, on the
+      recommendations of the Council, hereby notifies those registered persons (hereinafter referred to as the
+      erstwhile registered person), who are corporate debtors under the provisions of the Insolvency and
+      Bankruptcy Code, 2016 (Central Act 31 of 2016), undergoing the corporate insolvency resolution
+      process and the management of whose affairs are being undertaken by interim resolution professionals (IRP) or resolution professionals (RP), as the class of persons who shall follow the following special
+      procedure, from the date of the appointment of the IRP/RP till the period they undergo the corporate
+      insolvency resolution process, as mentioned below.</p>
+
+      <span class="tooltip sropara" style="text-indent: 2.5rem;"><u>Provided that the said class of persons shall not include those corporate debtors who have furnished the statements under section 37 and the returns under section 39 of the said Act for all the tax periods prior to the appointment of IRP/RP.</u> <sup style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1AtfeAWACWfgohYN7dZ4nDjx6fcjSBj_v" target="_blank"><span style="color:blue">39/2020-Cetral Tax</span></a>
+        (<a href="https://docs.google.com/uc?id=1TkiEt8EB_MKUlQP2sX-KmPTerlfHc6YL" target="_blank"><span style="color:blue">S.R.O. 472/2020</span></a>
+        )]</sup><span class="tooltiptext"> <span style="font-weight: bold;"><span style="color: rgb(253, 253, 253); font-weight: bold;">(inserted)</span></span></span></span><br><br>
+      
+      <span class="tooltip sropara" style="text-indent: 2.5rem;"><span style="font-weight: bold;"><u>2. Registration.-</span> The said class of persons shall, with effect from the date of appointment of IRP / RP, be treated as a distinct person of the corporate debtor, and shall be liable to take a new registration (hereinafter referred to as the new registration) in each of the States or Union territories where the corporate debtor was registered earlier, within thirty days of the appointment of the IRP/RP or by 30th June, 2020, whichever is later:</u> <sup style="color:Rgb(6, 32, 182)">[<a href="https://docs.google.com/uc?id=1AtfeAWACWfgohYN7dZ4nDjx6fcjSBj_v" target="_blank"><span style="color:blue">39/2020-Cetral Tax</span></a>
+        (<a href="https://docs.google.com/uc?id=1TkiEt8EB_MKUlQP2sX-KmPTerlfHc6YL" target="_blank"><span style="color:blue">S.R.O. 472/2020</span></a>
+       )]</sup><span class="tooltiptext"> <span style="font-weight: bold;">2. Registration.-</span>  The said class of persons shall, with effect from the date of appointment of IRP/RP, be treated as a distinct person of the corporate debtor, and shall be liable to take a new registration (hereinafter referred to as the new registration) in each of the States or Union territories where the corporate debtor was registered earlier, within thirty days of the appointment of the IRP/RP: <br><br>
+        Provided that in cases where the IRP/RP has been appointed prior to the date of this notification, he shall take registration within thirty days from the commencement of this notification, with effect from date of his appointment as IRP/RP. <span style="color: rgb(255, 77, 77); font-weight: bold;">(before amendment)</span></span></span>
+
+     
+
+        <p class="sropara"> <span style="font-weight: bold">3. Return.— </span>The said class of persons shall, after obtaining registration, file the first return under
+          section 40 of the said Act, from the date on which he becomes liable to registration till the date on
+          which registration has been granted. </p>
+
+        <p class="sropara"><span style="font-weight: bold">4. Input tax credit.— </span>(1) The said class of persons shall, in his first return, be eligible to avail
+          input tax credit on invoices covering the supplies of goods or services or both, received since his
+          appointment as IRP/RP but bearing the GSTIN of the erstwhile registered person, subject to the
+          conditions of Chapter V of the said Act and the rules made thereunder, except the provisions of
+          sub-section (4) of section 16 of the said Act and sub-rule (4) of rule 36 of the Kerala Goods and
+          Services Tax Rules, 2017 (hereinafter referred to as the said rules).</p>
+
+       <p class="sropara"><span style="font-weight: bold">5. </span>Any amount deposited in the cash ledger by the IRP/RP, in the existing registration, from the
+  date of appointment of IRP/RP to the date of registration in terms of this notification shall be available
+  for refund to the erstwhile registration.</p>
+
+<p>Explanation.- For the purposes of this notification, the terms “corporate debtor”, “corporate insolvency
+resolution professional”, “interim resolution professional” and “resolution professional” shall have the
+same meaning as assigned to them in the Insolvency and Bankruptcy Code, 2016 (Central Act 31 of
+2016).</p>
+<p class="sropara"><span style="font-weight: bold">6. </span> This notification shall be deemed to have come into force on the 21st day of March, 2020.</p>
+  
+<p class="parasign">   By order of the Governor,<br>R. RAJAGOPAL.,<br>Additional Secretary to Government.<br>
+  </p> 
+  <p class="parahead">  Explanatory Note</p> 
+  <p class="sropara">(This does not form part of the notification, but is intended to indicate its general purport.)</p> 
+  <p class="sropara">On the recommendation of the Goods and Services Tax Council, the Government of Kerala
+    have decided to provide special procedure for corporate debtors undergoing the corporate insolvency
+    resolution process under the Insolvency and Bankruptcy Code, 2016 (Central Act 31 of 2016).</p>
+  <p class="sropara">The notification is intended to achieve the above object.</p>  
+  </div>
+
+
+
+    
+</body>
+
+</html>
