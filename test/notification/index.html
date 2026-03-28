@@ -1,0 +1,3763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST Cell</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── BANNER ── */
+.site-banner {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+  background: #1a2e1a;
+}
+.site-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+.site-banner .banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 70%, transparent 100%);
+}
+.banner-clock-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.banner-datetime {
+  position: absolute;
+  right: 5%;
+  bottom: 18px;
+  color: #e8f5e9;
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+  text-align: right;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+}
+.banner-datetime .bdate { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+.banner-datetime .bday  { font-size: 16px; }
+
+/* ── MEGA MENU NAV ── */
+.mega-nav {
+  background: #1c1c1c;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.mega-nav-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 0 16px;
+  gap: 0;
+  width: 100%;
+}
+
+/* Pushes everything after HOME to the right */
+.nav-spacer {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .nav-spacer { display: none; }
+}
+.nav-home-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  height: 46px;
+  color: #4caf50;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.nav-home-link:hover { background: #2e2e2e; }
+
+.nav-item {
+  position: relative;
+}
+/* ── NAV FONT SIZE CONTROL ── */
+:root { --nav-fs: 12pt; --page-fs: 13px; }
+
+.nav-item > .nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 16px;
+  height: 46px;
+  background: none;
+  border: none;
+  color: #cccccc;
+  font-size: var(--nav-fs);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  font-family: 'Times New Roman', Times, serif;
+  text-decoration: none;
+}
+.nav-item > .nav-btn:hover,
+.nav-item:hover > .nav-btn {
+  background: #2e2e2e;
+  color: #ffffff;
+}
+.nav-item > .nav-btn .arrow {
+  font-size: 9px;
+  opacity: 0.6;
+  transition: transform 0.2s;
+}
+.nav-item:hover > .nav-btn .arrow { transform: rotate(180deg); }
+
+/* TAX RATE special button */
+.nav-btn-taxrate {
+  background: #e53935 !important;
+  color: #fff !important;
+  border-radius: 20px;
+  margin-left: 12px;
+  padding: 0 18px !important;
+  height: 34px !important;
+  align-self: center;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.8px !important;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.45);
+  transition: background 0.15s, box-shadow 0.15s !important;
+}
+.nav-btn-taxrate:hover {
+  background: #c62828 !important;
+  box-shadow: 0 4px 14px rgba(229,57,53,0.6);
+}
+.nav-btn-taxrate .arrow {
+  opacity: 1 !important;
+}
+
+/* ── MEGA PANEL ── */
+.mega-panel {
+  display: none;
+  position: fixed;
+  top: auto;
+  left: auto;
+  min-width: 560px;
+  max-width: 92vw;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #ffffff;
+  border-top: 3px solid #4caf50;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  z-index: 9999;
+  padding: 12px 20px 20px;
+  flex-direction: column;
+}
+.mega-panel.open { display: flex; }
+
+/* Search box inside mega panel */
+.mega-search-wrap {
+  position: relative;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+  max-width: 6cm;
+}
+.mega-search-wrap svg {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+.mega-search-input {
+  width: 100%;
+  padding: 7px 12px 7px 30px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12px;
+  outline: none;
+  background: #f9f9f9;
+  color: #333;
+  transition: border-color 0.15s;
+}
+.mega-search-input:focus { border-color: #4caf50; background: #f0fdf4; box-shadow: 0 0 0 3px rgba(76,175,80,0.15); }
+
+/* Nav search active highlight strip */
+.mega-search-wrap:focus-within {
+  background: #f0fdf4;
+  border-radius: 4px;
+}
+
+/* columns row */
+.mega-panel-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  flex: 1;
+}
+
+.mega-section {
+  min-width: 170px;
+  padding: 0 18px 12px 0;
+  border-right: 1px solid #eeeeee;
+  margin-right: 0;
+}
+.mega-section:last-child { border-right: none; padding-right: 0; }
+
+.mega-section-title {
+  font-size: calc(var(--nav-fs) - 1px);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #1b5e20;
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #4caf50;
+  font-family: 'Times New Roman', Times, serif;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.mega-section ul { list-style: none; padding: 0; margin: 0; }
+.mega-section ul li { margin-bottom: 1px; }
+.mega-section ul li a {
+  display: block;
+  padding: 3px 8px;
+  color: #333333;
+  text-decoration: none;
+  font-size: var(--nav-fs);
+  border-radius: 3px;
+  line-height: 1.35;
+  transition: background 0.12s, color 0.12s;
+  font-family: 'Times New Roman', Times, serif;
+}
+.mega-section ul li a:hover {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+.mega-section ul li.hidden-by-search { display: none; }
+.mega-section ul li.hidden-by-limit { display: none; }
+.load-more-btn {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: none;
+  border: 1px dashed #bbb;
+  border-radius: 3px;
+  color: #1b5e20;
+  font-size: 11px;
+  font-family: 'Times New Roman', Times, serif;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s;
+}
+.load-more-btn:hover { background: #e8f5e9; border-color: #4caf50; }
+
+/* Search highlight */
+.search-hl {
+  background: #fff176;
+  color: #1b5e20;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+/* Table cell highlight */
+.tbl-hl {
+  background: #fff176;
+  color: #111;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+
+/* Simple dropdown (for items with no headings) */
+.simple-dropdown {
+  display: none;
+  position: fixed;
+  top: auto;
+  left: auto;
+  min-width: 220px;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  background: #fff;
+  border-top: 3px solid #4caf50;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  z-index: 9999;
+  padding: 0;
+  flex-direction: column;
+}
+.simple-dropdown.open { display: flex; }
+
+/* Search inside simple dropdown */
+.simple-dropdown-search-wrap {
+  position: relative;
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+  max-width: 6cm;
+}
+.simple-dropdown-search-wrap svg {
+  position: absolute;
+  left: 19px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+.simple-dropdown-search {
+  width: 100%;
+  padding: 6px 10px 6px 28px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 11px;
+  outline: none;
+  background: #f9f9f9;
+  transition: border-color 0.15s;
+}
+.simple-dropdown-search:focus { border-color: #4caf50; background: #f0fdf4; box-shadow: 0 0 0 3px rgba(76,175,80,0.15); }
+
+.simple-dropdown-list { overflow-y: auto; }
+.simple-dropdown a {
+  display: block;
+  padding: 5px 18px;
+  color: #333;
+  text-decoration: none;
+  font-size: var(--nav-fs);
+  font-family: 'Times New Roman', Times, serif;
+  line-height: 1.35;
+  transition: background 0.12s;
+}
+.simple-dropdown a:hover { background: #e8f5e9; color: #1b5e20; }
+.simple-dropdown a.hidden-by-search { display: none; }
+.simple-dropdown a.hidden-by-limit { display: none; }
+
+/* Loading state */
+.nav-loading { color: #888; font-size: 11px; padding: 8px 18px; }
+
+/* ── MOBILE HAMBURGER ── */
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  padding: 0 14px;
+  height: 46px;
+  align-items: center;
+  font-size: 22px;
+  margin-left: auto;
+}
+.nav-mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1100;
+}
+.nav-mobile-overlay.open { display: block; }
+.nav-mobile-drawer {
+  position: fixed;
+  top: 0; right: 0;
+  width: 300px;
+  max-width: 90vw;
+  height: 100%;
+  background: #1c1c1c;
+  z-index: 1200;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+}
+.nav-mobile-drawer.open { transform: translateX(0); }
+.nav-mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #333;
+}
+.nav-mobile-drawer-title { color: #4caf50; font-size: 13px; font-weight: 700; letter-spacing: 1px; }
+.nav-mobile-close {
+  background: none; border: none; color: #aaa;
+  font-size: 22px; cursor: pointer; line-height: 1;
+}
+.nav-mobile-item {
+  border-bottom: 1px solid #2a2a2a;
+}
+.nav-mobile-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 13px 18px;
+  background: none;
+  border: none;
+  color: #cccccc;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  text-align: left;
+}
+.nav-mobile-btn .arrow { font-size: 10px; transition: transform 0.2s; }
+.nav-mobile-item.open .nav-mobile-btn .arrow { transform: rotate(180deg); }
+.nav-mobile-submenu {
+  display: none;
+  background: #141414;
+  padding: 8px 0 12px;
+}
+.nav-mobile-item.open .nav-mobile-submenu { display: block; }
+.nav-mobile-submenu-heading {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4caf50;
+  padding: 10px 22px 4px;
+  font-weight: 700;
+}
+.nav-mobile-submenu a {
+  display: block;
+  padding: 7px 22px;
+  color: #aaaaaa;
+  text-decoration: none;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  transition: color 0.12s, background 0.12s;
+}
+.nav-mobile-submenu a:hover { color: #fff; background: #1e1e1e; }
+/* Mobile search inside drawer submenu */
+.nav-mobile-search-wrap {
+  position: relative;
+  padding: 8px 14px 4px;
+}
+.nav-mobile-search-wrap svg {
+  position: absolute;
+  left: 23px; top: 50%; transform: translateY(-50%);
+  color: #666; pointer-events: none;
+}
+.nav-mobile-search {
+  width: 100%;
+  padding: 6px 10px 6px 28px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #1c1c1c;
+  color: #ccc;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  outline: none;
+}
+.nav-mobile-search:focus { border-color: #4caf50; }
+
+/* ── BANNER FONT CONTROL (overlay top-right) ── */
+.banner-font-ctrl {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 10;
+}
+.banner-font-label {
+  font-size: 10px;
+  color: #ccc;
+  font-family: 'Times New Roman', Times, serif;
+  margin-right: 3px;
+  letter-spacing: 0.5px;
+}
+.bfs-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #eee;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 700;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+  padding: 2px 6px;
+}
+.bfs-btn:hover { background: rgba(255,255,255,0.28); color: #fff; }
+.bfs-btn.active { background: #4caf50; border-color: #4caf50; color: #fff; }
+.bfs-btn.bfs-s  { font-size: 9px; }
+.bfs-btn.bfs-m  { font-size: 11px; }
+.bfs-btn.bfs-l  { font-size: 14px; }
+.bfs-btn.bfs-xl { font-size: 17px; }
+
+/* ── BANNER PAGE TITLE + DESCRIPTION ── */
+.banner-page-info {
+  position: absolute;
+  left: 5%;
+  bottom: 30px;
+  max-width: 65%;
+  z-index: 10;
+}
+.banner-page-title {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 2px 3px 10px rgba(0,0,0,0.7);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+.banner-page-desc {
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: clamp(12px, 1.8vw, 17px);
+  color: rgba(255,255,255,0.88);
+  text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* Keep old fs-btn class working just in case */
+.fs-btn { display: none; }
+.font-size-bar { display: none; }
+
+/* Font size control in nav — hidden */
+.nav-font-ctrl { display: none; }
+@media (max-width: 900px) {
+  .mega-nav-inner > .nav-item { display: none; }
+  .nav-hamburger { display: flex; }
+}
+
+/* ── BANNER CLOCK ── */
+#banner-canvas {
+  display: none; /* we use CSS clock */
+}
+</style>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #e8f4fd;
+    --surface2: #eeeeee;
+    --border: #87c5e8;
+    --accent: #2563eb;
+    --accent2: #0891b2;
+    --text: #111111;
+    --text-muted: #6b7280;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --radius: 4px;
+    --font-serif: 'Times New Roman', Times, serif;
+    --font-mono: 'Times New Roman', Times, serif;
+    --font-main: 'Times New Roman', Times, serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Times New Roman', Times, serif; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: var(--page-fs);
+    line-height: 1.6;
+  }
+
+  /* ── HEADER removed ── */
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .logo-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-badge {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #1d4ed8; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .btn-danger:hover { background: var(--danger); color: #fff; }
+
+  .btn-edit-mode {
+    background: var(--accent2);
+    color: #ffffff;
+    border-color: var(--accent2);
+  }
+  .btn-edit-mode:hover { background: #0e7490; }
+
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Admin buttons hidden until password unlocked */
+  .admin-btn { display: none !important; }
+  .admin-btn.unlocked { display: inline-flex !important; }
+
+  /* Password overlay on search field */
+  #search-input.pw-mode { -webkit-text-security: disc; text-security: disc; letter-spacing: 2px; border-color: #f59e0b; background: #fffbeb; }
+  #search-pw-hint { display:none; font-size:10px; color:#f59e0b; margin-left:6px; align-items:center; gap:4px; }
+  #search-pw-hint.visible { display:flex; }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    padding: 24px 32px;
+  }
+
+  @media (max-width: 1024px) {
+    main { padding: 20px 20px; }
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5a9ab8;
+    pointer-events: none;
+  }
+
+  #search-input {
+    padding: 8px 14px 8px 34px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    color: #0a4a6e;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    width: 240px;
+    outline: none;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(100,180,230,0.2);
+  }
+
+  #search-input::placeholder { color: #5a9ab8; }
+  #search-input:focus {
+    border-color: #3aabdc;
+    background: linear-gradient(135deg, #d0eaf7 0%, #b8dff0 100%);
+    box-shadow: 0 2px 8px rgba(58,171,220,0.3);
+  }
+
+  .year-select {
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    color: #0a4a6e;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(100,180,230,0.2);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230a4a6e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+  }
+  .year-select:focus, .year-select:hover {
+    border-color: #3aabdc;
+    background: linear-gradient(135deg, #d0eaf7 0%, #b8dff0 100%);
+    box-shadow: 0 2px 8px rgba(58,171,220,0.3);
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .status-dot.offline { background: var(--danger); animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  thead {
+    background: linear-gradient(135deg, #e8f4fd 0%, #d0eaf7 100%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 8px 5px;
+    text-align: left;
+    font-size: 12pt;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-muted);
+    font-weight: 700;
+    white-space: normal;
+    word-break: break-word;
+    user-select: none;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  th:hover { color: var(--accent); }
+
+  th.sorted { color: var(--accent); }
+
+  th .sort-icon {
+    display: inline-block;
+    margin-left: 4px;
+    opacity: 0.5;
+  }
+
+  th.sorted .sort-icon { opacity: 1; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody tr:hover { background: var(--surface); }
+
+  td {
+    padding: 8px 5px;
+    font-size: 12pt;
+    vertical-align: top;
+  }
+
+  .td-no { font-weight: 500; color: var(--text); white-space: normal; word-break: break-word; overflow: hidden; }
+  .td-date { color: var(--text-muted); white-space: nowrap; overflow: hidden; }
+  .td-desc { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
+  .td-file { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
+  .td-actions { width: 80px; min-width: 60px; text-align: right; display: none; }
+  .admin-mode .td-actions { display: table-cell; }
+
+  /* Extras list (sub-attachments under col 2 and col 5) */
+  .extras-list { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; }
+  .extra-item { display: flex; align-items: flex-start; gap: 5px; font-size: 11.5px; flex-wrap: wrap; white-space: normal; }
+  .extra-desc { color: #c0392b; font-weight: 500; flex-shrink: 0; }
+  .extra-arrow { color: var(--text-muted); flex-shrink: 0; }
+  .extra-link { color: #1a6fef; text-decoration: none; font-weight: 500; transition: opacity 0.15s; word-break: break-word; }
+  .extra-link:hover { opacity: 0.7; text-decoration: underline; }
+
+  /* Col 2 own PDF link */
+  .col2-pdf-link { display: inline-flex; align-items: center; gap: 4px; color: #1a6fef; text-decoration: none; font-size: 11px; margin-top: 3px; word-break: break-word; white-space: normal; }
+  .col2-pdf-link:hover { opacity: 0.7; }
+
+  .pdf-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #1a6fef;
+    text-decoration: none;
+    font-size: 11px;
+    transition: opacity 0.15s;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .pdf-link:hover { opacity: 0.7; }
+
+  /* ── EDIT TABLE INPUTS ── */
+  .edit-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .edit-input:focus { border-color: var(--accent2); }
+
+  /* ── PAGINATION ── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .pagination-info {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); color: #0f0f0f; border-color: var(--accent); }
+  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── PAGE SIZE SELECTOR ── */
+  .page-size-select {
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: var(--radius);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+  }
+
+  /* ── BULK UPLOAD ROW ── */
+  .bulk-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bulk-row:last-child { border-bottom: none; }
+  .bulk-row .bulk-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .bulk-row .bulk-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .bulk-row .form-input {
+    height: 34px;
+    font-size: 12px;
+    padding: 0 8px;
+  }
+  .bulk-row input[type="date"] { width: 130px; }
+  .bulk-row .bulk-no { flex: 0 0 150px; }
+  .bulk-row .bulk-date { flex: 0 0 140px; }
+  .bulk-row .bulk-desc { flex: 1; }
+  .bulk-row .bulk-docname { flex: 0 0 140px; }
+  .bulk-row .bulk-file-btn {
+    flex: 0 0 auto;
+    height: 34px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .bulk-row .bulk-remove {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 4px;
+  }
+  .bulk-col-headers {
+    display: flex;
+    gap: 8px;
+    padding: 0 0 4px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .bulk-col-headers span {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  /* ── EDIT MODE BANNER ── */
+  .edit-mode-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: linear-gradient(90deg, #ecfdf5 0%, #f0fdfa 100%);
+    border: 1px solid var(--accent2);
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+
+  .edit-mode-bar.visible { display: flex; }
+
+  .edit-mode-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  .edit-mode-blink {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── UPLOAD MODAL ── */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 480px;
+    max-width: 95vw;
+    animation: modal-in 0.2s ease;
+  }
+
+  @keyframes modal-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-title {
+    font-family: var(--font-serif);
+    font-size: 18px;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    transition: color 0.15s;
+    display: flex;
+    align-items: center;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-group label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 7px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 9px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-input:focus { border-color: var(--accent); }
+
+  /* ── DROP ZONE ── */
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 6px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .drop-zone:hover,
+  .drop-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(200,246,90,0.04);
+  }
+
+  .drop-zone input[type=file] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .drop-zone-icon { font-size: 28px; margin-bottom: 8px; color: var(--text-muted); }
+  .drop-zone-text { font-size: 12px; color: var(--text-muted); }
+  .drop-zone-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; opacity: 0.6; }
+  .drop-zone-filename { margin-top: 10px; color: var(--accent); font-size: 12px; }
+
+  /* ── EXTRAS INPUT ROW (in modal) ── */
+  .extras-input-list { display: flex; flex-direction: column; gap: 8px; }
+  .extra-input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 6px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 8px 10px;
+  }
+  .extra-input-desc {
+    padding: 6px 10px; border: 1px solid #e57373; border-radius: 4px;
+    font-size: 12px; font-family: var(--font-mono); color: #c0392b;
+    background: #fff5f5; outline: none;
+  }
+  .extra-input-desc:focus { border-color: #c0392b; }
+  .extra-input-desc::placeholder { color: #e57373; }
+  .extra-input-name {
+    padding: 6px 10px; border: 1px solid #90caf9; border-radius: 4px;
+    font-size: 12px; font-family: var(--font-mono); color: #1565c0;
+    background: #f0f8ff; outline: none;
+  }
+  .extra-input-name:focus { border-color: #1565c0; }
+  .extra-input-name::placeholder { color: #90caf9; }
+  .extra-file-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 4px;
+    font-size: 11px; cursor: pointer; color: var(--text-muted);
+    white-space: nowrap; transition: border-color 0.15s, color 0.15s;
+  }
+  .extra-file-label:hover { border-color: var(--accent); color: var(--accent); }
+  .extra-file-label.has-file { border-color: #4caf50; color: #1b5e20; background: #f0fdf4; }
+  .extra-row-remove {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 16px; padding: 0 4px;
+    transition: color 0.15s;
+  }
+  .extra-row-remove:hover { color: var(--danger); }
+
+  /* ── TOAST ── */
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    padding: 12px 18px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    border-left: 3px solid;
+    background: var(--surface2);
+    max-width: 320px;
+    animation: toast-in 0.2s ease;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .toast.success { border-left-color: var(--accent); }
+  .toast.error { border-left-color: var(--danger); }
+  .toast.info { border-left-color: var(--accent2); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state-text { font-size: 13px; }
+
+  /* ── LOADING ── */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .progress-wrap.visible { display: block; }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* ── EDIT ROW HIGHLIGHT ── */
+  tr.editing-row { background: rgba(90,246,200,0.04) !important; }
+
+  /* ── RESPONSIVE ── */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 900px) {
+    main { padding: 16px 14px; }
+    .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+    .toolbar-left, .toolbar-right { flex-wrap: wrap; gap: 8px; }
+    #search-input { width: 100%; max-width: 100%; font-size: 10pt; }
+    .year-select { width: auto; font-size: 10pt; }
+    table { min-width: 620px; }
+    th, td { font-size: 10pt; }
+    .td-desc { min-width: 160px; }
+    .td-file { min-width: 150px; }
+    :root { --nav-fs: 10pt; --page-fs: 10pt; }
+  }
+
+  @media (max-width: 600px) {
+    main { padding: 12px 8px; }
+    .toolbar-right { justify-content: flex-start; }
+    table { min-width: 560px; }
+    th, td { padding: 6px 4px; font-size: 9pt; }
+    #search-input { font-size: 9pt; }
+    .year-select { font-size: 9pt; }
+    .td-sl { width: 32px; min-width: 32px; max-width: 32px; }
+    .td-no { max-width: 110px; }
+    .td-date { width: 80px; min-width: 75px; }
+    .td-file { min-width: 130px; width: 160px; }
+    .pagination { flex-wrap: wrap; gap: 8px; }
+    .site-banner { height: 160px; }
+    .banner-page-title { font-size: clamp(20px, 6vw, 36px) !important; }
+    :root { --nav-fs: 9pt; --page-fs: 9pt; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #cccccc; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #aaaaaa; }
+</style>
+</head>
+<body>
+
+<!-- ── SITE BANNER ── -->
+<div class="site-banner">
+  <img src="https://lh3.googleusercontent.com/d/1sitChJR4HMammhoEKMSRATww76l0RR3-" alt="GST Cell Banner" onerror="this.style.background='#1a3a1a'">
+  <div class="banner-overlay"></div>
+
+  <!-- Font size control — top-right corner over banner -->
+  <div class="banner-font-ctrl">
+    <span class="banner-font-label">A</span>
+    <button class="bfs-btn bfs-s"  onclick="setPageFontSize(11)" title="Small">A</button>
+    <button class="bfs-btn bfs-m active" onclick="setPageFontSize(13)" title="Medium">A</button>
+    <button class="bfs-btn bfs-l"  onclick="setPageFontSize(16)" title="Large">A</button>
+    <button class="bfs-btn bfs-xl" onclick="setPageFontSize(19)" title="Extra Large">A</button>
+  </div>
+
+  <!-- Page title + description — centre of banner -->
+  <div class="banner-page-info">
+    <div class="banner-page-title" id="banner-page-title"></div>
+    <div class="banner-page-desc"  id="banner-page-desc"></div>
+  </div>
+
+  <div class="banner-datetime">
+    <div class="bdate" id="b-date"></div>
+    <div class="bday"  id="b-day"></div>
+  </div>
+</div>
+
+<!-- ── MEGA NAVIGATION ── -->
+<nav class="mega-nav" id="mega-nav">
+  <div class="mega-nav-inner" id="mega-nav-inner">
+    <a href="#" class="nav-home-link">🏠 HOME</a>
+    <span class="nav-spacer" id="nav-spacer"></span>
+    <span class="nav-loading" id="nav-loading">Loading menu…</span>
+    <button class="nav-hamburger" id="nav-hamburger" onclick="openMobileDrawer()" title="Menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- ── MOBILE DRAWER ── -->
+<div class="nav-mobile-overlay" id="nav-mobile-overlay" onclick="closeMobileDrawer()"></div>
+<div class="nav-mobile-drawer" id="nav-mobile-drawer">
+  <div class="nav-mobile-drawer-header">
+    <span class="nav-mobile-drawer-title">🏠 MENU</span>
+    <button class="nav-mobile-close" onclick="closeMobileDrawer()">&#x2715;</button>
+  </div>
+  <div id="nav-mobile-drawer-body"></div>
+</div>
+
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <select id="sheet-selector" class="year-select" onchange="onSheetSelect()" style="display:none">
+        <option value="">— Select Register —</option>
+      </select>
+      <select id="year-filter" class="year-select" onchange="onYearFilter()">
+        <option value="">All Years</option>
+      </select>
+      <div class="search-wrap">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Search records..." oninput="onSearch()">
+      </div>
+      <span id="record-count" style="font-size:11px;color:var(--text-muted)">0 records</span>
+      <span id="search-pw-hint">🔒 Enter password…</span>
+    </div>
+    <div class="toolbar-right">
+      <span id="sync-status" class="status-bar" style="display:none;margin:0">
+        <span class="status-dot offline" id="status-dot"></span>
+        <span id="status-text">Loading…</span>
+      </span>
+      <button id="back-to-normal-btn" class="btn btn-ghost btn-sm" onclick="lockAdminButtons()" style="display:none;color:#b00020;border-color:#b00020" title="Exit admin mode">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <button class="btn btn-ghost btn-sm admin-btn" onclick="loadFromSheet()" id="refresh-btn">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+
+      <button class="btn btn-ghost btn-sm" onclick="downloadTableExcel()" title="Download as Excel" style="color:#1b7a43;border-color:#1b7a43">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Excel
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="downloadTablePDF()" title="Download as PDF" style="color:#b00020;border-color:#b00020">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF
+      </button>
+      <div id="toolbar-extra-links" style="display:none"></div>
+      <button class="btn btn-primary btn-sm admin-btn" onclick="openBulkUploadModal()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+        Bulk Upload
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table id="data-table">
+      <colgroup>
+        <col style="width:18%">
+        <col style="width:8%">
+        <col>
+        <col style="width:20%">
+        <col style="width:0">
+      </colgroup>
+      <thead>
+        <tr id="table-header-row">
+          <th class="td-no" onclick="sortBy('no')">Central Tax Notification <span class="sort-icon">↕</span></th>
+          <th class="td-date" onclick="sortBy('date')">Date <span class="sort-icon">↕</span></th>
+          <th class="td-desc" onclick="sortBy('description')">Description <span class="sort-icon">↕</span></th>
+          <th class="td-file" id="th-file1">File Name</th>
+          <th class="td-actions" style="display:none" id="th-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr>
+          <td colspan="5">
+            <div class="empty-state">
+              <div class="empty-state-icon">📂</div>
+              <div class="empty-state-text">Loading records from Google Sheets…</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination" id="pagination" style="display:none">
+      <span class="pagination-info" id="page-info">Showing 1–10 of 0</span>
+      <div class="pagination-controls" id="page-controls"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:var(--text-muted)">Show</span>
+        <select class="page-size-select" id="page-size-select" onchange="onPageSizeChange()">
+          <option value="10" selected>10</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+        </select>
+        <span style="font-size:11px;color:var(--text-muted)">per page</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ── UPLOAD MODAL ── -->
+<div class="modal-backdrop" id="upload-modal">
+  <div class="modal" style="width:560px;max-width:98vw">
+    <div class="modal-header">
+      <span class="modal-title">Upload PDF Form</span>
+      <button class="modal-close" onclick="closeUploadModal()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:75vh;overflow-y:auto">
+      <!-- Core fields -->
+
+      <!-- Row: Form No. + PDF for Col 2 -->
+      <div class="form-group">
+        <label>Form No. (Column 2)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" class="form-input" id="form-no" placeholder="e.g. 1/2025-Central Tax" style="flex:1;min-width:0">
+          <label class="extra-file-label" id="col2-file-label" title="Choose PDF for Column 2" style="white-space:nowrap;flex-shrink:0;height:38px;padding:0 14px;margin:0">
+            📎 Choose PDF
+            <input type="file" id="file-input-col2" accept=".pdf" style="display:none" onchange="onFileSelectCol2(event)">
+          </label>
+        </div>
+        <span id="selected-filename-col2" style="font-size:10px;color:var(--accent);display:block;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      </div>
+
+      <div class="form-group">
+        <label>Date <span style="font-size:10px;color:var(--text-muted);letter-spacing:0;text-transform:none">(DD/MM/YYYY)</span></label>
+        <input type="text" class="form-input" id="form-date" placeholder="DD/MM/YYYY" maxlength="10"
+          oninput="autoFormatDate(this)">
+      </div>
+      <div class="form-group">
+        <label>Description (Column 4)</label>
+        <input type="text" class="form-input" id="form-desc" placeholder="Brief description of the form">
+      </div>
+
+      <!-- Row: PDF File Name + PDF File (Col 5) -->
+      <div class="form-group">
+        <label>PDF File Name (Column 5)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" class="form-input" id="form-docname" placeholder="Name shown in the table (leave blank to use file name)" style="flex:1;min-width:0">
+          <label class="extra-file-label" id="col5-file-label" title="Choose PDF for Column 5" style="white-space:nowrap;flex-shrink:0;height:38px;padding:0 14px;margin:0">
+            📎 Choose PDF
+            <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="onFileSelect(event)">
+          </label>
+        </div>
+        <span id="selected-filename" style="font-size:10px;color:var(--accent);display:block;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      </div>
+      <div class="progress-wrap" id="upload-progress">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0 12px">
+
+      <!-- Add More: Column 2 -->
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500">Extra attachments under Column 2</span>
+          <button class="btn btn-ghost btn-sm" onclick="addExtraRow('extras-no-list')">+ Add More</button>
+        </div>
+        <div id="extras-no-list" class="extras-input-list"></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+
+      <!-- Add More: Column 4 (Description) -->
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500">Extra attachments under Column 4 (Description)</span>
+          <button class="btn btn-ghost btn-sm" onclick="addExtraRow('extras-desc-list')">+ Add More</button>
+        </div>
+        <div id="extras-desc-list" class="extras-input-list"></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+
+      <!-- Add More: Column 5 -->
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500">Extra attachments under Column 5</span>
+          <button class="btn btn-ghost btn-sm" onclick="addExtraRow('extras-file-list')">+ Add More</button>
+        </div>
+        <div id="extras-file-list" class="extras-input-list"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer" style="flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;" id="modal-extra-links"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="closeUploadModal()">Cancel</button>
+        <button class="btn btn-primary" id="upload-btn" onclick="uploadPDF()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+          Upload to Drive
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BULK UPLOAD MODAL ── -->
+<div class="modal-backdrop" id="bulk-upload-modal">
+  <div class="modal" style="width:900px;max-width:99vw">
+    <div class="modal-header">
+      <span class="modal-title">Bulk Upload Records</span>
+      <button class="modal-close" onclick="closeBulkUploadModal()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:75vh;overflow-y:auto">
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px">Add one or more rows below. Each row will be appended as a new record.</p>
+      <!-- Column labels row -->
+      <div id="bulk-rows-container">
+        <!-- rows injected by JS -->
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button class="btn btn-ghost btn-sm" onclick="addBulkRow()" style="font-size:20px;line-height:1;padding:4px 14px;font-weight:700" title="Add another row">＋</button>
+      </div>
+      <div class="progress-wrap" id="bulk-progress" style="margin-top:12px">
+        <div class="progress-bar" id="bulk-progress-bar"></div>
+      </div>
+      <div id="bulk-status-text" style="font-size:11px;color:var(--text-muted);margin-top:6px;text-align:center"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeBulkUploadModal()">Cancel</button>
+      <button class="btn btn-primary" id="bulk-upload-btn" onclick="submitBulkUpload()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+        Upload All to Drive
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toast-container"></div>
+
+<script>
+// ──────────────────────────────────────────────
+//  CONFIG — Set your credentials here (admin only)
+// ──────────────────────────────────────────────
+const config = {
+  apiKey:   'AIzaSyDitEGgiMM2GqPWYRz8JSEJEpnQnbfQz10',        // Google API Key
+  clientId: '375093243511-0e3a5ihv3bb2lmemhln891do0aluh8n0.apps.googleusercontent.com',       // OAuth 2.0 Client ID
+  folderId: '1el_vFf0k5iA7neQ2qsbTBsPXtUp8DbEN',       // Google Drive Folder ID
+  sheetId:  '15P9OHw4-BC51iE6q6SU5fqWwbv6n3qVj-xtCdx2iOz4'        // Google Sheet ID
+};
+
+// ──────────────────────────────────────────────
+//  STATE
+// ──────────────────────────────────────────────
+
+let allData = [];          // Full dataset from sheet
+let filteredData = [];     // After search filter
+let searchQuery = '';      // Current search term for highlight
+let editMode = false;
+let selectedFile = null;
+let selectedFileCol2 = null;
+let sortCol = 'slNo';
+let sortDir = 1;           // 1 = asc, -1 = desc
+let currentPage = 1;
+let PAGE_SIZE = 10;
+let editingRowId = null;   // null = new upload, id = editing existing row
+
+// Tracks per-row edits { rowIndex: {no, date, description} }
+let pendingEdits = {};
+// Tracks newly added rows
+let newRows = [];
+// Tracks rows to delete (by slNo)
+let deletedRows = new Set();
+
+function updateStatus(online, msg) {
+  document.getElementById('status-dot').className = 'status-dot' + (online ? '' : ' offline');
+  document.getElementById('status-text').textContent = msg;
+}
+
+// ──────────────────────────────────────────────
+//  GOOGLE OAUTH
+// ──────────────────────────────────────────────
+let accessToken = null;
+
+async function ensureAuth() {
+  if (accessToken) return accessToken;
+  if (!config.clientId) throw new Error('No OAuth Client ID configured');
+  return new Promise((resolve, reject) => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: config.clientId,
+      scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
+      callback: (res) => {
+        if (res.access_token) { accessToken = res.access_token; resolve(accessToken); }
+        else reject(new Error('Auth failed'));
+      }
+    });
+    client.requestAccessToken();
+  });
+}
+
+// ──────────────────────────────────────────────
+//  GOOGLE SHEETS — READ
+// ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+//  APPLY SHEET HEADERS DYNAMICALLY
+// ──────────────────────────────────────────────
+function applySheetHeaders(headerRow) {
+  // Sheet columns: A[0]=Sl.No, B[1]=No/CTN, C[2]=Date, D[3]=Description, E[4]=FileId, F[5]=FileName
+  const colNo   = headerRow[1] || 'Central Tax Notification';
+  const colDate = headerRow[2] || 'Date';
+  const colDesc = headerRow[3] || 'Description';
+  const colFile = headerRow[5] || 'File Name';
+
+  const thNo   = document.querySelector('th.td-no');
+  const thDate = document.querySelector('th.td-date');
+  const thDesc = document.querySelector('th.td-desc');
+  const thFile = document.getElementById('th-file1');
+
+  if (thNo)   thNo.childNodes[0].textContent   = colNo + ' ';
+  if (thDate) thDate.childNodes[0].textContent = colDate + ' ';
+  if (thDesc) thDesc.childNodes[0].textContent = colDesc + ' ';
+  if (thFile) thFile.textContent               = colFile;
+}
+
+async function loadFromSheet() {
+  if (!activeSheetId || !config.apiKey) {
+    updateStatus(false, 'Not configured');
+    return;
+  }
+
+  const btn = document.getElementById('refresh-btn');
+  btn.innerHTML = '<span class="spinner"></span> Loading';
+  btn.disabled = true;
+
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${activeSheetId}/values/Sheet1!A:K?key=${config.apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const rows = (data.values || []);
+    // Row 1 is the header — read it and apply to table headings dynamically
+    const headerRow = rows[0] || [];
+    applySheetHeaders(headerRow);
+    const dataRows = rows.slice(1); // skip header row 1
+    allData = dataRows.map((r, i) => {
+      let extras_no = [], extras_desc = [], extras_file = [];
+      try { extras_no   = r[8]  ? JSON.parse(r[8])  : []; } catch(e) {}
+      try { extras_desc = r[9]  ? JSON.parse(r[9])  : []; } catch(e) {}
+      try { extras_file = r[10] ? JSON.parse(r[10]) : []; } catch(e) {}
+      return {
+        id: i,
+        slNo:        r[0] || '',
+        no:          r[1] || '',
+        date:        r[2] || '',
+        description: r[3] || '',
+        fileId:      r[4] || '',
+        fileName:    r[5] || '',
+        fileId2:     r[6] || '',
+        fileName2:   r[7] || '',
+        extras_no,    // [{desc, name, fileId}] — extra PDFs under col 2
+        extras_desc,  // [{desc, name, fileId}] — extra PDFs under col 4
+        extras_file   // [{desc, name, fileId}] — extra PDFs under col 5
+      };
+    });
+    filteredData = [...allData];
+    currentPage = 1;
+    pendingEdits = {};
+    newRows = [];
+    deletedRows = new Set();
+    populateYearFilter();
+    renderTable();
+    updateStatus(true, `Synced · ${allData.length} records`);
+    // toast suppressed — no popup on load
+  } catch(e) {
+    updateStatus(false, 'Sync error');
+    toast('Error loading sheet: ' + e.message, 'error');
+  } finally {
+    btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Refresh`;
+    btn.disabled = false;
+  }
+}
+
+// ──────────────────────────────────────────────
+//  GOOGLE SHEETS — WRITE
+// ──────────────────────────────────────────────
+async function writeSheetFull(data) {
+  await ensureAuth();
+
+  // Step 1: Read existing header row first so we never overwrite it
+  let headerRow = ['Sl. No.', 'No.', 'Date', 'Description', 'File ID', 'File Name', 'File ID 2', 'File Name 2', 'Extras No', 'Extras Desc', 'Extras File'];
+  try {
+    const hUrl = `https://sheets.googleapis.com/v4/spreadsheets/${activeSheetId}/values/Sheet1!A1:K1?key=${config.apiKey}`;
+    const hRes = await fetch(hUrl);
+    if (hRes.ok) {
+      const hData = await hRes.json();
+      if (hData.values && hData.values[0] && hData.values[0].length > 0) {
+        headerRow = hData.values[0];
+      }
+    }
+  } catch(e) { /* keep default header */ }
+
+  // Step 2: Clear old data rows (A2 onwards), leave row 1 untouched
+  const clearUrl = `https://sheets.googleapis.com/v4/spreadsheets/${activeSheetId}/values/Sheet1!A2:K2000:clear`;
+  await fetch(clearUrl, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+  });
+
+  // Step 3: Write data rows only (from A2), using preserved header
+  const values = [
+    headerRow,
+    ...data.map(r => [
+      r.slNo, r.no, r.date, r.description,
+      r.fileId, r.fileName,
+      r.fileId2||'', r.fileName2||'',
+      r.extras_no  && r.extras_no.length  ? JSON.stringify(r.extras_no)  : '',
+      r.extras_desc && r.extras_desc.length ? JSON.stringify(r.extras_desc) : '',
+      r.extras_file && r.extras_file.length ? JSON.stringify(r.extras_file) : ''
+    ])
+  ];
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${activeSheetId}/values/Sheet1!A1?valueInputOption=RAW`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ range: 'Sheet1!A1', majorDimension: 'ROWS', values })
+  });
+  if (!res.ok) throw new Error(`Sheet write error: ${res.status}`);
+}
+
+// ──────────────────────────────────────────────
+//  GOOGLE DRIVE — UPLOAD
+// ──────────────────────────────────────────────
+async function uploadToDrive(file, onProgress) {
+  await ensureAuth();
+  const metadata = {
+    name: file.name,
+    mimeType: 'application/pdf',
+    parents: config.folderId ? [config.folderId] : undefined
+  };
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', file);
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name');
+    xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+    xhr.upload.onprogress = e => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
+    xhr.onload = () => {
+      if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+      else reject(new Error(`Drive upload failed: ${xhr.status}`));
+    };
+    xhr.onerror = () => reject(new Error('Network error during upload'));
+    xhr.send(form);
+  });
+}
+
+// ──────────────────────────────────────────────
+//  UPLOAD FLOW
+// ──────────────────────────────────────────────
+let insertAfterId = null;  // null = append at end, id = insert below that row
+let cachedExtraLinks = []; // Links from Password A16/B16, A17/B17
+
+function renderModalExtraLinks() {
+  // Populate modal footer links
+  const container = document.getElementById('modal-extra-links');
+  if (container) {
+    container.innerHTML = '';
+    cachedExtraLinks.forEach(l => {
+      const a = document.createElement('a');
+      a.href = l.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.className = 'btn btn-ghost btn-sm';
+      a.style.cssText = 'color:#1a6fef;border-color:#1a6fef;text-decoration:none;';
+      a.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> ${l.name}`;
+      container.appendChild(a);
+    });
+  }
+
+  // Also populate toolbar links and make them visible
+  const toolbar = document.getElementById('toolbar-extra-links');
+  if (toolbar) {
+    toolbar.innerHTML = '';
+    if (cachedExtraLinks.length > 0) {
+      cachedExtraLinks.forEach(l => {
+        const a = document.createElement('a');
+        a.href = l.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'btn btn-ghost btn-sm';
+        a.style.cssText = 'color:#1a6fef;border-color:#1a6fef;text-decoration:none;white-space:nowrap;';
+        a.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> ${l.name}`;
+        toolbar.appendChild(a);
+      });
+      toolbar.style.display = 'flex';
+      toolbar.style.gap = '8px';
+      toolbar.style.flexWrap = 'wrap';
+      toolbar.style.alignItems = 'center';
+    } else {
+      toolbar.style.display = 'none';
+    }
+    // Always start hidden — shown only after password unlock
+    toolbar.style.display = 'none';
+  }
+}
+
+function openAddBelowModal(afterId) {
+  insertAfterId = afterId;
+  editingRowId = null;
+  document.getElementById('form-date').value = displayDate(new Date().toISOString().slice(0,10));
+  document.getElementById('form-no').value = '';
+  document.getElementById('form-desc').value = '';
+  document.getElementById('form-docname').value = '';
+  document.getElementById('selected-filename').textContent = '';
+  document.getElementById('selected-filename-col2').textContent = '';
+  selectedFile = null;
+  selectedFileCol2 = null;
+  const lbl5b = document.getElementById('col5-file-label');
+  if (lbl5b) { lbl5b.classList.remove('has-file'); lbl5b.childNodes[0].textContent = '📎 Choose PDF '; }
+  const lbl2b = document.getElementById('col2-file-label');
+  if (lbl2b) { lbl2b.classList.remove('has-file'); lbl2b.childNodes[0].textContent = '📎 Choose PDF '; }
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('upload-progress').classList.remove('visible');
+  ['extras-no-list','extras-desc-list','extras-file-list'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  document.querySelector('#upload-modal .modal-title').textContent = 'Add New Record Below';
+  document.getElementById('upload-btn').innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload to Drive`;
+  renderModalExtraLinks();
+  document.getElementById('upload-modal').classList.add('open');
+}
+
+function openUploadModal() {
+  insertAfterId = null;
+  document.getElementById('form-date').value = displayDate(new Date().toISOString().slice(0,10));
+  document.getElementById('form-no').value = '';
+  document.getElementById('form-desc').value = '';
+  document.getElementById('form-docname').value = '';
+  document.getElementById('selected-filename').textContent = '';
+  document.getElementById('selected-filename-col2').textContent = '';
+  selectedFile = null;
+  selectedFileCol2 = null;
+  const lbl5 = document.getElementById('col5-file-label');
+  if (lbl5) { lbl5.classList.remove('has-file'); lbl5.childNodes[0].textContent = '📎 Choose PDF '; }
+  const lbl2 = document.getElementById('col2-file-label');
+  if (lbl2) { lbl2.classList.remove('has-file'); lbl2.childNodes[0].textContent = '📎 Choose PDF '; }
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('upload-progress').classList.remove('visible');
+  // Clear extras lists
+  ['extras-no-list','extras-desc-list','extras-file-list'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  // Reset modal title and button
+  document.querySelector('#upload-modal .modal-title').textContent = 'Upload PDF Form';
+  document.getElementById('upload-btn').innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload to Drive`;
+  renderModalExtraLinks();
+  document.getElementById('upload-modal').classList.add('open');
+}
+
+function closeUploadModal() {
+  document.getElementById('upload-modal').classList.remove('open');
+}
+
+// ──────────────────────────────────────────────
+//  EDIT RECORD MODAL
+// ──────────────────────────────────────────────
+
+function openEditModal(id) {
+  const row = allData.find(r => r.id === id);
+  if (!row) return;
+  editingRowId = id;
+
+  // Populate fields with existing data
+  document.getElementById('form-no').value   = row.no || '';
+  document.getElementById('form-date').value = displayDate(row.date) || displayDate(new Date().toISOString().slice(0,10));
+  document.getElementById('form-desc').value = row.description || '';
+  document.getElementById('form-docname').value = row.fileName || '';
+  const lbl5e = document.getElementById('col5-file-label');
+  if (lbl5e) {
+    if (row.fileName) { lbl5e.classList.add('has-file'); lbl5e.childNodes[0].textContent = '✅ ' + row.fileName.slice(0,22) + (row.fileName.length > 22 ? '…' : '') + ' '; }
+    else { lbl5e.classList.remove('has-file'); lbl5e.childNodes[0].textContent = '📎 Choose PDF '; }
+  }
+  const lbl2e = document.getElementById('col2-file-label');
+  if (lbl2e) {
+    if (row.fileName2) { lbl2e.classList.add('has-file'); lbl2e.childNodes[0].textContent = '✅ ' + row.fileName2.slice(0,22) + (row.fileName2.length > 22 ? '…' : '') + ' '; }
+    else { lbl2e.classList.remove('has-file'); lbl2e.childNodes[0].textContent = '📎 Choose PDF '; }
+  }
+  document.getElementById('selected-filename').textContent = row.fileName ? row.fileName + ' (existing)' : '';
+  document.getElementById('selected-filename-col2').textContent = row.fileName2 ? row.fileName2 + ' (existing)' : '';
+  selectedFile = null;
+  selectedFileCol2 = null;
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('upload-progress').classList.remove('visible');
+
+  // Populate extras
+  ['extras-no-list','extras-desc-list','extras-file-list'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  // Re-populate existing extras
+  (row.extras_no || []).forEach(e => addExtraRowWithData('extras-no-list', e));
+  (row.extras_desc || []).forEach(e => addExtraRowWithData('extras-desc-list', e));
+  (row.extras_file || []).forEach(e => addExtraRowWithData('extras-file-list', e));
+
+  // Change modal title and button
+  document.querySelector('#upload-modal .modal-title').textContent = 'Edit Record';
+  document.getElementById('upload-btn').innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Save Changes`;
+  renderModalExtraLinks();
+  document.getElementById('upload-modal').classList.add('open');
+}
+
+function addExtraRowWithData(listId, data) {
+  const list = document.getElementById(listId);
+  const uid = listId + '-' + Date.now() + '-' + Math.random();
+  const row = document.createElement('div');
+  row.className = 'extra-input-row';
+  row.dataset.uid = uid;
+  row.dataset.existingFileId = data.fileId || '';
+  row.innerHTML = `
+    <input class="extra-input-desc" type="text" placeholder="Description (shown in red)" data-field="desc" value="${esc(data.desc||'')}">
+    <input class="extra-input-name" type="text" placeholder="PDF display name (shown in blue)" data-field="name" value="${esc(data.name||'')}">
+    <label class="extra-file-label ${data.fileId ? 'has-file' : ''}" title="Select PDF">
+      ${data.fileId ? '✅ ' + (data.name||'existing').slice(0,20) + ' ' : '📎 Choose PDF'}
+      <input type="file" accept=".pdf" style="display:none" onchange="onExtraFileSelect(event, '${uid}')">
+    </label>
+    <button class="extra-row-remove" title="Remove" onclick="this.closest('.extra-input-row').remove()">✕</button>
+  `;
+  list.appendChild(row);
+}
+
+async function saveEditedRecord() {
+  const row = allData.find(r => r.id === editingRowId);
+  if (!row) return;
+
+  const no      = document.getElementById('form-no').value.trim();
+  const date    = toInputDate(document.getElementById('form-date').value);
+  const desc    = document.getElementById('form-desc').value.trim();
+  const docname = document.getElementById('form-docname').value.trim();
+
+  if (!no || !date || !desc) { toast('Please fill in No., Date, and Description.', 'error'); return; }
+
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  const progressWrap = document.getElementById('upload-progress');
+  const progressBar  = document.getElementById('progress-bar');
+  progressWrap.classList.add('visible');
+
+  try {
+    // Update main col5 PDF only if a new file was selected
+    let fileId = row.fileId;
+    let fileName = row.fileName;
+    if (selectedFile) {
+      if (!config.folderId || !config.clientId) {
+        fileId = 'demo-' + Date.now();
+        fileName = selectedFile.name;
+      } else {
+        const result = await uploadToDrive(selectedFile, pct => {
+          progressBar.style.width = (pct * 50).toFixed(0) + '%';
+        });
+        fileId = result.id;
+        fileName = result.name;
+      }
+    }
+    const displayName = docname || fileName;
+
+    // Update col2 PDF only if a new file was selected
+    let fileId2 = row.fileId2;
+    let fileName2 = row.fileName2;
+    if (selectedFileCol2) {
+      if (!config.folderId || !config.clientId) {
+        fileId2 = 'demo2-' + Date.now();
+        fileName2 = selectedFileCol2.name;
+      } else {
+        const r2 = await uploadToDrive(selectedFileCol2, pct => {
+          progressBar.style.width = (50 + pct * 20).toFixed(0) + '%';
+        });
+        fileId2 = r2.id;
+        fileName2 = r2.name;
+      }
+    }
+
+    progressBar.style.width = '70%';
+
+    // Collect extras (existing ones carry their existing fileId via dataset)
+    const extras_no   = await collectExtrasWithExisting('extras-no-list');
+    const extras_desc = await collectExtrasWithExisting('extras-desc-list');
+    const extras_file = await collectExtrasWithExisting('extras-file-list');
+
+    progressBar.style.width = '100%';
+
+    // Mutate the row in allData
+    row.no = no;
+    row.date = date;
+    row.description = desc;
+    row.fileId = fileId;
+    row.fileName = displayName;
+    row.fileId2 = fileId2;
+    row.fileName2 = fileName2;
+    row.extras_no = extras_no;
+    row.extras_desc = extras_desc;
+    row.extras_file = extras_file;
+
+    filteredData = [...allData];
+
+    try {
+      await writeSheetFull(allData);
+      toast('Record updated and saved!', 'success');
+    } catch(e) {
+      toast('Updated locally but sheet write failed: ' + e.message, 'error');
+    }
+
+    renderTable();
+    closeUploadModal();
+    updateStatus(true, `Synced · ${allData.length} records`);
+
+  } catch(e) {
+    toast('Save failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload to Drive`;
+  }
+}
+
+// Like collectExtras but preserves existing fileId for rows that have no new file
+async function collectExtrasWithExisting(listId) {
+  const list = document.getElementById(listId);
+  const rows = Array.from(list.querySelectorAll('.extra-input-row'));
+  const result = [];
+  for (const row of rows) {
+    const desc = (row.querySelector('[data-field="desc"]').value || '').trim();
+    const name = (row.querySelector('[data-field="name"]').value || '').trim();
+    const file = row._extraFile || null;
+    const existingFileId = row.dataset.existingFileId || '';
+    if (!desc && !name && !file && !existingFileId) continue;
+    let fileId = existingFileId;
+    let displayName = name;
+    if (file) {
+      if (config.folderId && config.clientId) {
+        const r2 = await uploadToDrive(file, () => {});
+        fileId = r2.id;
+        if (!displayName) displayName = r2.name;
+      } else {
+        fileId = 'demo-' + Date.now();
+        if (!displayName) displayName = file.name;
+      }
+    }
+    result.push({ desc, name: displayName || name, fileId });
+  }
+  return result;
+}
+
+function onFileSelect(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.pdf')) { toast('Only PDF files are allowed.', 'error'); return; }
+  selectedFile = f;
+  const lbl = document.getElementById('col5-file-label');
+  if (lbl) { lbl.classList.add('has-file'); lbl.childNodes[0].textContent = '✅ ' + f.name.slice(0,22) + (f.name.length > 22 ? '…' : '') + ' '; }
+  const span = document.getElementById('selected-filename');
+  span.innerHTML = f.name + ' <button onclick="clearFileCol5()" title="Remove selected file" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:13px;padding:0 2px;vertical-align:middle;line-height:1" type="button">✕</button>';
+}
+
+function clearFileCol5() {
+  selectedFile = null;
+  const lbl = document.getElementById('col5-file-label');
+  if (lbl) { lbl.classList.remove('has-file'); lbl.childNodes[0].textContent = '📎 Choose PDF '; }
+  const inp = document.getElementById('file-input');
+  if (inp) inp.value = '';
+  document.getElementById('selected-filename').innerHTML = '';
+}
+
+function onFileSelectCol2(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.pdf')) { toast('Only PDF files are allowed.', 'error'); return; }
+  selectedFileCol2 = f;
+  const lbl = document.getElementById('col2-file-label');
+  if (lbl) { lbl.classList.add('has-file'); lbl.childNodes[0].textContent = '✅ ' + f.name.slice(0,22) + (f.name.length > 22 ? '…' : '') + ' '; }
+  const span = document.getElementById('selected-filename-col2');
+  span.innerHTML = f.name + ' <button onclick="clearFileCol2()" title="Remove selected file" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:13px;padding:0 2px;vertical-align:middle;line-height:1" type="button">✕</button>';
+}
+
+function clearFileCol2() {
+  selectedFileCol2 = null;
+  const lbl = document.getElementById('col2-file-label');
+  if (lbl) { lbl.classList.remove('has-file'); lbl.childNodes[0].textContent = '📎 Choose PDF '; }
+  const inp = document.getElementById('file-input-col2');
+  if (inp) inp.value = '';
+  document.getElementById('selected-filename-col2').innerHTML = '';
+}
+
+// Add an extra attachment row inside a given list container
+function addExtraRow(listId) {
+  const list = document.getElementById(listId);
+  const idx = list.children.length;
+  const uid = listId + '-' + Date.now();
+
+  const row = document.createElement('div');
+  row.className = 'extra-input-row';
+  row.dataset.uid = uid;
+
+  row.innerHTML = `
+    <input class="extra-input-desc" type="text" placeholder="Description (shown in red)" data-field="desc">
+    <input class="extra-input-name" type="text" placeholder="PDF display name (shown in blue)" data-field="name">
+    <label class="extra-file-label" title="Select PDF">
+      📎 Choose PDF
+      <input type="file" accept=".pdf" style="display:none" onchange="onExtraFileSelect(event, '${uid}')">
+    </label>
+    <button class="extra-row-remove" title="Remove" onclick="this.closest('.extra-input-row').remove()">✕</button>
+  `;
+
+  list.appendChild(row);
+}
+
+function onExtraFileSelect(e, uid) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.pdf')) { toast('Only PDF files are allowed.', 'error'); return; }
+  // Store file on the row element for retrieval at upload time
+  const row = document.querySelector(`.extra-input-row[data-uid="${uid}"]`);
+  if (row) {
+    row._extraFile = f;
+    const lbl = row.querySelector('.extra-file-label');
+    lbl.classList.add('has-file');
+    lbl.childNodes[0].textContent = '✅ ' + f.name.slice(0,20) + (f.name.length > 20 ? '…' : '') + ' ';
+  }
+}
+
+// Collect all extras from a list container, uploading PDFs to Drive
+async function collectExtras(listId) {
+  const list = document.getElementById(listId);
+  const rows = Array.from(list.querySelectorAll('.extra-input-row'));
+  const result = [];
+  for (const row of rows) {
+    const desc = (row.querySelector('[data-field="desc"]').value || '').trim();
+    const name = (row.querySelector('[data-field="name"]').value || '').trim();
+    const file = row._extraFile || null;
+    if (!desc && !name && !file) continue; // skip empty rows
+    let fileId = '';
+    let displayName = name;
+    if (file) {
+      if (config.folderId && config.clientId) {
+        const result2 = await uploadToDrive(file, () => {});
+        fileId = result2.id;
+        if (!displayName) displayName = result2.name;
+      } else {
+        fileId = 'demo-' + Date.now();
+        if (!displayName) displayName = file.name;
+      }
+    }
+    result.push({ desc, name: displayName || name, fileId });
+  }
+  return result;
+}
+
+async function uploadPDF() {
+  if (editingRowId !== null) { await saveEditedRecord(); return; }
+  const no      = document.getElementById('form-no').value.trim();
+  const date    = toInputDate(document.getElementById('form-date').value);
+  const desc    = document.getElementById('form-desc').value.trim();
+  const docname = document.getElementById('form-docname').value.trim();
+
+  if (!no || !date || !desc) { toast('Please fill all fields.', 'error'); return; }
+
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+
+  const progressWrap = document.getElementById('upload-progress');
+  const progressBar  = document.getElementById('progress-bar');
+  progressWrap.classList.add('visible');
+
+  try {
+    // Upload main col5 PDF (optional)
+    let fileId = '';
+    let fileName = '';
+    if (selectedFile) {
+      fileName = selectedFile.name;
+      if (!config.folderId || !config.clientId) {
+        toast('No Drive config — storing filename only.', 'info');
+        fileId = 'demo-' + Date.now();
+      } else {
+        const result = await uploadToDrive(selectedFile, pct => {
+          progressBar.style.width = (pct * 50).toFixed(0) + '%';
+        });
+        fileId = result.id;
+        fileName = result.name;
+      }
+    }
+    const displayName = docname || fileName;
+
+    // Upload col2 PDF (optional)
+    let fileId2 = '', fileName2 = '';
+    if (selectedFileCol2) {
+      if (!config.folderId || !config.clientId) {
+        fileId2 = 'demo2-' + Date.now();
+        fileName2 = selectedFileCol2.name;
+      } else {
+        const r2 = await uploadToDrive(selectedFileCol2, pct => {
+          progressBar.style.width = (50 + pct * 20).toFixed(0) + '%';
+        });
+        fileId2 = r2.id;
+        fileName2 = r2.name;
+      }
+    }
+
+    progressBar.style.width = '70%';
+
+    // Collect extras
+    const extras_no   = await collectExtras('extras-no-list');
+    const extras_desc = await collectExtras('extras-desc-list');
+    const extras_file = await collectExtras('extras-file-list');
+
+    progressBar.style.width = '100%';
+
+    const newRow = {
+      id: Date.now(), slNo: 0, no, date, description: desc,
+      fileId, fileName: displayName,
+      fileId2, fileName2,
+      extras_no, extras_desc, extras_file
+    };
+
+    if (insertAfterId !== null) {
+      const afterIdx = allData.findIndex(r => r.id === insertAfterId);
+      if (afterIdx !== -1) {
+        allData.splice(afterIdx + 1, 0, newRow);
+      } else {
+        allData.push(newRow);
+      }
+    } else {
+      allData.push(newRow);
+    }
+    // Re-number slNo for all rows
+    allData.forEach((r, i) => { r.slNo = i + 1; });
+    insertAfterId = null;
+
+    try {
+      await writeSheetFull(allData);
+      toast('PDF uploaded & record saved!', 'success');
+    } catch(e) {
+      toast('Uploaded but sheet write failed: ' + e.message, 'error');
+    }
+
+    filteredData = [...allData];
+    populateYearFilter();
+    currentPage = Math.ceil(filteredData.length / PAGE_SIZE);
+    renderTable();
+    closeUploadModal();
+    updateStatus(true, `Synced · ${allData.length} records`);
+
+  } catch(e) {
+    toast('Upload failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload to Drive`;
+  }
+}
+
+// ──────────────────────────────────────────────
+//  YEAR FILTER
+// ──────────────────────────────────────────────
+let yearFilter = '';
+
+function populateYearFilter() {
+  const sel = document.getElementById('year-filter');
+  const years = [...new Set(allData
+    .map(r => r.date ? r.date.substring(0, 4) : '')
+    .filter(y => y && /^\d{4}$/.test(y))
+  )].sort((a, b) => b - a);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">All Years</option>';
+  years.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    sel.appendChild(opt);
+  });
+  if (years.includes(current)) sel.value = current;
+}
+
+function onYearFilter() {
+  yearFilter = document.getElementById('year-filter').value;
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = searchQuery;
+  filteredData = allData.filter(r => {
+    const matchYear = !yearFilter || (r.date && r.date.startsWith(yearFilter));
+    const matchQ = !q ||
+      r.slNo.toString().includes(q) ||
+      r.no.toLowerCase().includes(q) ||
+      r.date.toLowerCase().includes(q) ||
+      r.description.toLowerCase().includes(q) ||
+      (r.fileName || '').toLowerCase().includes(q) ||
+      (r.fileName2 || '').toLowerCase().includes(q) ||
+      (r.extras_no  || []).some(e => (e.desc||'').toLowerCase().includes(q) || (e.name||'').toLowerCase().includes(q)) ||
+      (r.extras_desc|| []).some(e => (e.desc||'').toLowerCase().includes(q) || (e.name||'').toLowerCase().includes(q)) ||
+      (r.extras_file|| []).some(e => (e.desc||'').toLowerCase().includes(q) || (e.name||'').toLowerCase().includes(q));
+    return matchYear && matchQ;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+// ──────────────────────────────────────────────
+//  SEARCH & SORT
+// ──────────────────────────────────────────────
+let passwordMode = false;
+let passwordBuffer = '';
+let adminUnlocked = false;
+
+async function fetchSheetPassword() {
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Password!A1?key=${config.apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.values && data.values[0] && data.values[0][0]) ? String(data.values[0][0]).trim() : null;
+  } catch { return null; }
+}
+
+function unlockAdminButtons() {
+  adminUnlocked = true;
+  document.querySelectorAll('.admin-btn').forEach(b => b.classList.add('unlocked'));
+  const backBtn = document.getElementById('back-to-normal-btn');
+  if (backBtn) backBtn.style.display = 'inline-flex';
+  document.getElementById('data-table').classList.add('admin-mode');
+  const thActions = document.getElementById('th-actions');
+  if (thActions) thActions.style.display = '';
+  // Show the extra toolbar links (Central Tax / State Tax buttons) after unlock
+  const toolbar = document.getElementById('toolbar-extra-links');
+  if (toolbar && toolbar.children.length > 0) {
+    toolbar.style.display = 'flex';
+    toolbar.style.gap = '8px';
+    toolbar.style.flexWrap = 'wrap';
+    toolbar.style.alignItems = 'center';
+  }
+  renderTable();
+}
+
+function lockAdminButtons() {
+  adminUnlocked = false;
+  document.querySelectorAll('.admin-btn').forEach(b => b.classList.remove('unlocked'));
+  const backBtn = document.getElementById('back-to-normal-btn');
+  if (backBtn) backBtn.style.display = 'none';
+  document.getElementById('data-table').classList.remove('admin-mode');
+  const thActions = document.getElementById('th-actions');
+  if (thActions) thActions.style.display = 'none';
+  // Hide the extra toolbar links again
+  const toolbar = document.getElementById('toolbar-extra-links');
+  if (toolbar) toolbar.style.display = 'none';
+  renderTable();
+  toast('Returned to normal view', 'info');
+}
+
+function onSearch() {
+  const inp = document.getElementById('search-input');
+  const raw = inp.value;
+  const hint = document.getElementById('search-pw-hint');
+
+  // Detect && trigger
+  if (!passwordMode && raw.endsWith('&&')) {
+    passwordMode = true;
+    passwordBuffer = '';
+    inp.classList.add('pw-mode');
+    inp.value = '';
+    hint.classList.add('visible');
+    return;
+  }
+
+  if (passwordMode) {
+    passwordBuffer = raw;
+    return;
+  }
+
+  searchQuery = raw.toLowerCase().trim();
+  applyFilters();
+}
+
+// Handle Enter key for password submission
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('search-input');
+  inp.addEventListener('keydown', async function(e) {
+    if (e.key === 'Escape' && passwordMode) {
+      passwordMode = false;
+      passwordBuffer = '';
+      inp.classList.remove('pw-mode');
+      inp.value = '';
+      document.getElementById('search-pw-hint').classList.remove('visible');
+      searchQuery = '';
+      applyFilters();
+      return;
+    }
+    if (e.key === 'Enter' && passwordMode) {
+      e.preventDefault();
+      const entered = passwordBuffer.trim();
+      const correct = await fetchSheetPassword();
+      passwordMode = false;
+      passwordBuffer = '';
+      inp.classList.remove('pw-mode');
+      inp.value = '';
+      document.getElementById('search-pw-hint').classList.remove('visible');
+      searchQuery = '';
+      applyFilters();
+      if (correct !== null && entered === correct) {
+        unlockAdminButtons();
+      } else {
+        toast('Incorrect password', 'error');
+      }
+    }
+  });
+});
+
+function sortBy(col) {
+  if (sortCol === col) { sortDir *= -1; }
+  else { sortCol = col; sortDir = 1; }
+
+  filteredData.sort((a, b) => {
+    let va = a[col], vb = b[col];
+    if (col === 'slNo') { va = parseInt(va)||0; vb = parseInt(vb)||0; }
+    if (va < vb) return -1 * sortDir;
+    if (va > vb) return  1 * sortDir;
+    return 0;
+  });
+
+  // Update header styles
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+  renderTable();
+}
+
+// ──────────────────────────────────────────────
+//  RENDER TABLE
+// ──────────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  const total = filteredData.length;
+  document.getElementById('record-count').textContent = `${total} record${total !== 1 ? 's' : ''}`;
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No records found.</div></div></td></tr>`;
+    document.getElementById('pagination').style.display = 'none';
+    return;
+  }
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end   = Math.min(start + PAGE_SIZE, total);
+
+  // REVERSE: page 1 shows last records first
+  const reversedData = [...filteredData].reverse();
+  const pageData = reversedData.slice(start, end);
+
+  tbody.innerHTML = '';
+
+  pageData.forEach((row, i) => {
+    const globalIdx = start + i;
+    // Forward serial number: row at position globalIdx in reversedData
+    // corresponds to (total - 1 - globalIdx) in original, so displaySlNo = total - globalIdx
+    const displaySlNo = total - globalIdx;
+    const tr = document.createElement('tr');
+
+    {
+      const hl = (val) => {
+        const text = String(val || '');
+        if (!searchQuery) return esc(text);
+        const idx = text.toLowerCase().indexOf(searchQuery);
+        if (idx === -1) return esc(text);
+        return esc(text.slice(0, idx))
+          + '<mark class="tbl-hl">' + esc(text.slice(idx, idx + searchQuery.length)) + '</mark>'
+          + esc(text.slice(idx + searchQuery.length));
+      };
+
+      // Format description: *text* → bold, _text_ → italic
+      // Works on top of search highlighting
+      const formatDesc = (val) => {
+        const text = String(val || '');
+        // Split into segments, preserving *...* and _..._ markers
+        // Process character by character to handle both markers correctly
+        let result = '';
+        let i = 0;
+        while (i < text.length) {
+          if (text[i] === '*') {
+            const end = text.indexOf('*', i + 1);
+            if (end !== -1) {
+              const inner = text.slice(i + 1, end);
+              result += '<strong>' + hl(inner) + '</strong>';
+              i = end + 1;
+            } else {
+              result += esc(text[i]);
+              i++;
+            }
+          } else if (text[i] === '_') {
+            const end = text.indexOf('_', i + 1);
+            if (end !== -1) {
+              const inner = text.slice(i + 1, end);
+              result += '<em>' + hl(inner) + '</em>';
+              i = end + 1;
+            } else {
+              result += esc(text[i]);
+              i++;
+            }
+          } else {
+            // Find next marker or end of string
+            let next = text.length;
+            const nextStar = text.indexOf('*', i);
+            const nextUnd  = text.indexOf('_', i);
+            if (nextStar !== -1) next = Math.min(next, nextStar);
+            if (nextUnd  !== -1) next = Math.min(next, nextUnd);
+            result += hl(text.slice(i, next));
+            i = next;
+          }
+        }
+        return result;
+      };
+
+      // Build extras HTML: red desc 👉 blue link
+      const buildExtras = (arr) => {
+        if (!arr || !arr.length) return '';
+        return '<div class="extras-list">' + arr.map(e => {
+          const href = e.fileId ? `https://drive.google.com/uc?export=download&id=${esc(e.fileId)}` : '#';
+          const dl   = e.fileId ? `download="${esc(e.name||'file.pdf')}"` : '';
+          return `<div class="extra-item"><span class="extra-desc">${esc(e.desc||'')}</span><span class="extra-arrow">👉</span><a class="extra-link" href="${href}" ${dl} target="_blank">${esc(e.name||'')}</a></div>`;
+        }).join('') + '</div>';
+      };
+
+      // Col 2: text linked to col2 PDF if available, + extras_no
+      const col2TextDisplay = row.fileId2
+        ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:#1a6fef" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hl(row.no)}</a>`
+        : `<div style="font-weight:500">${hl(row.no)}</div>`;
+      const col2Html = `${col2TextDisplay}${buildExtras(row.extras_no)}`;
+
+      // Col 4 (description) with extras_desc
+      const col4Html = `${formatDesc(row.description)}${buildExtras(row.extras_desc)}`;
+
+      // Col 5: show text always — blue+linked if fileId exists, black if text only, dash if empty
+      const col5Main = row.fileName
+        ? (row.fileId
+            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:#1a6fef" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${esc(row.fileName)}</a>`
+            : `<span style="color:#111;font-weight:500">${esc(row.fileName)}</span>`)
+        : '<span style="color:var(--text-muted);font-size:11px">—</span>';
+      const col5Html = col5Main + buildExtras(row.extras_file);
+
+      tr.innerHTML = `
+        <td class="td-no" style="white-space:normal">${col2Html}</td>
+        <td class="td-date">${hl(displayDate(row.date))}</td>
+        <td class="td-desc">${col4Html}</td>
+        <td class="td-file">${col5Html}</td>
+        <td class="td-actions" style="text-align:right;white-space:nowrap">
+          ${adminUnlocked ? `
+          <button class="btn btn-ghost btn-sm" style="margin-right:2px" onclick="openEditModal(${row.id})" title="Edit record">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-danger btn-sm" style="margin-right:2px" onclick="deleteRowAndSave(${row.id})" title="Delete row">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" style="color:#1b5e20;border-color:#4caf50;font-weight:700;font-size:14px;padding:3px 8px" onclick="openAddBelowModal(${row.id})" title="Add new row below this row">+</button>
+          ` : ''}
+        </td>`;
+    }
+
+    tbody.appendChild(tr);
+  });
+
+  // Re-apply font size if set
+  if (window._currentPageFontSize) {
+    const px = window._currentPageFontSize;
+    document.querySelectorAll('td, th').forEach(el => { el.style.fontSize = px + 'px'; });
+  }
+
+  // Pagination
+  const pag = document.getElementById('pagination');
+  pag.style.display = 'flex';
+  document.getElementById('page-info').textContent = `Showing ${start+1}–${end} of ${total}`;
+
+  const controls = document.getElementById('page-controls');
+  controls.innerHTML = '';
+
+  // First
+  const first = pageBtn('«');
+  first.disabled = currentPage === 1;
+  first.title = 'First page';
+  first.onclick = () => { currentPage = 1; renderTable(); };
+  controls.appendChild(first);
+
+  // Prev
+  const prev = pageBtn('‹');
+  prev.disabled = currentPage === 1;
+  prev.onclick = () => { currentPage--; renderTable(); };
+  controls.appendChild(prev);
+
+  // Page numbers
+  const maxBtns = 7;
+  let pStart = Math.max(1, currentPage - 3);
+  let pEnd   = Math.min(totalPages, pStart + maxBtns - 1);
+  if (pEnd - pStart < maxBtns - 1) pStart = Math.max(1, pEnd - maxBtns + 1);
+
+  for (let p = pStart; p <= pEnd; p++) {
+    const b = pageBtn(p);
+    if (p === currentPage) b.classList.add('active');
+    const cp = p;
+    b.onclick = () => { currentPage = cp; renderTable(); };
+    controls.appendChild(b);
+  }
+
+  // Next
+  const next = pageBtn('›');
+  next.disabled = currentPage === totalPages;
+  next.onclick = () => { currentPage++; renderTable(); };
+  controls.appendChild(next);
+
+  // Last
+  const last = pageBtn('»');
+  last.disabled = currentPage === totalPages;
+  last.title = 'Last page';
+  last.onclick = () => { currentPage = totalPages; renderTable(); };
+  controls.appendChild(last);
+}
+
+function pageBtn(label) {
+  const b = document.createElement('button');
+  b.className = 'page-btn';
+  b.textContent = label;
+  return b;
+}
+
+// ──────────────────────────────────────────────
+//  PAGE SIZE HANDLER
+// ──────────────────────────────────────────────
+function onPageSizeChange() {
+  const sel = document.getElementById('page-size-select');
+  PAGE_SIZE = parseInt(sel.value) || 10;
+  currentPage = 1;
+  renderTable();
+}
+
+// ──────────────────────────────────────────────
+//  BULK UPLOAD
+// ──────────────────────────────────────────────
+let bulkFiles = {}; // uid -> File object
+
+function openBulkUploadModal() {
+  bulkFiles = {};
+  document.getElementById('bulk-rows-container').innerHTML = '';
+  document.getElementById('bulk-progress').classList.remove('visible');
+  document.getElementById('bulk-progress-bar').style.width = '0%';
+  document.getElementById('bulk-status-text').textContent = '';
+  addBulkRow(); // start with one empty row
+  document.getElementById('bulk-upload-modal').classList.add('open');
+}
+
+function closeBulkUploadModal() {
+  document.getElementById('bulk-upload-modal').classList.remove('open');
+}
+
+function addBulkRow() {
+  const container = document.getElementById('bulk-rows-container');
+  const uid = 'bulk-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Add header labels on first row
+  if (container.children.length === 0) {
+    const hdr = document.createElement('div');
+    hdr.className = 'bulk-col-headers';
+    hdr.style.cssText = 'display:flex;gap:8px;padding:0 0 6px 0;';
+    hdr.innerHTML = `
+      <span style="flex:0 0 150px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">Form No. (Col 2)</span>
+      <span style="flex:0 0 36px"></span>
+      <span style="flex:0 0 140px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">Date</span>
+      <span style="flex:1;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">Description (Col 4)</span>
+      <span style="flex:0 0 140px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">PDF File Name (Col 5)</span>
+      <span style="flex:0 0 80px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">PDF File</span>
+      <span style="flex:0 0 28px"></span>
+    `;
+    container.appendChild(hdr);
+  }
+
+  const row = document.createElement('div');
+  row.className = 'bulk-row';
+  row.dataset.uid = uid;
+  row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)';
+  row.innerHTML = `
+    <input type="text" class="form-input bulk-no" placeholder="e.g. 1/2025" style="flex:0 0 150px;height:34px;font-size:12px;padding:0 8px" data-field="no">
+    <label class="extra-file-label" title="Choose PDF for Col 2" style="flex:0 0 36px;height:34px;padding:0 8px;font-size:11px;white-space:nowrap;display:flex;align-items:center;justify-content:center" id="bulk-col2-lbl-${uid}">
+      📎
+      <input type="file" accept=".pdf" style="display:none" onchange="onBulkFileSelect(event,'${uid}','col2')">
+    </label>
+    <input type="date" class="form-input bulk-date" value="${today}" style="flex:0 0 140px;height:34px;font-size:12px;padding:0 8px" data-field="date">
+    <input type="text" class="form-input bulk-desc" placeholder="Description" style="flex:1;height:34px;font-size:12px;padding:0 8px" data-field="desc">
+    <input type="text" class="form-input bulk-docname" placeholder="Display name" style="flex:0 0 140px;height:34px;font-size:12px;padding:0 8px" data-field="docname">
+    <label class="extra-file-label" title="Choose PDF for Col 5" style="flex:0 0 36px;height:34px;padding:0 8px;font-size:11px;white-space:nowrap;display:flex;align-items:center;justify-content:center" id="bulk-col5-lbl-${uid}">
+      📎
+      <input type="file" accept=".pdf" style="display:none" onchange="onBulkFileSelect(event,'${uid}','col5')">
+    </label>
+    <button class="bulk-remove" onclick="removeBulkRow('${uid}')" title="Remove row" style="flex:0 0 28px;background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px;padding:0">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function removeBulkRow(uid) {
+  const container = document.getElementById('bulk-rows-container');
+  const row = container.querySelector(`[data-uid="${uid}"]`);
+  if (row) row.remove();
+  delete bulkFiles[uid + '_col2'];
+  delete bulkFiles[uid + '_col5'];
+  // Remove header if no rows left
+  const remaining = container.querySelectorAll('.bulk-row');
+  if (remaining.length === 0) container.innerHTML = '';
+}
+
+function onBulkFileSelect(e, uid, col) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.pdf')) { toast('Only PDF files allowed.', 'error'); return; }
+  bulkFiles[uid + '_' + col] = f;
+  const lblId = col === 'col2' ? `bulk-col2-lbl-${uid}` : `bulk-col5-lbl-${uid}`;
+  const lbl = document.getElementById(lblId);
+  if (lbl) {
+    lbl.classList.add('has-file');
+    lbl.childNodes[0].textContent = '✅';
+    lbl.title = f.name;
+  }
+}
+
+async function submitBulkUpload() {
+  const container = document.getElementById('bulk-rows-container');
+  const rows = Array.from(container.querySelectorAll('.bulk-row'));
+  if (rows.length === 0) { toast('No rows to upload.', 'error'); return; }
+
+  const btn = document.getElementById('bulk-upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+  const progressWrap = document.getElementById('bulk-progress');
+  const progressBar  = document.getElementById('bulk-progress-bar');
+  const statusText   = document.getElementById('bulk-status-text');
+  progressWrap.classList.add('visible');
+
+  try {
+    const newRecords = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const uid = row.dataset.uid;
+      const no      = (row.querySelector('[data-field="no"]').value || '').trim();
+      const date    = row.querySelector('[data-field="date"]').value || '';
+      const desc    = (row.querySelector('[data-field="desc"]').value || '').trim();
+      const docname = (row.querySelector('[data-field="docname"]').value || '').trim();
+
+      if (!no && !desc) continue; // skip completely empty rows
+
+      statusText.textContent = `Processing row ${i+1} of ${rows.length}…`;
+      progressBar.style.width = ((i / rows.length) * 80).toFixed(0) + '%';
+
+      // Upload col5 PDF
+      let fileId = '', fileName = '';
+      const f5 = bulkFiles[uid + '_col5'];
+      if (f5) {
+        if (config.folderId && config.clientId) {
+          const r = await uploadToDrive(f5, () => {});
+          fileId = r.id; fileName = r.name;
+        } else {
+          fileId = 'demo-' + Date.now(); fileName = f5.name;
+        }
+      }
+      const displayName = docname || fileName;
+
+      // Upload col2 PDF
+      let fileId2 = '', fileName2 = '';
+      const f2 = bulkFiles[uid + '_col2'];
+      if (f2) {
+        if (config.folderId && config.clientId) {
+          const r2 = await uploadToDrive(f2, () => {});
+          fileId2 = r2.id; fileName2 = r2.name;
+        } else {
+          fileId2 = 'demo2-' + Date.now(); fileName2 = f2.name;
+        }
+      }
+
+      newRecords.push({
+        id: Date.now() + i,
+        slNo: 0, no, date,
+        description: desc,
+        fileId, fileName: displayName,
+        fileId2, fileName2,
+        extras_no: [], extras_desc: [], extras_file: []
+      });
+    }
+
+    if (newRecords.length === 0) { toast('No valid rows found.', 'error'); return; }
+
+    // Append all new records
+    allData.push(...newRecords);
+    allData.forEach((r, i) => { r.slNo = i + 1; });
+    filteredData = [...allData];
+
+    progressBar.style.width = '90%';
+    statusText.textContent = 'Saving to Google Sheet…';
+
+    try {
+      await writeSheetFull(allData);
+      toast(`${newRecords.length} record(s) saved!`, 'success');
+    } catch(e) {
+      toast('Uploaded but sheet write failed: ' + e.message, 'error');
+    }
+
+    progressBar.style.width = '100%';
+    statusText.textContent = 'Done!';
+    populateYearFilter();
+    currentPage = 1;
+    renderTable();
+    updateStatus(true, `Synced · ${allData.length} records`);
+    setTimeout(() => closeBulkUploadModal(), 800);
+
+  } catch(e) {
+    toast('Bulk upload failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload All to Drive`;
+  }
+}
+
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ──────────────────────────────────────────────
+//  DATE HELPERS
+// ──────────────────────────────────────────────
+// Convert any date string to YYYY-MM-DD for <input type="date">
+function toInputDate(val) {
+  if (!val) return '';
+  const s = String(val).trim();
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // DD/MM/YYYY
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  // DD-MM-YYYY
+  const m2 = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (m2) return `${m2[3]}-${m2[2].padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
+  return s;
+}
+
+// Auto-insert slashes as user types date in DD/MM/YYYY
+function autoFormatDate(input) {
+  let v = input.value.replace(/\D/g, '').slice(0, 8);
+  if (v.length >= 5) v = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4);
+  else if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+  input.value = v;
+}
+
+// Format date for display: always show DD/MM/YYYY
+function displayDate(val) {
+  if (!val) return '';
+  const s = toInputDate(val);
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  return val;
+}
+
+// ──────────────────────────────────────────────
+//  EDIT MODE
+// ──────────────────────────────────────────────
+function toggleEditMode() {
+  editMode = !editMode;
+  const bar = document.getElementById('edit-mode-bar');
+  const btn = document.getElementById('pencil-btn');
+
+  if (editMode) {
+    bar.classList.add('visible');
+    btn.style.color = 'var(--accent2)';
+    btn.style.borderColor = 'var(--accent2)';
+    pendingEdits = {};
+    newRows = [];
+    deletedRows = new Set();
+  } else {
+    bar.classList.remove('visible');
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    // Discard all pending changes
+    pendingEdits = {};
+    newRows = [];
+    deletedRows = new Set();
+  }
+
+  renderTable();
+}
+
+function setEdit(id, field, value) {
+  if (!pendingEdits[id]) {
+    const orig = allData.find(r => r.id === id) || {};
+    pendingEdits[id] = { ...orig };
+  }
+  pendingEdits[id][field] = value;
+}
+
+function addNewRow() {
+  const slNo = allData.length + newRows.length + 1;
+  const nr = {
+    id: 'new-' + Date.now(),
+    slNo,
+    no: '',
+    date: new Date().toISOString().slice(0,10),
+    description: '',
+    fileId: '',
+    fileName: '',
+    fileId2: '',
+    fileName2: '',
+    extras_no: [],
+    extras_desc: [],
+    extras_file: [],
+    _isNew: true
+  };
+  newRows.push(nr);
+  allData.push(nr);
+  filteredData = [...allData];
+  currentPage = Math.ceil(filteredData.length / PAGE_SIZE);
+  renderTable();
+}
+
+function deleteRow(id) {
+  const idx = allData.findIndex(r => r.id === id);
+  if (idx !== -1) {
+    deletedRows.add(id);
+    allData.splice(idx, 1);
+    filteredData = filteredData.filter(r => r.id !== id);
+    // Re-number
+    allData.forEach((r, i) => { r.slNo = i + 1; });
+    filteredData.forEach((r, i) => { r.slNo = i + 1; });
+    renderTable();
+    toast('Row removed. Save All to commit.', 'info');
+  }
+}
+
+async function deleteRowAndSave(id) {
+  if (!confirm('Delete this record? This cannot be undone.')) return;
+  const idx = allData.findIndex(r => r.id === id);
+  if (idx === -1) return;
+  allData.splice(idx, 1);
+  allData.forEach((r, i) => { r.slNo = i + 1; });
+  filteredData = filteredData.filter(r => r.id !== id);
+  filteredData.forEach((r, i) => { r.slNo = i + 1; });
+  renderTable();
+
+  if (!config.sheetId || !config.clientId) {
+    toast('Row deleted (demo mode, no sheet write).', 'info');
+    return;
+  }
+  try {
+    await writeSheetFull(allData);
+    updateStatus(true, `Synced · ${allData.length} records`);
+    toast('Record deleted and sheet updated.', 'success');
+  } catch(e) {
+    toast('Deleted locally but sheet write failed: ' + e.message, 'error');
+  }
+}
+
+async function saveAllChanges() {
+  // Apply all pending edits to allData
+  for (const [id, edited] of Object.entries(pendingEdits)) {
+    const row = allData.find(r => String(r.id) === String(id));
+    if (row) {
+      row.no = edited.no;
+      row.date = edited.date;
+      row.description = edited.description;
+    }
+  }
+
+  // Re-number slNo
+  allData.forEach((r, i) => { r.slNo = i + 1; });
+
+  if (!config.sheetId || !config.clientId) {
+    toast('No sheet credentials — changes saved locally (demo).', 'info');
+    filteredData = [...allData];
+    editMode = false;
+    document.getElementById('edit-mode-bar').classList.remove('visible');
+    document.getElementById('pencil-btn').style.color = '';
+    document.getElementById('pencil-btn').style.borderColor = '';
+    renderTable();
+    return;
+  }
+
+  try {
+    await writeSheetFull(allData);
+    filteredData = [...allData];
+    editMode = false;
+    document.getElementById('edit-mode-bar').classList.remove('visible');
+    document.getElementById('pencil-btn').style.color = '';
+    document.getElementById('pencil-btn').style.borderColor = '';
+    pendingEdits = {};
+    newRows = [];
+    deletedRows = new Set();
+    renderTable();
+    updateStatus(true, `Synced · ${allData.length} records`);
+    toast('All changes saved to Google Sheets!', 'success');
+  } catch(e) {
+    toast('Save failed: ' + e.message, 'error');
+  }
+}
+
+// ──────────────────────────────────────────────
+//  DEMO DATA
+// ──────────────────────────────────────────────
+function loadDemoData() {
+  allData = [
+    { id:1, slNo:1, no:'1/2025-Central Tax', date:'2025-01-15', description:'Annual Tax Return Form 2023-24', fileId:'demo1', fileName:'tax_return_2023.pdf', fileId2:'', fileName2:'', extras_no:[], extras_desc:[], extras_file:[] },
+    { id:2, slNo:2, no:'2/2025-Central Tax', date:'2025-02-03', description:'Employee Joining Declaration', fileId:'demo2', fileName:'emp_joining.pdf', fileId2:'', fileName2:'', extras_no:[], extras_desc:[], extras_file:[] },
+    { id:3, slNo:3, no:'3/2025-Central Tax', date:'2025-02-20', description:'Leave Application — Q1 2025', fileId:'demo3', fileName:'leave_q1.pdf', fileId2:'', fileName2:'', extras_no:[], extras_desc:[], extras_file:[] },
+    { id:4, slNo:4, no:'4/2025-Central Tax', date:'2025-03-08', description:'Vendor Agreement Form — SupplyCo', fileId:'demo4', fileName:'vendor_supplyCo.pdf', fileId2:'', fileName2:'', extras_no:[], extras_desc:[], extras_file:[] },
+  ];
+  filteredData = [...allData];
+  currentPage = 1;
+  renderTable();
+  updateStatus(true, `Demo · ${allData.length} records`);
+  toast('Demo data loaded — 12 sample records.', 'success');
+}
+
+// ──────────────────────────────────────────────
+//  TOAST
+// ──────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.3s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+
+// Drop zones replaced by button-style file pickers — no drag & drop needed
+
+// ──────────────────────────────────────────────
+//  PAGE FONT SIZE CONTROL
+// ──────────────────────────────────────────────
+function setPageFontSize(px) {
+  document.documentElement.style.setProperty('--page-fs', px + 'px');
+  document.documentElement.style.setProperty('--nav-fs', px + 'px');
+  // Apply to table td and th directly
+  document.querySelectorAll('td, th').forEach(el => {
+    el.style.fontSize = px + 'px';
+  });
+  // Store for future renders
+  window._currentPageFontSize = px;
+  document.querySelectorAll('.bfs-btn').forEach(b => b.classList.remove('active'));
+  const sizes = [11, 13, 16, 19];
+  const idx = sizes.indexOf(px);
+  if (idx !== -1) document.querySelectorAll('.bfs-btn')[idx].classList.add('active');
+}
+
+// Legacy alias kept in case called elsewhere
+function setNavFontSize(px) { setPageFontSize(px); }
+
+// ──────────────────────────────────────────────
+//  PASSWORD SHEET DATA — banner URL + sheet list
+//  A1 = password, A2 = banner URL,
+//  A3:A12 = register labels, B3:B12 = sheet IDs
+// ──────────────────────────────────────────────
+let activeSheetId = config.sheetId;   // currently active data sheet
+const masterSheetId = config.sheetId; // always used for password & menu
+
+async function loadPasswordSheetData() {
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${masterSheetId}/values/Password!A1:B17?key=${config.apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const data = await res.json();
+    const rows = data.values || [];
+
+    // A2 → banner image URL
+    const bannerUrl = rows[1] && rows[1][0] ? rows[1][0].trim() : '';
+    if (bannerUrl) {
+      const img = document.querySelector('.site-banner img');
+      if (img) img.src = bannerUrl;
+    }
+
+    // A15 → placeholder word for the sheet selector (default: 'Register')
+    const selectorWord = rows[14] && rows[14][0] ? rows[14][0].trim() : 'Register';
+    const sel = document.getElementById('sheet-selector');
+    sel.options[0].textContent = `— Select ${selectorWord} —`;
+
+    // A3:A12 / B3:B12 → sheet selector
+    const entries = [];
+    for (let i = 2; i <= 11; i++) {
+      const label   = rows[i] && rows[i][0] ? rows[i][0].trim() : '';
+      const sheetId = rows[i] && rows[i][1] ? rows[i][1].trim() : '';
+      if (label && sheetId) entries.push({ label, sheetId });
+    }
+    if (entries.length > 0) {
+      entries.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.sheetId;
+        opt.textContent = e.label;
+        sel.appendChild(opt);
+      });
+      sel.style.display = '';
+    }
+
+    // A13 → page title, A14 → page description
+    const pageTitle = rows[12] && rows[12][0] ? rows[12][0].trim() : '';
+    const pageDesc  = rows[13] && rows[13][0] ? rows[13][0].trim() : '';
+    if (pageTitle) document.getElementById('banner-page-title').textContent = pageTitle;
+    if (pageDesc)  document.getElementById('banner-page-desc').textContent  = pageDesc;
+    // Update browser tab title too
+    if (pageTitle) document.title = pageTitle;
+
+    // A16/B16 and A17/B17 → extra link buttons in admin edit modal footer
+    const extraLinks = [
+      { name: rows[15] && rows[15][0] ? rows[15][0].trim() : '', url: rows[15] && rows[15][1] ? rows[15][1].trim() : '' },
+      { name: rows[16] && rows[16][0] ? rows[16][0].trim() : '', url: rows[16] && rows[16][1] ? rows[16][1].trim() : '' },
+    ].filter(l => l.name && l.url);
+
+    cachedExtraLinks = extraLinks;
+    renderModalExtraLinks();
+
+  } catch(e) {
+    console.warn('Password sheet load error:', e.message);
+  }
+}
+
+function onSheetSelect() {
+  const sel = document.getElementById('sheet-selector');
+  const chosen = sel.value;
+  if (!chosen) return;
+  activeSheetId = chosen;
+  loadFromSheet();
+}
+
+// ──────────────────────────────────────────────
+//  INIT
+// ──────────────────────────────────────────────
+window.addEventListener('load', () => {
+  updateStatus(true, 'Connecting…');
+  loadPasswordSheetData().then(() => loadFromSheet());
+  initBannerClock();
+  loadMegaMenu();
+});
+
+// ──────────────────────────────────────────────
+//  BANNER CLOCK / DATE
+// ──────────────────────────────────────────────
+function initBannerClock() {
+  function update() {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = String(now.getMonth()+1).padStart(2,'0');
+    const yyyy = now.getFullYear();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    document.getElementById('b-date').textContent = `${dd}/${mm}/${yyyy}`;
+    document.getElementById('b-day').textContent  = days[now.getDay()];
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+// ──────────────────────────────────────────────
+//  MEGA MENU — load from Sheet2 (cols A,B,C,D)
+//  A = Main Menu label (blank = same menu as above)
+//  B = Heading inside mega panel
+//  C = Sub-item label
+//  D = Sub-item URL
+// ──────────────────────────────────────────────
+// ── MOBILE DRAWER ──
+function openMobileDrawer() {
+  document.getElementById('nav-mobile-overlay').classList.add('open');
+  document.getElementById('nav-mobile-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileDrawer() {
+  document.getElementById('nav-mobile-overlay').classList.remove('open');
+  document.getElementById('nav-mobile-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Highlight matched query text inside a string, returns HTML
+function highlightText(text, q) {
+  if (!q) return escNav(text);
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return escNav(text);
+  return escNav(text.slice(0, idx))
+    + '<mark class="search-hl">' + escNav(text.slice(idx, idx + q.length)) + '</mark>'
+    + highlightText(text.slice(idx + q.length), q);
+}
+function escNav(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function positionDropdown(btn, panel) {
+  const nav = document.getElementById('mega-nav');
+  const navRect = nav.getBoundingClientRect();
+  const btnRect = btn.getBoundingClientRect();
+
+  panel.style.visibility = 'hidden';
+  panel.style.display = 'flex';
+  const panelW = panel.offsetWidth;
+  panel.style.display = 'none';
+  panel.style.visibility = '';
+
+  const vpW = window.innerWidth;
+  const vpH = window.innerHeight;
+  let left = btnRect.left;
+  if (left + panelW > vpW - 8) left = vpW - panelW - 8;
+  if (left < 0) left = 0;
+
+  panel.style.top    = navRect.bottom + 'px';
+  panel.style.left   = left + 'px';
+  // clamp max-height so it never goes below viewport
+  panel.style.maxHeight = (vpH - navRect.bottom - 8) + 'px';
+}
+
+function positionSimpleDropdown(btn, dd) {
+  const nav = document.getElementById('mega-nav');
+  const navRect = nav.getBoundingClientRect();
+  const btnRect = btn.getBoundingClientRect();
+
+  dd.style.visibility = 'hidden';
+  dd.style.display = 'flex';
+  const ddW = dd.offsetWidth;
+  dd.style.display = 'none';
+  dd.style.visibility = '';
+
+  const vpW = window.innerWidth;
+  const vpH = window.innerHeight;
+  let left = btnRect.left;
+  if (left + ddW > vpW - 8) left = vpW - ddW - 8;
+  if (left < 0) left = 0;
+
+  dd.style.top     = navRect.bottom + 'px';
+  dd.style.left    = left + 'px';
+  dd.style.maxHeight = (vpH - navRect.bottom - 8) + 'px';
+}
+
+// Build a search box element
+function buildSearchInput(placeholder, onInput) {
+  const wrap = document.createElement('div');
+  wrap.className = 'mega-search-wrap';
+  wrap.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'mega-search-input';
+  inp.placeholder = placeholder || 'Search…';
+  inp.addEventListener('input', onInput);
+  wrap.appendChild(inp);
+  return wrap;
+}
+
+async function loadMegaMenu() {
+  const loadingEl = document.getElementById('nav-loading');
+  const mobileBody = document.getElementById('nav-mobile-drawer-body');
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Sheet2!A:D?key=${config.apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const rows = (data.values || []).slice(1);
+
+    const menus = {};
+    const order = [];
+    let currentMain = null;
+    let currentSection = null;
+
+    for (const row of rows) {
+      const colA = (row[0] || '').trim();
+      const colB = (row[1] || '').trim();
+      const colC = (row[2] || '').trim();
+      const colD = (row[3] || '').trim();
+
+      if (colA) {
+        currentMain = colA;
+        if (!menus[currentMain]) {
+          menus[currentMain] = { sections: [] };
+          order.push(currentMain);
+        }
+        currentSection = null;
+      }
+      if (colB && currentMain) {
+        currentSection = { heading: colB, items: [] };
+        menus[currentMain].sections.push(currentSection);
+      }
+      if (colC && currentMain) {
+        if (!currentSection) {
+          currentSection = { heading: '', items: [] };
+          menus[currentMain].sections.push(currentSection);
+        }
+        currentSection.items.push({ label: colC, url: colD || '#' });
+      }
+    }
+
+    const navInner = document.getElementById('mega-nav-inner');
+    // Insert before the hamburger button
+    const hamburger = document.getElementById('nav-hamburger');
+    if (loadingEl) loadingEl.remove();
+
+    for (const mainLabel of order) {
+      const menuData = menus[mainLabel];
+      const hasDropdown = menuData.sections.some(s => s.items.length > 0);
+      const isTaxRate = mainLabel.toUpperCase().includes('TAX RATE');
+
+      // ── DESKTOP NAV ITEM ──
+      const item = document.createElement('div');
+      item.className = 'nav-item';
+
+      const btn = document.createElement('button');
+      btn.className = 'nav-btn' + (isTaxRate ? ' nav-btn-taxrate' : '');
+      btn.innerHTML = (isTaxRate ? '💰 ' : '') + mainLabel + (hasDropdown && !isTaxRate ? ' <span class="arrow">&#9660;</span>' : (isTaxRate && hasDropdown ? ' <span class="arrow">&#9660;</span>' : ''));
+      item.appendChild(btn);
+
+      if (hasDropdown) {
+        const hasMegaHeadings = menuData.sections.some(s => s.heading);
+
+        if (hasMegaHeadings) {
+          const panel = document.createElement('div');
+          panel.className = 'mega-panel';
+          panel.style.display = 'none';
+
+          // Search box — when typing, show ALL items (remove limit), filter by query
+          const searchWrap = buildSearchInput('Search ' + mainLabel + '…', function() {
+            const q = this.value.trim().toLowerCase();
+            panel.querySelectorAll('.mega-section').forEach(sec => {
+              const lis = sec.querySelectorAll('ul li');
+              // When there is a query, remove the limit-hidden class so all items are searchable
+              if (q) {
+                lis.forEach(li => li.classList.remove('hidden-by-limit'));
+                const lmBtn = sec.querySelector('.load-more-btn');
+                if (lmBtn) lmBtn.style.display = 'none';
+              } else {
+                // Restore limit when query cleared
+                lis.forEach((li, idx) => {
+                  if (idx >= 12) li.classList.add('hidden-by-limit');
+                  else li.classList.remove('hidden-by-limit');
+                });
+                const lmBtn = sec.querySelector('.load-more-btn');
+                if (lmBtn) lmBtn.style.display = lis.length > 12 ? '' : 'none';
+              }
+              lis.forEach(li => {
+                const a = li.querySelector('a');
+                const label = a ? (a.dataset.origText || a.textContent) : '';
+                const plainLabel = a ? a.textContent : '';
+                const matches = !q || plainLabel.toLowerCase().includes(q);
+                li.classList.toggle('hidden-by-search', !matches);
+                if (a) a.innerHTML = highlightText(label, q);
+              });
+              // Hide heading if all items hidden
+              const heading = sec.querySelector('.mega-section-title');
+              const allHidden = Array.from(lis).every(li => li.classList.contains('hidden-by-search'));
+              if (heading) heading.style.display = (q && allHidden) ? 'none' : '';
+              // Hide entire column if no items visible
+              sec.style.display = (q && allHidden) ? 'none' : '';
+            });
+          });
+          panel.appendChild(searchWrap);
+
+          // Columns container
+          const cols = document.createElement('div');
+          cols.className = 'mega-panel-cols';
+
+          for (const sec of menuData.sections) {
+            if (!sec.items.length) continue;
+            const col = document.createElement('div');
+            col.className = 'mega-section';
+            if (sec.heading) {
+              const h = document.createElement('div');
+              h.className = 'mega-section-title';
+              h.innerHTML = sec.heading;
+              col.appendChild(h);
+            }
+            const ul = document.createElement('ul');
+            const MAX_ITEMS = 12;
+            sec.items.forEach((it, idx) => {
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              a.href = it.url || '#';
+              a.innerHTML = it.label;
+              a.dataset.origText = it.label;
+              if (it.url && it.url !== '#') a.target = '_blank';
+              li.appendChild(a);
+              if (idx >= MAX_ITEMS) li.classList.add('hidden-by-limit');
+              ul.appendChild(li);
+            });
+            col.appendChild(ul);
+            // Load More button
+            if (sec.items.length > MAX_ITEMS) {
+              const lmBtn = document.createElement('button');
+              lmBtn.className = 'load-more-btn';
+              const remaining = sec.items.length - MAX_ITEMS;
+              lmBtn.textContent = `+ ${remaining} more…`;
+              lmBtn.addEventListener('click', function() {
+                ul.querySelectorAll('li.hidden-by-limit').forEach(li => li.classList.remove('hidden-by-limit'));
+                this.remove();
+              });
+              col.appendChild(lmBtn);
+            }
+            cols.appendChild(col);
+          }
+          panel.appendChild(cols);
+          document.body.appendChild(panel);
+
+          let closeTimer;
+          let openTimer;
+          const open  = () => { clearTimeout(closeTimer); openTimer = setTimeout(() => { positionDropdown(btn, panel); panel.style.display = 'flex'; panel.style.flexDirection = 'column'; }, 180); };
+          const close = () => { clearTimeout(openTimer); closeTimer = setTimeout(() => { panel.style.display = 'none'; }, 120); };
+          item.addEventListener('mouseenter', open);
+          item.addEventListener('mouseleave', close);
+          panel.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+          panel.addEventListener('mouseleave', close);
+
+        } else {
+          const dd = document.createElement('div');
+          dd.className = 'simple-dropdown';
+          dd.style.display = 'none';
+
+          // Collect all items flat
+          const allSimpleItems = [];
+          for (const sec of menuData.sections) {
+            for (const it of sec.items) allSimpleItems.push(it);
+          }
+          const SD_MAX = 12;
+
+          // Search wrap — shows all items when typing, filters, highlights
+          const sw = document.createElement('div');
+          sw.className = 'simple-dropdown-search-wrap';
+          sw.innerHTML = `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+          const sinp = document.createElement('input');
+          sinp.type = 'text';
+          sinp.className = 'simple-dropdown-search';
+          sinp.placeholder = 'Search…';
+          sinp.addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            const links = list.querySelectorAll('a');
+            if (q) {
+              // Show all, then filter by query
+              links.forEach(a => a.classList.remove('hidden-by-limit'));
+              if (lmWrap) lmWrap.style.display = 'none';
+            } else {
+              // Restore limit
+              links.forEach((a, idx) => {
+                if (idx >= SD_MAX) a.classList.add('hidden-by-limit');
+                else a.classList.remove('hidden-by-limit');
+              });
+              if (lmWrap) lmWrap.style.display = allSimpleItems.length > SD_MAX ? '' : 'none';
+            }
+            links.forEach(a => {
+              const label = a.dataset.origText || a.textContent;
+              if (!a.dataset.origText) a.dataset.origText = a.textContent;
+              const matches = !q || label.toLowerCase().includes(q);
+              a.classList.toggle('hidden-by-search', !matches);
+              a.innerHTML = highlightText(label, q);
+            });
+          });
+          sw.appendChild(sinp);
+          dd.appendChild(sw);
+
+          const list = document.createElement('div');
+          list.className = 'simple-dropdown-list';
+          allSimpleItems.forEach((it, idx) => {
+            const a = document.createElement('a');
+            a.href = it.url || '#';
+            a.textContent = it.label;
+            a.dataset.origText = it.label;
+            if (it.url && it.url !== '#') a.target = '_blank';
+            if (idx >= SD_MAX) a.classList.add('hidden-by-limit');
+            list.appendChild(a);
+          });
+          dd.appendChild(list);
+
+          // Load more for simple dropdown
+          let lmWrap = null;
+          if (allSimpleItems.length > SD_MAX) {
+            lmWrap = document.createElement('div');
+            lmWrap.style.padding = '4px 10px 8px';
+            const lmBtn2 = document.createElement('button');
+            lmBtn2.className = 'load-more-btn';
+            lmBtn2.textContent = `+ ${allSimpleItems.length - SD_MAX} more…`;
+            lmBtn2.addEventListener('click', function() {
+              list.querySelectorAll('a.hidden-by-limit').forEach(a => a.classList.remove('hidden-by-limit'));
+              lmWrap.remove();
+              lmWrap = null;
+            });
+            lmWrap.appendChild(lmBtn2);
+            dd.appendChild(lmWrap);
+          }
+
+          document.body.appendChild(dd);
+
+          let closeTimer;
+          let openTimer;
+          const open  = () => { clearTimeout(closeTimer); openTimer = setTimeout(() => { positionSimpleDropdown(btn, dd); dd.style.display = 'flex'; dd.style.flexDirection = 'column'; }, 180); };
+          const close = () => { clearTimeout(openTimer); closeTimer = setTimeout(() => { dd.style.display = 'none'; }, 120); };
+          item.addEventListener('mouseenter', open);
+          item.addEventListener('mouseleave', close);
+          dd.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+          dd.addEventListener('mouseleave', close);
+        }
+      }
+
+      navInner.insertBefore(item, hamburger);
+
+      // ── MOBILE DRAWER ITEM ──
+      const mItem = document.createElement('div');
+      mItem.className = 'nav-mobile-item';
+
+      if (!hasDropdown) {
+        const mLink = document.createElement('a');
+        mLink.href = '#';
+        mLink.className = 'nav-mobile-btn';
+        mLink.style.display = 'block';
+        mLink.textContent = mainLabel;
+        mItem.appendChild(mLink);
+      } else {
+        const mBtn = document.createElement('button');
+        mBtn.className = 'nav-mobile-btn';
+        mBtn.innerHTML = mainLabel + ' <span class="arrow">&#9660;</span>';
+        mBtn.addEventListener('click', () => {
+          mItem.classList.toggle('open');
+        });
+        mItem.appendChild(mBtn);
+
+        const sub = document.createElement('div');
+        sub.className = 'nav-mobile-submenu';
+
+        // Mobile search
+        const msw = document.createElement('div');
+        msw.className = 'nav-mobile-search-wrap';
+        msw.innerHTML = `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+        const ms = document.createElement('input');
+        ms.type = 'text';
+        ms.className = 'nav-mobile-search';
+        ms.placeholder = 'Search…';
+        ms.addEventListener('input', function() {
+          const q = this.value.trim().toLowerCase();
+          // Show/hide and highlight links
+          Array.from(sub.children).forEach(el => {
+            if (el.tagName === 'A') {
+              const label = el.dataset.origText || el.textContent;
+              if (!el.dataset.origText) el.dataset.origText = el.textContent;
+              const visible = !q || label.toLowerCase().includes(q);
+              el.style.display = visible ? '' : 'none';
+              el.innerHTML = highlightText(label, q);
+            }
+          });
+          // Second pass: hide headings if all following links (until next heading) are hidden
+          let headingEl = null;
+          let anyVisible = false;
+          Array.from(sub.children).forEach(el => {
+            if (el.classList.contains('nav-mobile-submenu-heading')) {
+              if (headingEl) headingEl.style.display = anyVisible ? '' : 'none';
+              headingEl = el;
+              anyVisible = false;
+            } else if (el.tagName === 'A') {
+              if (el.style.display !== 'none') anyVisible = true;
+            }
+          });
+          if (headingEl) headingEl.style.display = anyVisible ? '' : 'none';
+        });
+        msw.appendChild(ms);
+        sub.appendChild(msw);
+
+        for (const sec of menuData.sections) {
+          if (sec.heading) {
+            const h = document.createElement('div');
+            h.className = 'nav-mobile-submenu-heading';
+            h.textContent = sec.heading;
+            sub.appendChild(h);
+          }
+          for (const it of sec.items) {
+            const a = document.createElement('a');
+            a.href = it.url || '#';
+            a.textContent = it.label;
+            if (it.url && it.url !== '#') a.target = '_blank';
+            a.addEventListener('click', closeMobileDrawer);
+            sub.appendChild(a);
+          }
+        }
+        mItem.appendChild(sub);
+      }
+      mobileBody.appendChild(mItem);
+    }
+
+  } catch(e) {
+    if (loadingEl) loadingEl.textContent = 'Menu unavailable';
+    console.warn('Mega menu load error:', e.message);
+  }
+}
+</script>
+
+<!-- Google Identity Services (for OAuth) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+// ──────────────────────────────────────────────
+//  TABLE DOWNLOAD — EXCEL & PDF
+// ──────────────────────────────────────────────
+function downloadTableExcel() {
+  const reversedForDisplay = [...filteredData].reverse();
+  const rows = [['Central Tax Notification', 'Date', 'Description', 'File Name']];
+  reversedForDisplay.forEach(function(r, i) {
+    rows.push([i + 1, r.no, r.date, r.description, r.fileName || '']);
+  });
+  var csv = rows.map(function(r) {
+    return r.map(function(c) { return '"' + String(c||'').replace(/"/g,'""') + '"'; }).join(',');
+  }).join('\n');
+  var bom = '\uFEFF';
+  var blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'records_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('Excel (CSV) downloaded', 'success');
+}
+
+function downloadTablePDF() {
+  // Load jsPDF and jspdf-autotable for proper table rendering
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = cb;
+    s.onerror = function() { toast('Failed to load PDF library', 'error'); };
+    document.head.appendChild(s);
+  }
+
+  function doPDF() {
+    var jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+    if (!jsPDF) { toast('PDF library not available', 'error'); return; }
+    var doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    var pw = doc.internal.pageSize.getWidth();
+    var ph = doc.internal.pageSize.getHeight();
+    var mL = 10, mT = 14, lineH = 7;
+    var colW = [12, 55, 22, 115, 70];
+    var headers = ['Central Tax Notification', 'Date', 'Description', 'File Name'];
+    var totalW = colW.reduce(function(a,b){return a+b;},0);
+
+    // Title
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('GST Cell Records', mL, mT - 6);
+
+    // Header row
+    doc.setFontSize(9);
+    doc.setFillColor(210, 235, 250);
+    doc.rect(mL, mT - 4, totalW, lineH, 'F');
+    var cx = mL;
+    headers.forEach(function(h, i) {
+      doc.text(h, cx + 1.5, mT + 2);
+      cx += colW[i];
+    });
+
+    var y = mT + lineH;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    var reversedForPDF = [...filteredData].reverse();
+    reversedForPDF.forEach(function(r, ri) {
+      if (y + lineH > ph - 10) { doc.addPage(); y = mT; }
+      if (ri % 2 === 0) {
+        doc.setFillColor(245, 250, 255);
+        doc.rect(mL, y - 3, totalW, lineH, 'F');
+      }
+      cx = mL;
+      var cells = [String(ri + 1), r.no||'', r.date||'', r.description||'', r.fileName||''];
+      cells.forEach(function(c, i) {
+        var maxChars = Math.floor(colW[i] / 1.8);
+        var truncated = c.length > maxChars ? c.slice(0, maxChars) + '\u2026' : c;
+        doc.text(truncated, cx + 1.5, y + 2);
+        cx += colW[i];
+      });
+      // Draw row borders
+      doc.setDrawColor(220, 220, 220);
+      doc.line(mL, y + lineH - 3, mL + totalW, y + lineH - 3);
+      y += lineH;
+    });
+
+    doc.save('records_' + new Date().toISOString().slice(0,10) + '.pdf');
+    toast('PDF downloaded', 'success');
+  }
+
+  if (window.jspdf && window.jspdf.jsPDF) {
+    doPDF();
+  } else if (window.jsPDF) {
+    doPDF();
+  } else {
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', doPDF);
+  }
+}
+</script>
+
+</body>
+</html>
