@@ -1482,12 +1482,15 @@ function elCalculate(){
       // Split duty intervals at threeYearEnd
       if(threeYearEnd&&threeYearEnd>=iv.from&&threeYearEnd<iv.to)
         breakpoints.add(threeYearEnd.getTime());
-      // Split duty intervals at the day BEFORE each SEL W.E.F. date that falls within this interval:
-      // earning stops on wef-1 (one duty row), then a fresh duty row starts from wef onwards.
+      // Split duty intervals AT each SEL W.E.F. date that falls within this interval:
+      // EL is earned up to and including the wef date (surrender date), then a fresh duty
+      // row starts from wef+1 onwards. This ensures SEL on the very first day of service
+      // is always reflected — the duty row covers [from … wef] and SEL is attached to it.
       for(const wefT of selWefTimes){
-        const dayBefore=new Date(wefT-86400000);
-        // Split only if wef itself is strictly inside this duty interval (not at its very start)
-        if(dayBefore>=iv.from&&dayBefore<iv.to)breakpoints.add(dayBefore.getTime());
+        const wefDt=new Date(wefT);
+        // Include the wef date itself as the end of the duty segment,
+        // provided it falls within the interval (including at iv.from — first day).
+        if(wefDt>=iv.from&&wefDt<iv.to)breakpoints.add(wefT);
       }
     }
     const sorted=[...breakpoints].sort((a,b)=>a-b);
@@ -1535,8 +1538,9 @@ function elCalculate(){
       bal+=earnedForBal;
       if(bal>300)bal=300;
       tableRows.push({kind:'duty',from:iv.from,to:iv.to,totalDays,earned,rate,cumul:bal,elTaken:0,balance:bal,year:iv.from.getFullYear()});
-      // Attach SEL to the duty row that ends on wef-1 (i.e. wef is the day after iv.to)
-      while(selIdx<selEvents.length&&elAddDays(iv.to,1).getTime()===selEvents[selIdx].wefDt.getTime()){
+      // Attach SEL to the duty row that ends ON the wef date (iv.to === wefDt).
+      // EL is earned up to and including the surrender date; next duty row starts wef+1.
+      while(selIdx<selEvents.length&&iv.to.getTime()===selEvents[selIdx].wefDt.getTime()){
         const sel=selEvents[selIdx];
         const deducted=sel.selDays!==null?Math.min(sel.selDays,bal):bal;
         bal-=deducted;
@@ -1706,7 +1710,7 @@ function elCalculate(){
           <td class="el-hl-earn el-mixed">${earnedDisplay}${rateLabel}</td>
           <td class="el-mixed">${elToMixed(row.cumul)}</td>
           <td colspan="2" style="color:#9a6700;font-style:italic;font-size:10.5px;text-align:center;">
-            Earned leave surrendered w.e.f. ${elFmtDate(selNext.wefDt)} for ${info} days
+            EL surrendered on ${elFmtDate(selNext.wefDt)} for ${info} days
           </td>
           <td class="el-hl-taken el-mixed">${elToMixed(selNext.deducted)}</td>
           <td class="el-hl-bal el-mixed">${elToMixed(selNext.balAfter)}</td>
