@@ -155,15 +155,17 @@
   top: auto;
   left: auto;
   min-width: 560px;
-  max-width: 92vw;
+  max-width: 96vw;
   max-height: calc(100vh - 60px);
   overflow-y: auto;
   overflow-x: hidden;
-  background: #ffffff;
-  border-top: 3px solid #4caf50;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
-  z-index: 9999;
-  padding: 12px 20px 20px;
+  overscroll-behavior: contain;
+  background: #1a1a1a;
+  border-top: 3px solid #cc0000;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.9);
+  z-index: 100000;
+  isolation: isolate;
+  padding: 14px 0 18px;
   flex-direction: column;
 }
 .mega-panel.open { display: flex; }
@@ -171,7 +173,7 @@
 /* Search box inside mega panel */
 .mega-search-wrap {
   position: relative;
-  margin-bottom: 14px;
+  margin: 0 16px 12px;
   flex-shrink: 0;
   max-width: 6cm;
 }
@@ -185,23 +187,19 @@
 }
 .mega-search-input {
   width: 100%;
-  padding: 7px 12px 7px 30px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 6px 12px 6px 30px;
+  border: 1px solid #666;
+  border-radius: 3px;
   font-family: 'Times New Roman', Times, serif;
   font-size: 12px;
   outline: none;
-  background: #f9f9f9;
-  color: #333;
-  transition: border-color 0.15s;
+  background: #4a4a4a;
+  color: #eee;
+  transition: border-color 0.15s, background 0.15s;
 }
-.mega-search-input:focus { border-color: #4caf50; background: #f0fdf4; box-shadow: 0 0 0 3px rgba(76,175,80,0.15); }
-
-/* Nav search active highlight strip */
-.mega-search-wrap:focus-within {
-  background: #f0fdf4;
-  border-radius: 4px;
-}
+.mega-search-input::placeholder { color: #bbb; }
+.mega-search-input:focus { border-color: #cc0000; background: #555; box-shadow: 0 0 0 2px rgba(204,0,0,0.2); }
+.mega-search-wrap:focus-within { background: transparent; border-radius: 3px; }
 
 /* columns row */
 .mega-panel-cols {
@@ -209,46 +207,70 @@
   flex-wrap: wrap;
   gap: 0;
   flex: 1;
+  overflow-x: hidden;
 }
 
 .mega-section {
   min-width: 170px;
-  padding: 0 18px 12px 0;
-  border-right: 1px solid #eeeeee;
-  margin-right: 0;
+  padding: 0 0 12px 0;
+  border-right: 1px solid #333;
+  flex-shrink: 0;
 }
-.mega-section:last-child { border-right: none; padding-right: 0; }
+.mega-section.two-col {
+  min-width: 340px;
+}
+.mega-section:last-child { border-right: none; }
+
+.mega-section-subheading {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #e8a020;
+  font-family: 'Times New Roman', Times, serif;
+  padding: 4px 14px 6px 14px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid #3a3a3a;
+}
 
 .mega-section-title {
-  font-size: calc(var(--nav-fs) - 1px);
-  letter-spacing: 1.5px;
+  font-size: 13px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  color: #1b5e20;
+  color: #cc3300;
   font-weight: 700;
-  margin-bottom: 10px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid #4caf50;
+  margin-bottom: 6px;
+  padding: 7px 14px 7px 14px;
   font-family: 'Times New Roman', Times, serif;
   white-space: normal;
   word-break: break-word;
   line-height: 1.4;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.mega-section-title::after {
+  content: '▾';
+  font-size: 10px;
+  opacity: 0.7;
+  flex-shrink: 0;
 }
 .mega-section ul { list-style: none; padding: 0; margin: 0; }
-.mega-section ul li { margin-bottom: 1px; }
+.mega-section ul li { margin-bottom: 0; }
 .mega-section ul li a {
   display: block;
-  padding: 3px 8px;
-  color: #333333;
+  padding: 4px 14px;
+  color: #cccccc;
   text-decoration: none;
   font-size: var(--nav-fs);
-  border-radius: 3px;
-  line-height: 1.35;
-  transition: background 0.12s, color 0.12s;
+  line-height: 1.4;
+  transition: background 0.1s, color 0.1s;
   font-family: 'Times New Roman', Times, serif;
 }
 .mega-section ul li a:hover {
-  background: #e8f5e9;
-  color: #1b5e20;
+  background: #2a2a2a;
+  color: #ffffff;
 }
 .mega-section ul li.hidden-by-search { display: none; }
 .mega-section ul li.hidden-by-limit { display: none; }
@@ -256,23 +278,23 @@
   display: block;
   width: 100%;
   margin-top: 4px;
-  padding: 4px 8px;
+  padding: 4px 14px;
   background: none;
-  border: 1px dashed #bbb;
+  border: 1px dashed #444;
   border-radius: 3px;
-  color: #1b5e20;
+  color: #888;
   font-size: 11px;
   font-family: 'Times New Roman', Times, serif;
   cursor: pointer;
   text-align: left;
-  transition: background 0.12s, border-color 0.12s;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
-.load-more-btn:hover { background: #e8f5e9; border-color: #4caf50; }
+.load-more-btn:hover { background: #2a2a2a; border-color: #cc3300; color: #ccc; }
 
 /* Search highlight */
 .search-hl {
-  background: #fff176;
-  color: #1b5e20;
+  background: #cc3300;
+  color: #fff;
   border-radius: 2px;
   padding: 0 1px;
   font-weight: 700;
@@ -295,10 +317,11 @@
   min-width: 220px;
   max-height: calc(100vh - 60px);
   overflow-y: auto;
-  background: #fff;
-  border-top: 3px solid #4caf50;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  z-index: 9999;
+  background: #1a1a1a;
+  border-top: 3px solid #cc0000;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.9);
+  z-index: 100000;
+  isolation: isolate;
   padding: 0;
   flex-direction: column;
 }
@@ -308,7 +331,7 @@
 .simple-dropdown-search-wrap {
   position: relative;
   padding: 8px 10px 6px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #333;
   flex-shrink: 0;
   max-width: 6cm;
 }
@@ -323,28 +346,30 @@
 .simple-dropdown-search {
   width: 100%;
   padding: 6px 10px 6px 28px;
-  border: 1px solid #ddd;
+  border: 1px solid #555;
   border-radius: 4px;
   font-family: 'Times New Roman', Times, serif;
   font-size: 11px;
   outline: none;
-  background: #f9f9f9;
+  background: #4a4a4a;
+  color: #eee;
   transition: border-color 0.15s;
 }
-.simple-dropdown-search:focus { border-color: #4caf50; background: #f0fdf4; box-shadow: 0 0 0 3px rgba(76,175,80,0.15); }
+.simple-dropdown-search::placeholder { color: #bbb; }
+.simple-dropdown-search:focus { border-color: #cc0000; background: #555; }
 
 .simple-dropdown-list { overflow-y: auto; }
 .simple-dropdown a {
   display: block;
   padding: 5px 18px;
-  color: #333;
+  color: #cccccc;
   text-decoration: none;
   font-size: var(--nav-fs);
   font-family: 'Times New Roman', Times, serif;
   line-height: 1.35;
-  transition: background 0.12s;
+  transition: background 0.12s, color 0.12s;
 }
-.simple-dropdown a:hover { background: #e8f5e9; color: #1b5e20; }
+.simple-dropdown a:hover { background: #2a2a2a; color: #ffffff; }
 .simple-dropdown a.hidden-by-search { display: none; }
 .simple-dropdown a.hidden-by-limit { display: none; }
 
@@ -428,21 +453,79 @@
 }
 .nav-mobile-item.open .nav-mobile-submenu { display: block; }
 .nav-mobile-submenu-heading {
-  font-size: 9px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #4caf50;
-  padding: 10px 22px 4px;
+  color: #cc3300;
+  padding: 10px 12px 6px 16px;
   font-weight: 700;
+  font-family: 'Times New Roman', Times, serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  border-top: 1px solid #222;
+}
+.nav-mobile-submenu-heading:first-of-type { border-top: none; }
+.nav-mobile-sec-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #cc3300;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.2s;
+}
+.nav-mobile-submenu-heading.sec-open .nav-mobile-sec-toggle {
+  transform: rotate(45deg);
+  background: #3a1a1a;
+}
+.nav-mobile-sec-body {
+  display: none;
+}
+.nav-mobile-sec-body.open {
+  display: block;
+}
+/* Two-column row inside mobile submenu */
+.nav-mobile-twocol {
+  display: flex;
+  gap: 0;
+}
+.nav-mobile-twocol-col {
+  flex: 1;
+  min-width: 0;
+}
+.nav-mobile-twocol-col:first-child {
+  border-right: 1px solid #2a2a2a;
+}
+.nav-mobile-subheading {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #e8a020;
+  padding: 6px 14px 4px;
+  font-family: 'Times New Roman', Times, serif;
+  border-bottom: 1px solid #222;
+  margin-bottom: 2px;
 }
 .nav-mobile-submenu a {
   display: block;
-  padding: 7px 22px;
+  padding: 6px 14px;
   color: #aaaaaa;
   text-decoration: none;
   font-size: 12px;
-  font-family: var(--font-mono);
+  font-family: 'Times New Roman', Times, serif;
   transition: color 0.12s, background 0.12s;
+  line-height: 1.35;
 }
 .nav-mobile-submenu a:hover { color: #fff; background: #1e1e1e; }
 /* Mobile search inside drawer submenu */
@@ -1311,9 +1394,9 @@
     th, td { padding: 6px 4px; font-size: 9pt; }
     #search-input { font-size: 9pt; }
     .year-select { font-size: 9pt; }
-    .td-sl { width: 32px; min-width: 32px; max-width: 32px; }
+  .td-sl { width: 32px; min-width: 32px; max-width: 32px; }
     .td-no { max-width: 110px; }
-    .td-date { width: 80px; min-width: 75px; }
+    .td-date { width: 82px; min-width: 82px; max-width: 82px; white-space: nowrap; overflow: visible; }
     .td-file { min-width: 130px; width: 160px; }
     .pagination { flex-wrap: wrap; gap: 8px; }
     .site-banner { height: 160px; }
@@ -3323,7 +3406,7 @@ async function loadMegaMenu() {
   const loadingEl = document.getElementById('nav-loading');
   const mobileBody = document.getElementById('nav-mobile-drawer-body');
   try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Sheet2!A:D?key=${config.apiKey}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.sheetId}/values/Sheet2!A:F?key=${config.apiKey}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -3339,6 +3422,8 @@ async function loadMegaMenu() {
       const colB = (row[1] || '').trim();
       const colC = (row[2] || '').trim();
       const colD = (row[3] || '').trim();
+      const colE = (row[4] || '').trim();
+      const colF = (row[5] || '').trim();
 
       if (colA) {
         currentMain = colA;
@@ -3349,15 +3434,40 @@ async function loadMegaMenu() {
         currentSection = null;
       }
       if (colB && currentMain) {
-        currentSection = { heading: colB, items: [] };
+        // Parse: "Heading" | "Heading/Sub1" | "Heading/Sub1//Sub2"
+        let mainHeading = colB, subHeading1 = '', subHeading2 = '';
+        const dblIdx = colB.indexOf('//');
+        if (dblIdx !== -1) {
+          // Has both sub-headings: split on // first, then / from the left part
+          const rightPart = colB.slice(dblIdx + 2).trim();
+          const leftPart  = colB.slice(0, dblIdx);
+          const slashIdx  = leftPart.indexOf('/');
+          if (slashIdx !== -1) {
+            mainHeading  = leftPart.slice(0, slashIdx).trim();
+            subHeading1  = leftPart.slice(slashIdx + 1).trim();
+          } else {
+            mainHeading  = leftPart.trim();
+          }
+          subHeading2 = rightPart;
+        } else {
+          const slashIdx = colB.indexOf('/');
+          if (slashIdx !== -1) {
+            mainHeading = colB.slice(0, slashIdx).trim();
+            subHeading1 = colB.slice(slashIdx + 1).trim();
+          }
+        }
+        currentSection = { heading: mainHeading, subHeading1, subHeading2, items: [], tagItems: [] };
         menus[currentMain].sections.push(currentSection);
       }
       if (colC && currentMain) {
         if (!currentSection) {
-          currentSection = { heading: '', items: [] };
+          currentSection = { heading: '', items: [], tagItems: [] };
           menus[currentMain].sections.push(currentSection);
         }
         currentSection.items.push({ label: colC, url: colD || '#' });
+        if (colE) {
+          currentSection.tagItems.push({ label: colE, url: colF || '#' });
+        }
       }
     }
 
@@ -3439,28 +3549,83 @@ async function loadMegaMenu() {
               h.innerHTML = sec.heading;
               col.appendChild(h);
             }
-            const ul = document.createElement('ul');
-            const MAX_ITEMS = 12;
-            sec.items.forEach((it, idx) => {
-              const li = document.createElement('li');
-              const a = document.createElement('a');
-              a.href = it.url || '#';
-              a.innerHTML = it.label;
-              a.dataset.origText = it.label;
-              if (it.url && it.url !== '#') a.target = '_blank';
-              li.appendChild(a);
-              if (idx >= MAX_ITEMS) li.classList.add('hidden-by-limit');
-              ul.appendChild(li);
-            });
-            col.appendChild(ul);
-            // Load More button
-            if (sec.items.length > MAX_ITEMS) {
+
+            const hasTwoCols = sec.tagItems && sec.tagItems.length > 0;
+
+            // Wrapper: if two-col, use flex row; otherwise plain
+            const listWrap = document.createElement('div');
+            if (hasTwoCols) {
+              col.classList.add('two-col');
+              listWrap.style.cssText = 'display:flex;gap:0;align-items:flex-start;';
+            }
+
+            // Helper: build a <ul> for a list of items
+            function buildUl(items) {
+              const ul = document.createElement('ul');
+              const MAX_ITEMS = 12;
+              items.forEach((it, idx) => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = it.url || '#';
+                a.textContent = it.label;
+                a.dataset.origText = it.label;
+                if (it.url && it.url !== '#') a.target = '_blank';
+                li.appendChild(a);
+                if (idx >= MAX_ITEMS) li.classList.add('hidden-by-limit');
+                ul.appendChild(li);
+              });
+              return ul;
+            }
+
+            if (hasTwoCols) {
+              // Left sub-column (col C / col D)
+              const subLeft = document.createElement('div');
+              subLeft.style.cssText = 'flex:1;min-width:0;padding-right:0;border-right:1px solid #333;';
+              if (sec.subHeading1) {
+                const sh = document.createElement('div');
+                sh.className = 'mega-section-subheading';
+                sh.style.cssText = 'padding-left:14px;padding-right:14px;';
+                sh.textContent = sec.subHeading1;
+                subLeft.appendChild(sh);
+              }
+              subLeft.appendChild(buildUl(sec.items));
+              listWrap.appendChild(subLeft);
+
+              // Right sub-column (col E / col F)
+              const subRight = document.createElement('div');
+              subRight.style.cssText = 'flex:1;min-width:0;';
+              if (sec.subHeading2) {
+                const sh = document.createElement('div');
+                sh.className = 'mega-section-subheading';
+                sh.style.cssText = 'padding-left:14px;padding-right:14px;';
+                sh.textContent = sec.subHeading2;
+                subRight.appendChild(sh);
+              }
+              subRight.appendChild(buildUl(sec.tagItems));
+              listWrap.appendChild(subRight);
+            } else {
+              if (sec.subHeading1) {
+                const sh = document.createElement('div');
+                sh.className = 'mega-section-subheading';
+                sh.style.cssText = 'padding-left:14px;padding-right:14px;';
+                sh.textContent = sec.subHeading1;
+                listWrap.appendChild(sh);
+              }
+              const ul = buildUl(sec.items);
+              listWrap.appendChild(ul);
+            }
+
+            col.appendChild(listWrap);
+
+            // Load More button (only for single-col; two-col keeps it simple)
+            if (!hasTwoCols && sec.items.length > 12) {
+              const mainUl = listWrap.querySelector('ul');
               const lmBtn = document.createElement('button');
               lmBtn.className = 'load-more-btn';
-              const remaining = sec.items.length - MAX_ITEMS;
+              const remaining = sec.items.length - 12;
               lmBtn.textContent = `+ ${remaining} more…`;
               lmBtn.addEventListener('click', function() {
-                ul.querySelectorAll('li.hidden-by-limit').forEach(li => li.classList.remove('hidden-by-limit'));
+                mainUl.querySelectorAll('li.hidden-by-limit').forEach(li => li.classList.remove('hidden-by-limit'));
                 this.remove();
               });
               col.appendChild(lmBtn);
@@ -3537,8 +3702,6 @@ async function loadMegaMenu() {
             list.appendChild(a);
           });
           dd.appendChild(list);
-
-          // Load more for simple dropdown
           let lmWrap = null;
           if (allSimpleItems.length > SD_MAX) {
             lmWrap = document.createElement('div');
@@ -3603,47 +3766,155 @@ async function loadMegaMenu() {
         ms.placeholder = 'Search…';
         ms.addEventListener('input', function() {
           const q = this.value.trim().toLowerCase();
-          // Show/hide and highlight links
+
+          // Gather ALL anchor elements inside the submenu (flat + inside sec-body + two-col)
+          const allLinks = Array.from(sub.querySelectorAll('a'));
+          allLinks.forEach(el => {
+            // Normalise: use stored origText or fall back to current textContent
+            if (!el._origText) el._origText = el.textContent.trim();
+            const label = el._origText;
+            const visible = !q || label.toLowerCase().includes(q);
+            el.style.display = visible ? '' : 'none';
+            el.innerHTML = highlightText(label, q);
+          });
+
+          // Handle two-col row visibility
+          Array.from(sub.querySelectorAll('.nav-mobile-twocol')).forEach(row => {
+            const anyVisible = Array.from(row.querySelectorAll('a')).some(a => a.style.display !== 'none');
+            row.style.display = anyVisible ? '' : 'none';
+          });
+
+          // Handle sec-body: show/hide and auto-open if match found inside
+          Array.from(sub.querySelectorAll('.nav-mobile-sec-body')).forEach(body => {
+            const anyVisible = Array.from(body.querySelectorAll('a')).some(a => a.style.display !== 'none');
+            const heading = body.previousElementSibling;
+            if (q) {
+              body.style.display = anyVisible ? 'block' : 'none';
+              if (heading && heading.classList.contains('nav-mobile-submenu-heading')) {
+                heading.style.display = anyVisible ? '' : 'none';
+                if (anyVisible) {
+                  body.classList.add('open');
+                  heading.classList.add('sec-open');
+                }
+              }
+            } else {
+              // Restore: show heading, collapse body
+              body.style.display = '';
+              body.classList.remove('open');
+              if (heading && heading.classList.contains('nav-mobile-submenu-heading')) {
+                heading.style.display = '';
+                heading.classList.remove('sec-open');
+              }
+            }
+          });
+
+          // Handle flat (no-heading) links directly in sub
           Array.from(sub.children).forEach(el => {
             if (el.tagName === 'A') {
-              const label = el.dataset.origText || el.textContent;
-              if (!el.dataset.origText) el.dataset.origText = el.textContent;
+              if (!el._origText) el._origText = el.textContent.trim();
+              const label = el._origText;
               const visible = !q || label.toLowerCase().includes(q);
               el.style.display = visible ? '' : 'none';
               el.innerHTML = highlightText(label, q);
             }
           });
-          // Second pass: hide headings if all following links (until next heading) are hidden
-          let headingEl = null;
-          let anyVisible = false;
-          Array.from(sub.children).forEach(el => {
-            if (el.classList.contains('nav-mobile-submenu-heading')) {
-              if (headingEl) headingEl.style.display = anyVisible ? '' : 'none';
-              headingEl = el;
-              anyVisible = false;
-            } else if (el.tagName === 'A') {
-              if (el.style.display !== 'none') anyVisible = true;
-            }
-          });
-          if (headingEl) headingEl.style.display = anyVisible ? '' : 'none';
         });
         msw.appendChild(ms);
         sub.appendChild(msw);
 
         for (const sec of menuData.sections) {
+          let secBody;
+
           if (sec.heading) {
             const h = document.createElement('div');
             h.className = 'nav-mobile-submenu-heading';
-            h.textContent = sec.heading;
+
+            const titleSpan = document.createElement('span');
+            titleSpan.textContent = sec.heading;
+
+            const toggleBtn = document.createElement('span');
+            toggleBtn.className = 'nav-mobile-sec-toggle';
+            toggleBtn.textContent = '+';
+
+            h.appendChild(titleSpan);
+            h.appendChild(toggleBtn);
+
+            secBody = document.createElement('div');
+            secBody.className = 'nav-mobile-sec-body';
+
+            h.addEventListener('click', () => {
+              const isOpen = secBody.classList.toggle('open');
+              h.classList.toggle('sec-open', isOpen);
+            });
+
             sub.appendChild(h);
+            sub.appendChild(secBody);
+          } else {
+            // No heading — content goes directly into sub
+            secBody = sub;
           }
-          for (const it of sec.items) {
-            const a = document.createElement('a');
-            a.href = it.url || '#';
-            a.textContent = it.label;
-            if (it.url && it.url !== '#') a.target = '_blank';
-            a.addEventListener('click', closeMobileDrawer);
-            sub.appendChild(a);
+
+          const hasTwoCols = sec.tagItems && sec.tagItems.length > 0;
+
+          if (hasTwoCols) {
+            const row = document.createElement('div');
+            row.className = 'nav-mobile-twocol';
+
+            const colL = document.createElement('div');
+            colL.className = 'nav-mobile-twocol-col';
+            if (sec.subHeading1) {
+              const sh = document.createElement('div');
+              sh.className = 'nav-mobile-subheading';
+              sh.textContent = sec.subHeading1;
+              colL.appendChild(sh);
+            }
+            for (const it of sec.items) {
+              const a = document.createElement('a');
+              a.href = it.url || '#';
+              a.textContent = it.label;
+              a.dataset.origText = it.label;
+              if (it.url && it.url !== '#') a.target = '_blank';
+              a.addEventListener('click', closeMobileDrawer);
+              colL.appendChild(a);
+            }
+
+            const colR = document.createElement('div');
+            colR.className = 'nav-mobile-twocol-col';
+            if (sec.subHeading2) {
+              const sh = document.createElement('div');
+              sh.className = 'nav-mobile-subheading';
+              sh.textContent = sec.subHeading2;
+              colR.appendChild(sh);
+            }
+            for (const it of sec.tagItems) {
+              const a = document.createElement('a');
+              a.href = it.url || '#';
+              a.textContent = it.label;
+              a.dataset.origText = it.label;
+              if (it.url && it.url !== '#') a.target = '_blank';
+              a.addEventListener('click', closeMobileDrawer);
+              colR.appendChild(a);
+            }
+
+            row.appendChild(colL);
+            row.appendChild(colR);
+            secBody.appendChild(row);
+          } else {
+            if (sec.subHeading1) {
+              const sh = document.createElement('div');
+              sh.className = 'nav-mobile-subheading';
+              sh.textContent = sec.subHeading1;
+              secBody.appendChild(sh);
+            }
+            for (const it of sec.items) {
+              const a = document.createElement('a');
+              a.href = it.url || '#';
+              a.textContent = it.label;
+              a.dataset.origText = it.label;
+              if (it.url && it.url !== '#') a.target = '_blank';
+              a.addEventListener('click', closeMobileDrawer);
+              secBody.appendChild(a);
+            }
           }
         }
         mItem.appendChild(sub);
