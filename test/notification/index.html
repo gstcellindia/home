@@ -2885,8 +2885,8 @@ function showCrossSheetDropdown(groups, q) {
   const header = document.createElement('div');
   header.className = 'csd-header';
   header.innerHTML = hasResults
-    ? `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#3aabdc" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Found in other sheets`
-    : `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#3aabdc" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Not found in any sheet`;
+    ? `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#3aabdc" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Found in other page`
+    : `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#3aabdc" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Not found in any related page`;
   dd.appendChild(header);
 
   if (!hasResults) {
