@@ -660,6 +660,8 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Times New Roman', Times, serif; }
 
+  html { overflow-x: hidden; max-width: 100vw; }
+
   body {
     font-family: 'Times New Roman', Times, serif;
     background: var(--bg);
@@ -793,6 +795,8 @@
 
   .search-wrap {
     position: relative;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .search-wrap svg {
@@ -813,6 +817,8 @@
     font-family: 'Times New Roman', Times, serif;
     font-size: 11pt;
     width: 240px;
+    max-width: 100%;
+    box-sizing: border-box;
     outline: none;
     transition: all 0.2s;
     box-shadow: 0 1px 4px rgba(100,180,230,0.2);
@@ -1387,15 +1393,15 @@
 
   @media (max-width: 900px) {
     main { padding: 16px 14px; box-sizing: border-box; width: 100%; }
-    .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
-    .toolbar-left { flex-wrap: wrap; gap: 8px; }
-    .toolbar-right { flex-wrap: wrap; gap: 8px; }
+    .toolbar { flex-direction: column; align-items: stretch; gap: 8px; width: 100%; box-sizing: border-box; }
+    .toolbar-left { flex-wrap: wrap; gap: 8px; width: 100%; box-sizing: border-box; }
+    .toolbar-right { flex-wrap: wrap; gap: 8px; width: 100%; box-sizing: border-box; }
     /* Two selects: equal width, side by side */
     .toolbar-left { display: flex; flex-wrap: wrap; gap: 8px; }
     #sheet-selector, #year-filter { flex: 1 1 calc(50% - 4px); min-width: 0; max-width: calc(50% - 4px); box-sizing: border-box; }
     /* Search full width */
-    .search-wrap { width: 100%; order: 3; }
-    #search-input { width: 100%; max-width: 100%; font-size: 10pt; box-sizing: border-box; }
+    .search-wrap { width: 100%; max-width: 100%; order: 3; box-sizing: border-box; }
+    #search-input { width: 100% !important; max-width: 100% !important; font-size: 10pt; box-sizing: border-box; }
     .year-select { font-size: 10pt; }
     /* Table: remove horizontal scroll / blank space */
     table { min-width: 0; width: 100%; table-layout: fixed; }
