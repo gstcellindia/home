@@ -667,6 +667,8 @@
     min-height: 100vh;
     font-size: var(--page-fs);
     line-height: 1.6;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* ── HEADER removed ── */
@@ -878,7 +880,10 @@
   .table-wrap {
     border: 1px solid var(--border);
     border-radius: 6px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
   }
 
   table {
@@ -1381,7 +1386,7 @@
   }
 
   @media (max-width: 900px) {
-    main { padding: 16px 14px; }
+    main { padding: 16px 14px; box-sizing: border-box; width: 100%; }
     .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
     .toolbar-left { flex-wrap: wrap; gap: 8px; }
     .toolbar-right { flex-wrap: wrap; gap: 8px; }
