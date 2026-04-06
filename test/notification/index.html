@@ -1408,6 +1408,11 @@
     th, td { font-size: 10pt; }
     .td-desc { min-width: 0; }
     .td-file { min-width: 0; }
+    /* Hide record count on mobile */
+    #record-count { display: none !important; }
+    /* Fully collapse actions column - prevent ghost column */
+    .td-actions { display: none !important; width: 0 !important; padding: 0 !important; border: 0 !important; }
+    col:last-child { width: 0 !important; }
     :root { --nav-fs: 10pt; --page-fs: 10pt; }
   }
 
@@ -1426,6 +1431,9 @@
     .pagination { flex-wrap: wrap; gap: 8px; }
     .site-banner { height: 160px; }
     .banner-page-title { font-size: clamp(20px, 6vw, 36px) !important; }
+    #record-count { display: none !important; }
+    .td-actions { display: none !important; width: 0 !important; padding: 0 !important; border: 0 !important; }
+    col:last-child { width: 0 !important; }
     :root { --nav-fs: 9pt; --page-fs: 9pt; }
   }
 
@@ -1628,7 +1636,7 @@
         <col style="width:90px">
         <col>
         <col style="width:20%">
-        <col style="width:0">
+        <col style="width:0;padding:0;border:0">
       </colgroup>
       <thead>
         <tr id="table-header-row">
