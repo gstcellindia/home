@@ -831,6 +831,68 @@
     box-shadow: 0 2px 8px rgba(58,171,220,0.3);
   }
 
+  /* ── CROSS-SHEET SEARCH DROPDOWN ── */
+  #cross-sheet-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #3aabdc;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(58,171,220,0.18);
+    z-index: 9999;
+    max-height: 320px;
+    overflow-y: auto;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  #cross-sheet-dropdown.open { display: block; }
+  .csd-header {
+    padding: 7px 14px 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #3aabdc;
+    border-bottom: 1px solid #e0f0f8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .csd-spinner {
+    width: 11px; height: 11px;
+    border: 2px solid #cde8f5;
+    border-top-color: #3aabdc;
+    border-radius: 50%;
+    animation: csd-spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes csd-spin { to { transform: rotate(360deg); } }
+  .csd-sheet-group { border-bottom: 1px solid #f0f6fa; }
+  .csd-sheet-label {
+    padding: 5px 14px 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #0a4a6e;
+    background: #f0f7fc;
+    letter-spacing: 0.5px;
+  }
+  .csd-item {
+    padding: 7px 16px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #1a3a5c;
+    transition: background 0.12s;
+    line-height: 1.4;
+  }
+  .csd-item:hover { background: #d8effa; }
+  .csd-item .csd-match-no { font-weight: 700; color: #0a4a6e; }
+  .csd-item .csd-match-date { color: #5a9ab8; font-size: 10px; margin-left: 6px; }
+  .csd-item .csd-match-desc { color: #555; font-size: 10px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .csd-no-results { padding: 10px 16px; font-size: 11px; color: #999; font-style: italic; }
+  .csd-switch-hint { padding: 6px 14px; font-size: 10px; color: #3aabdc; font-style: italic; border-top: 1px solid #e0f0f8; }
+
   .year-select {
     padding: 8px 14px;
     background: var(--surface);
@@ -1593,7 +1655,8 @@
       </select>
       <div class="search-wrap">
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="search-input" placeholder="Search records..." oninput="onSearch()">
+        <input type="text" id="search-input" placeholder="Search records..." oninput="onSearch()" autocomplete="off">
+        <div id="cross-sheet-dropdown"></div>
       </div>
       <span id="record-count" style="font-size:11px;color:var(--text-muted)">0 records</span>
       <span id="search-pw-hint">🔒 Enter password…</span>
@@ -2641,6 +2704,13 @@ function applyFilters() {
   });
   currentPage = 1;
   renderTable();
+
+  // Cross-sheet fallback: if no results and query is long enough, search other sheets
+  if (q && q.length >= 2 && filteredData.length === 0) {
+    triggerCrossSheetSearch(q);
+  } else {
+    closeCrossSheetDropdown();
+  }
 }
 
 // ──────────────────────────────────────────────
@@ -2726,6 +2796,7 @@ function onSearch() {
   }
 
   searchQuery = raw.toLowerCase().trim();
+  if (!searchQuery) closeCrossSheetDropdown();
   applyFilters();
 }
 
@@ -2761,6 +2832,173 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+});
+
+// ──────────────────────────────────────────────
+//  CROSS-SHEET SEARCH
+// ──────────────────────────────────────────────
+let csdDebounceTimer = null;
+let csdAbortController = null;
+
+// Collect sheet entries from the selector (populated from Password sheet)
+function getOtherSheetEntries() {
+  const sel = document.getElementById('sheet-selector');
+  const entries = [];
+  for (const opt of sel.options) {
+    if (!opt.value) continue; // skip placeholder
+    if (opt.value === activeSheetId) continue; // skip current sheet
+    entries.push({ label: opt.textContent.trim(), sheetId: opt.value });
+  }
+  return entries;
+}
+
+function rowMatchesQuery(r, q) {
+  return (r.no||'').toLowerCase().includes(q) ||
+         (r.date||'').toLowerCase().includes(q) ||
+         (r.description||'').toLowerCase().includes(q) ||
+         (r.fileName||'').toLowerCase().includes(q);
+}
+
+async function fetchSheetRows(sheetId) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:K?key=${config.apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const rows = (data.values || []).slice(1); // skip header
+  return rows.map((r, i) => ({
+    id: i,
+    slNo: r[0] || '',
+    no:   r[1] || '',
+    date: r[2] || '',
+    description: r[3] || '',
+    fileId:   r[4] || '',
+    fileName: r[5] || '',
+  }));
+}
+
+function showCrossSheetDropdown(groups, q) {
+  const dd = document.getElementById('cross-sheet-dropdown');
+  dd.innerHTML = '';
+
+  const hasResults = groups.some(g => g.matches.length > 0);
+
+  const header = document.createElement('div');
+  header.className = 'csd-header';
+  header.innerHTML = hasResults
+    ? `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#3aabdc" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Found in other sheets`
+    : `<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#3aabdc" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Not found in any sheet`;
+  dd.appendChild(header);
+
+  if (!hasResults) {
+    const none = document.createElement('div');
+    none.className = 'csd-no-results';
+    none.textContent = `"${q}" not found in any other sheet.`;
+    dd.appendChild(none);
+  } else {
+    groups.forEach(g => {
+      if (g.matches.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'csd-sheet-group';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'csd-sheet-label';
+      lbl.textContent = `📄 ${g.label} (${g.matches.length} match${g.matches.length > 1 ? 'es' : ''})`;
+      group.appendChild(lbl);
+
+      // Show up to 5 matches per sheet
+      g.matches.slice(0, 5).forEach(row => {
+        const item = document.createElement('div');
+        item.className = 'csd-item';
+        const desc = row.description ? row.description.slice(0, 80) + (row.description.length > 80 ? '…' : '') : '';
+        item.innerHTML = `<span class="csd-match-no">${esc(row.no||'—')}</span><span class="csd-match-date">${displayDate(row.date)}</span><span class="csd-match-desc">${esc(desc)}</span>`;
+        item.addEventListener('mousedown', e => {
+          e.preventDefault(); // prevent blur closing dropdown before click fires
+          switchToSheet(g.sheetId, g.label, q);
+        });
+        group.appendChild(item);
+      });
+
+      if (g.matches.length > 5) {
+        const more = document.createElement('div');
+        more.className = 'csd-no-results';
+        more.textContent = `+ ${g.matches.length - 5} more — click to load sheet`;
+        more.style.cursor = 'pointer';
+        more.addEventListener('mousedown', e => { e.preventDefault(); switchToSheet(g.sheetId, g.label, q); });
+        group.appendChild(more);
+      }
+
+      dd.appendChild(group);
+    });
+
+    const hint = document.createElement('div');
+    hint.className = 'csd-switch-hint';
+    hint.textContent = 'Click any result to switch to that sheet';
+    dd.appendChild(hint);
+  }
+
+  dd.classList.add('open');
+}
+
+function closeCrossSheetDropdown() {
+  const dd = document.getElementById('cross-sheet-dropdown');
+  if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+  if (csdAbortController) { csdAbortController.abort(); csdAbortController = null; }
+  clearTimeout(csdDebounceTimer);
+}
+
+function showCrossSheetLoading() {
+  const dd = document.getElementById('cross-sheet-dropdown');
+  dd.innerHTML = `<div class="csd-header"><span class="csd-spinner"></span> Searching other sheets…</div>`;
+  dd.classList.add('open');
+}
+
+async function triggerCrossSheetSearch(q) {
+  const sheets = getOtherSheetEntries();
+  if (sheets.length === 0) return;
+
+  clearTimeout(csdDebounceTimer);
+  csdDebounceTimer = setTimeout(async () => {
+    if (csdAbortController) csdAbortController.abort();
+    csdAbortController = new AbortController();
+
+    showCrossSheetLoading();
+
+    const results = await Promise.allSettled(
+      sheets.map(async s => {
+        const rows = await fetchSheetRows(s.sheetId);
+        const matches = rows.filter(r => rowMatchesQuery(r, q));
+        return { label: s.label, sheetId: s.sheetId, matches };
+      })
+    );
+
+    const groups = results
+      .filter(r => r.status === 'fulfilled')
+      .map(r => r.value);
+
+    showCrossSheetDropdown(groups, q);
+  }, 600); // 600ms debounce — don't fire on every keystroke
+}
+
+function switchToSheet(sheetId, label, q) {
+  closeCrossSheetDropdown();
+  // Update the sheet selector UI
+  const sel = document.getElementById('sheet-selector');
+  if (sel) sel.value = sheetId;
+  // Switch active sheet and reload
+  activeSheetId = sheetId;
+  loadFromSheet().then(() => {
+    // Restore search query after sheet loads
+    searchQuery = q;
+    document.getElementById('search-input').value = q;
+    applyFilters();
+    toast(`Switched to: ${label}`, 'info');
+  });
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.search-wrap');
+  if (wrap && !wrap.contains(e.target)) closeCrossSheetDropdown();
 });
 
 function sortBy(col) {
@@ -3810,6 +4048,9 @@ async function loadPasswordSheetData() {
         sel.appendChild(opt);
       });
       sel.style.display = '';
+      // Auto-select the first sheet so the placeholder never shows
+      sel.value = entries[0].sheetId;
+      activeSheetId = entries[0].sheetId;
     }
 
     // A13 → page title, A14 → page description
