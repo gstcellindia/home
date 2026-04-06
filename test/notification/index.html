@@ -36,16 +36,22 @@
 }
 .banner-datetime {
   position: absolute;
-  right: 5%;
-  bottom: 18px;
+  top: 52px;
+  right: 14px;
   color: #e8f5e9;
   font-family: 'Times New Roman', Times, serif;
   font-style: italic;
   text-align: right;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+  text-shadow: 1px 1px 6px rgba(0,0,0,0.85);
+  pointer-events: none;
+  z-index: 10;
 }
-.banner-datetime .bdate { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
-.banner-datetime .bday  { font-size: 16px; }
+.banner-datetime .bdate { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+.banner-datetime .bday  { font-size: 14px; }
+
+@media (max-width: 900px) {
+  .banner-datetime { display: none; }
+}
 
 /* ── MEGA MENU NAV ── */
 .mega-nav {
@@ -929,7 +935,7 @@
   }
 
   .td-no { font-weight: 500; color: var(--text); white-space: normal; word-break: break-word; overflow: hidden; }
-  .td-date { color: var(--text-muted); white-space: nowrap; overflow: hidden; }
+  .td-date { color: var(--text-muted); white-space: nowrap; overflow: hidden; min-width: 90px; width: 90px; }
   .td-desc { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
   .td-file { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
   .td-actions { width: 80px; min-width: 60px; text-align: right; display: none; }
@@ -1377,27 +1383,35 @@
   @media (max-width: 900px) {
     main { padding: 16px 14px; }
     .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
-    .toolbar-left, .toolbar-right { flex-wrap: wrap; gap: 8px; }
-    #search-input { width: 100%; max-width: 100%; font-size: 10pt; }
-    .year-select { width: auto; font-size: 10pt; }
-    table { min-width: 620px; }
+    .toolbar-left { flex-wrap: wrap; gap: 8px; }
+    .toolbar-right { flex-wrap: wrap; gap: 8px; }
+    /* Two selects: equal width, side by side */
+    .toolbar-left { display: flex; flex-wrap: wrap; gap: 8px; }
+    #sheet-selector, #year-filter { flex: 1 1 calc(50% - 4px); min-width: 0; max-width: calc(50% - 4px); box-sizing: border-box; }
+    /* Search full width */
+    .search-wrap { width: 100%; order: 3; }
+    #search-input { width: 100%; max-width: 100%; font-size: 10pt; box-sizing: border-box; }
+    .year-select { font-size: 10pt; }
+    /* Table: remove horizontal scroll / blank space */
+    table { min-width: 0; width: 100%; table-layout: fixed; }
     th, td { font-size: 10pt; }
-    .td-desc { min-width: 160px; }
-    .td-file { min-width: 150px; }
+    .td-desc { min-width: 0; }
+    .td-file { min-width: 0; }
     :root { --nav-fs: 10pt; --page-fs: 10pt; }
   }
 
   @media (max-width: 600px) {
     main { padding: 12px 8px; }
     .toolbar-right { justify-content: flex-start; }
-    table { min-width: 560px; }
+    table { min-width: 0; width: 100%; }
     th, td { padding: 6px 4px; font-size: 9pt; }
     #search-input { font-size: 9pt; }
     .year-select { font-size: 9pt; }
-  .td-sl { width: 32px; min-width: 32px; max-width: 32px; }
+    #sheet-selector, #year-filter { flex: 1 1 calc(50% - 4px); min-width: 0; max-width: calc(50% - 4px); }
+    .td-sl { width: 32px; min-width: 32px; max-width: 32px; }
     .td-no { max-width: 110px; }
     .td-date { width: 82px; min-width: 82px; max-width: 82px; white-space: nowrap; overflow: visible; }
-    .td-file { min-width: 130px; width: 160px; }
+    .td-file { min-width: 0; width: auto; }
     .pagination { flex-wrap: wrap; gap: 8px; }
     .site-banner { height: 160px; }
     .banner-page-title { font-size: clamp(20px, 6vw, 36px) !important; }
@@ -1409,6 +1423,92 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: #cccccc; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #aaaaaa; }
+
+  /* ── BULK ROW EXTRAS ── */
+  .bulk-row-wrap {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .bulk-row-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--surface);
+  }
+  .bulk-extras-toggle {
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 10px;
+    padding: 2px 8px;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .bulk-extras-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .bulk-extras-toggle.has-extras { border-color: #4caf50; color: #1b5e20; background: #f0fdf4; }
+  .bulk-extras-panel {
+    display: none;
+    padding: 10px 12px 12px;
+    background: #f9fbfd;
+    border-top: 1px solid var(--border);
+  }
+  .bulk-extras-panel.open { display: block; }
+  .bulk-extras-section {
+    margin-bottom: 10px;
+  }
+  .bulk-extras-section:last-child { margin-bottom: 0; }
+  .bulk-extras-section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bulk-extra-item-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .bulk-extra-item-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    height: 30px;
+    font-size: 11px;
+    padding: 0 8px;
+  }
+
+  /* Excel preview table */
+  #excel-preview-table th {
+    padding: 6px 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: default;
+  }
+  #excel-preview-table td {
+    padding: 5px 10px;
+    font-size: 11px;
+    border-top: 1px solid var(--border);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #excel-preview-table tr:hover td { background: var(--surface); }
 </style>
 </head>
 <body>
@@ -1514,7 +1614,7 @@
     <table id="data-table">
       <colgroup>
         <col style="width:18%">
-        <col style="width:8%">
+        <col style="width:90px">
         <col>
         <col style="width:20%">
         <col style="width:0">
@@ -1654,17 +1754,28 @@
 
 <!-- ── BULK UPLOAD MODAL ── -->
 <div class="modal-backdrop" id="bulk-upload-modal">
-  <div class="modal" style="width:900px;max-width:99vw">
+  <div class="modal" style="width:960px;max-width:99vw">
     <div class="modal-header">
       <span class="modal-title">Bulk Upload Records</span>
       <button class="modal-close" onclick="closeBulkUploadModal()">✕</button>
     </div>
-    <div class="modal-body" style="max-height:75vh;overflow-y:auto">
-      <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px">Add one or more rows below. Each row will be appended as a new record.</p>
-      <!-- Column labels row -->
-      <div id="bulk-rows-container">
-        <!-- rows injected by JS -->
-      </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:2px solid var(--border);padding:0 24px;background:var(--surface)">
+      <button id="bulk-tab-manual" onclick="switchBulkTab('manual')"
+        style="padding:10px 20px;border:none;background:none;cursor:pointer;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--accent);border-bottom:2px solid var(--accent);margin-bottom:-2px;letter-spacing:0.3px">
+        ✏️ Manual Entry
+      </button>
+      <button id="bulk-tab-excel" onclick="switchBulkTab('excel')"
+        style="padding:10px 20px;border:none;background:none;cursor:pointer;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;letter-spacing:0.3px">
+        📊 Import from Excel / CSV
+      </button>
+    </div>
+
+    <!-- Manual Entry Tab -->
+    <div id="bulk-panel-manual" class="modal-body" style="max-height:72vh;overflow-y:auto">
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px">Add one or more rows. Each row can have extra attachments under Col 2, Col 4 (Description), and Col 5.</p>
+      <div id="bulk-rows-container"></div>
       <div style="display:flex;justify-content:flex-end;margin-top:12px">
         <button class="btn btn-ghost btn-sm" onclick="addBulkRow()" style="font-size:20px;line-height:1;padding:4px 14px;font-weight:700" title="Add another row">＋</button>
       </div>
@@ -1673,7 +1784,62 @@
       </div>
       <div id="bulk-status-text" style="font-size:11px;color:var(--text-muted);margin-top:6px;text-align:center"></div>
     </div>
-    <div class="modal-footer">
+
+    <!-- Excel Import Tab -->
+    <div id="bulk-panel-excel" class="modal-body" style="max-height:72vh;overflow-y:auto;display:none">
+      <div style="margin-bottom:16px">
+        <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px">
+          Upload an <strong>.xlsx</strong> or <strong>.csv</strong> file. The first row must be a header row with columns in this order:
+        </p>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;font-size:11px;line-height:1.8;color:var(--text)">
+          <strong>Col A:</strong> Form No. (Col 2) &nbsp;|&nbsp;
+          <strong>Col B:</strong> Date (DD/MM/YYYY or YYYY-MM-DD) &nbsp;|&nbsp;
+          <strong>Col C:</strong> Description &nbsp;|&nbsp;
+          <strong>Col D:</strong> PDF Display Name (Col 5)<br>
+          <em style="color:var(--text-muted)">Extras (repeating groups of 2 — Description, Name):</em><br>
+          <strong>Col E–F:</strong> Extra Col2 #1 &nbsp;|&nbsp;
+          <strong>Col G–H:</strong> Extra Col4 #1 &nbsp;|&nbsp;
+          <strong>Col I–J:</strong> Extra Col5 #1 &nbsp;|&nbsp; (and so on…)
+        </div>
+        <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;color:#1b7a43;border-color:#1b7a43">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Choose File (.xlsx / .csv)
+            <input type="file" id="excel-import-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="onExcelImport(event)">
+          </label>
+          <button class="btn btn-ghost btn-sm" onclick="downloadExcelTemplate()" style="color:#1a6fef;border-color:#1a6fef" title="Download blank template">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Template
+          </button>
+          <span id="excel-import-filename" style="font-size:11px;color:var(--accent)"></span>
+        </div>
+      </div>
+
+      <!-- Preview table -->
+      <div id="excel-preview-wrap" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.5px">PREVIEW</span>
+          <span id="excel-preview-count" style="font-size:11px;color:var(--text-muted)"></span>
+        </div>
+        <div style="overflow-x:auto;border:1px solid var(--border);border-radius:4px">
+          <table id="excel-preview-table" style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead id="excel-preview-thead" style="background:var(--surface);border-bottom:1px solid var(--border)"></thead>
+            <tbody id="excel-preview-tbody"></tbody>
+          </table>
+        </div>
+        <p style="font-size:10px;color:var(--text-muted);margin-top:6px">
+          ⚠ PDF files cannot be attached via Excel import. After importing, edit individual records to attach PDFs.
+        </p>
+      </div>
+
+      <div id="excel-import-error" style="display:none;color:var(--danger);font-size:11px;margin-top:8px;padding:8px 12px;background:#fff5f5;border:1px solid #fca5a5;border-radius:4px"></div>
+      <div class="progress-wrap" id="excel-progress" style="margin-top:12px">
+        <div class="progress-bar" id="excel-progress-bar"></div>
+      </div>
+      <div id="excel-status-text" style="font-size:11px;color:var(--text-muted);margin-top:6px;text-align:center"></div>
+    </div>
+
+    <div class="modal-footer" style="gap:10px">
       <button class="btn btn-ghost" onclick="closeBulkUploadModal()">Cancel</button>
       <button class="btn btn-primary" id="bulk-upload-btn" onclick="submitBulkUpload()">
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
@@ -2416,7 +2582,11 @@ let yearFilter = '';
 function populateYearFilter() {
   const sel = document.getElementById('year-filter');
   const years = [...new Set(allData
-    .map(r => r.date ? r.date.substring(0, 4) : '')
+    .map(r => {
+      if (!r.date) return '';
+      const iso = toInputDate(r.date); // normalise to YYYY-MM-DD first
+      return iso ? iso.substring(0, 4) : '';
+    })
     .filter(y => y && /^\d{4}$/.test(y))
   )].sort((a, b) => b - a);
   const current = sel.value;
@@ -2438,7 +2608,7 @@ function onYearFilter() {
 function applyFilters() {
   const q = searchQuery;
   filteredData = allData.filter(r => {
-    const matchYear = !yearFilter || (r.date && r.date.startsWith(yearFilter));
+    const matchYear = !yearFilter || (r.date && toInputDate(r.date).startsWith(yearFilter));
     const matchQ = !q ||
       r.slNo.toString().includes(q) ||
       r.no.toLowerCase().includes(q) ||
@@ -2743,8 +2913,8 @@ function renderTable() {
   controls.appendChild(prev);
 
   // Page numbers
-  const maxBtns = 7;
-  let pStart = Math.max(1, currentPage - 3);
+  const maxBtns = 3;
+  let pStart = Math.max(1, currentPage - 1);
   let pEnd   = Math.min(totalPages, pStart + maxBtns - 1);
   if (pEnd - pStart < maxBtns - 1) pStart = Math.max(1, pEnd - maxBtns + 1);
 
@@ -2790,15 +2960,49 @@ function onPageSizeChange() {
 // ──────────────────────────────────────────────
 //  BULK UPLOAD
 // ──────────────────────────────────────────────
-let bulkFiles = {}; // uid -> File object
+let bulkFiles = {}; // uid_col -> File object
+let excelImportRows = []; // parsed rows from Excel/CSV
+let activeBulkTab = 'manual';
+
+function switchBulkTab(tab) {
+  activeBulkTab = tab;
+  const tabs = ['manual','excel'];
+  tabs.forEach(t => {
+    const btn = document.getElementById('bulk-tab-' + t);
+    const panel = document.getElementById('bulk-panel-' + t);
+    const isActive = t === tab;
+    btn.style.color = isActive ? 'var(--accent)' : 'var(--text-muted)';
+    btn.style.borderBottom = isActive ? '2px solid var(--accent)' : '2px solid transparent';
+    panel.style.display = isActive ? 'block' : 'none';
+  });
+  const uploadBtn = document.getElementById('bulk-upload-btn');
+  if (tab === 'excel') {
+    uploadBtn.textContent = excelImportRows.length > 0 ? `Import ${excelImportRows.length} Records` : 'Import Records';
+  } else {
+    uploadBtn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload All to Drive`;
+  }
+}
 
 function openBulkUploadModal() {
   bulkFiles = {};
+  excelImportRows = [];
+  activeBulkTab = 'manual';
   document.getElementById('bulk-rows-container').innerHTML = '';
   document.getElementById('bulk-progress').classList.remove('visible');
   document.getElementById('bulk-progress-bar').style.width = '0%';
   document.getElementById('bulk-status-text').textContent = '';
-  addBulkRow(); // start with one empty row
+  // Reset excel tab
+  document.getElementById('excel-preview-wrap').style.display = 'none';
+  document.getElementById('excel-preview-thead').innerHTML = '';
+  document.getElementById('excel-preview-tbody').innerHTML = '';
+  document.getElementById('excel-import-filename').textContent = '';
+  document.getElementById('excel-import-error').style.display = 'none';
+  document.getElementById('excel-import-input').value = '';
+  document.getElementById('excel-progress').classList.remove('visible');
+  document.getElementById('excel-progress-bar').style.width = '0%';
+  document.getElementById('excel-status-text').textContent = '';
+  switchBulkTab('manual');
+  addBulkRow();
   document.getElementById('bulk-upload-modal').classList.add('open');
 }
 
@@ -2810,55 +3014,109 @@ function addBulkRow() {
   const container = document.getElementById('bulk-rows-container');
   const uid = 'bulk-' + Date.now() + '-' + Math.random().toString(36).slice(2);
   const today = new Date().toISOString().slice(0, 10);
+  const rowNum = container.querySelectorAll('.bulk-row-wrap').length + 1;
 
-  // Add header labels on first row
-  if (container.children.length === 0) {
-    const hdr = document.createElement('div');
-    hdr.className = 'bulk-col-headers';
-    hdr.style.cssText = 'display:flex;gap:8px;padding:0 0 6px 0;';
-    hdr.innerHTML = `
-      <span style="flex:0 0 150px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">Form No. (Col 2)</span>
-      <span style="flex:0 0 36px"></span>
-      <span style="flex:0 0 140px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">Date</span>
-      <span style="flex:1;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">Description (Col 4)</span>
-      <span style="flex:0 0 140px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">PDF File Name (Col 5)</span>
-      <span style="flex:0 0 80px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:700">PDF File</span>
-      <span style="flex:0 0 28px"></span>
-    `;
-    container.appendChild(hdr);
-  }
+  const wrap = document.createElement('div');
+  wrap.className = 'bulk-row-wrap';
+  wrap.dataset.uid = uid;
 
+  wrap.innerHTML = `
+    <div class="bulk-row-main">
+      <span style="font-size:10px;color:var(--text-muted);font-weight:700;flex-shrink:0;width:18px">#${rowNum}</span>
+      <input type="text" class="form-input" placeholder="Form No. (Col 2)" style="flex:0 0 140px;height:34px;font-size:12px;padding:0 8px" data-field="no">
+      <label class="extra-file-label" title="PDF for Col 2" style="flex:0 0 34px;height:34px;padding:0;font-size:13px;display:flex;align-items:center;justify-content:center" id="bulk-col2-lbl-${uid}">
+        📎<input type="file" accept=".pdf" style="display:none" onchange="onBulkFileSelect(event,'${uid}','col2')">
+      </label>
+      <input type="date" class="form-input" value="${today}" style="flex:0 0 136px;height:34px;font-size:12px;padding:0 8px" data-field="date">
+      <input type="text" class="form-input" placeholder="Description (Col 4)" style="flex:1;min-width:0;height:34px;font-size:12px;padding:0 8px" data-field="desc">
+      <input type="text" class="form-input" placeholder="PDF display name (Col 5)" style="flex:0 0 136px;height:34px;font-size:12px;padding:0 8px" data-field="docname">
+      <label class="extra-file-label" title="PDF for Col 5" style="flex:0 0 34px;height:34px;padding:0;font-size:13px;display:flex;align-items:center;justify-content:center" id="bulk-col5-lbl-${uid}">
+        📎<input type="file" accept=".pdf" style="display:none" onchange="onBulkFileSelect(event,'${uid}','col5')">
+      </label>
+      <button class="bulk-extras-toggle" id="bulk-extras-btn-${uid}" onclick="toggleBulkExtras('${uid}')" title="Add extra attachments">+ Extras</button>
+      <button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px;padding:0 2px;flex-shrink:0" onclick="removeBulkRow('${uid}')" title="Remove row">✕</button>
+    </div>
+
+    <!-- Extras Panel -->
+    <div class="bulk-extras-panel" id="bulk-extras-panel-${uid}">
+      <!-- Extra Col 2 attachments -->
+      <div class="bulk-extras-section">
+        <div class="bulk-extras-section-label">
+          <span>Extra attachments under Col 2</span>
+          <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:10px" onclick="addBulkExtraItem('${uid}','no')">+ Add</button>
+        </div>
+        <div id="bulk-extras-no-${uid}"></div>
+      </div>
+      <!-- Extra Col 4 (Description) attachments -->
+      <div class="bulk-extras-section">
+        <div class="bulk-extras-section-label" style="border-top:1px dashed var(--border);padding-top:8px;margin-top:4px">
+          <span>Extra attachments under Col 4 (Description)</span>
+          <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:10px" onclick="addBulkExtraItem('${uid}','desc')">+ Add</button>
+        </div>
+        <div id="bulk-extras-desc-${uid}"></div>
+      </div>
+      <!-- Extra Col 5 attachments -->
+      <div class="bulk-extras-section">
+        <div class="bulk-extras-section-label" style="border-top:1px dashed var(--border);padding-top:8px;margin-top:4px">
+          <span>Extra attachments under Col 5</span>
+          <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:10px" onclick="addBulkExtraItem('${uid}','file')">+ Add</button>
+        </div>
+        <div id="bulk-extras-file-${uid}"></div>
+      </div>
+    </div>
+  `;
+  container.appendChild(wrap);
+}
+
+function toggleBulkExtras(uid) {
+  const panel = document.getElementById('bulk-extras-panel-' + uid);
+  const btn   = document.getElementById('bulk-extras-btn-' + uid);
+  const isOpen = panel.classList.toggle('open');
+  btn.textContent = isOpen ? '▲ Extras' : '+ Extras';
+}
+
+function addBulkExtraItem(uid, type) {
+  // type: 'no' | 'desc' | 'file'
+  const containerId = `bulk-extras-${type}-${uid}`;
+  const container = document.getElementById(containerId);
+  const iid = uid + '-' + type + '-' + Date.now();
   const row = document.createElement('div');
-  row.className = 'bulk-row';
-  row.dataset.uid = uid;
-  row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)';
+  row.className = 'bulk-extra-item-row';
+  row.dataset.iid = iid;
   row.innerHTML = `
-    <input type="text" class="form-input bulk-no" placeholder="e.g. 1/2025" style="flex:0 0 150px;height:34px;font-size:12px;padding:0 8px" data-field="no">
-    <label class="extra-file-label" title="Choose PDF for Col 2" style="flex:0 0 36px;height:34px;padding:0 8px;font-size:11px;white-space:nowrap;display:flex;align-items:center;justify-content:center" id="bulk-col2-lbl-${uid}">
-      📎
-      <input type="file" accept=".pdf" style="display:none" onchange="onBulkFileSelect(event,'${uid}','col2')">
+    <input type="text" class="form-input extra-input-desc" placeholder="Description (red label)" data-field="extdesc" style="flex:1;min-width:0;height:30px;font-size:11px;padding:0 8px;border-color:#e57373;color:#c0392b">
+    <input type="text" class="form-input extra-input-name" placeholder="PDF display name (blue link)" data-field="extname" style="flex:1;min-width:0;height:30px;font-size:11px;padding:0 8px;border-color:#90caf9;color:#1565c0">
+    <label class="extra-file-label" title="Choose PDF" style="height:30px;padding:0 8px;font-size:11px;white-space:nowrap;flex-shrink:0" id="bulk-extra-lbl-${iid}">
+      📎 PDF<input type="file" accept=".pdf" style="display:none" onchange="onBulkExtraFileSelect(event,'${iid}')">
     </label>
-    <input type="date" class="form-input bulk-date" value="${today}" style="flex:0 0 140px;height:34px;font-size:12px;padding:0 8px" data-field="date">
-    <input type="text" class="form-input bulk-desc" placeholder="Description" style="flex:1;height:34px;font-size:12px;padding:0 8px" data-field="desc">
-    <input type="text" class="form-input bulk-docname" placeholder="Display name" style="flex:0 0 140px;height:34px;font-size:12px;padding:0 8px" data-field="docname">
-    <label class="extra-file-label" title="Choose PDF for Col 5" style="flex:0 0 36px;height:34px;padding:0 8px;font-size:11px;white-space:nowrap;display:flex;align-items:center;justify-content:center" id="bulk-col5-lbl-${uid}">
-      📎
-      <input type="file" accept=".pdf" style="display:none" onchange="onBulkFileSelect(event,'${uid}','col5')">
-    </label>
-    <button class="bulk-remove" onclick="removeBulkRow('${uid}')" title="Remove row" style="flex:0 0 28px;background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px;padding:0">✕</button>
+    <button style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0" onclick="this.closest('.bulk-extra-item-row').remove()" title="Remove">✕</button>
   `;
   container.appendChild(row);
+  // Mark toggle as having extras
+  const btn = document.getElementById('bulk-extras-btn-' + uid);
+  if (btn) btn.classList.add('has-extras');
+}
+
+function onBulkExtraFileSelect(e, iid) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.pdf')) { toast('Only PDF files allowed.', 'error'); return; }
+  bulkFiles['extra_' + iid] = f;
+  const lbl = document.getElementById('bulk-extra-lbl-' + iid);
+  if (lbl) { lbl.classList.add('has-file'); lbl.childNodes[0].textContent = '✅ '; lbl.title = f.name; }
 }
 
 function removeBulkRow(uid) {
   const container = document.getElementById('bulk-rows-container');
-  const row = container.querySelector(`[data-uid="${uid}"]`);
-  if (row) row.remove();
-  delete bulkFiles[uid + '_col2'];
-  delete bulkFiles[uid + '_col5'];
-  // Remove header if no rows left
-  const remaining = container.querySelectorAll('.bulk-row');
-  if (remaining.length === 0) container.innerHTML = '';
+  const wrap = container.querySelector(`[data-uid="${uid}"]`);
+  if (wrap) wrap.remove();
+  // Clean up bulkFiles for this uid
+  Object.keys(bulkFiles).forEach(k => { if (k.startsWith(uid) || k.includes(uid)) delete bulkFiles[k]; });
+  // Renumber remaining rows
+  container.querySelectorAll('.bulk-row-wrap').forEach((w, i) => {
+    const numEl = w.querySelector('.bulk-row-main > span');
+    if (numEl) numEl.textContent = '#' + (i + 1);
+  });
 }
 
 function onBulkFileSelect(e, uid, col) {
@@ -2868,17 +3126,31 @@ function onBulkFileSelect(e, uid, col) {
   bulkFiles[uid + '_' + col] = f;
   const lblId = col === 'col2' ? `bulk-col2-lbl-${uid}` : `bulk-col5-lbl-${uid}`;
   const lbl = document.getElementById(lblId);
-  if (lbl) {
-    lbl.classList.add('has-file');
-    lbl.childNodes[0].textContent = '✅';
-    lbl.title = f.name;
-  }
+  if (lbl) { lbl.classList.add('has-file'); lbl.childNodes[0].textContent = '✅'; lbl.title = f.name; }
+}
+
+// Collect extras from a bulk row's extras section
+function collectBulkExtrasItems(uid, type) {
+  const containerId = `bulk-extras-${type}-${uid}`;
+  const container = document.getElementById(containerId);
+  if (!container) return [];
+  const items = [];
+  container.querySelectorAll('.bulk-extra-item-row').forEach(row => {
+    const iid   = row.dataset.iid;
+    const desc  = (row.querySelector('[data-field="extdesc"]')?.value || '').trim();
+    const name  = (row.querySelector('[data-field="extname"]')?.value || '').trim();
+    const file  = bulkFiles['extra_' + iid] || null;
+    if (desc || name || file) items.push({ desc, name, file, iid });
+  });
+  return items;
 }
 
 async function submitBulkUpload() {
+  if (activeBulkTab === 'excel') { await submitExcelImport(); return; }
+
   const container = document.getElementById('bulk-rows-container');
-  const rows = Array.from(container.querySelectorAll('.bulk-row'));
-  if (rows.length === 0) { toast('No rows to upload.', 'error'); return; }
+  const wraps = Array.from(container.querySelectorAll('.bulk-row-wrap'));
+  if (wraps.length === 0) { toast('No rows to upload.', 'error'); return; }
 
   const btn = document.getElementById('bulk-upload-btn');
   btn.disabled = true;
@@ -2890,18 +3162,19 @@ async function submitBulkUpload() {
 
   try {
     const newRecords = [];
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const uid = row.dataset.uid;
-      const no      = (row.querySelector('[data-field="no"]').value || '').trim();
-      const date    = row.querySelector('[data-field="date"]').value || '';
-      const desc    = (row.querySelector('[data-field="desc"]').value || '').trim();
-      const docname = (row.querySelector('[data-field="docname"]').value || '').trim();
+    for (let i = 0; i < wraps.length; i++) {
+      const wrap = wraps[i];
+      const uid = wrap.dataset.uid;
+      const main = wrap.querySelector('.bulk-row-main');
+      const no      = (main.querySelector('[data-field="no"]')?.value || '').trim();
+      const date    = main.querySelector('[data-field="date"]')?.value || '';
+      const desc    = (main.querySelector('[data-field="desc"]')?.value || '').trim();
+      const docname = (main.querySelector('[data-field="docname"]')?.value || '').trim();
 
-      if (!no && !desc) continue; // skip completely empty rows
+      if (!no && !desc) continue;
 
-      statusText.textContent = `Processing row ${i+1} of ${rows.length}…`;
-      progressBar.style.width = ((i / rows.length) * 80).toFixed(0) + '%';
+      statusText.textContent = `Processing row ${i+1} of ${wraps.length}…`;
+      progressBar.style.width = ((i / wraps.length) * 70).toFixed(0) + '%';
 
       // Upload col5 PDF
       let fileId = '', fileName = '';
@@ -2910,9 +3183,7 @@ async function submitBulkUpload() {
         if (config.folderId && config.clientId) {
           const r = await uploadToDrive(f5, () => {});
           fileId = r.id; fileName = r.name;
-        } else {
-          fileId = 'demo-' + Date.now(); fileName = f5.name;
-        }
+        } else { fileId = 'demo-' + Date.now(); fileName = f5.name; }
       }
       const displayName = docname || fileName;
 
@@ -2923,24 +3194,48 @@ async function submitBulkUpload() {
         if (config.folderId && config.clientId) {
           const r2 = await uploadToDrive(f2, () => {});
           fileId2 = r2.id; fileName2 = r2.name;
-        } else {
-          fileId2 = 'demo2-' + Date.now(); fileName2 = f2.name;
-        }
+        } else { fileId2 = 'demo2-' + Date.now(); fileName2 = f2.name; }
       }
 
+      // Collect and upload extras
+      async function uploadExtrasItems(items) {
+        const result = [];
+        for (const item of items) {
+          let fid = '';
+          let nm = item.name;
+          if (item.file) {
+            if (config.folderId && config.clientId) {
+              const ru = await uploadToDrive(item.file, () => {});
+              fid = ru.id;
+              if (!nm) nm = ru.name;
+            } else {
+              fid = 'demo-extra-' + Date.now();
+              if (!nm) nm = item.file.name;
+            }
+          }
+          result.push({ desc: item.desc, name: nm || item.name, fileId: fid });
+        }
+        return result;
+      }
+
+      const rawNo   = collectBulkExtrasItems(uid, 'no');
+      const rawDesc = collectBulkExtrasItems(uid, 'desc');
+      const rawFile = collectBulkExtrasItems(uid, 'file');
+      const extras_no   = await uploadExtrasItems(rawNo);
+      const extras_desc = await uploadExtrasItems(rawDesc);
+      const extras_file = await uploadExtrasItems(rawFile);
+
       newRecords.push({
-        id: Date.now() + i,
-        slNo: 0, no, date,
+        id: Date.now() + i, slNo: 0, no, date,
         description: desc,
         fileId, fileName: displayName,
         fileId2, fileName2,
-        extras_no: [], extras_desc: [], extras_file: []
+        extras_no, extras_desc, extras_file
       });
     }
 
     if (newRecords.length === 0) { toast('No valid rows found.', 'error'); return; }
 
-    // Append all new records
     allData.push(...newRecords);
     allData.forEach((r, i) => { r.slNo = i + 1; });
     filteredData = [...allData];
@@ -2968,6 +3263,240 @@ async function submitBulkUpload() {
   } finally {
     btn.disabled = false;
     btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Upload All to Drive`;
+  }
+}
+
+// ──────────────────────────────────────────────
+//  EXCEL / CSV IMPORT
+// ──────────────────────────────────────────────
+
+function downloadExcelTemplate() {
+  // Build a CSV template with the expected headers
+  const headers = [
+    'Form No (Col2)', 'Date (DD/MM/YYYY)', 'Description', 'PDF Display Name (Col5)',
+    'Extra Col2 Desc#1', 'Extra Col2 Name#1',
+    'Extra Col4 Desc#1', 'Extra Col4 Name#1',
+    'Extra Col5 Desc#1', 'Extra Col5 Name#1'
+  ];
+  const sample = [
+    '1/2025-Central Tax', '31/12/2025', 'Sample description', 'SampleFile.pdf',
+    '', '', '', '', '', ''
+  ];
+  const csv = [headers, sample].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'bulk_upload_template.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('Template downloaded', 'success');
+}
+
+async function onExcelImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const errorEl = document.getElementById('excel-import-error');
+  errorEl.style.display = 'none';
+  document.getElementById('excel-import-filename').textContent = file.name;
+  document.getElementById('excel-preview-wrap').style.display = 'none';
+  excelImportRows = [];
+
+  try {
+    let rows = [];
+
+    if (file.name.endsWith('.csv')) {
+      // Parse CSV
+      const text = await file.text();
+      rows = parseCSV(text);
+    } else {
+      // Parse XLSX using SheetJS
+      if (!window.XLSX) {
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+      }
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    }
+
+    if (rows.length < 2) {
+      errorEl.textContent = 'File appears to be empty or has no data rows.';
+      errorEl.style.display = 'block'; return;
+    }
+
+    const header = rows[0].map(h => String(h || '').trim());
+    const dataRows = rows.slice(1).filter(r => r.some(c => String(c||'').trim() !== ''));
+
+    if (dataRows.length === 0) {
+      errorEl.textContent = 'No data rows found after the header.';
+      errorEl.style.display = 'block'; return;
+    }
+
+    // Parse each data row
+    excelImportRows = dataRows.map(r => {
+      const get = (i) => String(r[i] || '').trim();
+      // Build extras arrays from columns E onwards (pairs: desc, name)
+      // Columns 4-5: Extra Col2 pair, 6-7: Extra Col4 pair, 8-9: Extra Col5 pair, etc.
+      const extras_no = [], extras_desc = [], extras_file = [];
+      // We expect groups starting at col index 4
+      // Group layout: [col2_desc, col2_name, col4_desc, col4_name, col5_desc, col5_name] per set
+      let col = 4;
+      while (col < (r.length || 0)) {
+        const ec2d = get(col);   const ec2n = get(col+1);
+        const ec4d = get(col+2); const ec4n = get(col+3);
+        const ec5d = get(col+4); const ec5n = get(col+5);
+        if (ec2d || ec2n) extras_no.push({ desc: ec2d, name: ec2n, fileId: '' });
+        if (ec4d || ec4n) extras_desc.push({ desc: ec4d, name: ec4n, fileId: '' });
+        if (ec5d || ec5n) extras_file.push({ desc: ec5d, name: ec5n, fileId: '' });
+        col += 6;
+        // Also support simple 2-col pairs (desc, name) repeating for each section
+        // if header tells us so — fall through after first group
+        break; // for now, one group per section
+      }
+      return {
+        no:          get(0),
+        date:        toInputDate(get(1)),
+        description: get(2),
+        docname:     get(3),
+        extras_no, extras_desc, extras_file
+      };
+    });
+
+    // Show preview table
+    const thead = document.getElementById('excel-preview-thead');
+    const tbody = document.getElementById('excel-preview-tbody');
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+
+    const previewCols = ['#', 'Form No (Col2)', 'Date', 'Description', 'PDF Name', 'Extras No', 'Extras Desc', 'Extras File'];
+    const thRow = document.createElement('tr');
+    previewCols.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      thRow.appendChild(th);
+    });
+    thead.appendChild(thRow);
+
+    excelImportRows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      const cells = [
+        i + 1,
+        r.no,
+        displayDate(r.date),
+        r.description.length > 60 ? r.description.slice(0, 60) + '…' : r.description,
+        r.docname,
+        r.extras_no.length   ? `${r.extras_no.length} item(s)`   : '—',
+        r.extras_desc.length ? `${r.extras_desc.length} item(s)` : '—',
+        r.extras_file.length ? `${r.extras_file.length} item(s)` : '—'
+      ];
+      cells.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = c;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('excel-preview-count').textContent = `${excelImportRows.length} row(s) ready to import`;
+    document.getElementById('excel-preview-wrap').style.display = 'block';
+
+    // Update button label
+    const btn = document.getElementById('bulk-upload-btn');
+    btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Import ${excelImportRows.length} Records`;
+
+  } catch(err) {
+    errorEl.textContent = 'Error reading file: ' + err.message;
+    errorEl.style.display = 'block';
+  }
+}
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const row = [];
+    let inQuote = false, cur = '';
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        row.push(cur); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    row.push(cur);
+    rows.push(row);
+  }
+  return rows;
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = () => rej(new Error('Failed to load: ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+async function submitExcelImport() {
+  if (excelImportRows.length === 0) { toast('No data to import. Please choose a file first.', 'error'); return; }
+
+  const btn = document.getElementById('bulk-upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Importing…';
+  const progressWrap = document.getElementById('excel-progress');
+  const progressBar  = document.getElementById('excel-progress-bar');
+  const statusText   = document.getElementById('excel-status-text');
+  progressWrap.classList.add('visible');
+
+  try {
+    const newRecords = excelImportRows.map((r, i) => ({
+      id:          Date.now() + i,
+      slNo:        0,
+      no:          r.no,
+      date:        r.date,
+      description: r.description,
+      fileId:      '',
+      fileName:    r.docname,
+      fileId2:     '',
+      fileName2:   '',
+      extras_no:   r.extras_no,
+      extras_desc: r.extras_desc,
+      extras_file: r.extras_file
+    }));
+
+    progressBar.style.width = '60%';
+    statusText.textContent = 'Saving to Google Sheet…';
+
+    allData.push(...newRecords);
+    allData.forEach((r, idx) => { r.slNo = idx + 1; });
+    filteredData = [...allData];
+
+    try {
+      await writeSheetFull(allData);
+      toast(`${newRecords.length} record(s) imported!`, 'success');
+    } catch(e) {
+      toast('Data prepared but sheet write failed: ' + e.message, 'error');
+    }
+
+    progressBar.style.width = '100%';
+    statusText.textContent = 'Done!';
+    populateYearFilter();
+    currentPage = 1;
+    renderTable();
+    updateStatus(true, `Synced · ${allData.length} records`);
+    setTimeout(() => closeBulkUploadModal(), 800);
+
+  } catch(e) {
+    toast('Import failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg> Import Records`;
   }
 }
 
