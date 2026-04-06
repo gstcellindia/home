@@ -1631,12 +1631,11 @@
   <!-- Table -->
   <div class="table-wrap">
     <table id="data-table">
-      <colgroup>
+      <colgroup id="table-colgroup">
         <col style="width:18%">
         <col style="width:90px">
         <col>
         <col style="width:20%">
-        <col style="width:0;padding:0;border:0">
       </colgroup>
       <thead>
         <tr id="table-header-row">
@@ -2669,6 +2668,14 @@ function unlockAdminButtons() {
   document.getElementById('data-table').classList.add('admin-mode');
   const thActions = document.getElementById('th-actions');
   if (thActions) thActions.style.display = '';
+  // Add actions col to colgroup
+  const cg = document.getElementById('table-colgroup');
+  if (cg && !document.getElementById('col-actions')) {
+    const c = document.createElement('col');
+    c.id = 'col-actions';
+    c.style.width = '80px';
+    cg.appendChild(c);
+  }
   // Show the extra toolbar links (Central Tax / State Tax buttons) after unlock
   const toolbar = document.getElementById('toolbar-extra-links');
   if (toolbar && toolbar.children.length > 0) {
@@ -2688,6 +2695,9 @@ function lockAdminButtons() {
   document.getElementById('data-table').classList.remove('admin-mode');
   const thActions = document.getElementById('th-actions');
   if (thActions) thActions.style.display = 'none';
+  // Remove actions col from colgroup
+  const colActions = document.getElementById('col-actions');
+  if (colActions) colActions.remove();
   // Hide the extra toolbar links again
   const toolbar = document.getElementById('toolbar-extra-links');
   if (toolbar) toolbar.style.display = 'none';
