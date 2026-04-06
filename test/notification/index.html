@@ -949,8 +949,8 @@
   .td-date { color: var(--text-muted); white-space: nowrap; overflow: hidden; min-width: 90px; width: 90px; }
   .td-desc { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
   .td-file { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
-  .td-actions { width: 80px; min-width: 60px; text-align: right; visibility: collapse; }
-  .admin-mode .td-actions { visibility: visible; display: table-cell; }
+  .td-actions { display: none !important; width: 0 !important; max-width: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important; }
+  .admin-mode .td-actions { display: table-cell !important; width: 80px !important; max-width: none !important; padding: 8px 5px !important; border: revert !important; overflow: visible !important; }
 
   /* Extras list (sub-attachments under col 2 and col 5) */
   .extras-list { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; }
@@ -1411,7 +1411,6 @@
     .td-file { min-width: 0; text-align: left; }
     .td-date { white-space: normal; }
     #record-count { display: none !important; }
-    .td-actions { visibility: collapse !important; }
     :root { --nav-fs: 10pt; --page-fs: 10pt; }
   }
 
@@ -1435,7 +1434,6 @@
     .site-banner { height: 160px; }
     .banner-page-title { font-size: clamp(20px, 6vw, 36px) !important; }
     #record-count { display: none !important; }
-    .td-actions { visibility: collapse !important; }
     :root { --nav-fs: 9pt; --page-fs: 9pt; }
   }
 
@@ -1634,10 +1632,10 @@
   <div class="table-wrap">
     <table id="data-table">
       <colgroup id="table-colgroup">
-        <col id="col1" style="width:22%">
-        <col id="col2" style="width:18%">
-        <col id="col3" style="width:32%">
-        <col id="col4" style="width:28%">
+        <col id="col1" style="width:18%">
+        <col id="col2" style="width:100px">
+        <col id="col3" style="width:auto">
+        <col id="col4" style="width:22%">
       </colgroup>
       <thead>
         <tr id="table-header-row">
@@ -1645,7 +1643,7 @@
           <th class="td-date" onclick="sortBy('date')">Date <span class="sort-icon">↕</span></th>
           <th class="td-desc" onclick="sortBy('description')">Description <span class="sort-icon">↕</span></th>
           <th class="td-file" id="th-file1">File Name</th>
-          <th class="td-actions" style="display:none" id="th-actions"></th>
+          <th class="td-actions" id="th-actions"></th>
         </tr>
       </thead>
       <tbody id="table-body">
