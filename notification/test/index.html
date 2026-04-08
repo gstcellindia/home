@@ -1033,19 +1033,19 @@
     border-right: 1px solid #d0e8f5;
   }
 
-  .td-no { font-weight: 500; color: var(--text); white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
+  .td-no { font-weight: 500; color: var(--text); white-space: normal; word-break: break-word; overflow-wrap: anywhere; max-width: 0; }
   .td-date { color: var(--text-muted); white-space: nowrap; overflow: hidden; min-width: 90px; width: 90px; }
-  .td-desc { word-break: break-word; white-space: normal; overflow: visible; text-align: justify; }
-  .td-file { word-break: break-word; white-space: normal; overflow: visible; text-align: justify; }
+  .td-desc { word-break: break-word; white-space: normal; text-align: justify; max-width: 0; }
+  .td-file { word-break: break-word; white-space: normal; text-align: justify; max-width: 0; }
   .td-actions { display: none !important; width: 0 !important; max-width: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important; }
   .admin-mode .td-actions { display: table-cell !important; width: 80px !important; max-width: none !important; padding: 8px 5px !important; border: revert !important; overflow: visible !important; }
 
   /* Extras list (sub-attachments under col 2 and col 5) */
-  .extras-list { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; }
-  .extra-item { display: flex; align-items: flex-start; gap: 5px; font-size: var(--table-fs); font-style: italic; flex-wrap: wrap; white-space: normal; }
-  .extra-desc { color: red; font-weight: 500; flex-shrink: 0; }
+  .extras-list { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; width: 100%; }
+  .extra-item { display: flex; align-items: flex-start; gap: 5px; font-size: var(--table-fs); font-style: italic; flex-wrap: wrap; white-space: normal; width: 100%; min-width: 0; }
+  .extra-desc { color: red; font-weight: 500; word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
   .extra-arrow { color: var(--text-muted); flex-shrink: 0; }
-  .extra-link { color: blue; text-decoration: none; font-weight: 500; transition: opacity 0.15s; word-break: break-word; }
+  .extra-link { color: blue; text-decoration: none; font-weight: 500; transition: opacity 0.15s; word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
   .extra-link:hover { opacity: 0.7; text-decoration: underline; }
 
   /* Col 2 own PDF link */
