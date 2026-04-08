@@ -330,11 +330,14 @@
   background: #fff176;
   color: #111;
   display: inline;
-  padding: 0;
+  padding: 0 1px;
   margin: 0;
   border-radius: 2px;
+  font-size: 1em;
   font-style: inherit;
   font-weight: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
 }
 
 /* Simple dropdown (for items with no headings) */
@@ -3309,9 +3312,11 @@ function renderTable() {
         if (!searchQuery) return esc(text);
         const idx = text.toLowerCase().indexOf(searchQuery);
         if (idx === -1) return esc(text);
-        return esc(text.slice(0, idx))
-          + '<mark class="tbl-hl">' + esc(text.slice(idx, idx + searchQuery.length)) + '</mark>'
-          + esc(text.slice(idx + searchQuery.length));
+        const before = esc(text.slice(0, idx));
+        const match  = '<mark class="tbl-hl">' + esc(text.slice(idx, idx + searchQuery.length)) + '</mark>';
+        const after  = esc(text.slice(idx + searchQuery.length));
+        // Wrap in a span to prevent the browser treating mark boundaries as word-break points
+        return '<span style="display:inline;white-space:normal">' + before + match + after + '</span>';
       };
 
       // Format description: *text* → bold, _text_ → italic
@@ -3369,7 +3374,7 @@ function renderTable() {
 
       // Col 2: text linked to col2 PDF if available, + extras_no
       const col2TextDisplay = row.fileId2
-        ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue;word-break:break-word;overflow-wrap:anywhere" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hl(row.no)}</a>`
+        ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue;display:inline-block;word-break:break-word;overflow-wrap:anywhere" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hl(row.no)}</a>`
         : `<div style="font-weight:500;word-break:break-word;overflow-wrap:anywhere">${hl(row.no)}</div>`;
       const col2Html = `${col2TextDisplay}${buildExtras(row.extras_no)}`;
 
