@@ -1490,9 +1490,9 @@
     .year-select { font-size: 10pt; }
     /* Table column widths optimised for mobile */
     table { min-width: 0; width: 100%; table-layout: fixed; }
-    #col1 { width: 22% !important; }
+    #col1 { width: 20% !important; }
     #col2 { width: 16% !important; }
-    #col3 { width: 37% !important; }
+    #col3 { width: 39% !important; }
     #col4 { width: 25% !important; }
     th, td { font-size: 9pt; padding: 6px 4px; }
     .td-desc { min-width: 0; text-align: left; }
@@ -1506,10 +1506,10 @@
     main { padding: 12px 8px; }
     .toolbar-right { justify-content: flex-start; }
     table { min-width: 0; width: 100%; table-layout: fixed; }
-    #col1 { width: 22% !important; }
+    #col1 { width: 20% !important; }
     #col2 { width: 16% !important; }
-    #col3 { width: 37% !important; }
-    #col4 { width: 25% !important; }
+    #col3 { width: 39% !important; }
+    #col4 { width: 24% !important; }
     th, td { padding: 5px 3px; font-size: 8.5pt; }
     #search-input { font-size: 9pt; }
     .year-select { font-size: 9pt; }
@@ -1909,7 +1909,7 @@
   <div class="table-wrap">
     <table id="data-table">
       <colgroup id="table-colgroup">
-        <col id="col1" style="width:18%">
+        <col id="col1" style="width:15%">
         <col id="col2" style="width:100px">
         <col id="col3" style="width:auto">
         <col id="col4" style="width:22%">
@@ -3373,9 +3373,12 @@ function renderTable() {
       };
 
       // Col 2: text linked to col2 PDF if available, + extras_no
+      // Insert <wbr> after hyphens so "20/2025-Central Tax" wraps as "20/2025-↵Central Tax"
+      const hlNo = (val) => hl(val).replace(/-/g, '-<wbr>');
+
       const col2TextDisplay = row.fileId2
-        ? `<a class="col2-pdf-link" style="font-weight:500" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hl(row.no)}</a>`
-        : `<div style="font-weight:500;word-break:break-word;overflow-wrap:anywhere">${hl(row.no)}</div>`;
+        ? `<a class="col2-pdf-link" style="font-weight:500" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hlNo(row.no)}</a>`
+        : `<div style="font-weight:500;word-break:break-word;overflow-wrap:anywhere">${hlNo(row.no)}</div>`;
       const col2Html = `${col2TextDisplay}${buildExtras(row.extras_no)}`;
 
       // Col 4 (description) with extras_desc
@@ -3384,8 +3387,8 @@ function renderTable() {
       // Col 5: show text always — blue+linked if fileId exists, black if text only, dash if empty
       const col5Main = row.fileName
         ? (row.fileId
-            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${esc(row.fileName)}</a>`
-            : `<span style="color:#111;font-weight:500">${esc(row.fileName)}</span>`)
+            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${hl(row.fileName)}</a>`
+            : `<span style="color:#111;font-weight:500">${hl(row.fileName)}</span>`)
         : '<span style="color:var(--text-muted);font-size:11px">—</span>';
       const col5Html = col5Main + buildExtras(row.extras_file);
 
