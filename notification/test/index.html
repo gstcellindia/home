@@ -1049,7 +1049,7 @@
   .extra-link:hover { opacity: 0.7; text-decoration: underline; }
 
   /* Col 2 own PDF link */
-  .col2-pdf-link { display: inline-flex; align-items: center; gap: 4px; color: blue; text-decoration: none; font-size: 11px; margin-top: 3px; word-break: break-word; white-space: normal; }
+  .col2-pdf-link { display: inline; color: blue; text-decoration: none; font-weight: 500; word-break: break-word; overflow-wrap: anywhere; white-space: normal; }
   .col2-pdf-link:hover { opacity: 0.7; }
 
   .pdf-link {
@@ -1490,10 +1490,10 @@
     .year-select { font-size: 10pt; }
     /* Table column widths optimised for mobile */
     table { min-width: 0; width: 100%; table-layout: fixed; }
-    #col1 { width: 28% !important; }
-    #col2 { width: 18% !important; }
-    #col3 { width: 30% !important; }
-    #col4 { width: 24% !important; }
+    #col1 { width: 22% !important; }
+    #col2 { width: 16% !important; }
+    #col3 { width: 37% !important; }
+    #col4 { width: 25% !important; }
     th, td { font-size: 9pt; padding: 6px 4px; }
     .td-desc { min-width: 0; text-align: left; }
     .td-file { min-width: 0; text-align: left; }
@@ -1506,10 +1506,10 @@
     main { padding: 12px 8px; }
     .toolbar-right { justify-content: flex-start; }
     table { min-width: 0; width: 100%; table-layout: fixed; }
-    #col1 { width: 28% !important; }
-    #col2 { width: 18% !important; }
-    #col3 { width: 30% !important; }
-    #col4 { width: 24% !important; }
+    #col1 { width: 22% !important; }
+    #col2 { width: 16% !important; }
+    #col3 { width: 37% !important; }
+    #col4 { width: 25% !important; }
     th, td { padding: 5px 3px; font-size: 8.5pt; }
     #search-input { font-size: 9pt; }
     .year-select { font-size: 9pt; }
@@ -3374,7 +3374,7 @@ function renderTable() {
 
       // Col 2: text linked to col2 PDF if available, + extras_no
       const col2TextDisplay = row.fileId2
-        ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue;display:inline-block;word-break:break-word;overflow-wrap:anywhere" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hl(row.no)}</a>`
+        ? `<a class="col2-pdf-link" style="font-weight:500" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hl(row.no)}</a>`
         : `<div style="font-weight:500;word-break:break-word;overflow-wrap:anywhere">${hl(row.no)}</div>`;
       const col2Html = `${col2TextDisplay}${buildExtras(row.extras_no)}`;
 
