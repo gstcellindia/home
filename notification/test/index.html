@@ -3384,8 +3384,8 @@ function renderTable() {
       // Col 5: show text always — blue+linked if fileId exists, black if text only, dash if empty
       const col5Main = row.fileName
         ? (row.fileId
-            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${esc(row.fileName)}</a>`
-            : `<span style="color:#111;font-weight:500">${esc(row.fileName)}</span>`)
+            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${hl(row.fileName)}</a>`
+            : `<span style="color:#111;font-weight:500">${hl(row.fileName)}</span>`)
         : '<span style="color:var(--text-muted);font-size:11px">—</span>';
       const col5Html = col5Main + buildExtras(row.extras_file);
 
