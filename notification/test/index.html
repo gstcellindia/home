@@ -1033,10 +1033,10 @@
     border-right: 1px solid #d0e8f5;
   }
 
-  .td-no { font-weight: 500; color: var(--text); white-space: normal; word-break: break-word; overflow-wrap: anywhere; overflow: hidden; }
+  .td-no { font-weight: 500; color: var(--text); white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
   .td-date { color: var(--text-muted); white-space: nowrap; overflow: hidden; min-width: 90px; width: 90px; }
-  .td-desc { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
-  .td-file { word-break: break-word; white-space: normal; overflow: hidden; text-align: justify; }
+  .td-desc { word-break: break-word; white-space: normal; overflow: visible; text-align: justify; }
+  .td-file { word-break: break-word; white-space: normal; overflow: visible; text-align: justify; }
   .td-actions { display: none !important; width: 0 !important; max-width: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important; }
   .admin-mode .td-actions { display: table-cell !important; width: 80px !important; max-width: none !important; padding: 8px 5px !important; border: revert !important; overflow: visible !important; }
 
@@ -3384,8 +3384,8 @@ function renderTable() {
       // Col 5: show text always — blue+linked if fileId exists, black if text only, dash if empty
       const col5Main = row.fileName
         ? (row.fileId
-            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${hl(row.fileName)}</a>`
-            : `<span style="color:#111;font-weight:500">${hl(row.fileName)}</span>`)
+            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${esc(row.fileName)}</a>`
+            : `<span style="color:#111;font-weight:500">${esc(row.fileName)}</span>`)
         : '<span style="color:var(--text-muted);font-size:11px">—</span>';
       const col5Html = col5Main + buildExtras(row.extras_file);
 
