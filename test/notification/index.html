@@ -2921,7 +2921,7 @@ function applyFilters() {
     return matchYear && matchQ;
   });
   currentPage = 1;
-  renderTable();
+  requestAnimationFrame(renderTable);
 
   // Cross-sheet fallback: if no results and query is long enough, search other sheets
   if (q && q.length >= 2 && filteredData.length === 0) {
@@ -2993,6 +2993,8 @@ function lockAdminButtons() {
   toast('Returned to normal view', 'info');
 }
 
+let _searchDebounceTimer = null;
+
 function onSearch() {
   const inp = document.getElementById('search-input');
   const raw = inp.value;
@@ -3013,9 +3015,22 @@ function onSearch() {
     return;
   }
 
-  searchQuery = raw.toLowerCase().trim();
-  if (!searchQuery) closeCrossSheetDropdown();
-  applyFilters();
+  const q = raw.toLowerCase().trim();
+  if (!q) {
+    // Instant clear — no debounce needed
+    clearTimeout(_searchDebounceTimer);
+    searchQuery = '';
+    closeCrossSheetDropdown();
+    applyFilters();
+    return;
+  }
+
+  // Debounce: wait 150ms after last keystroke before filtering
+  clearTimeout(_searchDebounceTimer);
+  _searchDebounceTimer = setTimeout(() => {
+    searchQuery = q;
+    applyFilters();
+  }, 150);
 }
 
 // Handle Enter key for password submission
@@ -3261,6 +3276,8 @@ function renderTable() {
 
   tbody.innerHTML = '';
 
+  const fragment = document.createDocumentFragment();
+
   pageData.forEach((row, i) => {
     const globalIdx = start + i;
     // Forward serial number: row at position globalIdx in reversedData
@@ -3367,14 +3384,11 @@ function renderTable() {
         </td>`;
     }
 
-    tbody.appendChild(tr);
+    fragment.appendChild(tr);
   });
 
-  // Re-apply font size if set
-  if (window._currentPageFontSize) {
-    const px = window._currentPageFontSize;
-    document.querySelectorAll('td, th').forEach(el => { el.style.fontSize = px + 'px'; });
-  }
+  tbody.appendChild(fragment);
+
 
   // Pagination
   const pag = document.getElementById('pagination');
