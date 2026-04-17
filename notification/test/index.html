@@ -584,6 +584,9 @@
 .nav-mobile-search:focus { border-color: #4caf50; }
 
 /* ── BANNER FONT CONTROL (overlay top-right) ── */
+@media (max-width: 900px) {
+  .banner-font-ctrl { display: none !important; }
+}
 .banner-font-ctrl {
   position: absolute;
   top: 10px;
@@ -1043,14 +1046,14 @@
   /* Extras list (sub-attachments under col 2 and col 5) */
   .extras-list { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; width: 100%; }
   .extra-item { display: flex; align-items: flex-start; gap: 5px; font-size: var(--table-fs); font-style: italic; flex-wrap: wrap; white-space: normal; width: 100%; min-width: 0; }
-  .extra-desc { color: red; font-weight: 500; word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
+  .extra-desc { color: red; font-weight: 500; word-break: break-word; overflow-wrap: anywhere; min-width: 0; font-size: var(--table-fs); }
   .extra-arrow { color: var(--text-muted); flex-shrink: 0; }
-  .extra-link { color: blue; text-decoration: none; font-weight: 500; transition: opacity 0.15s; word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
-  .extra-link:hover { opacity: 0.7; text-decoration: underline; }
+  .extra-link { color: blue; text-decoration: none; font-weight: 500; transition: opacity 0.15s; word-break: break-word; overflow-wrap: anywhere; min-width: 0; font-size: var(--table-fs); }
+  .extra-link:hover { opacity: 0.7; text-decoration: none; }
 
   /* Col 2 own PDF link */
-  .col2-pdf-link { display: inline; color: blue; text-decoration: none; font-weight: 500; word-break: break-word; overflow-wrap: anywhere; white-space: normal; }
-  .col2-pdf-link:hover { opacity: 0.7; }
+  .col2-pdf-link { display: inline; color: blue; text-decoration: none; font-weight: 500; word-break: break-word; overflow-wrap: anywhere; white-space: normal; transition: opacity 0.15s; }
+  .col2-pdf-link:hover { opacity: 0.7; text-decoration: none; }
 
   .pdf-link {
     display: inline-flex;
@@ -1058,13 +1061,13 @@
     gap: 5px;
     color: blue;
     text-decoration: none;
-    font-size: 11px;
+    font-size: var(--table-fs);
     transition: opacity 0.15s;
     word-break: break-word;
     white-space: normal;
   }
 
-  .pdf-link:hover { opacity: 0.7; }
+  .pdf-link:hover { opacity: 0.7; text-decoration: none; }
 
   /* ── EDIT TABLE INPUTS ── */
   .edit-input {
@@ -3366,9 +3369,14 @@ function renderTable() {
       const buildExtras = (arr) => {
         if (!arr || !arr.length) return '';
         return '<div class="extras-list">' + arr.map(e => {
-          const href = e.fileId ? `https://drive.google.com/uc?export=download&id=${esc(e.fileId)}` : '#';
-          const dl   = e.fileId ? `download="${esc(e.name||'file.pdf')}"` : '';
-          return `<div class="extra-item"><span class="extra-desc">${esc(e.desc||'')}</span><span class="extra-arrow">👉</span><a class="extra-link" href="${href}" ${dl} target="_blank">${esc(e.name||'')}</a></div>`;
+          const href = e.fileId
+            ? (e.fileId.startsWith('https://')
+                ? e.fileId
+                : `https://drive.google.com/uc?export=download&id=${esc(e.fileId)}`)
+            : '#';
+          const dl   = (e.fileId && !e.fileId.startsWith('https://')) ? `download="${esc(e.name||'file.pdf')}"` : '';
+          const target = e.fileId ? 'target="_blank" rel="noopener"' : '';
+          return `<div class="extra-item"><span class="extra-desc">${esc(e.desc||'')}</span><span class="extra-arrow">👉</span><a class="extra-link" href="${href}" ${dl} ${target}>${esc(e.name||'')}</a></div>`;
         }).join('') + '</div>';
       };
 
@@ -3377,7 +3385,9 @@ function renderTable() {
       const hlNo = (val) => hl(val).replace(/-/g, '-<wbr>');
 
       const col2TextDisplay = row.fileId2
-        ? `<a class="col2-pdf-link" style="font-weight:500" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hlNo(row.no)}</a>`
+        ? (row.fileId2.startsWith('https://')
+            ? `<a class="col2-pdf-link" style="font-weight:500" href="${esc(row.fileId2)}" target="_blank" rel="noopener" title="${esc(row.fileName2||'')}">${hlNo(row.no)}</a>`
+            : `<a class="col2-pdf-link" style="font-weight:500" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId2)}" download="${esc(row.fileName2||'file.pdf')}" title="Download: ${esc(row.fileName2||'')}">${hlNo(row.no)}</a>`)
         : `<div style="font-weight:500;word-break:break-word;overflow-wrap:anywhere">${hlNo(row.no)}</div>`;
       const col2Html = `${col2TextDisplay}${buildExtras(row.extras_no)}`;
 
@@ -3385,9 +3395,12 @@ function renderTable() {
       const col4Html = `${formatDesc(row.description)}${buildExtras(row.extras_desc)}`;
 
       // Col 5: show text always — blue+linked if fileId exists, black if text only, dash if empty
+      // If fileId starts with https://, use it directly; otherwise build a Google Drive URL
       const col5Main = row.fileName
         ? (row.fileId
-            ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${hl(row.fileName)}</a>`
+            ? (row.fileId.startsWith('https://')
+                ? `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="${esc(row.fileId)}" target="_blank" rel="noopener" title="${esc(row.fileName||'')}">${hl(row.fileName)}</a>`
+                : `<a class="col2-pdf-link" style="font-weight:500;font-size:inherit;color:blue" href="https://drive.google.com/uc?export=download&id=${esc(row.fileId)}" download="${esc(row.fileName||'file.pdf')}" title="Download: ${esc(row.fileName||'')}">${hl(row.fileName)}</a>`)
             : `<span style="color:#111;font-weight:500">${hl(row.fileName)}</span>`)
         : '<span style="color:var(--text-muted);font-size:11px">—</span>';
       const col5Html = col5Main + buildExtras(row.extras_file);
@@ -4370,7 +4383,12 @@ function onSheetSelect() {
   const chosen = sel.value;
   if (!chosen) return;
   activeSheetId = chosen;
-  loadFromSheet();
+  loadFromSheet().then(() => {
+    // Re-apply any active search query after the new sheet loads
+    if (searchQuery) {
+      applyFilters();
+    }
+  });
 }
 
 // ──────────────────────────────────────────────
