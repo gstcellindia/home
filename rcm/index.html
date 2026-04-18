@@ -97,9 +97,45 @@ th {
             font-size: 13pt;
             transition:500ms;
             margin-left: 2%; 
-            
-
 }
+
+/* ===== CROSS-SHEET SEARCH ===== */
+#csWrapper {
+    position: relative;
+    display: inline-block;
+    margin: 10px 5px 10px 2%;
+}
+#csDropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 999;
+    background: #fff;
+    border: 2px solid deepskyblue;
+    border-radius: 8px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.25);
+    min-width: 340px;
+    max-width: 540px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+#csDropdown .cs-header {
+    background: linear-gradient(to right, #9be8ff, #e1f5ff);
+    padding: 6px 12px; font-size: 10pt; font-weight: bold; color: #005f7a;
+    border-bottom: 1px solid #a1e4ff; border-radius: 6px 6px 0 0;
+    position: sticky; top: 0;
+}
+#csDropdown .cs-item {
+    padding: 8px 12px; font-size: 11pt; cursor: pointer;
+    border-bottom: 1px solid #e8f7ff; line-height: 1.4;
+}
+#csDropdown .cs-item:hover { background-color: #d0f4ff; }
+#csDropdown .cs-sheet-name { font-size: 9pt; color: #0077B5; font-weight: bold; display: block; margin-bottom: 2px; }
+#csDropdown .cs-match-text { color: #333; }
+#csDropdown .cs-searching { padding: 12px; font-style: italic; color: #888; text-align: center; font-size: 11pt; }
+#csDropdown .cs-no-result { padding: 12px; color: #c0392b; text-align: center; font-size: 11pt; }
+#csDropdown .cs-msg { padding: 10px 12px; color: #005f7a; font-size: 11pt; font-style: italic; text-align: center; background: #e8f7ff; border-radius: 0 0 6px 6px; }
 .amendment-button{
     background: linear-gradient(to right, #9be8ff, #e1ffea);
     box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
@@ -1562,7 +1598,10 @@ text-shadow: 1px 1px 1px #000000;
             <option value="1ux4xuu7lcmIszP_O2GLUVyExjZA3bbU_Aj1MUIDtP5M" selected>RCM-Goods</option>
             <option value="1ALWtM7nHt1Myn2wnQoEHKs4qfTdmWw0adAcA1J2HIo0">RCM-Services</option>
         </select>
-        <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter">
+        <div id="csWrapper">
+            <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter" style="margin:0;">
+            <div id="csDropdown"></div>
+        </div>
         <select id="filterE"  class="selectFilter" style="display:none">
             <option value="">Select Notification</option>
         </select>
@@ -1571,12 +1610,6 @@ text-shadow: 1px 1px 1px #000000;
         </select>
         
 
-    </div>
-    
-    <!-- Pagination Top -->
-    <div class="pagination">
-      
-        <div id="paginationTop"></div>
     </div>
 
     <!-- Data Table -->
@@ -1766,11 +1799,10 @@ const filterE = document.getElementById('filterE');
 const filterJ = document.getElementById('filterJ');
 const searchFilter = document.getElementById('searchFilter');
 const tableBody = document.querySelector('#dataTable tbody');
-const paginationTop = document.getElementById('paginationTop');
 const paginationBottom = document.getElementById('paginationBottom');
 
 let currentPage = 1;
-let rowsPerPage = 50; // Default records per page
+let rowsPerPage = 30; // Default records per page
 const maxVisiblePages = 3; // Maximum visible pages in pagination
 let tableData = [];
 let originalData = []; // Copy of the full dataset
@@ -1778,12 +1810,12 @@ let originalData = []; // Copy of the full dataset
 // Fetch data from Google Sheets
 // Add a loading message to the web page
 function showLoadingMessage() {
+    if (document.getElementById('loadingMessage')) return; // already showing
     const loadingMessage = document.createElement('div');
     loadingMessage.id = 'loadingMessage';
-    loadingMessage.classList.add('Loadingstyle'); // Apply the CSS class
+    loadingMessage.classList.add('Loadingstyle');
     loadingMessage.textContent = 'Loading data... Please wait.';
     document.body.appendChild(loadingMessage);
-    // Hide the table
     document.getElementById('dataTable').style.display = 'none';
 }
 
@@ -1825,35 +1857,13 @@ function populateFilters() {
             filterJ.appendChild(option);
         }
     });
-
-    filterE.addEventListener('change', () => {
-        const selectedValue = filterE.value;
-
-        let updatedColumnJValues;
-        if (selectedValue === '') {
-            // If "Select Notification" is chosen, allow all unique values from row[145]
-            updatedColumnJValues = [...new Set(originalData.map(row => row[145] || ''))];
-        } else {
-            // Filter unique values from row[145] based on the selected value of filterE
-            updatedColumnJValues = [...new Set(
-                originalData
-                    .filter(row => row[5] === selectedValue) // Filter rows based on filterE's selected value
-                    .map(row => row[145] || '')
-            )];
-        }
-
-        // Update filterJ dropdown
-        filterJ.innerHTML = '<option value="">Select Schedule</option>';
-        updatedColumnJValues.forEach(value => {
-            if (value) {
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = value;
-                filterJ.appendChild(option);
-            }
-        });
-    });
 }
+
+
+
+
+
+
 
 
 
@@ -1862,7 +1872,7 @@ function populateFilters() {
 // Update the table based on pagination and filters
 let useFunction1 = true; // A flag to toggle between functions
 
-function changeFunctionOption(event) {
+function changeFunctionOption(event, skipRender = false) {
     const selectedOption = event.target.value; // Get the selected value
     
     // Update the useFunction1 flag for table rendering logic
@@ -1880,26 +1890,23 @@ function changeFunctionOption(event) {
         goodsHeader.classList.remove('hidden');
         servicesHeader.classList.add('hidden');
         filterJ.classList.remove('hidden');
-        button1.classList.remove('hidden');
-        button2.classList.add('hidden');
-        button3.classList.remove('hidden');
-        button4.classList.add('hidden');
+        if (button1) button1.classList.remove('hidden');
+        if (button2) button2.classList.add('hidden');
+        if (button3) button3.classList.remove('hidden');
+        if (button4) button4.classList.add('hidden');
     } else if (selectedOption === "1ALWtM7nHt1Myn2wnQoEHKs4qfTdmWw0adAcA1J2HIo0") {
         servicesHeader.classList.remove('hidden');
         goodsHeader.classList.add('hidden');
         filterJ.classList.add('hidden');
-        button1.classList.add('hidden');
-        button2.classList.remove('hidden');
-        button3.classList.add('hidden');
-        button4.classList.remove('hidden');
+        if (button1) button1.classList.add('hidden');
+        if (button2) button2.classList.remove('hidden');
+        if (button3) button3.classList.add('hidden');
+        if (button4) button4.classList.remove('hidden');
     }
 
-    
- 
-
-    // Log the change and re-render the table
+    // Log the change and re-render the table (skip during programmatic sheet switch)
     console.log(`Switched to ${selectedOption}`);
-    updateTable(); // Re-render the table based on the selected function
+    if (!skipRender) updateTable();
 }
 
 
@@ -3335,40 +3342,41 @@ const searchQuery = searchFilter.value.trim().toLowerCase();
 const filterEValue = filterE.value;
 const filterJValue = filterJ.value;
 
-
     tableData = originalData.filter(row => {
         const matchesSearch = !searchQuery || row.some((cell, index) => {
-            // Exclude columns K (index 10) and L (index 11)
            const excludedIndexes = [5, 6, 10, 12, 18, 21, 23, 29, 32, 34, 40, 43, 45, 51, 54, 56, 62, 65, 67, 73, 76, 78, 84, 87, 89, 95, 98, 100, 106, 109, 111, 117, 120, 122, 128, 131, 133];
-
-if (excludedIndexes.includes(index)) {
-    return false;
-
-            }
+if (excludedIndexes.includes(index)) { return false; }
             return cell && cell.toLowerCase().includes(searchQuery);
         });
-
     const matchesFilterE = !filterEValue || row[5] === filterEValue;
     const matchesFilterJ = !filterJValue || row[145] === filterJValue;
     return matchesSearch && matchesFilterE && matchesFilterJ;
 });
 
-currentPage = 1; // Reset to the first page
+currentPage = 1;
 updateTable();
+handleCrossSheetSearch(searchQuery);
 }
 
 // Update pagination buttons
-
 function updatePagination(data) {
     const totalPages = Math.ceil(data.length / rowsPerPage);
+    const paginationWrap = paginationBottom.parentElement;
+
+    // Hide entire pagination bar when 30 or fewer rows
+    if (data.length <= 30) {
+        paginationWrap.style.display = 'none';
+        return;
+    }
+    paginationWrap.style.display = 'flex';
 
     const createPagination = (paginationDiv) => {
         let paginationHTML = `<label class="labelclass">Show</label>
                               <select id="recordsPerPage" onchange="updateRowsPerPage()">
-                                  <option value="50" ${rowsPerPage === 50 ? "selected" : ""}>50</option>
+                                  <option value="30" ${rowsPerPage === 30 ? "selected" : ""}>30</option>
+                                  <option value="60" ${rowsPerPage === 60 ? "selected" : ""}>60</option>
                                   <option value="100" ${rowsPerPage === 100 ? "selected" : ""}>100</option>
-                                  <option value="200" ${rowsPerPage === 200 ? "selected" : ""}>200</option>
-                                  <option value="300" ${rowsPerPage === 300 ? "selected" : ""}>300</option>
+                                  <option value="150" ${rowsPerPage === 150 ? "selected" : ""}>150</option>
                               </select>
                               <span class="labelclass">records</span>`;
         paginationHTML += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="navigateToPage(1)">First</button>`;
@@ -3386,7 +3394,6 @@ function updatePagination(data) {
 
         paginationDiv.innerHTML = paginationHTML;
 
-        // Responsive behavior for hiding elements
         const updateVisibility = () => {
             const labelElements = document.querySelectorAll('.labelclass');
             if (window.innerWidth < 800) {
@@ -3395,14 +3402,10 @@ function updatePagination(data) {
                 labelElements.forEach(el => el.style.display = 'inline');
             }
         };
-
-        // Initial visibility adjustment
         updateVisibility();
-        // Attach resize event listener for dynamic changes
         window.addEventListener('resize', updateVisibility);
     };
 
-    createPagination(paginationTop);
     createPagination(paginationBottom);
 }
 
@@ -3425,13 +3428,154 @@ updateTable();
 
 // Event listeners for filters and rows per page
 searchFilter.addEventListener('input', applyFilters);
-filterE.addEventListener('change', applyFilters);
+filterE.addEventListener('change', () => {
+    const selectedValue = filterE.value;
+    let updatedColumnJValues;
+    if (selectedValue === '') {
+        updatedColumnJValues = [...new Set(originalData.map(row => row[145] || ''))];
+    } else {
+        updatedColumnJValues = [...new Set(
+            originalData.filter(row => row[5] === selectedValue).map(row => row[145] || '')
+        )];
+    }
+    filterJ.innerHTML = '<option value="">Select Schedule</option>';
+    updatedColumnJValues.forEach(value => {
+        if (value) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            filterJ.appendChild(option);
+        }
+    });
+    applyFilters();
+});
 filterJ.addEventListener('change', applyFilters);
 
 // Initialize the table
 fetchSheetData();
 
-</script>
+// ==================== CROSS-SHEET SEARCH ====================
+const GOODS_ID    = "1ux4xuu7lcmIszP_O2GLUVyExjZA3bbU_Aj1MUIDtP5M";
+const SERVICES_ID = "1ALWtM7nHt1Myn2wnQoEHKs4qfTdmWw0adAcA1J2HIo0";
+const CS_EXCLUDED = [5,6,10,12,18,21,23,29,32,34,40,43,45,51,54,56,62,65,67,73,76,78,84,87,89,95,98,100,106,109,111,117,120,122,128,131,133];
+
+const csDropdownEl = document.getElementById('csDropdown');
+let csTimer = null;
+let csAbort  = false;
+
+document.addEventListener('click', e => {
+    if (!document.getElementById('csWrapper').contains(e.target)) csDropdownEl.style.display = 'none';
+});
+
+function handleCrossSheetSearch(query) {
+    csAbort = true;
+    clearTimeout(csTimer);
+    csDropdownEl.style.display = 'none';
+    if (!query || tableData.length > 0) return;
+    // No results in current sheet — search the other one
+    csDropdownEl.innerHTML = `<div class="cs-header">Searching other similar page&hellip;</div><div class="cs-searching">&#128269; Searching&hellip;</div>`;
+    csDropdownEl.style.display = 'block';
+    csTimer = setTimeout(() => { csAbort = false; runCrossSearch(query); }, 500);
+}
+
+async function runCrossSearch(query) {
+    const isGoodsActive = sheetId1 === GOODS_ID;
+    const otherSheetId  = isGoodsActive ? SERVICES_ID : GOODS_ID;
+    const otherLabel    = isGoodsActive ? 'RCM – Services' : 'RCM – Goods';
+    const msgIfFound    = isGoodsActive
+        ? '&#128994; The required records are available in <strong>Services</strong>.'
+        : '&#128308; The required records are available in <strong>Goods</strong>.';
+
+    try {
+        const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${otherSheetId}/values/Sheet1!A:FG?key=${apiKey}`);
+        if (csAbort) return;
+        if (!resp.ok) { showCsNoResult(); return; }
+        const json = await resp.json();
+        if (!json.values || json.values.length < 2) { showCsNoResult(); return; }
+
+        const rows = json.values.slice(1);
+        const lq   = query.toLowerCase();
+        const matches = [];
+        rows.forEach(row => {
+            const hit = row.some((cell, idx) => !CS_EXCLUDED.includes(idx) && cell && cell.toLowerCase().includes(lq));
+            if (hit) {
+                const preview = [0,1,2,3,4].map(i => (row[i]||'').replace(/<[^>]*>/g,'').trim()).filter(Boolean).join(' | ').substring(0,120) || '(entry)';
+                matches.push({ preview, row });
+            }
+        });
+
+        if (csAbort) return;
+        if (matches.length === 0) { showCsNoResult(); return; }
+
+        const limited = matches.slice(0, 30);
+        const esc = query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+        let html = `<div class="cs-header">${msgIfFound} &mdash; ${matches.length} match${matches.length!==1?'es':''} found &mdash; click to switch</div>`;
+        limited.forEach(m => {
+            const hi = m.preview.replace(new RegExp(`(${esc})`,'gi'),'<span class="highlight">$1</span>');
+            html += `<div class="cs-item" onclick="switchToOtherSheet('${otherSheetId}')">
+                        <span class="cs-sheet-name">&#128196; ${otherLabel}</span>
+                        <span class="cs-match-text">${hi}</span>
+                     </div>`;
+        });
+        if (matches.length > limited.length) {
+            html += `<div class="cs-item" style="color:#888;font-style:italic;cursor:default;">…and ${matches.length - limited.length} more. Switch to see all.</div>`;
+        }
+        html += `<div class="cs-msg">${msgIfFound}</div>`;
+        csDropdownEl.innerHTML = html;
+        csDropdownEl.style.display = 'block';
+    } catch(e) { showCsNoResult(); }
+}
+
+function showCsNoResult() {
+    csDropdownEl.innerHTML = `<div class="cs-header">Cross-page search</div><div class="cs-no-result">No matches found in either page.</div>`;
+    csDropdownEl.style.display = 'block';
+}
+
+async function switchToOtherSheet(newSheetId) {
+    // 1. Hide dropdown immediately
+    csDropdownEl.style.display = 'none';
+
+    // 2. Save keyword, then clear the box so applyFilters inside fetchSheetData
+    //    doesn't re-trigger cross-sheet search on the new data
+    const savedKeyword = searchFilter.value.trim();
+    searchFilter.value = '';
+
+    // 3. Update the <select> UI element
+    document.getElementById('functionSelect').value = newSheetId;
+
+    // 4. Update global sheetId1 BEFORE anything else reads it
+    sheetId1 = newSheetId;
+
+    // 5. Toggle table headers / button visibility (skipRender = true)
+    changeFunctionOption({ target: { value: newSheetId } }, true);
+
+    // 6. Directly fetch the sheet ourselves so we control the full flow
+    try {
+        showLoadingMessage();
+
+        const response = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${newSheetId}/values/Sheet1!A:FG?key=${apiKey}`
+        );
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const json = await response.json();
+        originalData = json.values.slice(1);
+        tableData    = [...originalData];
+
+        // Reset page and repopulate filters
+        currentPage = 1;
+        populateFilters();
+
+        // 7. Restore the saved keyword so results are filtered and highlighted
+        searchFilter.value = savedKeyword;
+        applyFilters();
+
+    } catch (err) {
+        console.error('switchToOtherSheet fetch failed:', err);
+    } finally {
+        hideLoadingMessage();
+    }
+}</script>
 <!-------------------------------------------------------Social Media---------------------------------------------------------------->
 <script>
     const panel = document.getElementById('social-media-panel');
