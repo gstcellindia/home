@@ -61,52 +61,116 @@ th {
     background-color: #c9fbff;
 }
 
-.selectFilter {
-    margin: 10px 5px;
-    padding: 5px;
-    width:7cm;
-    box-shadow: black 2px 2px 6px;
-    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
+/* ===== UNIFIED FILTER BAR ===== */
+#filtersBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 2% 0 2%;
+    margin-bottom: 10px;
+}
+
+.filterControl {
+    height: 38px;
+    padding: 0 10px;
+    font-size: 13pt;
+    font-family: inherit;
+    color: #003344;
     background: linear-gradient(to right, #9be8ff, #e1f5ff);
-    border-color: deepskyblue;
-    border-radius: 5px;
-            border-width: 2px;
-            font-size: 13pt;
-            transition:500ms;
-            margin-left: 2%; 
-        
+    border: 2px solid deepskyblue;
+    border-radius: 8px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+    cursor: pointer;
+    min-width: 160px;
+    box-sizing: border-box;
 }
-.selectFilter1 {
-    margin: 10px 5px;
-    padding: 5px;
-    width:7cm;
-    box-shadow: black 2px 2px 6px;
-    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
+.filterControl:hover,
+.filterControl:focus {
+    border-color: #0099cc;
+    box-shadow: 2px 2px 8px rgba(0,120,180,0.35);
+}
+.filterControl--select {
+    appearance: auto;
+    -webkit-appearance: auto;
+    max-width: 8cm;
+}
+.filterControl--search {
+    cursor: text;
+    font-style: italic;
+    flex: 1 1 200px;
+    min-width: 180px;
+    max-width: 8cm;
+    padding-left: 34px;
+    background: #ffffff;
+    border: 2px solid deepskyblue;
+    color: #003344;
+}
+.filterControl--search::placeholder { color: #7ac8e0; }
+.filterControl--search:focus::placeholder { color: #cce8f4; }
+.filterControl--search:hover { border-color: #0099cc; }
+.filterControl--search:focus {
+    border-color: #0099cc;
+    box-shadow: 0 0 0 3px rgba(0,153,204,0.15);
+}
+
+#crossSheetWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 200px;
+    min-width: 180px;
+}
+#searchIcon {
+    position: absolute;
+    left: 11px;
+    width: 15px;
+    height: 15px;
+    pointer-events: none;
+    color: #0099cc;
+    z-index: 1;
+    flex-shrink: 0;
+}
+#crossSheetNotice {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    font-size: 11pt;
+    color: #c0392b;
+    font-style: italic;
+    white-space: nowrap;
+    z-index: 998;
+}
+#crossSheetDropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 999;
+    background: #fff;
+    border: 2px solid deepskyblue;
+    border-radius: 8px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.25);
+    min-width: 340px;
+    max-width: 520px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+#crossSheetDropdown .cs-header {
     background: linear-gradient(to right, #9be8ff, #e1f5ff);
-    border-color: deepskyblue;
-    color:red;
-    border-radius: 5px;
-            border-width: 2px;
-            font-size: 15pt;
-            transition:500ms;
-            margin-left: 2%; 
-
+    padding: 6px 12px; font-size: 10pt; font-weight: bold; color: #005f7a;
+    border-bottom: 1px solid #a1e4ff; border-radius: 6px 6px 0 0;
+    position: sticky; top: 0;
 }
-
-.inputFilter {
-    margin: 10px 5px;
-    padding: 5px;
-    width:7cm;
-    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
-    border-color: deepskyblue;
-    border-radius: 10px;
-            border-width: 2px;
-            font-size: 13pt;
-            transition:500ms;
-            margin-left: 2%; 
-            
-
-}
+#crossSheetDropdown .cs-item { padding: 8px 12px; font-size: 11pt; cursor: pointer; border-bottom: 1px solid #e8f7ff; line-height: 1.4; }
+#crossSheetDropdown .cs-item:hover { background-color: #d0f4ff; }
+#crossSheetDropdown .cs-item .cs-sheet-name { font-size: 9pt; color: #0077B5; font-weight: bold; display: block; margin-bottom: 2px; }
+#crossSheetDropdown .cs-item .cs-match-text { color: #333; }
+#crossSheetDropdown .cs-searching { padding: 12px; font-style: italic; color: #888; text-align: center; font-size: 11pt; }
+#crossSheetDropdown .cs-no-result { padding: 12px; color: #c0392b; text-align: center; font-size: 11pt; }
 .amendment-button{
     background: linear-gradient(to right, #9be8ff, #e1ffea);
     box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
@@ -124,21 +188,34 @@ th {
 }
 
 
-/* Add this to your CSS file or a <style> block */
-    .Loadingstyle {
-    position: fixed;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(to right, #9be8ff, #e1ffea);
-    padding: 20px;
-    border: 2px solid #0077B5;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 16px;
-font-weight:bold; 
-color:red;
+/* ===== SPINNER LOADER ===== */
+.Loadingstyle {
+    position: fixed; inset: 0;
+    background: rgba(220, 245, 255, 0.55);
+    backdrop-filter: blur(3px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     z-index: 1000;
 }
+.loader-spinner {
+    width: 62px; height: 62px;
+    border-radius: 50%;
+    border: 7px solid #b8eeff;
+    border-top-color: #0099cc;
+    border-right-color: #00ccee;
+    animation: spin 0.8s linear infinite;
+    box-shadow: 0 0 18px rgba(0,153,204,0.25);
+    margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 15px; font-weight: bold;
+    color: #005f7a;
+    letter-spacing: 0.04em;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
 
 
 .pagination {
@@ -355,9 +432,7 @@ button:hover {
 	}
 
 .headimage {
-  /* background-image: url('https://docs.google.com/uc?id=1sitChJR4HMammhoEKMSRATww76l0RR3-');*/
- background-image: url('https://i.postimg.cc/gkxfpYbx/head-image.jpg');
-
+  background-image: url('https://i.postimg.cc/gkxfpYbx/head-image.jpg');
   background-repeat: no-repeat;
   background-attachment:local;
   background-size: cover;
@@ -365,6 +440,12 @@ button:hover {
   height:25rem;
   margin-left: 0%;
   margin-right: 0%;
+  display: flex;
+  align-items: center;
+}
+.headimage-content {
+  padding: 0 5%;
+  max-width: 800px;
 }
                   /*-----END------Image for other page*/
 
@@ -372,13 +453,13 @@ button:hover {
   font-size: 60px; 
   font-family: 'Times New Roman', Times, serif;
   color:white;
-  padding: 40px 0% 10px 50px;
+  padding: 0 0 10px 0;
   font-weight: bold;
   text-shadow: 10px 0px 10px #000000; 
 }
 
 .SRO{
-  margin-left: 150px;
+  margin-left: 0;
   font-size: 17px;
   font-family: 'Times New Roman', Times, serif;
   color: #ffffff;
@@ -388,6 +469,7 @@ button:hover {
 .SRO:hover{
   box-shadow: 12px 6px 12px 6px rgba(0,0,0,0.3);
 }
+.head-subtitle { font-size: 17px; }
 
 
 
@@ -531,6 +613,16 @@ table {
     color: white;
     background-color: red;
     padding: 0px 4px 0px 4px;}
+/* Filter bar mobile overrides */
+#filtersBar { flex-direction: column; gap: 6px; padding: 8px 2% 0 2%; }
+.filterControl, #crossSheetWrapper, .filterControl--search { width: 100% !important; min-width: 0 !important; max-width: none !important; flex: 1 1 auto; box-sizing: border-box; font-size: 12pt; }
+.filterControl--select { max-width: none !important; }
+#crossSheetDropdown { min-width: 0; width: 100%; }
+/* Headimage mobile */
+.headimage { height: 16rem; }
+.headimage-content { padding: 0 4%; }
+.sitename { font-size: 20px; padding: 0 0 6px 0; }
+.SRO { font-size: 10px; }
 }
 /*-------------------------------------Social Media End-------------------------------------*/
 
@@ -802,9 +894,10 @@ html{
 .pcss3t > input:checked + label {
 	cursor: default;
 }
-.fusion1, .fusion2, .fusion3, .fusion4{
+.fusion1, .fusion2, .fusion3{
 	display:none;
 }
+.fusion4 { display: block; }
 
 /*--------------------------tab end----------------------------*/
 
@@ -865,7 +958,7 @@ margin-left: 680px;
 font-size: 40px; 
 }
 .SRO{
-padding: 10px 10px 3px 100px;
+padding: 10px 10px 3px 0;
 }
 .mega-short-box{
  margin-left: 215px;
@@ -909,7 +1002,7 @@ padding: 10px 10px 3px 100px;
                      padding: 5px;
 					}
 					.SRO{
-    margin-left: 100px;
+    margin-left: 0;
     font-size: 13px;
   } 
 .sitename{
@@ -1245,16 +1338,6 @@ text-shadow: 1px 1px 1px #000000;
  padding: 0 5px;
  
 }
-.selectFilter, .selectFilter1 {
-    margin-left:2%;
-    width:96%;
-        
-}
-
-.inputFilter {
-    margin-left:2%;
-    width:96%;
-}
 }
 
 
@@ -1274,10 +1357,10 @@ Circular - GST Cell
 
 
 <div class="headimage">
-			<p class="sitename fus ion4">Circular</p>
-      <div class="SRO"; style="overflow-x:auto;">
-      <p>Circular and Instructions issued by Commissioner of State Tax and Central Tax</p>
-      </div>
+    <div class="headimage-content">
+        <p class="sitename fusion4">Circular</p>
+        <p class="SRO head-subtitle">Circular and Instructions issued by Commissioner of State Tax and Central Tax</p>
+    </div>
 </div>
 
 
@@ -1565,34 +1648,29 @@ Circular - GST Cell
 
 <body>
     <!-- Search and Filters -->
-    <div>
-
-        
-        <select id="functionSelect" onchange="changeFunctionOption(event)"  class="selectFilter1">
-            <option style="color: black;"  value="1_fe6rYyg1qfBOl5pOEvU8aY8Vj4E1cpM2qSYvjK1fvc" selected>Circular issued by Kerala</option>
-            <option style="color: black;"  value="1fvLXbZu5cJ24uKcsk8gLJqN_yhuhYqzWDUeDA0c05mY">C.B.I.C. Circular</option>
-            <option style="color: black;"  value="1kitIihyHBdng1aSCndyd0EHci-fprbnDj9DzIY39aIk">Instructions</option>
-            
-            
+    <div id="filtersBar">
+        <select id="functionSelect" onchange="changeFunctionOption(event)" class="filterControl filterControl--select">
+            <option style="color: black;" value="1_fe6rYyg1qfBOl5pOEvU8aY8Vj4E1cpM2qSYvjK1fvc" selected>Circular issued by Kerala</option>
+            <option style="color: black;" value="1fvLXbZu5cJ24uKcsk8gLJqN_yhuhYqzWDUeDA0c05mY">C.B.I.C. Circular</option>
+            <option style="color: black;" value="1kitIihyHBdng1aSCndyd0EHci-fprbnDj9DzIY39aIk">Instructions</option>
         </select>
-        
-        <select id="filterE"  class="selectFilter" style="text-align: center;">
+
+        <select id="filterE" class="filterControl filterControl--select" style="text-align: center;">
             <option value="">Select Year</option>
         </select>
 
-        <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter">
+        <div id="crossSheetWrapper">
+            <svg id="searchIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchFilter" placeholder="Search circulars..." autocomplete="off" class="filterControl filterControl--search">
+            <div id="crossSheetNotice">Searching other similar pages&hellip;</div>
+            <div id="crossSheetDropdown"></div>
+        </div>
 
-        <select id="filterJ" class="selectFilter" style="display:none">
+        <select id="filterJ" class="filterControl filterControl--select" style="display:none">
             <option value="">Select</option>
         </select>
-        
-
-    </div>
-    
-    <!-- Pagination Top -->
-    <div class="pagination">
-      
-        <div id="paginationTop"></div>
     </div>
 
     <!-- Data Table -->
@@ -1798,7 +1876,6 @@ const filterE = document.getElementById('filterE');
 const filterJ = document.getElementById('filterJ');
 const searchFilter = document.getElementById('searchFilter');
 const tableBody = document.querySelector('#dataTable tbody');
-const paginationTop = document.getElementById('paginationTop');
 const paginationBottom = document.getElementById('paginationBottom');
 
 let currentPage = 1;
@@ -1812,10 +1889,9 @@ let originalData = []; // Copy of the full dataset
 function showLoadingMessage() {
     const loadingMessage = document.createElement('div');
     loadingMessage.id = 'loadingMessage';
-    loadingMessage.classList.add('Loadingstyle'); // Apply the CSS class
-    loadingMessage.textContent = 'Loading data... Please wait.';
+    loadingMessage.classList.add('Loadingstyle');
+    loadingMessage.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">Loading&hellip;</div>';
     document.body.appendChild(loadingMessage);
-    // Hide the table
     document.getElementById('dataTable').style.display = 'none';
 }
 
@@ -2185,6 +2261,7 @@ if (excludedIndexes.includes(index)) {
 
 currentPage = 1; // Reset to the first page
 updateTable();
+handleCrossSheetSearch(searchQuery);
 }
 
 // Update pagination buttons
@@ -2232,7 +2309,6 @@ function updatePagination(data) {
         window.addEventListener('resize', updateVisibility);
     };
 
-    createPagination(paginationTop);
     createPagination(paginationBottom);
 }
 
@@ -2261,7 +2337,102 @@ filterJ.addEventListener('change', applyFilters);
 // Initialize the table
 fetchSheetData();
 
-</script>
+// ==================== CROSS-SHEET SEARCH ====================
+const ALL_SHEETS = [
+    { value: "1_fe6rYyg1qfBOl5pOEvU8aY8Vj4E1cpM2qSYvjK1fvc", label: "Circular issued by Kerala" },
+    { value: "1fvLXbZu5cJ24uKcsk8gLJqN_yhuhYqzWDUeDA0c05mY",  label: "C.B.I.C. Circular" },
+    { value: "1kitIihyHBdng1aSCndyd0EHci-fprbnDj9DzIY39aIk",  label: "Instructions" }
+];
+const CS_EXCLUDED_INDEXES = [6, 9, 11, 14, 16, 19, 23, 26, 29, 32, 34, 36, 38, 40, 42];
+const csNotice   = document.getElementById('crossSheetNotice');
+const csDropdown = document.getElementById('crossSheetDropdown');
+let csSearchTimer = null;
+let csAbortFlag   = false;
+
+document.addEventListener('click', (e) => {
+    if (!document.getElementById('crossSheetWrapper').contains(e.target)) hideCrossSheetDropdown();
+});
+
+function hideCrossSheetDropdown() {
+    csDropdown.style.display = 'none';
+    csNotice.style.display   = 'none';
+}
+
+function handleCrossSheetSearch(searchQuery) {
+    csAbortFlag = true;
+    clearTimeout(csSearchTimer);
+    hideCrossSheetDropdown();
+    if (!searchQuery || tableData.length > 0) return;
+    csNotice.style.display = 'block';
+    csDropdown.style.display = 'none';
+    csSearchTimer = setTimeout(() => { csAbortFlag = false; runCrossSheetSearch(searchQuery); }, 500);
+}
+
+async function runCrossSheetSearch(query) {
+    const sheetsToSearch = ALL_SHEETS.filter(s => s.value !== sheetId1);
+    csDropdown.innerHTML = `<div class="cs-header">Searching other similar pages&hellip;</div><div class="cs-searching">&#128269; Searching&hellip;</div>`;
+    csDropdown.style.display = 'block';
+    const allMatches = [];
+    for (const sheet of sheetsToSearch) {
+        if (csAbortFlag) return;
+        try {
+            const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheet.value}/values/Sheet1!A:FG?key=${apiKey}`);
+            if (!response.ok) continue;
+            const data = await response.json();
+            if (!data.values || data.values.length < 2) continue;
+            const rows = data.values.slice(1);
+            const lowerQuery = query.toLowerCase();
+            rows.forEach(row => {
+                const matched = row.some((cell, idx) => {
+                    if (CS_EXCLUDED_INDEXES.includes(idx)) return false;
+                    return cell && cell.toLowerCase().includes(lowerQuery);
+                });
+                if (matched) {
+                    const previewCols = [0, 1, 3].map(i => (row[i] || '').replace(/<[^>]*>/g, '').trim()).filter(Boolean);
+                    const preview = previewCols.join(' | ').substring(0, 120) || '(entry)';
+                    allMatches.push({ sheetId: sheet.value, sheetLabel: sheet.label, preview, row });
+                }
+            });
+        } catch (e) {}
+    }
+    if (csAbortFlag) return;
+    if (allMatches.length === 0) {
+        csNotice.style.display = 'none';
+        csDropdown.innerHTML = `<div class="cs-header">Cross-page search</div><div class="cs-no-result">No matches found in any other page.</div>`;
+        csDropdown.style.display = 'block';
+        return;
+    }
+    csNotice.style.display = 'none';
+    const seen = {}; const limited = [];
+    for (const m of allMatches) {
+        seen[m.sheetLabel] = (seen[m.sheetLabel] || 0);
+        if (seen[m.sheetLabel] < 5 && limited.length < 30) { limited.push(m); seen[m.sheetLabel]++; }
+    }
+    const totalCount = allMatches.length;
+    let html = `<div class="cs-header">Found ${totalCount} match${totalCount !== 1 ? 'es' : ''} in other pages &mdash; click to switch &amp; load</div>`;
+    limited.forEach(m => {
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const highlighted = m.preview.replace(new RegExp(`(${escaped})`, 'gi'), '<span class="highlight">$1</span>');
+        html += `<div class="cs-item" onclick="switchToSheetFromCrossSearch('${m.sheetId}', '${m.sheetLabel.replace(/'/g, "\\'")}')">
+                    <span class="cs-sheet-name">&#128196; ${m.sheetLabel}</span>
+                    <span class="cs-match-text">${highlighted}</span>
+                 </div>`;
+    });
+    if (totalCount > limited.length) {
+        html += `<div class="cs-item" style="color:#888;font-style:italic;cursor:default;">…and ${totalCount - limited.length} more. Switch to the page to see all.</div>`;
+    }
+    csDropdown.innerHTML = html;
+    csDropdown.style.display = 'block';
+}
+
+async function switchToSheetFromCrossSearch(newSheetId, sheetLabel) {
+    hideCrossSheetDropdown();
+    const selectEl = document.getElementById('functionSelect');
+    selectEl.value = newSheetId;
+    sheetId1 = newSheetId;
+    changeFunctionOption({ target: { value: newSheetId } });
+    await fetchSheetData();
+}</script>
 <!-------------------------------------------------------Social Media---------------------------------------------------------------->
 <script>
     const panel = document.getElementById('social-media-panel');
