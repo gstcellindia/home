@@ -114,12 +114,32 @@ th { background-color: #c9fbff; }
 .labelclass { font-size: 11pt; }
 
 .Loadingstyle {
-    position: fixed; top: 70%; left: 50%; transform: translate(-50%, -50%);
-    background: linear-gradient(to right, #9be8ff, #e1ffea);
-    padding: 20px; border: 2px solid #0077B5;
-    font-family: 'Times New Roman', Times, serif; font-size: 16px;
-    font-weight: bold; color: red; z-index: 1000;
+    position: fixed; inset: 0;
+    background: rgba(220, 245, 255, 0.55);
+    backdrop-filter: blur(3px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 1000;
 }
+.loader-spinner {
+    width: 62px; height: 62px;
+    border-radius: 50%;
+    border: 7px solid #b8eeff;
+    border-top-color: #0099cc;
+    border-right-color: #00ccee;
+    animation: spin 0.8s linear infinite;
+    box-shadow: 0 0 18px rgba(0,153,204,0.25);
+    margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 15px; font-weight: bold;
+    color: #005f7a;
+    letter-spacing: 0.04em;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
 
 .pagination { display: flex; justify-content: flex-end; margin: 10px 4% 10px 0px; text-align: right; }
 .pagination label, .pagination select, .pagination span, .pagination button {
@@ -755,7 +775,7 @@ function showLoadingMessage() {
     const loadingMessage = document.createElement('div');
     loadingMessage.id = 'loadingMessage';
     loadingMessage.classList.add('Loadingstyle');
-    loadingMessage.textContent = 'Loading data... Please wait.';
+    loadingMessage.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">Loading&hellip;</div>';
     document.body.appendChild(loadingMessage);
     document.getElementById('dataTable').style.display = 'none';
 }
