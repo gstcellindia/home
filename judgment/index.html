@@ -1579,6 +1579,10 @@ text-shadow: 1px 1px 1px #000000;
 
         <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter">
 
+        <!-- Secret mode buttons: shown only when *532351+ is typed -->
+        <a id="excelBtn" href="https://docs.google.com/spreadsheets/d/1APdqb6Ko7NpIE2wnDvqh0KyHbFCTt3ba1i4QVWE4ex4/edit?usp=sharing" target="_blank" style="display:none; margin:0 4px; padding:6px 14px; font-size:12pt; font-weight:bold; font-family:inherit; color:#1a5c1a; background:linear-gradient(to bottom,#b6f5a0,#6dd960); border:2px solid #3a9c20; border-radius:7px; box-shadow:1px 2px 5px rgba(0,0,0,0.2); text-decoration:none; vertical-align:middle; cursor:pointer;">&#128196; EXCEL</a>
+
+
         <select id="filterJ" class="selectFilter" style="display:none">
             <option value="">Select</option>
         </select>
@@ -1586,12 +1590,6 @@ text-shadow: 1px 1px 1px #000000;
 
     </div>
     
-    <!-- Pagination Top -->
-    <div class="pagination">
-      
-        <div id="paginationTop"></div>
-    </div>
-
     <!-- Data Table -->
     <table id="dataTable">
 
@@ -2125,7 +2123,7 @@ tableRow += `</tr>`;
 
 // Highlight search keywords in the table
 function highlightText(text) {
-const query = searchFilter.value.trim().toLowerCase(); // Get the search query
+const query = (_realVal || searchFilter.value).trim().toLowerCase(); // Get the search query
 if (!text || !query) return text; // Return original text if there's no query or text
 
 // Create a temporary container to safely handle HTML
@@ -2159,7 +2157,7 @@ return tempDiv.innerHTML; // Return processed HTML
 
 // Filter data based on all three filters
 function applyFilters() {
-const searchQuery = searchFilter.value.trim().toLowerCase();
+const searchQuery = (_realVal || searchFilter.value).trim().toLowerCase();
 const filterEValue = filterE.value;
 const filterJValue = filterJ.value;
 
@@ -2230,7 +2228,6 @@ function updatePagination(data) {
         window.addEventListener('resize', updateVisibility);
     };
 
-    createPagination(paginationTop);
     createPagination(paginationBottom);
 }
 
@@ -2251,8 +2248,57 @@ currentPage = 1;
 updateTable();
 }
 
-// Event listeners for filters and rows per page
-searchFilter.addEventListener('input', applyFilters);
+// ===== DIGIT MASKING + SECRET MODE =====
+// Digits typed in the search box are shown as bullets (•).
+// The real value is tracked in _realVal for filtering.
+// Typing *532351+ reveals the EXCEL button.
+
+const SECRET_CODE = '*532351+';
+let _realVal = '';
+
+const excelBtn = document.getElementById('excelBtn');
+
+searchFilter.addEventListener('input', function () {
+    const el = this;
+    const cursor = el.selectionStart;
+    const displayed = el.value;
+    const prev = _realVal;
+
+    // Reconstruct real value from displayed (• chars map back to digits in prev)
+    let newReal = '';
+    let pi = 0; // pointer into prev real digits
+    for (let i = 0; i < displayed.length; i++) {
+        if (displayed[i] === '•') {
+            // find next digit in prev
+            while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
+            newReal += pi < prev.length ? prev[pi++] : '0';
+        } else {
+            newReal += displayed[i];
+            // advance prev pointer past this char
+            while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
+            if (pi < prev.length) pi++;
+        }
+    }
+    _realVal = newReal;
+
+    // Rule: digits are always masked as bullets
+    const masked = newReal.replace(/\d/g, '•');
+    if (el.value !== masked) {
+        el.value = masked;
+        try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+    }
+
+    // Check for secret code
+    if (newReal === SECRET_CODE) {
+        excelBtn.style.display = 'inline-block';
+        return; // Don't filter with the secret code
+    } else {
+        excelBtn.style.display = 'none';
+    }
+
+    applyFilters();
+});
+
 filterE.addEventListener('change', applyFilters);
 filterJ.addEventListener('change', applyFilters);
 
