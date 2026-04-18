@@ -1602,6 +1602,18 @@ text-shadow: 1px 1px 1px #000000;
             <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter" style="margin:0;">
             <div id="csDropdown"></div>
         </div>
+        <a id="btnGoods" href="https://docs.google.com/spreadsheets/d/1ux4xuu7lcmIszP_O2GLUVyExjZA3bbU_Aj1MUIDtP5M/edit?usp=sharing" target="_blank"
+           style="display:none; padding:7px 14px; background:linear-gradient(to right,#9be8ff,#e1ffea); border:2px solid deepskyblue; border-radius:10px; font-size:12pt; font-weight:bold; color:#005f7a; text-decoration:none; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle;">
+           Goods
+        </a>
+        <a id="btnServices" href="https://docs.google.com/spreadsheets/d/1ALWtM7nHt1Myn2wnQoEHKs4qfTdmWw0adAcA1J2HIo0/edit?usp=sharing" target="_blank"
+           style="display:none; padding:7px 14px; background:linear-gradient(to right,#ffe49b,#fff5e1); border:2px solid orange; border-radius:10px; font-size:12pt; font-weight:bold; color:#7a4a00; text-decoration:none; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle;">
+           Services
+        </a>
+        <button id="btnExitSecret" onclick="exitSecretModeGlobal()"
+           style="display:none; padding:7px 12px; background:linear-gradient(to right,#ffb3b3,#ffe0e0); border:2px solid red; border-radius:10px; font-size:12pt; font-weight:bold; color:red; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle; cursor:pointer;">
+           &#10005;
+        </button>
         <select id="filterE"  class="selectFilter" style="display:none">
             <option value="">Select Notification</option>
         </select>
@@ -3335,6 +3347,88 @@ return tempDiv.innerHTML; // Return processed HTML
 }
 
 
+
+// ==================== SECRET CODE HANDLER ====================
+(function() {
+    const sf          = document.getElementById('searchFilter');
+    const btnGoods    = document.getElementById('btnGoods');
+    const btnServices = document.getElementById('btnServices');
+    const btnExit     = document.getElementById('btnExitSecret');
+
+    let secretMode = false;
+    let secretCode = '';
+
+    function enterSecretMode() {
+        secretMode = true;
+        secretCode = '';
+        sf.type = 'password';
+        sf.value = '';
+        sf.placeholder = 'Enter code...';
+    }
+
+    window.exitSecretModeGlobal = function() {
+        secretMode = false;
+        secretCode = '';
+        sf.type = 'text';
+        sf.value = '';
+        sf.placeholder = 'Search...';
+        btnGoods.style.display    = 'none';
+        btnServices.style.display = 'none';
+        btnExit.style.display     = 'none';
+    };
+
+    function revealButtons() {
+        btnGoods.style.display    = 'inline-block';
+        btnServices.style.display = 'inline-block';
+        btnExit.style.display     = 'inline-block';
+    }
+
+    sf.addEventListener('keydown', function(e) {
+        if (!secretMode && e.key === '*') {
+            e.preventDefault();
+            enterSecretMode();
+            return;
+        }
+        if (secretMode) {
+            if (e.key === 'Backspace') {
+                if (secretCode.length > 0) {
+                    secretCode = secretCode.slice(0, -1);
+                } else {
+                    e.preventDefault();
+                    window.exitSecretModeGlobal();
+                }
+                return;
+            }
+            if (e.key === '+') {
+                e.preventDefault();
+                revealButtons();
+                secretMode = false;
+                sf.type = 'text';
+                sf.value = '';
+                sf.placeholder = 'Search...';
+                return;
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                window.exitSecretModeGlobal();
+                return;
+            }
+        }
+    });
+
+    sf.addEventListener('input', function() {
+        if (!secretMode) {
+            if (sf.value !== '') {
+                btnGoods.style.display    = 'none';
+                btnServices.style.display = 'none';
+                btnExit.style.display     = 'none';
+            }
+        } else {
+            secretCode = sf.value;
+        }
+    });
+})();
+// ==================== END SECRET CODE HANDLER ====================
 
 // Filter data based on all three filters
 function applyFilters() {
