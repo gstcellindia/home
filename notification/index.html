@@ -592,6 +592,7 @@ nav input { display: none; }
             <option style="color: black;" value="1xCE-xXI6kHxaKoh_1UzlEV7u0UXxGP1WrTrMBAsmWYA">Kerala Flood Cess</option>
             <option style="color: black;" value="1mmhpJKKB-G3fNOUKtRgrrxiqwxJ8Zx0VSxbukqbuWQo">Removal of Difficulties</option>
             <option style="color: black;" value="1qkPEUWAv6P8bVYdFYZrvxMJW6gkwJiDLwrraQOHIexE">Legacy Act</option>
+            <option style="color: black;" value="1ySpJOGCpBQUcOtVfM3QkqcQHRoj7UZpH4VX3CpRHGFM">Government Orders (G.O.)</option>
         </select>
 
         <select id="filterE" class="filterControl filterControl--select">
@@ -652,10 +653,10 @@ nav input { display: none; }
         </thead>
         <thead id="LegacyNotification" class="hidden" style="color: #0077B5; background-color: lightyellow;">
             <tr>
-                <th style="width:10%">Sl. No.</th>
-                <th style="width:10%">Chapter, Section, Heading, Group or SAC</th>
-                <th style="width:40%">Description of Services</th>
-                <th style="width:5%">CGST/ SGST</th>
+                <th style="width:10%">G.O. No.</th>
+                <th style="width:10%">Date</th>
+                <th style="width:40%">Description</th>
+                <th style="width:5%">Remarks</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -821,14 +822,17 @@ function changeFunctionOption(event) {
     const IgstNotification = document.getElementById('IgstNotification');
     const KfcNotification = document.getElementById('KfcNotification');
     const RodNotification = document.getElementById('RodNotification');
+    const LegacyNotification = document.getElementById('LegacyNotification');
     if (selectedOption === "1rOoZcpg-mxwAA3z3s5SYRj6J9y_a3zn3U8mZ7knhmw8" || selectedOption === "1v7vwloebhyf-sN_UfT-y8VwPprGxvput0YNT-iIwqWQ") {
-        TaxAndRate.classList.remove('hidden'); IgstNotification.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.add('hidden');
+        TaxAndRate.classList.remove('hidden'); IgstNotification.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.add('hidden'); LegacyNotification.classList.add('hidden');
     } else if (selectedOption === "1GoxCpnf7V92RklJw11_l0vMOKnkk1Q2pzfxU6z75L3Y" || selectedOption === "1EDONb06ZMoiY2KIAm88D7i0POyzz0xfmvD5lKMJUqWQ") {
-        IgstNotification.classList.remove('hidden'); TaxAndRate.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.add('hidden');
+        IgstNotification.classList.remove('hidden'); TaxAndRate.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.add('hidden'); LegacyNotification.classList.add('hidden');
     } else if (selectedOption === "1xCE-xXI6kHxaKoh_1UzlEV7u0UXxGP1WrTrMBAsmWYA" || selectedOption === "1qkPEUWAv6P8bVYdFYZrvxMJW6gkwJiDLwrraQOHIexE") {
-        TaxAndRate.classList.add('hidden'); IgstNotification.classList.add('hidden'); KfcNotification.classList.remove('hidden'); RodNotification.classList.add('hidden');
+        TaxAndRate.classList.add('hidden'); IgstNotification.classList.add('hidden'); KfcNotification.classList.remove('hidden'); RodNotification.classList.add('hidden'); LegacyNotification.classList.add('hidden');
     } else if (selectedOption === "1mmhpJKKB-G3fNOUKtRgrrxiqwxJ8Zx0VSxbukqbuWQo") {
-        IgstNotification.classList.add('hidden'); TaxAndRate.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.remove('hidden');
+        IgstNotification.classList.add('hidden'); TaxAndRate.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.remove('hidden'); LegacyNotification.classList.add('hidden');
+    } else if (selectedOption === "1ySpJOGCpBQUcOtVfM3QkqcQHRoj7UZpH4VX3CpRHGFM") {
+        IgstNotification.classList.add('hidden'); TaxAndRate.classList.add('hidden'); KfcNotification.classList.add('hidden'); RodNotification.classList.add('hidden'); LegacyNotification.classList.remove('hidden');
     }
     updateTable();
 }
@@ -967,7 +971,9 @@ const ALL_SHEETS = [
     { value: "1EDONb06ZMoiY2KIAm88D7i0POyzz0xfmvD5lKMJUqWQ",  label: "Integrated Tax (Rate)" },
     { value: "1xCE-xXI6kHxaKoh_1UzlEV7u0UXxGP1WrTrMBAsmWYA",  label: "Kerala Flood Cess" },
     { value: "1mmhpJKKB-G3fNOUKtRgrrxiqwxJ8Zx0VSxbukqbuWQo",  label: "Removal of Difficulties" },
-    { value: "1qkPEUWAv6P8bVYdFYZrvxMJW6gkwJiDLwrraQOHIexE",  label: "Legacy Act" }
+    { value: "1qkPEUWAv6P8bVYdFYZrvxMJW6gkwJiDLwrraQOHIexE",  label: "Legacy Act" },
+    { value: "1ySpJOGCpBQUcOtVfM3QkqcQHRoj7UZpH4VX3CpRHGFM",  label: "Government Orders (G.O.)" }
+
 ];
 const CS_EXCLUDED_INDEXES = [6, 9, 11, 14, 16, 19, 23, 26, 29, 32, 34, 36, 38, 40, 42];
 const csNotice   = document.getElementById('crossSheetNotice');
