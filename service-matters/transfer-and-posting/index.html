@@ -50,15 +50,16 @@ width:94%;
 }
 
 #pagination-top, #pagination-bottom, #pagination-top1, #pagination-bottom1, #pagination-top2, #pagination-bottom2{
-    position:absolute;
-    right:3%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 3px;
 }
 #pagination-bottom, #pagination-bottom1, #pagination-bottom2{
-    padding-top: 1rem;
-    padding-bottom: 2rem;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 table{
-    margin-top:4rem;
+    margin-top:0.5rem;
     margin-bottom:0rem;
 }
 table, td, th {
@@ -135,19 +136,175 @@ transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out e
 
 
 }
-.select-table-filter2{
-    overflow-x:auto; 
-    position:absolute;
-    display:inline-block;
-    right:30%;
-    background-color: #f1f1f1;
-    color: black;
-    border: 1px solid #ccc;
-    margin: 0 2px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
 
+/* ===== UNIFIED FILTER BAR ===== */
+#filtersBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 2% 8px 2%;
+    background: linear-gradient(135deg, #f0fbff 0%, #e8f7ff 100%);
+    border-bottom: 2px solid #c3ecff;
+    margin-bottom: 0;
+}
+
+.filterCtrl {
+    height: 40px;
+    padding: 0 12px;
+    font-size: 13pt;
+    font-family: 'Times New Roman', Times, serif;
+    color: #003344;
+    background: linear-gradient(to right, #9be8ff, #e1f5ff);
+    border: 2px solid deepskyblue;
+    border-radius: 9px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.18);
+    transition: border-color 0.25s, box-shadow 0.25s;
+    outline: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.filterCtrl:hover, .filterCtrl:focus {
+    border-color: #0099cc;
+    box-shadow: 2px 2px 9px rgba(0,140,200,0.35);
+}
+.filterCtrl--select {
+    appearance: auto;
+    -webkit-appearance: auto;
+    min-width: 170px;
+    max-width: 7cm;
+}
+.filterCtrl--search {
+    cursor: text;
+    font-style: italic;
+    background: #ffffff;
+    border: 2px solid deepskyblue;
+    color: #003344;
+    flex: 1 1 180px;
+    min-width: 160px;
+    max-width: 7cm;
+    padding-left: 32px;
+    position: relative;
+}
+.filterCtrl--search::placeholder { color: #7ac8e0; }
+.filterCtrl--search:focus::placeholder { color: #cce8f4; }
+
+#searchWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 180px;
+    min-width: 160px;
+}
+#searchWrapper svg {
+    position: absolute;
+    left: 10px;
+    width: 15px; height: 15px;
+    pointer-events: none;
+    color: #0099cc;
+    z-index: 1;
+}
+
+/* Heading inline with filters */
+#tableHeadingInline {
+    font-size: 16pt;
+    font-family: 'Times New Roman', Times, serif;
+    color: #1a92e2;
+    font-style: italic;
+    font-weight: bold;
+    text-shadow: 1px 2px 4px #5fc7daad;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+    flex-shrink: 1;
+}
+
+/* Rows-per-page select in bottom pagination */
+#rowsPerPageSelect {
+    height: 32px;
+    padding: 0 8px;
+    font-size: 11pt;
+    background: linear-gradient(to right, #9be8ff, #e1f5ff);
+    border: 2px solid deepskyblue;
+    border-radius: 7px;
+    cursor: pointer;
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.15);
+}
+
+/* Secret popup overlay */
+#secretPopupOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+}
+#secretPopupOverlay.active { display: flex; }
+#secretPopupBox {
+    background: linear-gradient(135deg, #e6f9ff, #f0fff4);
+    border: 2px solid deepskyblue;
+    border-radius: 14px;
+    padding: 22px 24px 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    max-width: 520px;
+    width: 92%;
+    position: relative;
+}
+#secretPopupBox h3 {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14pt;
+    color: #005f7a;
+    margin: 0 0 14px 0;
+}
+#secretPopupClose {
+    position: absolute;
+    top: 8px; right: 12px;
+    background: red; color: white;
+    border: none; border-radius: 4px;
+    font-size: 13px; font-weight: bold;
+    padding: 1px 6px; cursor: pointer;
+    line-height: 1.4;
+}
+#secretPopupClose:hover { background: #aa0000; }
+#secretBtnGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.secret-btn {
+    display: block;
+    text-align: center;
+    padding: 9px 6px;
+    font-size: 11pt;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+    color: #003344;
+    background: linear-gradient(to bottom, #b8f0ff, #7dd8f7);
+    border: 2px solid deepskyblue;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.18);
+    transition: background 0.2s;
+}
+.secret-btn:hover {
+    background: linear-gradient(to bottom, #7dd8f7, #3ec7f5);
+    color: #001a22;
+}
+
+@media (max-width: 700px) {
+    #secretBtnGrid { grid-template-columns: repeat(2, 1fr); }
+    #tableHeadingInline { max-width: 100%; font-size: 13pt; }
+    #filtersBar { flex-direction: column; align-items: stretch; padding: 8px 2%; }
+    .filterCtrl, #searchWrapper { width: 100% !important; min-width: 0 !important; max-width: none !important; }
+    .filterCtrl--select { max-width: none !important; }
+    .filterCtrl--search { max-width: none !important; }
+}
+.select-table-filter2-REMOVED {
+    display: none;
 }
 
 .select-table-filter:hover, .light-table-filter:hover{
@@ -1389,64 +1546,92 @@ padding: 0 30px;
 			
 			<!-- tabs -->
 
-<main class="grid2">
-        <div class="container2" style="z-index: 10;">
-            <select id="sheetSelect" class="select-table-filter" onchange="updateYearSelect()">
-                <option for="sheet1" value="sheet1">Special Commissioner</option>
-                <option value="sheet2">Additional Commissioner</option>
-                <option value="sheet3">Joint Commissioner</option>
-                <option value="sheet4">K. A. S.</option>
-                <option value="sheet5">Deputy Commissioner</option>
-                <option value="sheet6">Asst. Commissioner / STO</option>
-                <option value="sheet7">ASTO / DSTO</option>
-                <option value="sheet8">Clerk / Sr. Clerk</option>
-                <option value="sheet9">Clerical Assistant</option>
-                <option value="sheet10">Confidential Assistant</option>
-                <option value="sheet11">Faircopy Superintendent</option>
-                <option value="sheet12">Typist</option>
-                <option value="sheet13">Office Attendant</option>
-                <option value="sheet14">Driver</option>
-                <option value="sheet15">Lift Opertor</option>
-            </select>
+<div id="filtersBar">
+    <!-- Sheet selector -->
+    <select id="sheetSelect" class="filterCtrl filterCtrl--select" onchange="updateYearSelect()">
+      <option value="sheet2">Additional Commissioner</option>
+      <option value="sheet6">Asst. Commissioner / STO</option>
+      <option value="sheet7">ASTO / DSTO</option>
+      <option value="sheet9">Clerical Assistant</option>
+      <option value="sheet8">Clerk / Sr. Clerk</option>
+      <option value="sheet10">Confidential Assistant</option>
+      <option value="sheet5">Deputy Commissioner</option>
+      <option value="sheet14">Driver</option>
+      <option value="sheet11">Faircopy Superintendent</option>
+      <option value="sheet3">Joint Commissioner</option>
+      <option value="sheet4">K. A. S.</option>
+      <option value="sheet15">Lift Operator</option>
+      <option value="sheet13">Office Attendant</option>
+      <option for="sheet1" value="sheet1">Special Commissioner</option>
+      <option value="sheet12">Typist</option>
+    </select>
+
+    <!-- Year selector -->
+    <select id="yearSelect" class="filterCtrl filterCtrl--select">
+        <option value="all">Select year</option>
+    </select>
+
+    <!-- Search box with icon -->
+    <div id="searchWrapper">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
+        </svg>
+        <input type="text" id="searchBox" class="filterCtrl filterCtrl--search" autocomplete="off" placeholder="Search using keyword">
+    </div>
+
+    <!-- Heading shown inline, updates on sheet change -->
+    <span id="tableHeadingInline">Additional Commissioner</span>
+</div>
+
+<!-- Secret popup: shown when *532351+ is typed -->
+<div id="secretPopupOverlay">
+    <div id="secretPopupBox">
+        <button id="secretPopupClose" onclick="closeSecretPopup()">&#x2715;</button>
+        <h3>&#128196; Quick Links</h3>
+        <div id="secretBtnGrid">
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">STO</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Driver</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Addl Comr</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">ASTO</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Faircopy</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Typist</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">ClA</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">JC</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">CA</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Clerk</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">LiftO</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">OA</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">DC</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">SC</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">KAS</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Seniority</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">Pay Rev</a>
+            <a class="secret-btn" href="https://www.gstcell.com" target="_blank">My List</a>
         </div>
-                
-        <div class="container2" style="z-index: 10;">
-          <div style="overflow-x:auto;">
-              <select id="yearSelect" type="search" class="select-table-filter" style="overflow-x:auto">
-                  <option value="all">Select year</option>
-                  <!-- Options will be populated by JavaScript -->
-              </select>
-          </div>
-          </div>
-
-
-
-        <div class="container2" style="z-index: 10;">
-            <input type="text" id="searchBox" class="light-table-filter" autocomplete="off" placeholder="Search using keyword">
-        </div>
-        
-</main>
+    </div>
+</div>
     
     
-<div style="margin-top: 15px;"> 
-        <div class="tableheading1"><span class="fusion">Special Commissioner</span><span class="fusion1">Additional Commissioner</span><span class="fusion2">Joint Commissioner of State Tax</span><span class="fusion3">K. A. S.</span><span class="fusion4">Deputy Commissioner of State Tax</span><span class="fusion5">Asst. Commissioner / State Tax Officer</span><span class="fusion6">ASTO / DSTO</span><span class="fusion7">Clerk / Senior Clerk</span><span class="fusion8">Clerical Assistant</span><span class="fusion9">Confidential Assistant</span><span class="fusion10">Faircopy Superintendent</span><span class="fusion11">Typist</span><span class="fusion12">Office Attendant</span><span class="fusion13">Driver</span><span class="fusion14">Lift Opertor</span><span class="fusion15"></span></div>
-            <div id="loadingMessage">Loading data, please wait...</div>
-            <div id="errorMessage" style="display:none;">Error loading data. Please try again later.</div>
-        <div class="label" style="overflow-x:auto;">
-            <label for="mySelect" style="display:none">Choose an option:</label><select id="rowsPerPageSelect" type="search" class="select-table-filter2" >
-                <option value="30">30</option>
-                <option value="100">100</option>
-                <option value="200">200</option>
-                <option value="200">250</option>
-                <option value="all">All</option>
-            </select>
-            <div id="pagination-top"></div>
-            <table id="TaxdataTable" align-self="center">
-                <!-- Data will be populated here -->
-            </table>
-            <div id="pagination-bottom"></div>
-        </div>
-</div>	
+<div style="overflow-x:auto; margin-top:4px;">
+            <div id="loadingMessage" style="padding:10px 3%; font-family:'Times New Roman',serif; font-size:13pt; color:#005f7a;">Loading data, please wait...</div>
+            <div id="errorMessage" style="display:none; padding:10px 3%; color:red;">Error loading data. Please try again later.</div>
+            <!-- The old heading is now inline in the filter bar -->
+            <div class="tableheading1" style="display:none;"></div>
+            <table id="TaxdataTable" align-self="center" style="margin-top:0;"></table>
+            <!-- Bottom pagination with rows-per-page (only shown when rows > 30) -->
+            <div id="paginationBottomWrap" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:8px 2% 10px; justify-content:flex-end; margin-top:6px;">
+                <label style="font-size:11pt; font-family:'Times New Roman',serif; color:#003344;">Show</label>
+                <select id="rowsPerPageSelect">
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="60">60</option>
+                    <option value="100">100</option>
+                    <option value="all">All</option>
+                </select>
+                <span style="font-size:11pt; font-family:'Times New Roman',serif; color:#003344;">records</span>
+                <div id="pagination-bottom" style="display:inline-flex; flex-wrap:wrap; gap:3px;"></div>
+            </div>
+        </div>	
 
 <!-------------------------------------Social Media------------------------->
 <hr class="hide-social" style="border: 1px solid red; margin-top: 2rem;";>
@@ -1500,7 +1685,7 @@ padding: 0 30px;
 <!-------------------------------------Whatsapp script script ends--------------------->
 
 
-<!-------------------------------------ISSUED BY STATE------------------------------->
+<!------------------------------------ISSUED BY STATE -------------------------->
 <script>
  document.addEventListener('DOMContentLoaded', function() {
     const searchBox = document.getElementById('searchBox');
@@ -1508,8 +1693,8 @@ padding: 0 30px;
     const dataTable = document.getElementById('TaxdataTable');
     const loadingMessage = document.getElementById('loadingMessage');
     const errorMessage = document.getElementById('errorMessage');
-    const paginationTop = document.getElementById('pagination-top');
     const paginationBottom = document.getElementById('pagination-bottom');
+    const paginationBottomWrap = document.getElementById('paginationBottomWrap');
     const rowsPerPageSelect = document.getElementById('rowsPerPageSelect');
     const sheetSelect = document.getElementById('sheetSelect');
 
@@ -1530,30 +1715,42 @@ padding: 0 30px;
         'sheet14': '1KrK5U9BpbF3B7WHRyPL49QZstAGtB8rBE-ZN3uqNcyk',
         'sheet15': '1QTwNhx9evZWXM0wJRiLFRBsSaSb3cBagZTbpg87QDRw'
     };
+
+    // Inline heading labels matching sheet options
+    const sheetHeadings = {
+        'sheet1': 'Special Commissioner',
+        'sheet2': 'Additional Commissioner',
+        'sheet3': 'Joint Commissioner',
+        'sheet4': 'K. A. S.',
+        'sheet5': 'Deputy Commissioner',
+        'sheet6': 'Asst. Commissioner / STO',
+        'sheet7': 'ASTO / DSTO',
+        'sheet8': 'Clerk / Sr. Clerk',
+        'sheet9': 'Clerical Assistant',
+        'sheet10': 'Confidential Assistant',
+        'sheet11': 'Faircopy Superintendent',
+        'sheet12': 'Typist',
+        'sheet13': 'Office Attendant',
+        'sheet14': 'Driver',
+        'sheet15': 'Lift Operator'
+    };
+
     const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
 
     let currentPage = 1;
-    let rowsPerPage = parseInt(rowsPerPageSelect.value) || 30;
+    let rowsPerPage = 15;
     let allRows = [];
 
     function fetchData(sheetId) {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
-        
-        // Show the loading message
         loadingMessage.style.display = 'block';
         errorMessage.style.display = 'none';
-        dataTable.innerHTML = ''; // Clear the table
-
+        dataTable.innerHTML = '';
         fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(response => { if (!response.ok) throw new Error('HTTP ' + response.status); return response.json(); })
             .then(data => {
                 loadingMessage.style.display = 'none';
-                allRows = data.values.slice(1); // Skip the header row
+                allRows = data.values.slice(1);
                 initializeRowsPerPage();
                 filterAndDisplay();
             })
@@ -1565,135 +1762,114 @@ padding: 0 30px;
     }
 
     function filterAndDisplay() {
-        const keyword = searchBox.value.toLowerCase();
+        const keyword = _realSearchVal || searchBox.value.toLowerCase();
         const selectedYear = yearSelect.value;
         const filteredData = allRows.filter(row =>
             (selectedYear === 'all' || row[5] === selectedYear) &&
             (row.some((cell, index) => index !== 6 && index !== 9 && index !== 11 && index !== 14 && index !== 16 && index !== 19 && index !== 23 && index !== 26 && index !== 29 && index !== 32 && index !== 34 && index !== 36 && index !== 38 && index !== 40 && index !== 42 && index < 45 && cell.toLowerCase().includes(keyword)))
-            );
+        );
         displayData(filteredData, keyword);
     }
 
-    
-
     function initializeRowsPerPage() {
-        const screenWidth = window.innerWidth;
-        if (screenWidth <= 800) {
+        if (window.innerWidth <= 800) {
             rowsPerPageSelect.value = 'all';
-            rowsPerPage = allRows.length;
+            rowsPerPage = allRows.length || 9999;
         } else {
-            rowsPerPageSelect.value = '30';
-            rowsPerPage = 30;
+            rowsPerPageSelect.value = '15';
+            rowsPerPage = 15;
         }
-        filterAndDisplay(); // Ensure the display is updated with new rowsPerPage
     }
 
-    searchBox.addEventListener('input', filterAndDisplay);
-    yearSelect.addEventListener('change', filterAndDisplay);
+    searchBox.addEventListener('input', function() {
+        const el = this;
+        const cursor = el.selectionStart;
+        const displayed = el.value;
+        const prev = _realSearchVal;
+
+        // Reconstruct real value from display (bullets → digits)
+        let newReal = '';
+        let pi = 0;
+        for (let i = 0; i < displayed.length; i++) {
+            if (displayed[i] === '•') {
+                while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
+                newReal += pi < prev.length ? prev[pi++] : '0';
+            } else {
+                newReal += displayed[i];
+                while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
+                if (pi < prev.length) pi++;
+            }
+        }
+        _realSearchVal = newReal;
+
+        // Mask digits as bullets
+        const masked = newReal.replace(/\d/g, '•');
+        if (el.value !== masked) {
+            el.value = masked;
+            try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+        }
+
+        // Secret code check
+        if (newReal === '*532351+') {
+            openSecretPopup();
+            return;
+        }
+
+        currentPage = 1;
+        filterAndDisplay();
+    });
+
+    yearSelect.addEventListener('change', function() { currentPage = 1; filterAndDisplay(); });
     rowsPerPageSelect.addEventListener('change', function() {
-        rowsPerPage = rowsPerPageSelect.value === 'all' ? allRows.length : parseInt(rowsPerPageSelect.value) || 10;
-        currentPage = 1; // Reset to the first page
+        rowsPerPage = rowsPerPageSelect.value === 'all' ? (allRows.length || 9999) : parseInt(rowsPerPageSelect.value) || 15;
+        currentPage = 1;
         filterAndDisplay();
     });
 
     sheetSelect.addEventListener('change', function() {
-        currentPage = 1; // Reset to the first page
-        const selectedSheet = sheetSelect.value;
-        fetchData(sheetIds[selectedSheet]);
+        currentPage = 1;
+        // Update inline heading
+        const heading = document.getElementById('tableHeadingInline');
+        if (heading) heading.textContent = sheetHeadings[this.value] || '';
+        fetchData(sheetIds[this.value]);
     });
 
     function displayData(rows, keyword = '') {
         const startRow = (currentPage - 1) * rowsPerPage;
-        const endRow = rowsPerPage === 'all' ? rows.length : startRow + rowsPerPage;
+        const endRow = rowsPerPage >= (allRows.length || 9999) ? rows.length : startRow + rowsPerPage;
         const paginatedRows = rows.slice(startRow, endRow);
 
-        dataTable.innerHTML = '<tr style="background-color:rgb(222, 255, 255)"><th style="width:14%;">CIRCULAR NO.</th><th style="width:7%;">DATE</th><th style="width:55%;">DESCRIPTION</th><th style="width:14%;">REMARKS</th></tr>';
+        dataTable.innerHTML = '<tr style="background-color:rgb(222, 255, 255)"><th style="width:20%;">Order No.</th><th style="width:7%;">Date</th><th style="width:55%;">Description</th><th style="width:14%;">Remarks</th></tr>';
         paginatedRows.forEach(row => {
             const highlightedRow = row.map((cell, index) =>
-                keyword && index <= 45 ? cell.replace(new RegExp(keyword, 'gi'), match => `<span class="highlight">${match}</span>`) : cell
+                keyword && index <= 45 ? cell.replace(new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'), match => `<span class="highlight">${match}</span>`) : cell
             );
-
             const tr = document.createElement('tr');
             tr.innerHTML = `
-   
-
-
                 <td>
-                    <span style="text-transform: None; ${(row[4] && row[4] !== 'undefined') ? 'display:none;' : ''}">${highlightedRow[0]}</span>
-                    <span style="color:red; text-transform: None; ${(row[4] && row[4] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[4]}</span>
- 
-                    </td>
- 
-                 <td>
-                     ${(row[1] && row[1] !== 'undefined')
-                     ? `<span style="${(row[1] && row[1] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[1]}</span>` 
-                     : ''}
-                 </td>
- 
-                 <td>   ${(row[6] && row[6] !== 'undefined')
-                     ? ` <a href="${row[6]}" target="_blank" style="color:blue; text-transform: None;"><B>${highlightedRow[2]} </b> ${highlightedRow[3]}</a> <span style="color:red; ${(row[20] && row[20] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[20]}</span>` 
-                     : `</span><span style="${(row[3] && row[2] !== 'undefined') ? '' : 'display:none;'}"><b>${highlightedRow[2]} </b> ${highlightedRow[3]}</span>`}
- 
-                     ${(row[9] && row[9] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[7]} </span><a href="${row[9]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[8]}</a>` 
-                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[7] && row[7] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[7]}`}</span>
- 
-                     ${(row[14] && row[14] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None; font-style: italic">${highlightedRow[12]} </span><a href="${row[14]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[13]}</a>` 
-                     : `<span style="color:red; text-transform: None; ${(row[12] && row[12] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[12]}`}</span>
-
-                       ${(row[23] && row[23] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[21]} </span><a href="${row[23]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[22]}</a>` 
-                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[21] && row[21] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[21]}`}</span>
-                   
-                     ${(row[29] && row[29] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[27]} </span><a href="${row[29]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[28]}</a>` 
-                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[27] && row[27] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[27]}`}</span>
-                
-                    ${(row[34] && row[34] !== 'undefined')
-                     ? `<a href="${row[34]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[33]}</a>` 
-                     : ''}
-
-                     ${(row[36] && row[36] !== 'undefined')
-                     ? `, <a href="${row[36]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[35]}</a>` 
-                     : ''}
-                     
-                      ${(row[38] && row[38] !== 'undefined')
-                     ? `, <a href="${row[38]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[37]}</a>` 
-                     : ''}
-
-                      ${(row[40] && row[40] !== 'undefined')
-                     ? `, <a href="${row[40]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[39]}</a>` 
-                     : ''}
-
-                      ${(row[42] && row[42] !== 'undefined')
-                     ? `, <a href="${row[42]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[41]}</a>` 
-                     : ''}
-
-                      ${(row[44] && row[44] !== 'undefined')
-                     ? `,<a href="${row[44]}" target="_blank" style="color:blue; text-transform: None; font-style: italic">${highlightedRow[33]}</a>` 
-                     : ''}
-
-                                                           
-                   
-                   </td>
-                <td> ${(row[16] && row[16] !== 'undefined')
-                     ? `<a href="${row[16]}" target="_blank" style="color:blue; text-transform: None;">${highlightedRow[15]}</a>` 
-                     : `<span style="text-transform: None; ${(row[15] && row[15] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[15]}`}</span>
- 
-                     ${(row[19] && row[19] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[17]} </span><a href="${row[19]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[18]}</a>` 
-                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[17] && row[17] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[17]}`}</span>
- 
-                     ${(row[26] && row[26] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[24]} </span><a href="${row[26]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[25]}</a>` 
-                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[24] && row[24] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[24]}`}</span>
- 
-                     ${(row[32] && row[32] !== 'undefined')
-                     ? `<br><br><span style="color:red; text-transform: None;font-style: italic">${highlightedRow[30]} </span><a href="${row[32]}" target="_blank" style="color:blue; text-transform: None;font-style: italic">${highlightedRow[31]}</a>` 
-                     : `<span style="color:red; text-transform: None; font-style: italic; ${(row[30] && row[30] !== 'undefined') ? '' : 'display:none;'}"><br><br>${highlightedRow[30]}`}</span>
-                 </td>
-            `;
+                    <span style="${(row[4] && row[4] !== 'undefined') ? 'display:none;' : ''}">${highlightedRow[0]||''}</span>
+                    <span style="color:red; ${(row[4] && row[4] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[4]||''}</span>
+                </td>
+                <td>${(row[1] && row[1] !== 'undefined') ? `<span>${highlightedRow[1]}</span>` : ''}</td>
+                <td>${(row[6] && row[6] !== 'undefined')
+                    ? `<a href="${row[6]}" target="_blank" style="color:blue;"><b>${highlightedRow[2]||''}</b> ${highlightedRow[3]||''}</a><span style="color:red; ${(row[20] && row[20] !== 'undefined') ? '' : 'display:none;'}">${highlightedRow[20]||''}</span>`
+                    : `<b>${highlightedRow[2]||''}</b> ${highlightedRow[3]||''}`}
+                ${(row[9] && row[9] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[7]||''}</span> <a href="${row[9]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[8]||''}</a>` : (row[7] && row[7] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[7]||''}</span>` : '')}
+                ${(row[14] && row[14] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[12]||''}</span> <a href="${row[14]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[13]||''}</a>` : (row[12] && row[12] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[12]||''}</span>` : '')}
+                ${(row[23] && row[23] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[21]||''}</span> <a href="${row[23]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[22]||''}</a>` : (row[21] && row[21] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[21]||''}</span>` : '')}
+                ${(row[29] && row[29] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[27]||''}</span> <a href="${row[29]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[28]||''}</a>` : (row[27] && row[27] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[27]||''}</span>` : '')}
+                ${(row[34] && row[34] !== 'undefined') ? `<a href="${row[34]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[33]||''}</a>` : ''}
+                ${(row[36] && row[36] !== 'undefined') ? `, <a href="${row[36]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[35]||''}</a>` : ''}
+                ${(row[38] && row[38] !== 'undefined') ? `, <a href="${row[38]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[37]||''}</a>` : ''}
+                ${(row[40] && row[40] !== 'undefined') ? `, <a href="${row[40]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[39]||''}</a>` : ''}
+                ${(row[42] && row[42] !== 'undefined') ? `, <a href="${row[42]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[41]||''}</a>` : ''}
+                ${(row[44] && row[44] !== 'undefined') ? `, <a href="${row[44]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[43]||''}</a>` : ''}
+                </td>
+                <td>${(row[16] && row[16] !== 'undefined') ? `<a href="${row[16]}" target="_blank" style="color:blue;">${highlightedRow[15]||''}</a>` : `<span>${highlightedRow[15]||''}</span>`}
+                ${(row[19] && row[19] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[17]||''}</span> <a href="${row[19]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[18]||''}</a>` : (row[17] && row[17] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[17]||''}</span>` : '')}
+                ${(row[26] && row[26] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[24]||''}</span> <a href="${row[26]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[25]||''}</a>` : (row[24] && row[24] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[24]||''}</span>` : '')}
+                ${(row[32] && row[32] !== 'undefined') ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[30]||''}</span> <a href="${row[32]}" target="_blank" style="color:blue;font-style:italic">${highlightedRow[31]||''}</a>` : (row[30] && row[30] !== 'undefined' ? `<br><br><span style="color:red;font-style:italic">${highlightedRow[30]||''}</span>` : '')}
+                </td>`;
             dataTable.appendChild(tr);
         });
 
@@ -1701,9 +1877,15 @@ padding: 0 30px;
     }
 
     function displayPagination(totalRows) {
-        paginationTop.innerHTML = '';
         paginationBottom.innerHTML = '';
-        const totalPages = rowsPerPage === 'all' ? 1 : Math.ceil(totalRows / rowsPerPage);
+        // Hide entire pagination wrap if 30 or fewer rows
+        if (totalRows <= 15) {
+            paginationBottomWrap.style.display = 'none';
+            return;
+        }
+        paginationBottomWrap.style.display = 'flex';
+
+        const totalPages = (rowsPerPage === 'all' || rowsPerPage >= totalRows) ? 1 : Math.ceil(totalRows / rowsPerPage);
         const maxButtons = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
         let endPage = Math.min(totalPages, startPage + maxButtons - 1);
@@ -1714,98 +1896,42 @@ padding: 0 30px;
             btn.innerText = text;
             btn.classList.add('page-button');
             if (targetPage === currentPage) btn.classList.add('active');
-            btn.addEventListener('click', () => {
-                currentPage = targetPage;
-                filterAndDisplay(); // Update data based on new page
-            });
+            btn.style.cssText = 'padding:4px 9px; background:#c4c4c4; border:none; border-radius:4px; cursor:pointer; font-size:11pt; margin:1px;';
+            if (targetPage === currentPage) btn.style.background = '#0099cc'; btn.style.color = targetPage === currentPage ? 'white' : '';
+            btn.addEventListener('click', () => { currentPage = targetPage; filterAndDisplay(); });
             return btn;
         };
 
-        const appendPaginationButtons = (paginationElement) => {
-            // First button
-            if (currentPage > 1) {
-                const firstBtn = createPageButton('First', 1);
-                paginationElement.appendChild(firstBtn);
-            }
-
-            // Previous button
-            if (currentPage > 1) {
-                const prevBtn = createPageButton('Prev', currentPage - 1);
-                paginationElement.appendChild(prevBtn);
-            }
-
-            // Page number buttons
-            for (let i = startPage; i <= endPage; i++) {
-                const btn = createPageButton(i, i);
-                paginationElement.appendChild(btn);
-            }
-
-            // Next button
-            if (currentPage < totalPages) {
-                const nextBtn = createPageButton('Next', currentPage + 1);
-                paginationElement.appendChild(nextBtn);
-            }
-
-            // Last button
-            if (currentPage < totalPages) {
-                const lastBtn = createPageButton('Last', totalPages);
-                paginationElement.appendChild(lastBtn);
-            }
-        };
-
-        appendPaginationButtons(paginationTop);
-        appendPaginationButtons(paginationBottom);
+        if (currentPage > 1) paginationBottom.appendChild(createPageButton('First', 1));
+        if (currentPage > 1) paginationBottom.appendChild(createPageButton('Prev', currentPage - 1));
+        for (let i = startPage; i <= endPage; i++) paginationBottom.appendChild(createPageButton(i, i));
+        if (currentPage < totalPages) paginationBottom.appendChild(createPageButton('Next', currentPage + 1));
+        if (currentPage < totalPages) paginationBottom.appendChild(createPageButton('Last', totalPages));
     }
 
-    // Fetch initial data for the default sheet and initialize rows per page
+    // Fetch initial data
     fetchData(sheetIds[sheetSelect.value]);
 });
 
-    </script>
-<!------------------------------------ISSUED BY STATE -------------------------->
-<script>
-    const sheetSelect = document.getElementById('sheetSelect');
-    const content = document.querySelector('.tableheading1');
+// ===== DIGIT MASKING + SECRET CODE =====
+let _realSearchVal = '';
 
-    sheetSelect.addEventListener('change', function() {
-        content.classList.remove('show-fusion', 'show-fusion1', 'show-fusion2', 'show-fusion3', 'show-fusion4', 'show-fusion5', 'show-fusion6', 'show-fusion7', 'show-fusion8', 'show-fusion9', 'show-fusion10', 'show-fusion11', 'show-fusion12', 'show-fusion13', 'show-fusion14', 'show-fusion15');
-
-        if (this.value === 'sheet1') {
-            content.classList.add('show-fusion');
-        } else if (this.value === 'sheet2') {
-            content.classList.add('show-fusion1');
-        } else if (this.value === 'sheet3') {
-            content.classList.add('show-fusion2');
-        } else if (this.value === 'sheet4') {
-            content.classList.add('show-fusion3');
-        } else if (this.value === 'sheet5') {
-             content.classList.add('show-fusion4');
-        } else if (this.value === 'sheet6') {
-            content.classList.add('show-fusion5');
-        } else if (this.value === 'sheet7') {
-            content.classList.add('show-fusion6');
-        } else if (this.value === 'sheet8') {
-            content.classList.add('show-fusion7');
-        } else if (this.value === 'sheet9') {
-            content.classList.add('show-fusion8');
-        } else if (this.value === 'sheet10') {
-            content.classList.add('show-fusion9');
-        } else if (this.value === 'sheet11') {
-            content.classList.add('show-fusion10');
-        } else if (this.value === 'sheet12') {
-            content.classList.add('show-fusion11');
-        } else if (this.value === 'sheet13') {
-            content.classList.add('show-fusion12');
-        } else if (this.value === 'sheet14') {
-             content.classList.add('show-fusion13');
-        } else if (this.value === 'sheet15') {
-            content.classList.add('show-fusion14');
-        }
-        
+function openSecretPopup() {
+    document.getElementById('secretPopupOverlay').classList.add('active');
+}
+function closeSecretPopup() {
+    document.getElementById('secretPopupOverlay').classList.remove('active');
+    // Clear the secret code from the search box
+    const sb = document.getElementById('searchBox');
+    if (sb) { sb.value = ''; }
+    _realSearchVal = '';
+}
+// Close popup on overlay backdrop click
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('secretPopupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeSecretPopup();
     });
-
-    // Trigger change event on page load to apply initial style
-    sheetSelect.dispatchEvent(new Event('change'));
+});
 </script>
 
 <script src="https://apis.google.com/js/api.js"></script>
