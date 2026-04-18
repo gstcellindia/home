@@ -1667,6 +1667,22 @@ Circular - GST Cell
             <div id="crossSheetNotice">Searching other similar pages&hellip;</div>
             <div id="crossSheetDropdown"></div>
         </div>
+        <a id="btnCentral" href="https://docs.google.com/spreadsheets/d/1fvLXbZu5cJ24uKcsk8gLJqN_yhuhYqzWDUeDA0c05mY/edit?usp=sharing" target="_blank"
+           style="display:none; padding:7px 14px; background:linear-gradient(to right,#9be8ff,#e1ffea); border:2px solid deepskyblue; border-radius:10px; font-size:12pt; font-weight:bold; color:#005f7a; text-decoration:none; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle;">
+           Central
+        </a>
+        <a id="btnState" href="https://docs.google.com/spreadsheets/d/1_fe6rYyg1qfBOl5pOEvU8aY8Vj4E1cpM2qSYvjK1fvc/edit?gid=889030374#gid=889030374" target="_blank"
+           style="display:none; padding:7px 14px; background:linear-gradient(to right,#ffe49b,#fff5e1); border:2px solid orange; border-radius:10px; font-size:12pt; font-weight:bold; color:#7a4a00; text-decoration:none; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle;">
+           State
+        </a>
+        <a id="btnInstruction" href="https://docs.google.com/spreadsheets/d/1kitIihyHBdng1aSCndyd0EHci-fprbnDj9DzIY39aIk/edit?usp=sharing" target="_blank"
+           style="display:none; padding:7px 14px; background:linear-gradient(to right,#d4b3ff,#f0e6ff); border:2px solid #9b5de5; border-radius:10px; font-size:12pt; font-weight:bold; color:#4a007a; text-decoration:none; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle;">
+           Instruction
+        </a>
+        <button id="btnExitSecret" onclick="exitSecretModeGlobal()"
+           style="display:none; padding:7px 12px; background:linear-gradient(to right,#ffb3b3,#ffe0e0); border:2px solid red; border-radius:10px; font-size:12pt; font-weight:bold; color:red; box-shadow:2px 2px 6px rgba(0,0,0,0.2); margin:10px 3px; vertical-align:middle; cursor:pointer;">
+           &#10005;
+        </button>
 
         <select id="filterJ" class="filterControl filterControl--select" style="display:none">
             <option value="">Select</option>
@@ -2234,6 +2250,123 @@ return tempDiv.innerHTML; // Return processed HTML
 }
 
 
+
+// ==================== SECRET CODE HANDLER ====================
+(function() {
+    const sf             = document.getElementById('searchFilter');
+    const btnCentral     = document.getElementById('btnCentral');
+    const btnState       = document.getElementById('btnState');
+    const btnInstruction = document.getElementById('btnInstruction');
+    const btnExit        = document.getElementById('btnExitSecret');
+
+    // States: 'normal' | 'star' (saw *, still text mode) | 'number' (password mode, digits after *)
+    let state = 'normal';
+
+    window.exitSecretModeGlobal = function() {
+        state = 'normal';
+        sf.type = 'text';
+        sf.value = '';
+        sf.placeholder = 'Search circulars...';
+        hideButtons();
+    };
+
+    function hideButtons() {
+        btnCentral.style.display     = 'none';
+        btnState.style.display       = 'none';
+        btnInstruction.style.display = 'none';
+        btnExit.style.display        = 'none';
+    }
+
+    function revealButtons() {
+        btnCentral.style.display     = 'inline-block';
+        btnState.style.display       = 'inline-block';
+        btnInstruction.style.display = 'inline-block';
+        btnExit.style.display        = 'inline-block';
+    }
+
+    sf.addEventListener('keydown', function(e) {
+
+        // --- NORMAL state ---
+        if (state === 'normal') {
+            // If * is the first character typed, enter 'star' state
+            if (e.key === '*' && sf.value === '') {
+                // Let the * appear normally in the text box
+                state = 'star';
+            }
+            return;
+        }
+
+        // --- STAR state: user typed *, box shows '*', type = text ---
+        if (state === 'star') {
+            if (e.key === 'Backspace') {
+                // Deleting the * — back to normal
+                state = 'normal';
+                return;
+            }
+            if (/^[0-9]$/.test(e.key)) {
+                // First digit after * — switch to password mode
+                e.preventDefault();
+                state = 'number';
+                sf.type = 'password';
+                sf.value = e.key; // put the digit as first char
+                return;
+            }
+            // Any non-digit, non-backspace → treat as normal search
+            state = 'normal';
+            return;
+        }
+
+        // --- NUMBER state: password mode, collecting digits ---
+        if (state === 'number') {
+            if (e.key === 'Backspace') {
+                // If only one char left and backspace, go back to star state
+                if (sf.value.length <= 1) {
+                    e.preventDefault();
+                    state = 'star';
+                    sf.type = 'text';
+                    sf.value = '*';
+                }
+                // Otherwise let browser handle backspace normally
+                return;
+            }
+            if (e.key === '+') {
+                e.preventDefault();
+                // Trigger buttons
+                state = 'normal';
+                sf.type = 'text';
+                sf.value = '';
+                sf.placeholder = 'Search circulars...';
+                revealButtons();
+                return;
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                window.exitSecretModeGlobal();
+                return;
+            }
+            if (/^[0-9]$/.test(e.key)) {
+                // Allow digit — browser handles it
+                return;
+            }
+            // Non-digit typed → exit secret mode, treat as normal search
+            e.preventDefault();
+            window.exitSecretModeGlobal();
+            return;
+        }
+    });
+
+    // Watch for the box being cleared externally (e.g. user selects all & deletes)
+    sf.addEventListener('input', function() {
+        if (state === 'normal') {
+            // Hide buttons if user is typing a normal search
+            hideButtons();
+        }
+        if (state === 'star' && sf.value === '') {
+            state = 'normal';
+        }
+    });
+})();
+// ==================== END SECRET CODE HANDLER ====================
 
 // Filter data based on all three filters
 function applyFilters() {
