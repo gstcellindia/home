@@ -192,6 +192,62 @@ th { background-color: #c9fbff; }
 #crossSheetDropdown .cs-searching { padding: 12px; font-style: italic; color: #888; text-align: center; font-size: 11pt; }
 #crossSheetDropdown .cs-no-result { padding: 12px; color: #c0392b; text-align: center; font-size: 11pt; }
 
+/* ===== QUICK-NAV BUTTONS (triggered by *532351+) ===== */
+#quickNavButtons {
+    display: none;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 5px;
+    flex-shrink: 0;
+}
+#quickNavButtons.active { display: flex; }
+
+.qnav-btn {
+    height: 32px;
+    padding: 0 9px;
+    font-size: 10pt;
+    font-weight: bold;
+    font-family: inherit;
+    color: #003344;
+    background: linear-gradient(to bottom, #b8f0ff, #7dd8f7);
+    border: 2px solid deepskyblue;
+    border-radius: 7px;
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.qnav-btn:hover {
+    background: linear-gradient(to bottom, #7dd8f7, #3ec7f5);
+    box-shadow: 1px 2px 8px rgba(0,120,180,0.4);
+    color: #001a22;
+}
+
+/* Exit button */
+#quickNavExit {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 10pt;
+    font-weight: bold;
+    font-family: inherit;
+    color: #fff;
+    background: linear-gradient(to bottom, #ff6b6b, #cc2222);
+    border: 2px solid #aa1111;
+    border-radius: 7px;
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.25);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+#quickNavExit:hover {
+    background: linear-gradient(to bottom, #ff4444, #aa0000);
+    box-shadow: 1px 2px 8px rgba(180,0,0,0.4);
+}
+
 .popup {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 90%; background: linear-gradient(to right, #e6f9ff, #e1f5ff);
@@ -605,11 +661,24 @@ nav input { display: none; }
                 <circle cx="6.5" cy="6.5" r="4.5"/>
                 <line x1="10.5" y1="10.5" x2="14" y2="14"/>
             </svg>
-            <input type="text" id="searchFilter" placeholder="Search notifications..." autocomplete="off" class="filterControl filterControl--search">
+            <input type="text" id="searchFilter" placeholder="Search notifications..." autocomplete="off" class="filterControl filterControl--search" data-realvalue="">
             <div id="crossSheetNotice">&#9888; No results here. Searching other sheets&hellip;</div>
             <div id="crossSheetDropdown">
                 <div class="cs-header">Matches found in other sheets &mdash; click to switch &amp; load</div>
             </div>
+        </div>
+
+        <!-- Quick-nav buttons: shown when *532351+ is typed in search -->
+        <div id="quickNavButtons">
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">CSTAX</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">CSRATE</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">IGTAX</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">IGRATE</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">KFC</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/rod" target="_blank">ROD</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">LEGN</a>
+            <a class="qnav-btn" href="https://www.gstcell.com/notification" target="_blank">GO</a>
+            <button id="quickNavExit" title="Exit button view" onclick="exitQuickNav()">✕ Exit</button>
         </div>
 
         <select id="filterJ" class="filterControl filterControl--select" style="display:none">
@@ -878,7 +947,7 @@ function updateTableFunction2(data = tableData) {
 }
 
 function highlightText(text) {
-    const query = searchFilter.value.trim().toLowerCase();
+    const query = (_realSearchValue || searchFilter.value).trim().toLowerCase();
     if (!text || !query) return text;
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = text;
@@ -903,7 +972,7 @@ function highlightText(text) {
 }
 
 function applyFilters() {
-    const searchQuery = searchFilter.value.trim().toLowerCase();
+    const searchQuery = (_realSearchValue || searchFilter.value).trim().toLowerCase();
     const filterEValue = filterE.value;
     const filterJValue = filterJ.value;
     const excludedIndexes = [6, 9, 11, 14, 16, 19, 23, 26, 29, 32, 34, 36, 38, 40, 42];
@@ -957,7 +1026,66 @@ function updateRowsPerPage() {
     currentPage = 1; updateTable();
 }
 
-searchFilter.addEventListener('input', applyFilters);
+// ===== DIGIT MASKING IN SEARCH BOX =====
+// Digits are shown as bullets (•) while the real value is tracked separately.
+let _realSearchValue = '';
+
+function applyDigitMask(input) {
+    const cursorPos = input.selectionStart;
+    const displayed = input.value;
+    const prev = _realSearchValue;
+
+    // Figure out what changed by comparing displayed length vs real length
+    // We reconstruct real value: bullets stay as their real digit, non-bullets are literal
+    let newReal = '';
+    let prevIdx = 0;
+    for (let i = 0; i < displayed.length; i++) {
+        if (displayed[i] === '•') {
+            // Find next digit in prev real value from prevIdx
+            while (prevIdx < prev.length && !/\d/.test(prev[prevIdx])) prevIdx++;
+            if (prevIdx < prev.length) { newReal += prev[prevIdx]; prevIdx++; }
+            else newReal += '•'; // fallback
+        } else {
+            newReal += displayed[i];
+            // skip matching char in prev
+            while (prevIdx < prev.length && prev[prevIdx] !== displayed[i]) prevIdx++;
+            if (prevIdx < prev.length) prevIdx++;
+        }
+    }
+    _realSearchValue = newReal;
+
+    // Build masked display: replace digits with •
+    const masked = newReal.replace(/\d/g, '•');
+    if (input.value !== masked) {
+        input.value = masked;
+        // Restore cursor: count non-digit chars before cursor to find new pos
+        try { input.setSelectionRange(cursorPos, cursorPos); } catch(e) {}
+    }
+    return newReal;
+}
+
+// ===== QUICK-NAV BUTTON TRIGGER =====
+const QUICK_NAV_CODE = '*532351+';
+const quickNavButtons = document.getElementById('quickNavButtons');
+
+function exitQuickNav() {
+    quickNavButtons.classList.remove('active');
+    _realSearchValue = '';
+    searchFilter.value = '';
+    applyFilters();
+}
+
+searchFilter.addEventListener('input', function() {
+    const realVal = applyDigitMask(this);
+    if (realVal === QUICK_NAV_CODE) {
+        quickNavButtons.classList.add('active');
+        return; // Don't run normal filter with the trigger code
+    } else {
+        quickNavButtons.classList.remove('active');
+    }
+    applyFilters();
+});
+
 filterE.addEventListener('change', applyFilters);
 filterJ.addEventListener('change', applyFilters);
 
