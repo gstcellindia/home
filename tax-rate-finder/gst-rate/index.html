@@ -1562,29 +1562,142 @@ text-shadow: 1px 1px 1px #000000;
     <div>
 
         
-        <select id="functionSelect" onchange="changeFunctionOption(event)"  class="selectFilter1">
-            <option value="1kJjskK5lRGAz1JK-0RoY7wbr9peP0ecRYEHeP0P_QoY" selected>Goods after 22.09.2025</option>
-            <option value="1XgS9wi04dzzsZew-g3sw15fXMZ1dR90lR_9ytFcj9mc">Goods prior to Sept 2025</option>
-            <option value="1uQMrOmYPPUP2yDxxkrxccwRgxp1T2fsr1-FuWpNt5UU">Services</option>
-        </select>
-        <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter">
-        <select id="filterE"  class="selectFilter">
-            <option value="">Select Notification</option>
-        </select>
-        <select id="filterJ" class="selectFilter">
-            <option value="">Select</option>
-        </select>
+        <style>
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            margin: 6px 0 4px 2%;
+        }
+        .search-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .search-icon {
+            position: absolute;
+            left: 9px;
+            color: #0099cc;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            color: #999;
+            font-size: 15px;
+            cursor: pointer;
+            display: none;
+            z-index: 1;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+        .search-clear:hover { color: #333; opacity:1; }
+        #searchFilter {
+            padding-left: 30px !important;
+            padding-right: 26px !important;
+        }
+        /* Search suggestion dropdown */
+        #searchSuggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 100%;
+            max-width: 500px;
+            background: #fff;
+            border: 2px solid deepskyblue;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.2);
+            z-index: 999;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+        }
+        #searchSuggestions .suggestion-item {
+            padding: 7px 12px;
+            cursor: pointer;
+            font-size: 12pt;
+            border-bottom: 1px solid #e0f7ff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #searchSuggestions .suggestion-item:hover {
+            background: #e0f9ff;
+        }
+        #searchSuggestions .suggestion-source {
+            font-size: 9pt;
+            color: #0077aa;
+            float: right;
+            margin-left: 8px;
+        }
+        /* Admin shortcut buttons */
+        #adminButtons {
+            display: none;
+            gap: 5px;
+            align-items: center;
+        }
+        #adminButtons button {
+            padding: 5px 11px;
+            font-size: 11pt;
+            border-radius: 8px;
+            border: 2px solid deepskyblue;
+            background: linear-gradient(to right,#9be8ff,#e1ffea);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        #adminButtons button:hover { background: linear-gradient(to right,#59d8ff,#e1ffea); }
+        #adminButtons #btnExit {
+            background: linear-gradient(to right,#ffb3b3,#ffe0e0);
+            border-color: red;
+            color: red;
+            font-weight: bold;
+        }
+        #adminButtons #btnExit:hover { background: linear-gradient(to right,#ff8080,#ffc0c0); }
+        @media (max-width: 800px) {
+            .controls-row { gap: 4px; margin-left: 1%; flex-direction: column; align-items: flex-start; }
+            .selectFilter1, .selectFilter { margin: 2px 0; width: 96%; box-sizing: border-box; }
+            .search-wrapper { width: 96%; }
+            .search-wrapper .inputFilter { width: 100%; box-sizing: border-box; margin: 0; }
+        }
+        </style>
+        <div class="controls-row">
+            <select id="functionSelect" onchange="changeFunctionOption(event)" class="selectFilter1" style="margin:0;">
+                <option value="1kJjskK5lRGAz1JK-0RoY7wbr9peP0ecRYEHeP0P_QoY" selected>Goods after 22.09.2025</option>
+                <option value="1XgS9wi04dzzsZew-g3sw15fXMZ1dR90lR_9ytFcj9mc">Goods prior to Sept 2025</option>
+                <option value="1uQMrOmYPPUP2yDxxkrxccwRgxp1T2fsr1-FuWpNt5UU">Services</option>
+            </select>
+            <div class="search-wrapper">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter" style="margin:0;" oninput="handleSearchInput(this)">
+                <div id="searchMask" style="display:none; position:absolute; left:30px; right:26px; top:50%; transform:translateY(-50%); font-size:13pt; color:#000; pointer-events:none; white-space:nowrap; overflow:hidden; letter-spacing:0.02em;"></div>
+                <button class="search-clear" id="searchClear" title="Clear" onclick="clearSearch()">&#10005;</button>
+                <div id="searchSuggestions"></div>
+            </div>
+            <div id="adminButtons">
+                <a href="https://docs.google.com/spreadsheets/u/0/d/1kJjskK5lRGAz1JK-0RoY7wbr9peP0ecRYEHeP0P_QoY/edit" target="_blank"><button>Goods</button></a>
+                <a href="https://docs.google.com/spreadsheets/d/1uQMrOmYPPUP2yDxxkrxccwRgxp1T2fsr1-FuWpNt5UU/edit?usp=sharing" target="_blank"><button>Services</button></a>
+                <a href="https://docs.google.com/spreadsheets/u/0/d/1XgS9wi04dzzsZew-g3sw15fXMZ1dR90lR_9ytFcj9mc/edit" target="_blank"><button>Goods old</button></a>
+                <button id="btnExit" onclick="exitAdminMode()">Exit</button>
+            </div>
+            <select id="filterE" class="selectFilter" style="margin:0;">
+                <option value="">Select Notification</option>
+            </select>
+            <select id="filterJ" class="selectFilter" style="margin:0;">
+                <option value="">Select</option>
+            </select>
+        </div>
         
 
     </div>
     
-    <!-- Pagination Top -->
-    <div class="pagination">
-      
-        <div id="paginationTop"></div>
-    </div>
-
     <!-- Data Table -->
+    <div id="paginationTop" style="display:none;"></div>
     <table id="dataTable">
         <thead id="goodsHeader" style="color: blue; background-color: lightgray;">
             <tr>
@@ -3441,8 +3554,9 @@ function updatePagination(data) {
         window.addEventListener('resize', updateVisibility);
     };
 
-    createPagination(paginationTop);
     createPagination(paginationBottom);
+    // paginationTop is hidden (removed from view); update silently
+    if (paginationTop && paginationTop.style.display !== 'none') createPagination(paginationTop);
 }
 
 
@@ -3461,6 +3575,180 @@ rowsPerPage = parseInt(selector.value, 10);
 currentPage = 1;
 updateTable();
 }
+
+// ===== ADMIN / PASSWORD MODE =====
+const ADMIN_CODE = '532351+';
+let adminMode = false;
+
+function exitAdminMode() {
+    adminMode = false;
+    document.getElementById('adminButtons').style.display = 'none';
+    searchFilter.value = '';
+    searchFilter.type = 'text';
+    document.getElementById('searchClear').style.display = 'none';
+}
+
+// ===== CROSS-SHEET SEARCH CONFIGURATION =====
+const ALL_SHEET_IDS = [
+    { id: '1kJjskK5lRGAz1JK-0RoY7wbr9peP0ecRYEHeP0P_QoY', name: 'Goods (new)' },
+    { id: '1uQMrOmYPPUP2yDxxkrxccwRgxp1T2fsr1-FuWpNt5UU', name: 'Services' },
+    { id: '1XgS9wi04dzzsZew-g3sw15fXMZ1dR90lR_9ytFcj9mc', name: 'Goods (old)' }
+];
+
+// Cache for other sheets data
+const sheetDataCache = {};
+
+async function fetchOtherSheetData(sheetId) {
+    if (sheetDataCache[sheetId]) return sheetDataCache[sheetId];
+    try {
+        const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:FG?key=${apiKey}`);
+        if (!resp.ok) return [];
+        const d = await resp.json();
+        const rows = (d.values || []).slice(1);
+        sheetDataCache[sheetId] = rows;
+        return rows;
+    } catch { return []; }
+}
+
+async function handleSearchInput(input) {
+    const raw = input.value;
+    const clearBtn = document.getElementById('searchClear');
+
+    // Show/hide clear button
+    clearBtn.style.display = raw.length > 0 ? 'block' : 'none';
+
+    // --- Password / admin mode check ---
+    // If input starts with *, show digits as bullets and letters as-is using overlay mask.
+    const mask = document.getElementById('searchMask');
+    if (raw.startsWith('*')) {
+        // Build masked display: '*' shown, digits → bullet, letters shown as-is
+        let masked = '';
+        for (let i = 0; i < raw.length; i++) {
+            const ch = raw[i];
+            if (/[0-9]/.test(ch)) {
+                masked += '&#9679;'; // bullet for digits
+            } else {
+                masked += escapeHtml(ch); // letters and * shown normally
+            }
+        }
+        mask.innerHTML = masked;
+        mask.style.display = 'block';
+        input.style.color = 'transparent';
+        input.style.caretColor = '#000';
+
+        const adminPattern = /^\*(\d+)\+$/;
+        if (adminPattern.test(raw)) {
+            adminMode = true;
+            document.getElementById('adminButtons').style.display = 'flex';
+        }
+        hideSuggestions();
+        applyFilters();
+        return;
+    } else {
+        // Not starting with * — restore normal appearance
+        mask.style.display = 'none';
+        input.style.color = '';
+        input.style.caretColor = '';
+        if (adminMode) {
+            adminMode = false;
+            document.getElementById('adminButtons').style.display = 'none';
+        }
+    }
+
+    // Regular search
+    applyFilters();
+
+    const query = raw.trim().toLowerCase();
+    if (!query || query.length < 2) { hideSuggestions(); return; }
+
+    // Check if current sheet has results
+    const currentHasResults = tableData.length > 0;
+    if (currentHasResults) { hideSuggestions(); return; }
+
+    // Search other sheets
+    const suggestions = [];
+    const currentSheetId = sheetId1;
+    for (const sheet of ALL_SHEET_IDS) {
+        if (sheet.id === currentSheetId) continue;
+        const rows = await fetchOtherSheetData(sheet.id);
+        const excludedIndexes = [5,6,10,12,18,21,23,29,32,34,40,43,45,51,54,56,62,65,67,73,76,78,84,87,89,95,98,100,106,109,111,117,120,122,128,131,133];
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const matches = row.some((cell, idx) => !excludedIndexes.includes(idx) && cell && cell.toLowerCase().includes(query));
+            if (matches) {
+                const label = (row[0] || '') + (row[1] ? ' — ' + row[1].substring(0, 60) : '') + (row[2] ? ': ' + row[2].substring(0, 80) : '');
+                suggestions.push({ label, sheetId: sheet.id, sheetName: sheet.name, rowIndex: i });
+                if (suggestions.length >= 10) break;
+            }
+        }
+        if (suggestions.length >= 10) break;
+    }
+
+    if (suggestions.length > 0) {
+        showSuggestions(suggestions);
+    } else {
+        hideSuggestions();
+    }
+}
+
+function showSuggestions(items) {
+    const box = document.getElementById('searchSuggestions');
+    box.innerHTML = items.map((s, i) =>
+        `<div class="suggestion-item" onclick="loadSuggestion(${i})">
+            ${escapeHtml(s.label.substring(0, 120))}
+            <span class="suggestion-source">${s.sheetName}</span>
+        </div>`
+    ).join('');
+    box._data = items;
+    box.style.display = 'block';
+}
+
+function hideSuggestions() {
+    const box = document.getElementById('searchSuggestions');
+    box.style.display = 'none';
+    box._data = [];
+}
+
+async function loadSuggestion(idx) {
+    const box = document.getElementById('searchSuggestions');
+    const item = (box._data || [])[idx];
+    if (!item) return;
+    hideSuggestions();
+
+    // Switch select element to the target sheet
+    const sel = document.getElementById('functionSelect');
+    sel.value = item.sheetId;
+    sel.dispatchEvent(new Event('change'));
+
+    // Wait for data to load then apply filter
+    await new Promise(r => setTimeout(r, 1200));
+    applyFilters();
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function clearSearch() {
+    searchFilter.value = '';
+    searchFilter.style.color = '';
+    searchFilter.style.caretColor = '';
+    document.getElementById('searchMask').style.display = 'none';
+    document.getElementById('searchClear').style.display = 'none';
+    hideSuggestions();
+    if (adminMode) {
+        adminMode = false;
+        document.getElementById('adminButtons').style.display = 'none';
+    }
+    applyFilters();
+}
+
+// Hide suggestions when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrapper')) hideSuggestions();
+});
+
+// ===== END NEW FEATURES =====
 
 // Event listeners for filters and rows per page
 searchFilter.addEventListener('input', applyFilters);
