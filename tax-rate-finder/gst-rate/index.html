@@ -1636,6 +1636,35 @@ text-shadow: 1px 1px 1px #000000;
             float: right;
             margin-left: 8px;
         }
+        #searchSuggestions .suggestion-searching {
+            padding: 10px 14px;
+            font-size: 11pt;
+            color: #0077aa;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #searchSuggestions .suggestion-searching::before {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #b0e8ff;
+            border-top-color: #0099cc;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        #searchSuggestions .suggestion-noresult {
+            padding: 10px 14px;
+            font-size: 11pt;
+            color: #888;
+            font-style: italic;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
         /* Admin shortcut buttons */
         #adminButtons {
             display: none;
@@ -3665,6 +3694,9 @@ async function handleSearchInput(input) {
     const currentHasResults = tableData.length > 0;
     if (currentHasResults) { hideSuggestions(); return; }
 
+    // Show "searching" indicator immediately
+    showSearchingMessage();
+
     // Search other sheets
     const suggestions = [];
     const currentSheetId = sheetId1;
@@ -3687,7 +3719,7 @@ async function handleSearchInput(input) {
     if (suggestions.length > 0) {
         showSuggestions(suggestions);
     } else {
-        hideSuggestions();
+        showNoResultsMessage();
     }
 }
 
@@ -3707,6 +3739,20 @@ function hideSuggestions() {
     const box = document.getElementById('searchSuggestions');
     box.style.display = 'none';
     box._data = [];
+}
+
+function showSearchingMessage() {
+    const box = document.getElementById('searchSuggestions');
+    box.innerHTML = `<div class="suggestion-searching">Searching other sheets\u2026</div>`;
+    box._data = [];
+    box.style.display = 'block';
+}
+
+function showNoResultsMessage() {
+    const box = document.getElementById('searchSuggestions');
+    box.innerHTML = `<div class="suggestion-noresult">\u26a0 No matching items found in any sheet.</div>`;
+    box._data = [];
+    box.style.display = 'block';
 }
 
 async function loadSuggestion(idx) {
