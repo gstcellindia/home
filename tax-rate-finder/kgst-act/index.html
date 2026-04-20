@@ -92,19 +92,62 @@ th {
 
 }
 
-.inputFilter {
-    margin: 10px 5px;
-    padding: 5px;
-    width:7cm;
-    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
-    border-color: deepskyblue;
-    border-radius: 10px;
-            border-width: 2px;
-            font-size: 13pt;
-            transition:500ms;
-            margin-left: 2%; 
-            
+/* ===== Search box wrapper ===== */
+#searchWrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin: 10px 5px 10px 2%;
+    width: 7cm;
+}
 
+#searchIcon {
+    position: absolute;
+    left: 10px;
+    width: 16px;
+    height: 16px;
+    color: #0099cc;
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.inputFilter {
+    width: 100%;
+    padding: 7px 32px 7px 36px;
+    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
+    border: 2px solid deepskyblue;
+    border-radius: 20px;
+    font-size: 13pt;
+    font-style: italic;
+    transition: 400ms;
+    background: #ffffff;
+    color: #003344;
+    outline: none;
+}
+
+.inputFilter:focus {
+    border-color: #0077bb;
+    box-shadow: 0 0 0 3px rgba(0,153,204,0.18), 2px 2px 6px rgba(0,0,0,0.2);
+    background: #f0faff;
+}
+
+.inputFilter::placeholder {
+    color: #aaccdd;
+}
+
+#searchClear {
+    position: absolute;
+    right: 10px;
+    font-size: 13pt;
+    color: #aaa;
+    cursor: pointer;
+    display: none;
+    line-height: 1;
+    padding: 2px;
+}
+
+#searchClear:hover {
+    color: #e00;
 }
 /* Desktop: show full label, hide short label */
 .amend-mobile  { display: none; }
@@ -1257,9 +1300,9 @@ text-shadow: 1px 1px 1px #000000;
         
 }
 
-.inputFilter {
-    margin-left:2%;
-    width:96%;
+#searchWrapper {
+    margin-left: 2%;
+    width: 96%;
 }
 }
 
@@ -1577,7 +1620,14 @@ text-shadow: 1px 1px 1px #000000;
         <select id="functionSelect" onchange="changeFunctionOption(event)" style="display:none"  class="selectFilter1">
             <option value="1N7jaZS5JmOKR0uiaaOFQ7q96cTO7L2S5qwuhlJDV5f8" selected>Services</option>
         </select>
-        <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter" >
+        <div id="searchWrapper">
+            <svg id="searchIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter">
+            <span id="searchClear" title="Clear" onclick="clearSearchField()">&#x2715;</span>
+        </div>
         <a id="excelBtn" href="https://docs.google.com/spreadsheets/u/0/d/1N7jaZS5JmOKR0uiaaOFQ7q96cTO7L2S5qwuhlJDV5f8/edit" target="_blank" style="display:none; margin-left:2%; padding:6px 14px; background:linear-gradient(to right,#9be8ff,#e1ffea); border:2px solid deepskyblue; border-radius:8px; font-size:12pt; font-weight:bold; color:#005588; box-shadow:2px 2px 6px rgba(0,0,0,0.25); text-decoration:none; vertical-align:middle;">&#128196; Edit Sheet</a>
         <select id="filterE"  class="selectFilter" style="display:none">
             <option value="">Select Notification</option>
@@ -3433,6 +3483,16 @@ currentPage = 1;
 updateTable();
 }
 
+function clearSearchField() {
+    const sf = document.getElementById('searchFilter');
+    sf.value = '';
+    _realVal = '';
+    document.getElementById('searchClear').style.display = 'none';
+    if (excelBtn) excelBtn.style.display = 'none';
+    applyFilters();
+    sf.focus();
+}
+
 // ===== DIGIT MASKING + SECRET MODE =====
 // Digits are masked as bullets (•) ONLY when input starts with *.
 // Normal searches (no leading *) are shown as typed.
@@ -3446,6 +3506,8 @@ searchFilter.addEventListener('input', function () {
     const cursor = el.selectionStart;
     const displayed = el.value;
     const prev = _realVal;
+    const clearBtn = document.getElementById('searchClear');
+    if (clearBtn) clearBtn.style.display = displayed.length > 0 ? 'block' : 'none';
 
     if (displayed.startsWith('*') || prev.startsWith('*')) {
         // Reconstruct real value: • maps back to digit from prev, others are literal
