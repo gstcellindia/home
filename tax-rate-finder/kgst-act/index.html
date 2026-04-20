@@ -106,6 +106,16 @@ th {
             
 
 }
+/* Desktop: show full label, hide short label */
+.amend-mobile  { display: none; }
+.amend-desktop { display: inline-block; }
+
+@media (max-width: 799px) {
+    /* Mobile: show short label, hide full label */
+    .amend-desktop { display: none; }
+    .amend-mobile  { display: inline-block; }
+}
+
 .amendment-button{
     background: linear-gradient(to right, #9be8ff, #e1ffea);
     box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
@@ -1568,6 +1578,7 @@ text-shadow: 1px 1px 1px #000000;
             <option value="1N7jaZS5JmOKR0uiaaOFQ7q96cTO7L2S5qwuhlJDV5f8" selected>Services</option>
         </select>
         <input type="text" id="searchFilter" placeholder="Search..." autocomplete="off" class="inputFilter" >
+        <a id="excelBtn" href="https://docs.google.com/spreadsheets/u/0/d/1N7jaZS5JmOKR0uiaaOFQ7q96cTO7L2S5qwuhlJDV5f8/edit" target="_blank" style="display:none; margin-left:2%; padding:6px 14px; background:linear-gradient(to right,#9be8ff,#e1ffea); border:2px solid deepskyblue; border-radius:8px; font-size:12pt; font-weight:bold; color:#005588; box-shadow:2px 2px 6px rgba(0,0,0,0.25); text-decoration:none; vertical-align:middle;">&#128196; Edit Sheet</a>
         <select id="filterE"  class="selectFilter" style="display:none">
             <option value="">Select Notification</option>
         </select>
@@ -1578,12 +1589,6 @@ text-shadow: 1px 1px 1px #000000;
 
     </div>
     
-    <!-- Pagination Top -->
-    <div class="pagination">
-      
-        <div id="paginationTop"></div>
-    </div>
-
     <!-- Data Table -->
     <table id="dataTable">
         <thead id="goodsHeader" style="background-color: lightgray;">
@@ -1938,13 +1943,10 @@ if (highlightText(row[3]) === "or") {
     <td style="text-align:justify; color:blue">${highlightText(row[6] || '')}</td>`;}
         }
 
-        const amendmentButton = window.innerWidth < 800
-    ? (row[146]
-        ? `<button class="amendment-button" onclick="showAmendmentPopup(${rowIndex})">${row[146]}</button>`
-        : '')
-    : (row[7]
-        ? `<button class="amendment-button" onclick="showAmendmentPopup(${rowIndex})">${row[7]}</button>`
-        : '');
+        // Render both labels; CSS hides/shows the right one per screen width
+        const amendmentButton =
+            (row[7]   ? `<button class="amendment-button amend-desktop" onclick="showAmendmentPopup(${rowIndex})">${row[7]}</button>`   : '') +
+            (row[146] ? `<button class="amendment-button amend-mobile"  onclick="showAmendmentPopup(${rowIndex})">${row[146]}</button>` : '');
 
 tableRow += `<td style="text-align:center" >${amendmentButton}</td></tr>`;
         tableBody.innerHTML += tableRow;
@@ -3411,7 +3413,6 @@ function updatePagination(data) {
         window.addEventListener('resize', updateVisibility);
     };
 
-    createPagination(paginationTop);
     createPagination(paginationBottom);
 }
 
@@ -3432,8 +3433,65 @@ currentPage = 1;
 updateTable();
 }
 
-// Event listeners for filters and rows per page
-searchFilter.addEventListener('input', applyFilters);
+// ===== DIGIT MASKING + SECRET MODE =====
+// Digits are masked as bullets (•) ONLY when input starts with *.
+// Normal searches (no leading *) are shown as typed.
+// Typing *532351+ reveals the Edit Sheet button.
+const SECRET_CODE = '*532351+';
+let _realVal = '';
+const excelBtn = document.getElementById('excelBtn');
+
+searchFilter.addEventListener('input', function () {
+    const el = this;
+    const cursor = el.selectionStart;
+    const displayed = el.value;
+    const prev = _realVal;
+
+    if (displayed.startsWith('*') || prev.startsWith('*')) {
+        // Reconstruct real value: • maps back to digit from prev, others are literal
+        let newReal = '';
+        let pi = 0;
+        for (let i = 0; i < displayed.length; i++) {
+            if (displayed[i] === '•') {
+                while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
+                newReal += pi < prev.length ? prev[pi++] : '0';
+            } else {
+                newReal += displayed[i];
+                while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
+                if (pi < prev.length) pi++;
+            }
+        }
+        _realVal = newReal;
+
+        // Mask digits as bullets only while still in secret mode
+        if (newReal.startsWith('*')) {
+            const masked = newReal.replace(/\d/g, '•');
+            if (el.value !== masked) {
+                el.value = masked;
+                try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+            }
+        } else {
+            el.value = newReal;
+        }
+
+        // Reveal button on exact secret code match
+        if (newReal === SECRET_CODE) {
+            excelBtn.style.display = 'inline-block';
+            el.value = '';
+            _realVal = '';
+            return;
+        } else {
+            excelBtn.style.display = 'none';
+        }
+
+        if (newReal.startsWith('*')) return; // don't run search in secret mode
+    } else {
+        _realVal = displayed;
+        excelBtn.style.display = 'none';
+    }
+
+    applyFilters();
+});
 filterE.addEventListener('change', applyFilters);
 filterJ.addEventListener('change', applyFilters);
 
