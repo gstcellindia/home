@@ -2248,8 +2248,8 @@ updateTable();
 
 // Event listeners for filters and rows per page
 // ===== DIGIT MASKING + SECRET MODE =====
-// Digits typed in the search box are shown as bullets (•).
-// Real value tracked in _realVal for filtering.
+// Digits are masked as bullets (•) ONLY when input starts with *.
+// Normal searches (no leading *) are shown as typed.
 // Typing *532351+ reveals the EXCEL button.
 const SECRET_CODE = '*532351+';
 let _realVal = '';
@@ -2261,33 +2261,50 @@ searchFilter.addEventListener('input', function () {
     const displayed = el.value;
     const prev = _realVal;
 
-    // Reconstruct real value: • maps back to digit from prev, others are literal
-    let newReal = '';
-    let pi = 0;
-    for (let i = 0; i < displayed.length; i++) {
-        if (displayed[i] === '•') {
-            while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
-            newReal += pi < prev.length ? prev[pi++] : '0';
-        } else {
-            newReal += displayed[i];
-            while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
-            if (pi < prev.length) pi++;
+    // --- Secret mode: only when input starts with * ---
+    if (displayed.startsWith('*') || prev.startsWith('*')) {
+        // Reconstruct real value: • maps back to digit from prev, others are literal
+        let newReal = '';
+        let pi = 0;
+        for (let i = 0; i < displayed.length; i++) {
+            if (displayed[i] === '•') {
+                while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
+                newReal += pi < prev.length ? prev[pi++] : '0';
+            } else {
+                newReal += displayed[i];
+                while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
+                if (pi < prev.length) pi++;
+            }
         }
-    }
-    _realVal = newReal;
+        _realVal = newReal;
 
-    // Mask all digits as bullets
-    const masked = newReal.replace(/\d/g, '•');
-    if (el.value !== masked) {
-        el.value = masked;
-        try { el.setSelectionRange(cursor, cursor); } catch(e) {}
-    }
+        // Mask digits as bullets only while still in secret mode
+        if (newReal.startsWith('*')) {
+            const masked = newReal.replace(/\d/g, '•');
+            if (el.value !== masked) {
+                el.value = masked;
+                try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+            }
+        } else {
+            // * was removed — restore real value and exit secret mode
+            el.value = newReal;
+        }
 
-    // Show/hide EXCEL button on secret code
-    if (newReal === SECRET_CODE) {
-        excelBtn.style.display = 'inline-block';
-        return;
+        // Show/hide EXCEL button on secret code match
+        if (newReal === SECRET_CODE) {
+            excelBtn.style.display = 'inline-block';
+            el.value = '';
+            _realVal = '';
+            return;
+        } else {
+            excelBtn.style.display = 'none';
+        }
+
+        // Don't run normal search while in secret mode
+        if (newReal.startsWith('*')) return;
     } else {
+        // Normal input — track real value as-is, no masking
+        _realVal = displayed;
         excelBtn.style.display = 'none';
     }
 
