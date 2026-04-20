@@ -150,7 +150,7 @@ transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out e
 }
 
 .filterCtrl {
-    height: 40px;
+    min-height: 1cm;
     padding: 0 12px;
     font-size: 13pt;
     font-family: 'Times New Roman', Times, serif;
@@ -199,6 +199,8 @@ transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out e
 #searchWrapper svg {
     position: absolute;
     left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 15px; height: 15px;
     pointer-events: none;
     color: #0099cc;
@@ -270,6 +272,53 @@ transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out e
     line-height: 1.4;
 }
 #secretPopupClose:hover { background: #aa0000; }
+
+/* ===== CROSS-SHEET SEARCH SUGGESTIONS ===== */
+#searchSuggestions {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 2px solid deepskyblue;
+    border-radius: 9px;
+    box-shadow: 2px 6px 16px rgba(0,140,200,0.22);
+    z-index: 500;
+    max-height: 260px;
+    overflow-y: auto;
+}
+.suggestion-item {
+    padding: 7px 12px;
+    font-size: 11pt;
+    font-family: 'Times New Roman', Times, serif;
+    color: #003344;
+    cursor: pointer;
+    border-bottom: 1px solid #d6f4ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background: #e6f9ff; }
+.suggestion-source {
+    font-size: 9pt;
+    color: #0099cc;
+    font-style: italic;
+    white-space: nowrap;
+    background: #d6f4ff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+}
+.suggestion-searching, .suggestion-noresult {
+    padding: 9px 12px;
+    font-size: 11pt;
+    font-family: 'Times New Roman', Times, serif;
+    color: #005f7a;
+    font-style: italic;
+}
 #secretBtnGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -301,7 +350,10 @@ transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out e
     #filtersBar { flex-direction: column; align-items: stretch; padding: 8px 2%; }
     .filterCtrl, #searchWrapper { width: 100% !important; min-width: 0 !important; max-width: none !important; }
     .filterCtrl--select { max-width: none !important; }
-    .filterCtrl--search { max-width: none !important; }
+    .filterCtrl--search { max-width: none !important; width: 100% !important; box-sizing: border-box; }
+    #searchWrapper { flex: none; height: auto; min-height: 0; padding: 0; margin: 0; align-items: stretch; overflow: visible; }
+    #searchWrapper .filterCtrl--search { width: 100% !important; flex: none; min-height: 1cm; }
+    #searchSuggestions { top: 100%; }
 }
 .select-table-filter2-REMOVED {
     display: none;
@@ -1577,6 +1629,7 @@ padding: 0 30px;
             <circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
         </svg>
         <input type="text" id="searchBox" class="filterCtrl filterCtrl--search" autocomplete="off" placeholder="Search using keyword">
+        <div id="searchSuggestions"></div>
     </div>
 
     <!-- Heading shown inline, updates on sheet change -->
@@ -1787,29 +1840,50 @@ padding: 0 30px;
         const displayed = el.value;
         const prev = _realSearchVal;
 
-        // Reconstruct real value from display (bullets → digits)
+        // Reconstruct real value from displayed (bullets → digits, only when started with *)
         let newReal = '';
-        let pi = 0;
-        for (let i = 0; i < displayed.length; i++) {
-            if (displayed[i] === '•') {
-                while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
-                newReal += pi < prev.length ? prev[pi++] : '0';
-            } else {
-                newReal += displayed[i];
-                while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
-                if (pi < prev.length) pi++;
+        if (prev.startsWith('*')) {
+            // Previously in masked mode — reconstruct digits from bullets
+            let pi = 0;
+            for (let i = 0; i < displayed.length; i++) {
+                if (displayed[i] === '•') {
+                    while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
+                    newReal += pi < prev.length ? prev[pi++] : '0';
+                } else {
+                    newReal += displayed[i];
+                    while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
+                    if (pi < prev.length) pi++;
+                }
             }
+        } else {
+            // Not in masked mode — displayed value IS the real value
+            newReal = displayed;
         }
         _realSearchVal = newReal;
 
-        // Mask digits as bullets
-        const masked = newReal.replace(/\d/g, '•');
-        if (el.value !== masked) {
-            el.value = masked;
-            try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+        // Apply masking only if the value starts with *
+        if (newReal.startsWith('*')) {
+            // Mask digits after the leading *
+            let masked = '*';
+            for (let i = 1; i < newReal.length; i++) {
+                masked += /\d/.test(newReal[i]) ? '•' : newReal[i];
+            }
+            if (el.value !== masked) {
+                el.value = masked;
+                try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+            }
+            // Secret code check
+            if (newReal === '*532351+') {
+                openSecretPopup();
+                return;
+            }
+            hideSuggestions();
+            currentPage = 1;
+            filterAndDisplay();
+            return;
         }
 
-        // Secret code check
+        // Secret code check (unmasked, just in case)
         if (newReal === '*532351+') {
             openSecretPopup();
             return;
@@ -1817,6 +1891,121 @@ padding: 0 30px;
 
         currentPage = 1;
         filterAndDisplay();
+
+        // Cross-sheet search: only trigger if current sheet has no results
+        const query = newReal.trim().toLowerCase();
+        if (!query || query.length < 2) { hideSuggestions(); return; }
+
+        const filteredNow = allRows.filter(row =>
+            row.some((cell, index) => index !== 6 && index !== 9 && index !== 11 && index !== 14 && index !== 16 && index !== 19 && index !== 23 && index !== 26 && index !== 29 && index !== 32 && index !== 34 && index !== 36 && index !== 38 && index !== 40 && index !== 42 && index < 45 && cell && cell.toLowerCase().includes(query))
+        );
+        if (filteredNow.length > 0) { hideSuggestions(); return; }
+
+        // No results in current sheet — search other sheets
+        showSearchingMessage();
+        searchOtherSheets(query);
+    });
+
+    // ===== CROSS-SHEET SEARCH =====
+    const ALL_SHEET_IDS = Object.entries(sheetIds).map(([key, id]) => ({
+        key,
+        id,
+        name: sheetHeadings[key] || key
+    }));
+    const crossSheetCache = {};
+
+    async function fetchCrossSheetData(sheetId) {
+        if (crossSheetCache[sheetId]) return crossSheetCache[sheetId];
+        try {
+            const apiKey2 = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
+            const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:AV?key=${apiKey2}`);
+            if (!resp.ok) return [];
+            const d = await resp.json();
+            const rows = (d.values || []).slice(1);
+            crossSheetCache[sheetId] = rows;
+            return rows;
+        } catch { return []; }
+    }
+
+    async function searchOtherSheets(query) {
+        const currentId = sheetIds[sheetSelect.value];
+        const suggestions = [];
+        const excludedIdx = new Set([6,9,11,14,16,19,23,26,29,32,34,36,38,40,42]);
+        for (const sheet of ALL_SHEET_IDS) {
+            if (sheet.id === currentId) continue;
+            const rows = await fetchCrossSheetData(sheet.id);
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const matches = row.some((cell, idx) => idx < 45 && !excludedIdx.has(idx) && cell && cell.toLowerCase().includes(query));
+                if (matches) {
+                    const label = (row[0] || '') + (row[1] ? '  ' + row[1].substring(0, 50) : '') + (row[2] ? ' — ' + row[2].substring(0, 70) : '');
+                    suggestions.push({ label, sheetKey: sheet.key, sheetName: sheet.name, rowIndex: i });
+                    if (suggestions.length >= 10) break;
+                }
+            }
+            if (suggestions.length >= 10) break;
+        }
+        if (suggestions.length > 0) {
+            showSuggestions(suggestions);
+        } else {
+            showNoResultsMessage();
+        }
+    }
+
+    function showSuggestions(items) {
+        const box = document.getElementById('searchSuggestions');
+        box.innerHTML = items.map((s, i) =>
+            `<div class="suggestion-item" onclick="loadSuggestion(${i})">
+                <span>${escapeHtml(s.label.substring(0, 110))}</span>
+                <span class="suggestion-source">${escapeHtml(s.sheetName)}</span>
+            </div>`
+        ).join('');
+        box._data = items;
+        box.style.display = 'block';
+    }
+
+    function hideSuggestions() {
+        const box = document.getElementById('searchSuggestions');
+        if (box) { box.style.display = 'none'; box._data = []; }
+    }
+
+    function showSearchingMessage() {
+        const box = document.getElementById('searchSuggestions');
+        box.innerHTML = `<div class="suggestion-searching">Searching other sheets\u2026</div>`;
+        box._data = [];
+        box.style.display = 'block';
+    }
+
+    function showNoResultsMessage() {
+        const box = document.getElementById('searchSuggestions');
+        box.innerHTML = `<div class="suggestion-noresult">\u26a0 No matching items found in any sheet.</div>`;
+        box._data = [];
+        box.style.display = 'block';
+    }
+
+    window.loadSuggestion = async function(idx) {
+        const box = document.getElementById('searchSuggestions');
+        const item = (box._data || [])[idx];
+        if (!item) return;
+        hideSuggestions();
+        // Switch sheet selector
+        sheetSelect.value = item.sheetKey;
+        // Update heading
+        const heading = document.getElementById('tableHeadingInline');
+        if (heading) heading.textContent = sheetHeadings[item.sheetKey] || '';
+        fetchData(sheetIds[item.sheetKey]);
+        // Wait for data then reapply filter
+        await new Promise(r => setTimeout(r, 1200));
+        filterAndDisplay();
+    };
+
+    window.escapeHtml = function(str) {
+        return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    };
+
+    // Hide suggestions when clicking outside searchWrapper
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#searchWrapper')) hideSuggestions();
     });
 
     yearSelect.addEventListener('change', function() { currentPage = 1; filterAndDisplay(); });
