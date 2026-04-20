@@ -65,8 +65,10 @@ th { background-color: #c9fbff; }
     font-style: italic;
     flex: 1 1 200px;
     min-width: 180px;
-    max-width: 8cm;
+    max-width: 100%;              /* FIX: fill wrapper instead of fixed 8cm, wrapper controls max-width */
+    width: 100%;
     padding-left: 34px;           /* room for the search icon */
+    padding-right: 30px;          /* room for the X clear button */
     background: #ffffff;          /* clean white instead of blue gradient */
     border: 2px solid deepskyblue;
     color: #003344;
@@ -86,6 +88,7 @@ th { background-color: #c9fbff; }
     align-items: center;          /* was flex-direction: column — that caused the stretch */
     flex: 1 1 200px;
     min-width: 180px;
+    max-width: 8cm;               /* FIX: match input max-width so X button stays inside */
 }
 
 /* Search icon absolutely positioned inside wrapper */
