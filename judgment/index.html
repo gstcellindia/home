@@ -2264,38 +2264,48 @@ searchFilter.addEventListener('input', function () {
     const displayed = el.value;
     const prev = _realVal;
 
-    // Reconstruct real value from displayed (• chars map back to digits in prev)
     let newReal = '';
-    let pi = 0; // pointer into prev real digits
-    for (let i = 0; i < displayed.length; i++) {
-        if (displayed[i] === '•') {
-            // find next digit in prev
-            while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
-            newReal += pi < prev.length ? prev[pi++] : '0';
-        } else {
-            newReal += displayed[i];
-            // advance prev pointer past this char
-            while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
-            if (pi < prev.length) pi++;
+    if (prev.startsWith('*')) {
+        // Previously in masked mode — reconstruct digits from bullets
+        let pi = 0;
+        for (let i = 0; i < displayed.length; i++) {
+            if (displayed[i] === '\u2022') {
+                while (pi < prev.length && !/\d/.test(prev[pi])) pi++;
+                newReal += pi < prev.length ? prev[pi++] : '0';
+            } else {
+                newReal += displayed[i];
+                while (pi < prev.length && prev[pi] !== displayed[i]) pi++;
+                if (pi < prev.length) pi++;
+            }
         }
+    } else {
+        // Not in masked mode — displayed value IS the real value
+        newReal = displayed;
     }
     _realVal = newReal;
 
-    // Rule: digits are always masked as bullets
-    const masked = newReal.replace(/\d/g, '•');
-    if (el.value !== masked) {
-        el.value = masked;
-        try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+    // Mask digits ONLY when input starts with *
+    if (newReal.startsWith('*')) {
+        let masked = '*';
+        for (let i = 1; i < newReal.length; i++) {
+            masked += /\d/.test(newReal[i]) ? '\u2022' : newReal[i];
+        }
+        if (el.value !== masked) {
+            el.value = masked;
+            try { el.setSelectionRange(cursor, cursor); } catch(e) {}
+        }
+        if (newReal === SECRET_CODE) {
+            excelBtn.style.display = 'inline-block';
+            return;
+        } else {
+            excelBtn.style.display = 'none';
+        }
+        applyFilters();
+        return;
     }
 
-    // Check for secret code
-    if (newReal === SECRET_CODE) {
-        excelBtn.style.display = 'inline-block';
-        return; // Don't filter with the secret code
-    } else {
-        excelBtn.style.display = 'none';
-    }
-
+    // Normal input — no masking
+    excelBtn.style.display = 'none';
     applyFilters();
 });
 
