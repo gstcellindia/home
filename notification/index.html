@@ -662,6 +662,10 @@ nav input { display: none; }
                 <line x1="10.5" y1="10.5" x2="14" y2="14"/>
             </svg>
             <input type="text" id="searchFilter" placeholder="Search notifications..." autocomplete="off" class="filterControl filterControl--search" data-realvalue="">
+            <!-- Mask overlay: shown only when input starts with *, hides digits as bullets -->
+            <div id="searchMask" style="display:none;position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;padding-left:34px;padding-right:30px;font-size:13pt;font-family:inherit;color:#003344;line-height:38px;overflow:hidden;white-space:nowrap;box-sizing:border-box;"></div>
+            <!-- Clear button -->
+            <span id="searchClear" onclick="clearSearch()" title="Clear search" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14pt;color:#888;line-height:1;z-index:2;">&#x2715;</span>
             <div id="crossSheetNotice">&#9888; No results here. Searching other sheets&hellip;</div>
             <div id="crossSheetDropdown">
                 <div class="cs-header">Matches found in other sheets &mdash; click to switch &amp; load</div>
@@ -947,7 +951,7 @@ function updateTableFunction2(data = tableData) {
 }
 
 function highlightText(text) {
-    const query = (_realSearchValue || searchFilter.value).trim().toLowerCase();
+    const query = searchFilter.value.trim().toLowerCase();
     if (!text || !query) return text;
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = text;
@@ -972,7 +976,7 @@ function highlightText(text) {
 }
 
 function applyFilters() {
-    const searchQuery = (_realSearchValue || searchFilter.value).trim().toLowerCase();
+    const searchQuery = searchFilter.value.trim().toLowerCase();
     const filterEValue = filterE.value;
     const filterJValue = filterJ.value;
     const excludedIndexes = [6, 9, 11, 14, 16, 19, 23, 26, 29, 32, 34, 36, 38, 40, 42];
@@ -1026,64 +1030,92 @@ function updateRowsPerPage() {
     currentPage = 1; updateTable();
 }
 
-// ===== DIGIT MASKING IN SEARCH BOX =====
-// Digits are shown as bullets (•) while the real value is tracked separately.
-let _realSearchValue = '';
+// ===== SEARCH MASK OVERLAY (only active when input starts with *) =====
+// A transparent overlay div mirrors the input and hides digits with bullets.
+// When input does NOT start with *, everything is shown normally.
 
-function applyDigitMask(input) {
-    const cursorPos = input.selectionStart;
-    const displayed = input.value;
-    const prev = _realSearchValue;
-
-    // Figure out what changed by comparing displayed length vs real length
-    // We reconstruct real value: bullets stay as their real digit, non-bullets are literal
-    let newReal = '';
-    let prevIdx = 0;
-    for (let i = 0; i < displayed.length; i++) {
-        if (displayed[i] === '•') {
-            // Find next digit in prev real value from prevIdx
-            while (prevIdx < prev.length && !/\d/.test(prev[prevIdx])) prevIdx++;
-            if (prevIdx < prev.length) { newReal += prev[prevIdx]; prevIdx++; }
-            else newReal += '•'; // fallback
-        } else {
-            newReal += displayed[i];
-            // skip matching char in prev
-            while (prevIdx < prev.length && prev[prevIdx] !== displayed[i]) prevIdx++;
-            if (prevIdx < prev.length) prevIdx++;
-        }
-    }
-    _realSearchValue = newReal;
-
-    // Build masked display: replace digits with •
-    const masked = newReal.replace(/\d/g, '•');
-    if (input.value !== masked) {
-        input.value = masked;
-        // Restore cursor: count non-digit chars before cursor to find new pos
-        try { input.setSelectionRange(cursorPos, cursorPos); } catch(e) {}
-    }
-    return newReal;
-}
-
-// ===== QUICK-NAV BUTTON TRIGGER =====
 const QUICK_NAV_CODE = '*532351+';
 const quickNavButtons = document.getElementById('quickNavButtons');
 
 function exitQuickNav() {
     quickNavButtons.classList.remove('active');
-    _realSearchValue = '';
     searchFilter.value = '';
+    searchFilter.style.color = '';
+    searchFilter.style.caretColor = '';
+    const mask = document.getElementById('searchMask');
+    if (mask) { mask.style.display = 'none'; }
+    document.getElementById('searchClear').style.display = 'none';
+    hideCrossSheetDropdown();
+    applyFilters();
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function clearSearch() {
+    searchFilter.value = '';
+    searchFilter.style.color = '';
+    searchFilter.style.caretColor = '';
+    const mask = document.getElementById('searchMask');
+    if (mask) { mask.style.display = 'none'; }
+    document.getElementById('searchClear').style.display = 'none';
+    quickNavButtons.classList.remove('active');
+    hideCrossSheetDropdown();
     applyFilters();
 }
 
 searchFilter.addEventListener('input', function() {
-    const realVal = applyDigitMask(this);
-    if (realVal === QUICK_NAV_CODE) {
-        quickNavButtons.classList.add('active');
-        return; // Don't run normal filter with the trigger code
+    const raw = this.value;
+    const clearBtn = document.getElementById('searchClear');
+    clearBtn.style.display = raw.length > 0 ? 'block' : 'none';
+
+    const mask = document.getElementById('searchMask');
+
+    // Only apply masking when input starts with *
+    if (raw.startsWith('*')) {
+        // Build masked display: * and letters shown as-is, digits → bullet
+        let masked = '';
+        for (let i = 0; i < raw.length; i++) {
+            const ch = raw[i];
+            if (/[0-9]/.test(ch)) {
+                masked += '&#9679;'; // bullet for digits
+            } else {
+                masked += escapeHtml(ch);
+            }
+        }
+        mask.innerHTML = masked;
+        mask.style.display = 'block';
+        this.style.color = 'transparent';
+        this.style.caretColor = '#000';
+
+        // Check for quick-nav trigger code
+        if (raw === QUICK_NAV_CODE) {
+            quickNavButtons.classList.add('active');
+        } else {
+            quickNavButtons.classList.remove('active');
+        }
+        hideCrossSheetDropdown();
+        applyFilters();
+        return;
     } else {
+        // Normal input — restore appearance, no masking
+        mask.style.display = 'none';
+        this.style.color = '';
+        this.style.caretColor = '';
         quickNavButtons.classList.remove('active');
     }
+
     applyFilters();
+
+    const query = raw.trim().toLowerCase();
+    if (!query || query.length < 2) { hideCrossSheetDropdown(); return; }
+
+    // If current sheet has results, no need to cross-search
+    if (tableData.length > 0) { hideCrossSheetDropdown(); return; }
+
+    // Trigger cross-sheet search
+    handleCrossSheetSearch(query);
 });
 
 filterE.addEventListener('change', applyFilters);
@@ -1101,13 +1133,15 @@ const ALL_SHEETS = [
     { value: "1mmhpJKKB-G3fNOUKtRgrrxiqwxJ8Zx0VSxbukqbuWQo",  label: "Removal of Difficulties" },
     { value: "1qkPEUWAv6P8bVYdFYZrvxMJW6gkwJiDLwrraQOHIexE",  label: "Legacy Act" },
     { value: "1ySpJOGCpBQUcOtVfM3QkqcQHRoj7UZpH4VX3CpRHGFM",  label: "Government Orders (G.O.)" }
-
 ];
 const CS_EXCLUDED_INDEXES = [6, 9, 11, 14, 16, 19, 23, 26, 29, 32, 34, 36, 38, 40, 42];
-const csNotice   = document.getElementById('crossSheetNotice');
 const csDropdown = document.getElementById('crossSheetDropdown');
+const csNotice   = document.getElementById('crossSheetNotice');
+
+// Cache fetched sheet data to avoid repeated API calls
+const csSheetCache = {};
 let csSearchTimer = null;
-let csAbortFlag   = false;
+let csAbortFlag = false;
 
 document.addEventListener('click', (e) => {
     if (!document.getElementById('crossSheetWrapper').contains(e.target)) hideCrossSheetDropdown();
@@ -1115,54 +1149,66 @@ document.addEventListener('click', (e) => {
 
 function hideCrossSheetDropdown() {
     csDropdown.style.display = 'none';
-    csNotice.style.display   = 'none';
+    csNotice.style.display = 'none';
 }
 
-function handleCrossSheetSearch(searchQuery) {
+async function fetchCsSheetData(sheetId) {
+    if (csSheetCache[sheetId]) return csSheetCache[sheetId];
+    try {
+        const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:FG?key=${apiKey}`);
+        if (!resp.ok) return [];
+        const d = await resp.json();
+        const rows = (d.values || []).slice(1);
+        csSheetCache[sheetId] = rows;
+        return rows;
+    } catch { return []; }
+}
+
+function handleCrossSheetSearch(query) {
     csAbortFlag = true;
     clearTimeout(csSearchTimer);
     hideCrossSheetDropdown();
-    if (!searchQuery || tableData.length > 0) return;
+    if (!query || query.length < 2) return;
+    // Show "searching" notice immediately
     csNotice.style.display = 'block';
     csDropdown.style.display = 'none';
-    csSearchTimer = setTimeout(() => { csAbortFlag = false; runCrossSheetSearch(searchQuery); }, 500);
+    csSearchTimer = setTimeout(() => { csAbortFlag = false; runCrossSheetSearch(query); }, 500);
 }
 
 async function runCrossSheetSearch(query) {
     const sheetsToSearch = ALL_SHEETS.filter(s => s.value !== sheetId1);
     csDropdown.innerHTML = `<div class="cs-header">Searching other sheets&hellip;</div><div class="cs-searching">&#128269; Searching&hellip;</div>`;
     csDropdown.style.display = 'block';
+    csNotice.style.display = 'none';
+
     const allMatches = [];
+    const lowerQuery = query.toLowerCase();
+
     for (const sheet of sheetsToSearch) {
         if (csAbortFlag) return;
-        try {
-            const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheet.value}/values/Sheet1!A:FG?key=${apiKey}`);
-            if (!response.ok) continue;
-            const data = await response.json();
-            if (!data.values || data.values.length < 2) continue;
-            const rows = data.values.slice(1);
-            const lowerQuery = query.toLowerCase();
-            rows.forEach(row => {
-                const matched = row.some((cell, idx) => {
-                    if (CS_EXCLUDED_INDEXES.includes(idx)) return false;
-                    return cell && cell.toLowerCase().includes(lowerQuery);
-                });
-                if (matched) {
-                    const previewCols = [0, 1, 3].map(i => (row[i] || '').replace(/<[^>]*>/g, '').trim()).filter(Boolean);
-                    const preview = previewCols.join(' | ').substring(0, 120) || '(entry)';
-                    allMatches.push({ sheetId: sheet.value, sheetLabel: sheet.label, preview, row });
-                }
+        const rows = await fetchCsSheetData(sheet.value);
+        for (const row of rows) {
+            const matched = row.some((cell, idx) => {
+                if (CS_EXCLUDED_INDEXES.includes(idx)) return false;
+                return cell && cell.toLowerCase().includes(lowerQuery);
             });
-        } catch (e) {}
+            if (matched) {
+                const previewCols = [0, 1, 3].map(i => (row[i] || '').replace(/<[^>]*>/g, '').trim()).filter(Boolean);
+                const preview = previewCols.join(' | ').substring(0, 120) || '(entry)';
+                allMatches.push({ sheetId: sheet.value, sheetLabel: sheet.label, preview });
+            }
+        }
     }
+
     if (csAbortFlag) return;
+
     if (allMatches.length === 0) {
-        csNotice.style.display = 'none';
         csDropdown.innerHTML = `<div class="cs-header">Cross-sheet search</div><div class="cs-no-result">No matches found in any other sheet.</div>`;
         csDropdown.style.display = 'block';
         return;
     }
-    csNotice.style.display = 'none';
+
+    // Deduplicate / limit per sheet
     const seen = {}; const limited = [];
     for (const m of allMatches) {
         seen[m.sheetLabel] = (seen[m.sheetLabel] || 0);
