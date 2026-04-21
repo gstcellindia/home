@@ -16,7 +16,7 @@ background-color: rgb(255, 255, 255);
 }
 
 table{
-width:94%;
+width:98%;
 }
 
 
@@ -40,16 +40,17 @@ width:94%;
     border: 1px solid #007bff;
 }
 
-#pagination-top, #pagination-bottom, #pagination-top1, #pagination-bottom1, #pagination-top2, #pagination-bottom2{
-    position:absolute;
-    right:3%;
+#pagination-bottom{
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
 }
-#pagination-bottom, #pagination-bottom1, #pagination-bottom2{
+#pagination-bottom-wrapper{
     padding-top: 1rem;
     padding-bottom: 2rem;
 }
 table{
-    margin-top:4rem;
+    margin-top:0rem;
     margin-bottom:0rem;
 }
 table, td, th {
@@ -59,8 +60,8 @@ font-size: 18px;
 text-align: justify;
 padding: 5px 5px 5px 5px;
 font-family: 'Times New Roman', Times, serif, meera;
-margin-left: 3%;
-margin-right: 3%;
+margin-left: 1%;
+margin-right: 1%;
 }
 
 .SRO{
@@ -98,51 +99,118 @@ font-size: 14pt;
 width: 8cm;
 border-radius: 10px;
 min-height: 1cm;
-padding: 0px 0px 0px 0px;
-border: 3px solid rgb(208, 243, 255);
-padding: 0px 7px 0px 5px;
-border-width: 2px;
+padding: 0px 7px 0px 10px;
+border: 2px solid rgb(160, 220, 245);
 box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
-transition: all 200ms ease-in-out; /* Apply a 0.5s transition with ease-in-out effect */
+transition: all 200ms ease-in-out;
 }
 .select-table-filter option {
     background-color: white;
 }
 
-
 .light-table-filter, .select-table-filter1 {
-    margin: 7px 0px 0px auto;
-
+    margin: 0px 0px 0px auto;
 }
 .light-table-filter {
-    margin: 7px 0px 0px auto;
+    margin: 0px 0px 0px auto;
     background-color: rgb(255, 255, 255);
-    border-radius: 15px;      
+    border-radius: 20px;
+    padding-left: 34px; /* space for search icon */
 }
 
 .select-table-filter, .select-table-filter1  {
-    margin: 7px 0px 0px 3%;
-    background: linear-gradient(to right, #8de4ff, #c3ecff);
+    margin: 0px 0px 0px 3%;
+    background: linear-gradient(135deg, #c3ecff 0%, #e8f8ff 50%, #b8e8ff 100%);
+    border: 2px solid #7dd3f0;
+    border-radius: 10px;
+    color: #1a6a8a;
+    font-weight: 500;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: linear-gradient(135deg, #c3ecff 0%, #e8f8ff 50%, #b8e8ff 100%),
+                      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231a6a8a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center, calc(100% - 10px) center;
+    background-size: cover, 12px;
+    padding-right: 28px;
+}
 
-
+/* Search wrapper to hold icon and clear button */
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 0px 0px 0px auto;
+}
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 15px;
+    pointer-events: none;
+}
+.search-wrapper .clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    display: none;
+    font-weight: bold;
+}
+.search-wrapper .clear-btn:hover {
+    color: #e00;
+}
+.secret-link-btn {
+    display: none;
+    margin-left: 8px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #1a6a8a, #2596be);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 13pt;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    text-decoration: none;
+    vertical-align: middle;
+    transition: background 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+}
+.secret-link-btn:hover {
+    background: linear-gradient(135deg, #155870, #1a7fa0);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .select-table-filter2{
     overflow-x:auto; 
-    position:absolute;
+    position:relative;
     display:inline-block;
-    right:30%;
-    background-color: #f1f1f1;
-    color: black;
-    border: 1px solid #ccc;
-    margin: 0 2px;
-    padding: 8px 16px;
+    background: linear-gradient(135deg, #c3ecff 0%, #e8f8ff 100%);
+    color: #1a6a8a;
+    border: 2px solid #7dd3f0;
+    border-radius: 8px;
+    margin: 0 4px 0 0;
+    padding: 6px 14px;
     cursor: pointer;
+    font-size: 13pt;
+    font-weight: 500;
     transition: background-color 0.3s;
-
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .select-table-filter:hover, .light-table-filter:hover{
 box-shadow: 5px 6px 10px 5px rgba(0,0,0,0.3);
+border-color: #4db8e8;
 }
 
 tr:nth-child(even){background-color: #f0fbff}
@@ -185,7 +253,8 @@ background-color: rgb(254, 255, 202);
 margin: 10px 0px 10px 50px;
 display: grid;
 grid-template-columns: repeat(4, 1fr);
-grid-gap: 2rem;
+column-gap: 0.6rem;
+row-gap: 20px;
 align-items: center;
 }
 
@@ -193,7 +262,8 @@ align-items: center;
 border: none;
 border-radius: 20px;
 width: 500px;
-height: 5rem;
+height: auto;
+min-height: 2.5rem;
 }
 
 a{
@@ -620,7 +690,7 @@ text-shadow: 2px 3px 5px #5fc7daad;
         }
 
         .select-table-filter2{
-        right:40%;}
+        font-size: 12pt;}
 
         .tableheading, .tableheading1, .tableheading2{
         margin-left: 25%;
@@ -639,7 +709,13 @@ text-shadow: 2px 3px 5px #5fc7daad;
 grid-template-columns: repeat(2, 1fr);
 }
 .light-table-filter {
-    margin: 7px 0px 0px 3%;
+    margin: 0px 0px 0px 3%;
+}
+.search-wrapper {
+    margin: 0px 0px 0px 3%;
+}
+.search-wrapper .light-table-filter {
+    margin: 0;
 }
 }
 /*----------------------------------------Youtube video style @1450 end-------------------------*/
@@ -714,8 +790,14 @@ margin-left: 680px;
         font-size: 12pt;
         min-width: 8cm;
         min-height: 1cm;
-        padding: 0px 0px 0px 5px;
+        padding: 0px 30px 0px 34px;
         margin: 7px 0px 10px 3%;
+        }
+        .search-wrapper {
+        margin: 7px 0px 10px 3%;
+        }
+        .search-wrapper .light-table-filter {
+        margin: 0;
         }
         .select-table-filter, .select-table-filter1{
         font-size: 12pt;
@@ -729,8 +811,23 @@ margin-left: 680px;
         }
         .grid2 > div {
         border: none;
-        width: 320px;
-        height: 5rem;
+        width: 100%;
+        height: auto;
+        min-height: 3rem;
+        }
+        .select-table-filter, .select-table-filter1 {
+        width: 94%;
+        min-width: unset;
+        margin: 4px 0px 0px 3%;
+        }
+        .search-wrapper {
+        width: 94%;
+        margin: 4px 0px 6px 3%;
+        }
+        .search-wrapper .light-table-filter {
+        width: 100%;
+        min-width: unset;
+        margin: 0;
         }
         .heading{
         font-size: 1.5rem;
@@ -770,10 +867,10 @@ margin-left: 680px;
 
 
 .select-table-filter2{
-    border: 1px solid #ccc;
+    border: 2px solid #7dd3f0;
     margin: 0 2px;
     padding: 5px 10px;
-
+    font-size: 11pt;
 }
 
 }
@@ -1029,11 +1126,8 @@ padding: 0 30px;
 /*-------------------------------------NAV BAR STYLE @ 1020PX end-------------------------------*/
 @media screen and (max-width: 800px) {
 
-            #pagination-top, #pagination-bottom {
-            display: none;
-            }
-            #rowsPerPageSelect {
-            display: none;
+            #pagination-bottom-wrapper {
+            display: none !important;
             }
             table, td, th {
             margin-top:1rem;
@@ -1062,12 +1156,25 @@ padding: 0 30px;
             .light-table-filter{
             margin: 7px 0px 10px 2%;
             min-width:96%;
+            width: 96%;
+            }
+
+            .search-wrapper {
+            margin: 7px 0px 10px 2%;
+            width: 96%;
+            display: block;
+            }
+            .search-wrapper .light-table-filter {
+            margin: 0;
+            width: 100%;
+            min-width: unset;
+            box-sizing: border-box;
             }
 
             .select-table-filter, .select-table-filter2 {
             margin:7px 0px 0px 2%;
             min-width:96%;
-            
+            width:96%;
             }
 
 }
@@ -1400,29 +1507,38 @@ padding: 0 30px;
 
 
         <div class="container2" style="z-index: 10;">
-            <input type="text" id="searchBox" class="light-table-filter" autocomplete="off" placeholder="Search using keyword">
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div class="search-wrapper">
+                    <span class="search-icon">&#128269;</span>
+                    <input type="text" id="searchBox" class="light-table-filter" autocomplete="off" placeholder="Search using keyword">
+                    <button class="clear-btn" id="clearSearch" title="Clear search">&#10005;</button>
+                </div>
+                <a id="secretLinkBtn" class="secret-link-btn" href="https://docs.google.com/spreadsheets/d/1MeJL5aFlJmk2lIUfMJlBTPBUw2D2KaN7MRGtIzDh91I/edit?usp=sharing" target="_blank">&#128196; Open</a>
+            </div>
         </div>
         
 </main>
     
     
-<div style="margin-top: 15px;"> 
+<div style="margin-top: 15px; margin-left: 3%; margin-right: 3%;">
         <div class="tableheading1" style="display: none;"><span class="fusion">Issued by the Kerala</span><span class="fusion1">Issued by the C.B.I.C</span><span class="fusion2">Instructions issued by State & Central</span></div>
             <div id="loadingMessage">Loading data, please wait...</div>
             <div id="errorMessage" style="display:none;">Error loading data. Please try again later.</div>
         <div class="label" style="overflow-x:auto;">
-            <label for="mySelect" style="display:none">Choose an option:</label><select id="rowsPerPageSelect" type="search" class="select-table-filter2" >
-                <option value="30">30</option>
-                <option value="100">100</option>
-                <option value="200">200</option>
-                <option value="200">250</option>
-                <option value="all">All</option>
-            </select>
-            <div id="pagination-top"></div>
             <table id="TaxdataTable" align-self="center">
                 <!-- Data will be populated here -->
             </table>
-            <div id="pagination-bottom"></div>
+            <div id="pagination-bottom-wrapper" style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding-top:1rem; padding-bottom:2rem; margin-left:3%; justify-content:flex-end; margin-right:3%;">
+                <label for="rowsPerPageSelect" style="font-size:12pt; color:#1a6a8a; font-weight:500;">Records per page:</label>
+                <select id="rowsPerPageSelect" class="select-table-filter2">
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="all">All</option>
+                </select>
+                <div id="pagination-bottom" style="display:inline-flex; flex-wrap:wrap; gap:2px;"></div>
+            </div>
         </div>
 </div>	
 
@@ -1481,12 +1597,13 @@ padding: 0 30px;
 <script>
  document.addEventListener('DOMContentLoaded', function() {
     const searchBox = document.getElementById('searchBox');
+    const clearSearch = document.getElementById('clearSearch');
     const yearSelect = document.getElementById('yearSelect');
     const dataTable = document.getElementById('TaxdataTable');
     const loadingMessage = document.getElementById('loadingMessage');
     const errorMessage = document.getElementById('errorMessage');
-    const paginationTop = document.getElementById('pagination-top');
     const paginationBottom = document.getElementById('pagination-bottom');
+    const paginationBottomWrapper = document.getElementById('pagination-bottom-wrapper');
     const rowsPerPageSelect = document.getElementById('rowsPerPageSelect');
     const sheetSelect = document.getElementById('sheetSelect');
 
@@ -1497,16 +1614,62 @@ padding: 0 30px;
     const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
 
     let currentPage = 1;
-    let rowsPerPage = parseInt(rowsPerPageSelect.value) || 30;
+    let rowsPerPage = 15;
     let allRows = [];
+
+    const secretLinkBtn = document.getElementById('secretLinkBtn');
+    const SECRET_PREFIX = '*';
+    const SECRET_SUFFIX = '+';
+    const SECRET_CODE   = '532351';
+
+    // Clear button logic
+    searchBox.addEventListener('input', function() {
+        const val = this.value;
+
+        // --- Secret code mode: input starts with * ---
+        if (val.startsWith(SECRET_PREFIX)) {
+            // Mask digits after * as password
+            this.setAttribute('type', 'password');
+            clearSearch.style.display = val.length > 1 ? 'block' : 'none';
+
+            // Check for complete pattern: *532351+
+            const inner = val.slice(1); // strip leading *
+            if (inner.endsWith(SECRET_SUFFIX)) {
+                const code = inner.slice(0, -1); // strip trailing +
+                if (code === SECRET_CODE) {
+                    secretLinkBtn.style.display = 'inline-block';
+                } else {
+                    secretLinkBtn.style.display = 'none';
+                }
+            } else {
+                secretLinkBtn.style.display = 'none';
+            }
+            // Do NOT run table filter in secret mode
+            return;
+        }
+
+        // --- Normal search mode ---
+        this.setAttribute('type', 'text');
+        secretLinkBtn.style.display = 'none';
+        clearSearch.style.display = val ? 'block' : 'none';
+        filterAndDisplay();
+    });
+
+    clearSearch.addEventListener('click', function() {
+        searchBox.value = '';
+        searchBox.setAttribute('type', 'text');
+        clearSearch.style.display = 'none';
+        secretLinkBtn.style.display = 'none';
+        filterAndDisplay();
+        searchBox.focus();
+    });
 
     function fetchData(sheetId) {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
         
-        // Show the loading message
         loadingMessage.style.display = 'block';
         errorMessage.style.display = 'none';
-        dataTable.innerHTML = ''; // Clear the table
+        dataTable.innerHTML = '';
 
         fetch(url)
             .then(response => {
@@ -1517,7 +1680,8 @@ padding: 0 30px;
             })
             .then(data => {
                 loadingMessage.style.display = 'none';
-                allRows = data.values.slice(1); // Skip the header row
+                allRows = data.values.slice(1);
+                populateYearSelectFromData(allRows);
                 initializeRowsPerPage();
                 filterAndDisplay();
             })
@@ -1532,13 +1696,11 @@ padding: 0 30px;
         const keyword = searchBox.value.toLowerCase();
         const selectedYear = yearSelect.value;
         const filteredData = allRows.filter(row =>
-            (selectedYear === 'all' || row[5] === selectedYear) &&
+            (selectedYear === 'all' || (row[5] || '').trim().replace(/@/g, '') === selectedYear) &&
             (row.some((cell, index) => index !== 6 && index !== 9 && index !== 11 && index !== 14 && index !== 16 && index !== 19 && index !== 23 && index !== 26 && index !== 29 && index !== 32 && index !== 34 && index !== 36 && index !== 38 && index !== 40 && index !== 42 && index < 45 && cell.toLowerCase().includes(keyword)))
             );
         displayData(filteredData, keyword);
     }
-
-    
 
     function initializeRowsPerPage() {
         const screenWidth = window.innerWidth;
@@ -1546,22 +1708,22 @@ padding: 0 30px;
             rowsPerPageSelect.value = 'all';
             rowsPerPage = allRows.length;
         } else {
-            rowsPerPageSelect.value = '30';
-            rowsPerPage = 30;
+            rowsPerPageSelect.value = '15';
+            rowsPerPage = 15;
         }
-        filterAndDisplay(); // Ensure the display is updated with new rowsPerPage
+        filterAndDisplay();
     }
 
-    searchBox.addEventListener('input', filterAndDisplay);
     yearSelect.addEventListener('change', filterAndDisplay);
     rowsPerPageSelect.addEventListener('change', function() {
-        rowsPerPage = rowsPerPageSelect.value === 'all' ? allRows.length : parseInt(rowsPerPageSelect.value) || 10;
-        currentPage = 1; // Reset to the first page
+        rowsPerPage = rowsPerPageSelect.value === 'all' ? allRows.length : parseInt(rowsPerPageSelect.value) || 15;
+        currentPage = 1;
         filterAndDisplay();
     });
 
     sheetSelect.addEventListener('change', function() {
-        currentPage = 1; // Reset to the first page
+        currentPage = 1;
+        updateYearSelect(); // reset year dropdown while new data loads
         const selectedSheet = sheetSelect.value;
         fetchData(sheetIds[selectedSheet]);
     });
@@ -1665,9 +1827,16 @@ padding: 0 30px;
     }
 
     function displayPagination(totalRows) {
-        paginationTop.innerHTML = '';
         paginationBottom.innerHTML = '';
-        const totalPages = rowsPerPage === 'all' ? 1 : Math.ceil(totalRows / rowsPerPage);
+        // Only show pagination controls when total rows exceed 15
+        const effectiveRowsPerPage = rowsPerPage === 'all' ? totalRows : rowsPerPage;
+        if (totalRows <= 15 || rowsPerPage === 'all') {
+            paginationBottomWrapper.style.display = totalRows > 0 ? 'flex' : 'none';
+            // Still show rows-per-page selector but hide page buttons
+            return;
+        }
+        paginationBottomWrapper.style.display = 'flex';
+        const totalPages = Math.ceil(totalRows / effectiveRowsPerPage);
         const maxButtons = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
         let endPage = Math.min(totalPages, startPage + maxButtons - 1);
@@ -1717,7 +1886,6 @@ padding: 0 30px;
             }
         };
 
-        appendPaginationButtons(paginationTop);
         appendPaginationButtons(paginationBottom);
     }
 
@@ -1747,77 +1915,44 @@ padding: 0 30px;
     sheetSelect.dispatchEvent(new Event('change'));
 </script>
 
-<script src="https://apis.google.com/js/api.js"></script>
 <script>
-  const spreadsheetId = '1TYxpb5DpOvThUvMwiGDVICPVOdFMJinON7epWUYhtY0'; // Replace with your Google Sheets ID
-const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs'; // Replace with your Google Sheets API key
-
-// Fetch data from the specified Google Sheets range
-function fetchSheetData(range, callback) {
-    gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: spreadsheetId,
-        range: range,
-    }).then((response) => {
-        const data = response.result.values;
-        callback(data);
-    });
-}
-
-// Populate the yearSelect dropdown with data from Google Sheets
-function populateSelect(data) {
-    const yearSelect = document.getElementById('yearSelect');
-    yearSelect.innerHTML = '';
-
-    data.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item[0]; // Assuming value is in the first column
-        option.text = item[1];  // Assuming text is in the second column
-        yearSelect.appendChild(option);
-    });
-}
-
-// Update the yearSelect dropdown based on the selected sheet
+// Populate yearSelect dynamically from the already-loaded main data (column index 5)
 function updateYearSelect() {
-    const sheetSelect = document.getElementById('sheetSelect').value;
     const yearSelect = document.getElementById('yearSelect');
-
-    // Set default value to "Select year" before loading data
+    // Keep only the first 'Select year / all' option
     yearSelect.innerHTML = '';
-    const allOption = document.createElement('option');
-    allOption.value = 'all';
-    allOption.text = 'Select year';
-    yearSelect.appendChild(allOption);
+    const allOpt = document.createElement('option');
+    allOpt.value = 'all';
+    allOpt.text  = 'Select year';
+    yearSelect.appendChild(allOpt);
     yearSelect.value = 'all';
-
-    let range = 'Sheet1!A1:B50';
-
-    switch (sheetSelect) {
-        case 'sheet2':
-        case 'sheet3':
-        case 'sheet4':
-            range = 'Sheet1!A1:B50';
-            break;
-        case 'sheet5':
-            range = 'Sheet1!E1:F50';
-            break;
-    }
-
-    fetchSheetData(range, populateSelect);
 }
 
-// Initialize the Google API client
-function initClient() {
-    gapi.client.init({
-        apiKey: apiKey,
-        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-    }).then(() => {
-        updateYearSelect(); // Populate default data on page load
+// Called after main data is loaded to populate year options from actual data
+function populateYearSelectFromData(rows) {
+    const yearSelect = document.getElementById('yearSelect');
+    // Collect unique non-empty values from column index 5
+    const years = [];
+    rows.forEach(row => {
+        const yr = (row[5] || '').trim().replace(/@/g, '');
+        if (yr && yr !== 'undefined' && !years.includes(yr)) {
+            years.push(yr);
+        }
+    });
+    // Sort years descending (most recent first)
+    years.sort((a, b) => b.localeCompare(a, undefined, {numeric: true}));
+    // Remove old year options (keep only the 'all' option at index 0)
+    while (yearSelect.options.length > 1) yearSelect.remove(1);
+    years.forEach(yr => {
+        const opt = document.createElement('option');
+        opt.value = yr;
+        opt.text  = yr;
+        yearSelect.appendChild(opt);
     });
 }
 
-// Load the Google API client
-gapi.load('client', initClient);
-
+// Run on page load to reset dropdown
+updateYearSelect();
 </script>
 
   <!--------------------------------------------------------NAV Bar Script---------------------------------------------------------------->
