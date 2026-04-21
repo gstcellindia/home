@@ -28,22 +28,36 @@ background-color: rgb(255, 255, 255);
 }
 
 #rowsPerPageSelect{
-    overflow-x:auto; 
+    overflow-x:auto;
     display:inline-block;
-    background-color: #f1f1f1;
-    color: black;
-    padding: 0px 0px 0px 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230077b6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    color: #0077b6;
+    font-weight: bold;
+    padding: 0px 28px 0px 10px;
     cursor: pointer;
     margin-top: 4px;
-    
-    border: 1px solid #ccc;
-    height:3.1rem;
-    transition: background-color 0.3s;
-
+    border: 2px solid #0077b6;
+    border-radius: 6px;
+    height: 3.1rem;
+    font-size: 11pt;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 1px 4px rgba(0,119,182,0.15);
+}
+#rowsPerPageSelect:hover, #rowsPerPageSelect:focus {
+    border-color: #023e8a;
+    box-shadow: 0 0 0 3px rgba(0,119,182,0.18);
+    outline: none;
 }
 .paginationLeveler label{
     font-size: 11pt;
     margin-top: 5px;
+    color: #444;
+    font-weight: 600;
 }
 .page-button {
     background-color: #f1f1f1;
@@ -53,6 +67,7 @@ background-color: rgb(255, 255, 255);
     padding: 8px 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    border-radius: 4px;
 }
 
 .page-button:hover {
@@ -67,46 +82,110 @@ background-color: rgb(255, 255, 255);
 
 #pagination-bottom, .paginationLeveler{
     display: flex;
-    justify-content: flex-end; /* Align elements to the right */
+    justify-content: flex-end;
     margin: 10px 3% 10px 0px;
     text-align: right;
+    align-items: center;
 }
 .paginationLeveler label,
 .paginationLeveler select,
 .paginationLeveler div{
-    margin-left: 0px; /* Add some spacing between elements */
-    margin-right: 5px; /* Add spacing to keep things clean */
+    margin-left: 0px;
+    margin-right: 5px;
     padding: 5px;
     display: inline-block;
 }
 
 .selectFilter {
-    padding: 5px;
-    width:7cm;
-    box-shadow: black 2px 2px 6px;
-    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
-    background: linear-gradient(to right, #9be8ff, #e1f5ff);
-    border-color: deepskyblue;
-    border-radius: 5px;
-    border-width: 2px;
+    padding: 6px 32px 6px 12px;
+    width: 7cm;
+    box-shadow: 0 2px 8px rgba(0,119,182,0.15);
+    background: linear-gradient(135deg, #e0f4ff 0%, #f8fcff 100%);
+    border: 2px solid deepskyblue;
+    border-radius: 8px;
     font-size: 13pt;
-    transition:500ms;
+    color: #023e8a;
+    font-weight: 600;
+    transition: border-color 0.4s, box-shadow 0.4s;
+    margin-left: 3%;
+    margin-top: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230077b6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+}
+.selectFilter:hover, .selectFilter:focus {
+    border-color: #0077b6;
+    box-shadow: 0 0 0 3px rgba(0,119,182,0.2);
+    outline: none;
+}
+
+/* Search wrapper */
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 7cm;
     margin-left: 3%;
     margin-top: 10px;
 }
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0077b6;
+    font-size: 15pt;
+    pointer-events: none;
+    line-height: 1;
+}
+.search-wrapper .search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,119,182,0.12);
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #0077b6;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.2s;
+    padding: 0;
+}
+.search-wrapper .search-clear:hover {
+    background: rgba(0,119,182,0.25);
+}
+.search-wrapper .search-clear.visible {
+    display: flex;
+}
 
 .inputFilter {
-    padding: 5px;
-    width:7cm;
-    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.3);
-    border-color: deepskyblue;
+    padding: 6px 36px 6px 38px;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0,119,182,0.15);
+    border: 2px solid deepskyblue;
     border-radius: 10px;
-    border-width: 2px;
     font-size: 13pt;
-    transition:500ms; 
-    margin-left:3%;
-    margin-top: 10px;
-
+    color: #023e8a;
+    transition: border-color 0.4s, box-shadow 0.4s;
+    background: #f8fcff;
+    margin-left: 0;
+    margin-top: 0;
+    box-sizing: border-box;
+}
+.inputFilter:hover, .inputFilter:focus {
+    border-color: #0077b6;
+    box-shadow: 0 0 0 3px rgba(0,119,182,0.2);
+    outline: none;
+    background: #fff;
 }
 
 #pagination-bottom {
@@ -141,28 +220,6 @@ table, td, th {
   font-weight: bold;
   font-family: 'Times New Roman', Times, serif;
 }
-.page-button {
-    background-color: #f1f1f1;
-    color: black;
-    border: 1px solid #ccc;
-    margin: 0 2px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.page-button:hover {
-    background-color: #ddd;
-}
-
-.page-button.active {
-    background-color: #007bff;
-    color: white;
-    border: 1px solid #007bff;
-}
-
-
-
 
 .SRO{
 margin-left: 0%;
@@ -1023,7 +1080,7 @@ padding: 0 30px;
 /*-------------------------------------NAV BAR STYLE @ 1020PX end-------------------------------*/
 @media screen and (max-width: 800px) {
 
-            #pagination-top, #pagination-bottom, .paginationLeveler label {
+            #pagination-bottom, .paginationLeveler label {
             display: none;
             }
             #rowsPerPageSelect {
@@ -1055,6 +1112,10 @@ padding: 0 30px;
             .selectFilter, .inputFilter{
                 margin-left: 1%;
                 width:98%;
+            }
+            .search-wrapper {
+                width: 98%;
+                margin-left: 1%;
             }
 
 }
@@ -1365,40 +1426,42 @@ padding: 0 30px;
   
 		
 
-            <select id="sheetSelect" class="selectFilter" style="display: none;" onchange="updateYearSelect()">
+            <select id="sheetSelect" class="selectFilter" style="display: none;">
                 <option for="sheet1" value="sheet1">Circular issued by Kerala</option>
                 <option value="sheet2">C.B.I.C. Circular</option>
                 <option value="sheet3">Instructions</option>
             </select>
               <select id="yearSelect" type="search" class="selectFilter" style="overflow-x:auto">
-                  <option value="all">Select Category</option>
+
                   <!-- Options will be populated by JavaScript -->
               </select>
-            <input type="text" id="searchBox" class="inputFilter" autocomplete="off" placeholder="Search using keyword">
+            <div class="search-wrapper">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="searchBox" class="inputFilter" autocomplete="off" placeholder="Search using keyword">
+                <button class="search-clear" id="searchClear" title="Clear search">&#x2715;</button>
+            </div>
     
 
         
 <div id="loadingMessage">Loading data, please wait...</div>
 <div id="errorMessage" style="display:none;">Error loading data. Please try again later.</div>
        
-        <div class="paginationLeveler" style="overflow-x:auto;">
-            <div class="tableheading1" style="display: none;"><span class="fusion">Issued by the Kerala</span><span class="fusion1">Issued by the C.B.I.C</span><span class="fusion2">Issued by State & Central</span></div>
-                    <label for="mySelect" >Show</label>
-                    <select id="rowsPerPageSelect" type="search">
-                        <option value="30">30</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="200">250</option>
-                        <option value="all">All</option>
-                    </select>
-                    <label for="mySelect" >records</label>
-                    <div id="pagination-top"></div>
-        </div>
 
 <table id="TaxdataTable" align-self="center">
 <!-- Data will be populated here -->
 </table>
+        <div class="paginationLeveler" id="bottom-bar" style="overflow-x:auto; display:none;">
+            <label for="rowsPerPageSelect">Show</label>
+            <select id="rowsPerPageSelect">
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
+            </select>
+            <label for="rowsPerPageSelect">records</label>
             <div id="pagination-bottom"></div>
+        </div>
 
 
         
@@ -1460,7 +1523,6 @@ padding: 0 30px;
     const dataTable = document.getElementById('TaxdataTable');
     const loadingMessage = document.getElementById('loadingMessage');
     const errorMessage = document.getElementById('errorMessage');
-    const paginationTop = document.getElementById('pagination-top');
     const paginationBottom = document.getElementById('pagination-bottom');
     const rowsPerPageSelect = document.getElementById('rowsPerPageSelect');
     const sheetSelect = document.getElementById('sheetSelect');
@@ -1473,8 +1535,23 @@ padding: 0 30px;
     const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
 
     let currentPage = 1;
-    let rowsPerPage = parseInt(rowsPerPageSelect.value) || 30;
+    let rowsPerPage = 15;
     let allRows = [];
+    const bottomBar = document.getElementById('bottom-bar');
+    const searchClear = document.getElementById('searchClear');
+
+    // Search: show/hide clear, reset page 1 on every keystroke
+    searchBox.addEventListener('input', function() {
+        searchClear.classList.toggle('visible', searchBox.value.length > 0);
+        currentPage = 1;
+        filterAndDisplay();
+    });
+    searchClear.addEventListener('click', function() {
+        searchBox.value = '';
+        searchClear.classList.remove('visible');
+        currentPage = 1;
+        filterAndDisplay();
+    });
 
     function fetchData(sheetId) {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
@@ -1522,16 +1599,18 @@ padding: 0 30px;
             rowsPerPageSelect.value = 'all';
             rowsPerPage = allRows.length;
         } else {
-            rowsPerPageSelect.value = '30';
-            rowsPerPage = 30;
+            rowsPerPageSelect.value = '15';
+            rowsPerPage = 15;
         }
         filterAndDisplay(); // Ensure the display is updated with new rowsPerPage
     }
 
-    searchBox.addEventListener('input', filterAndDisplay);
-    yearSelect.addEventListener('change', filterAndDisplay);
+    yearSelect.addEventListener('change', function() {
+        currentPage = 1;
+        filterAndDisplay();
+    });
     rowsPerPageSelect.addEventListener('change', function() {
-        rowsPerPage = rowsPerPageSelect.value === 'all' ? allRows.length : parseInt(rowsPerPageSelect.value) || 10;
+        rowsPerPage = rowsPerPageSelect.value === 'all' ? allRows.length : parseInt(rowsPerPageSelect.value) || 15;
         currentPage = 1; // Reset to the first page
         filterAndDisplay();
     });
@@ -1540,6 +1619,7 @@ padding: 0 30px;
         currentPage = 1; // Reset to the first page
         const selectedSheet = sheetSelect.value;
         fetchData(sheetIds[selectedSheet]);
+        updateYearSelect(); // Reload categories for the new sheet
     });
 
     function displayData(rows, keyword = '') {
@@ -1635,8 +1715,11 @@ padding: 0 30px;
     }
 
     function displayPagination(totalRows) {
-        paginationTop.innerHTML = '';
         paginationBottom.innerHTML = '';
+        // Show bottom bar only when records exceed 15
+        bottomBar.style.display = totalRows > 15 ? 'flex' : 'none';
+        if (totalRows <= 15) return;
+
         const totalPages = rowsPerPage === 'all' ? 1 : Math.ceil(totalRows / rowsPerPage);
         const maxButtons = 3;
         let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
@@ -1650,45 +1733,16 @@ padding: 0 30px;
             if (targetPage === currentPage) btn.classList.add('active');
             btn.addEventListener('click', () => {
                 currentPage = targetPage;
-                filterAndDisplay(); // Update data based on new page
+                filterAndDisplay();
             });
             return btn;
         };
 
-        const appendPaginationButtons = (paginationElement) => {
-            // First button
-            if (currentPage > 1) {
-                const firstBtn = createPageButton('First', 1);
-                paginationElement.appendChild(firstBtn);
-            }
-
-            // Previous button
-            if (currentPage > 1) {
-                const prevBtn = createPageButton('Prev', currentPage - 1);
-                paginationElement.appendChild(prevBtn);
-            }
-
-            // Page number buttons
-            for (let i = startPage; i <= endPage; i++) {
-                const btn = createPageButton(i, i);
-                paginationElement.appendChild(btn);
-            }
-
-            // Next button
-            if (currentPage < totalPages) {
-                const nextBtn = createPageButton('Next', currentPage + 1);
-                paginationElement.appendChild(nextBtn);
-            }
-
-            // Last button
-            if (currentPage < totalPages) {
-                const lastBtn = createPageButton('Last', totalPages);
-                paginationElement.appendChild(lastBtn);
-            }
-        };
-
-        appendPaginationButtons(paginationTop);
-        appendPaginationButtons(paginationBottom);
+        if (currentPage > 1) paginationBottom.appendChild(createPageButton('First', 1));
+        if (currentPage > 1) paginationBottom.appendChild(createPageButton('Prev', currentPage - 1));
+        for (let i = startPage; i <= endPage; i++) paginationBottom.appendChild(createPageButton(i, i));
+        if (currentPage < totalPages) paginationBottom.appendChild(createPageButton('Next', currentPage + 1));
+        if (currentPage < totalPages) paginationBottom.appendChild(createPageButton('Last', totalPages));
     }
 
     // Fetch initial data for the default sheet and initialize rows per page
@@ -1717,75 +1771,41 @@ padding: 0 30px;
     sheetSelect.dispatchEvent(new Event('change'));
 </script>
 
-<script src="https://apis.google.com/js/api.js"></script>
 <script>
-  const spreadsheetId = '1TYxpb5DpOvThUvMwiGDVICPVOdFMJinON7epWUYhtY0'; // Replace with your Google Sheets ID
-const apiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs'; // Replace with your Google Sheets API key
+// Category dropdown – plain fetch (same pattern as main data fetch)
+const catSpreadsheetId = '1TYxpb5DpOvThUvMwiGDVICPVOdFMJinON7epWUYhtY0';
+const catApiKey = 'AIzaSyCCbEH-YK4gxmzO5FRXG0c7V_5RHK4hLzs';
 
-// Fetch data from the specified Google Sheets range
-function fetchSheetData(range, callback) {
-    gapi.client.sheets.spreadsheets.values.get({
-        spreadsheetId: spreadsheetId,
-        range: range,
-    }).then((response) => {
-        const data = response.result.values;
-        callback(data);
-    });
-}
-
-// Populate the yearSelect dropdown with data from Google Sheets
 function populateSelect(data) {
     const yearSelect = document.getElementById('yearSelect');
-    yearSelect.innerHTML = '';
-
+    // Reset to default "Select Category" first
     data.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item[0]; // Assuming value is in the first column
-        option.text = item[1];  // Assuming text is in the second column
-        yearSelect.appendChild(option);
+        if (item && item[0] && item[1]) {
+            const option = document.createElement('option');
+            option.value = item[0];
+            option.text  = item[1];
+            yearSelect.appendChild(option);
+        }
     });
-}
-
-// Update the yearSelect dropdown based on the selected sheet
-function updateYearSelect() {
-    const sheetSelect = document.getElementById('sheetSelect').value;
-    const yearSelect = document.getElementById('yearSelect');
-
-    // Set default value to "Select year" before loading data
-    yearSelect.innerHTML = '';
-    const allOption = document.createElement('option');
-    allOption.value = 'all';
-    allOption.text = 'Select Category';
-    yearSelect.appendChild(allOption);
     yearSelect.value = 'all';
+}
 
+function updateYearSelect() {
+    const sheetVal = document.getElementById('sheetSelect').value;
     let range = 'Sheet1!G1:H50';
+    if (sheetVal === 'sheet2' || sheetVal === 'sheet3') range = 'Sheet1!A1:B50';
 
-    switch (sheetSelect) {
-        case 'sheet2':
-            range = 'Sheet1!A1:B50';
-             break;
-        case 'sheet3':
-            range = 'Sheet1!A1:B50';
-            break;
-    }
-
-    fetchSheetData(range, populateSelect);
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${catSpreadsheetId}/values/${range}?key=${catApiKey}`;
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            if (data.values) populateSelect(data.values);
+        })
+        .catch(err => console.error('Category load error:', err));
 }
 
-// Initialize the Google API client
-function initClient() {
-    gapi.client.init({
-        apiKey: apiKey,
-        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-    }).then(() => {
-        updateYearSelect(); // Populate default data on page load
-    });
-}
-
-// Load the Google API client
-gapi.load('client', initClient);
-
+// Load categories on page ready
+document.addEventListener('DOMContentLoaded', updateYearSelect);
 </script>
 
   <!--------------------------------------------------------NAV Bar Script---------------------------------------------------------------->
