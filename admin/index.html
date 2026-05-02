@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSTCell Admin Panel 🔥</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<!-- ████  FIREBASE SDK  ████ -->
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc,
+    doc, query, orderBy, serverTimestamp, getDoc, setDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  // ─── PASTE YOUR FIREBASE CONFIG HERE ───
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCpKgeXBwfvPDZUqbl0ro2xYTIIOYs40QI",
+    authDomain:        "gstcell-afe30.firebaseapp.com",
+    projectId:         "gstcell-afe30",
+    storageBucket:     "gstcell-afe30.firebasestorage.app",
+    messagingSenderId: "977774861669",
+    appId:             "1:977774861669:web:249661743136343e4a158c"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  window._db   = db;
+  window._auth = auth;
+  window._fs   = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, getDoc, setDoc };
+  window._authFn = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
+
+  // ── Direct delete helper: runs inside module scope so doc() & deleteDoc() are native ──
+  window._deleteDoc = async function(collectionName, documentId) {
+    const ref = doc(db, collectionName, documentId);
+    await deleteDoc(ref);
+  };
+
+  // Auth state watcher
+  const MAIN_ADMIN = "gstcell.com@gmail.com";
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      document.getElementById("loginScreen").style.display  = "none";
+      document.getElementById("adminPanel").style.display   = "flex";
+      document.getElementById("userEmail").textContent = user.email;
+      window._currentAdminEmail = user.email;
+      window._isMainAdmin = (user.email === MAIN_ADMIN);
+
+      if (window._isMainAdmin) {
+        // Main admin: show all nav items
+        window._allowedPages = ["dashboard","recent","articles","navlinks","doccards","suggestions","subadmins"];
+        document.querySelectorAll(".nav-item[data-page]").forEach(el => el.style.display = "flex");
+        document.querySelector(".nav-item[data-page='subadmins']").style.display = "flex";
+      } else {
+        // Sub-admin: check permissions from Firestore
+        const snap = await getDoc(doc(db, "sub_admins", user.email));
+        if (!snap.exists()) {
+          // Not authorised
+          signOut(auth);
+          document.getElementById("loginScreen").style.display = "flex";
+          document.getElementById("adminPanel").style.display  = "none";
+          document.getElementById("loginError").textContent = "You are not authorised as an admin.";
+          return;
+        }
+        const allowed = snap.data().pages || [];
+        window._allowedPages = allowed;
+        // Show only allowed nav items
+        document.querySelectorAll(".nav-item[data-page]").forEach(el => {
+          const pg = el.getAttribute("data-page");
+          el.style.display = allowed.includes(pg) ? "flex" : "none";
+        });
+      }
+      loadAll();
+    } else {
+      document.getElementById("loginScreen").style.display  = "flex";
+      document.getElementById("adminPanel").style.display   = "none";
+    }
+  });
+</script>
+
+<style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════ */
+:root {
+  --bg:        #f4f6fb;
+  --surface:   #ffffff;
+  --surface2:  #f0f2f8;
+  --border:    #dde1ef;
+  --accent:    #FF6D00;
+  --accent2:   #FFA000;
+  --green:     #00a854;
+  --red:       #e53935;
+  --blue:      #1565c0;
+  --text:      #1a1d2e;
+  --text-muted:#6673a0;
+  --font:      'Plus Jakarta Sans', sans-serif;
+  --mono:      'DM Mono', monospace;
+  --radius:    10px;
+  --shadow:    0 4px 24px rgba(0,0,0,.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { font-size: 10px; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size:1.4rem; min-height:100vh; }
+
+/* scrollbar */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background: var(--surface2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius:3px; }
+
+/* ══ LOGIN SCREEN ══ */
+#loginScreen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 60% 40%, #e8eaf6 0%, #f4f6fb 70%);
+}
+.login-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px 36px; width: 380px;
+  box-shadow: var(--shadow);
+  animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+.login-box .logo {
+  text-align: center; margin-bottom: 28px;
+}
+.login-box .logo span {
+  font-size: 3.2rem; font-weight:800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.login-box .logo p { color: var(--text-muted); font-size:1.25rem; margin-top:4px; }
+.login-box label { display:block; color:var(--text-muted); font-size:1.15rem; margin-bottom:5px; }
+.login-box input {
+  width:100%; background: var(--surface2); border:1px solid var(--border);
+  color: var(--text); border-radius:8px; padding: 10px 14px; font-size:1.4rem;
+  margin-bottom:16px; outline:none; transition: border .2s;
+}
+.login-box input:focus { border-color: var(--accent); }
+.btn-login {
+  width:100%; background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border:none; color:#fff; border-radius:8px; padding:12px;
+  font-size:1.5rem; font-weight:700; cursor:pointer; transition:opacity .2s;
+}
+.btn-login:hover { opacity:.88; }
+#loginError { color:var(--red); font-size:1.2rem; margin-top:10px; text-align:center; }
+
+/* ══ ADMIN PANEL SHELL ══ */
+#adminPanel {
+  display: none; flex-direction: row; min-height:100vh;
+}
+
+/* ══ SIDEBAR ══ */
+.sidebar {
+  width: 240px; background: var(--surface); border-right:1px solid var(--border);
+  display: flex; flex-direction:column; padding: 20px 0;
+  position: sticky; top:0; height:100vh; overflow-y:auto; flex-shrink:0;
+}
+.sidebar .brand {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size:2rem; font-weight:800;
+}
+.sidebar .brand span { color:var(--accent); }
+.sidebar .brand small { display:block; color:var(--text-muted); font-size:1.1rem; font-weight:400; }
+.nav-item {
+  display:flex; align-items:center; gap:12px;
+  padding: 12px 20px; cursor:pointer; font-size:1.35rem;
+  color: var(--text-muted); transition: all .2s; border-left:3px solid transparent;
+}
+.nav-item:hover { background:var(--surface2); color:var(--text); }
+.nav-item.active { color:var(--accent); background:rgba(255,109,0,.08); border-left-color:var(--accent); }
+.nav-item i { width:18px; text-align:center; }
+.sidebar-footer {
+  margin-top:auto; padding:16px 20px; border-top:1px solid var(--border);
+}
+#userEmail { color:var(--text-muted); font-size:1.15rem; word-break:break-all; margin-bottom:10px; }
+.btn-logout {
+  width:100%; background:rgba(255,23,68,.12); border:1px solid rgba(255,23,68,.3);
+  color:var(--red); border-radius:8px; padding:8px; font-size:1.3rem; cursor:pointer;
+  transition: background .2s;
+}
+.btn-logout:hover { background:rgba(255,23,68,.25); }
+
+/* ══ MAIN CONTENT ══ */
+.main {
+  flex:1; padding: 28px 32px; overflow-y:auto; min-width:0;
+}
+.page { display:none; }
+.page.active { display:block; }
+
+/* ══ PAGE HEADER ══ */
+.page-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:24px; flex-wrap:wrap; gap:12px;
+}
+.page-header h1 { font-size:2.4rem; font-weight:800; }
+.page-header h1 span { color:var(--accent); }
+.badge {
+  background: rgba(255,109,0,.15); color:var(--accent);
+  border:1px solid rgba(255,109,0,.3); border-radius:20px;
+  padding:3px 12px; font-size:1.1rem; font-family:var(--mono);
+}
+
+/* ══ STATS ROW ══ */
+.stats-row { display:flex; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+.stat-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px 20px; flex:1; min-width:140px;
+  transition: border-color .2s;
+}
+.stat-card:hover { border-color:var(--accent); }
+.stat-card .num { font-size:3rem; font-weight:800; color:var(--accent); line-height:1; }
+.stat-card .lbl { color:var(--text-muted); font-size:1.2rem; margin-top:4px; }
+
+/* ══ FORM CARD ══ */
+.form-card {
+  background: var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px; margin-bottom:28px;
+  box-shadow: var(--shadow);
+}
+.form-card h2 { font-size:1.7rem; margin-bottom:18px; color:var(--text); display:flex; align-items:center; gap:8px; }
+.form-card h2 i { color:var(--accent); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-grid.single { grid-template-columns:1fr; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column: 1/-1; }
+.form-group label { color:var(--text-muted); font-size:1.2rem; font-weight:600; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--text); border-radius:8px; padding:10px 14px;
+  font-size:1.35rem; font-family:var(--font); outline:none;
+  transition: border-color .2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color:var(--accent); }
+.form-group textarea { resize:vertical; min-height:90px; }
+select option { background:var(--surface2); }
+
+/* paragraph array */
+.para-list { display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+.para-item { display:flex; flex-direction:column; gap:6px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
+.para-item-img-row { display:flex; gap:8px; align-items:center; }
+.para-item-img-row input[type=text] {
+  flex:1; background:var(--surface); border:1px solid var(--border);
+  color:var(--text); border-radius:6px; padding:7px 10px; font-size:1.25rem;
+  font-family:var(--font); outline:none; transition:border-color .2s;
+}
+.para-item-img-row input[type=text]:focus { border-color:var(--accent); }
+.para-item-img-row input[type=file] { font-size:1.15rem; flex-shrink:0; max-width:160px; }
+.para-item-img-preview { width:60px; height:40px; object-fit:cover; border-radius:4px; display:none; border:1px solid var(--border); }
+.para-item-bottom { display:flex; gap:8px; align-items:flex-start; }
+.para-item-bottom textarea {
+  flex:1; background:var(--surface); border:1px solid var(--border);
+  color:var(--text); border-radius:8px; padding:8px 12px; font-size:1.3rem;
+  resize:vertical; min-height:60px; outline:none; font-family:var(--font);
+}
+.para-item-bottom textarea:focus { border-color:var(--accent); }
+.btn-rm-para {
+  background:rgba(255,23,68,.12); border:1px solid rgba(255,23,68,.3);
+  color:var(--red); border-radius:8px; padding:0 12px; cursor:pointer;
+  font-size:1.4rem; flex-shrink:0;
+}
+.btn-add-para {
+  background:rgba(68,138,255,.12); border:1px solid rgba(68,138,255,.3);
+  color:var(--blue); border-radius:8px; padding:8px 16px;
+  font-size:1.25rem; cursor:pointer; transition:background .2s;
+}
+.btn-add-para:hover { background:rgba(68,138,255,.22); }
+
+/* action buttons */
+.btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+.btn {
+  border:none; border-radius:8px; padding:10px 22px;
+  font-size:1.35rem; font-weight:700; cursor:pointer; transition:all .2s;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.btn-primary { background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; }
+.btn-primary:hover { opacity:.88; transform:translateY(-1px); }
+.btn-secondary { background:var(--surface2); border:1px solid var(--border); color:var(--text); }
+.btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
+.btn-danger { background:rgba(255,23,68,.12); border:1px solid rgba(255,23,68,.3); color:var(--red); }
+.btn-danger:hover { background:rgba(255,23,68,.25); }
+.btn-edit { background:rgba(68,138,255,.12); border:1px solid rgba(68,138,255,.3); color:var(--blue); padding:6px 14px; font-size:1.2rem; }
+.btn-edit:hover { background:rgba(68,138,255,.22); }
+.btn-del { background:rgba(255,23,68,.1); border:1px solid rgba(255,23,68,.25); color:var(--red); padding:6px 14px; font-size:1.2rem; }
+.btn-del:hover { background:rgba(255,23,68,.22); }
+
+/* ══ SUB ADMIN PERMISSIONS ══ */
+.sa-perm-item {
+  display:flex; align-items:center; gap:8px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:10px 14px; cursor:pointer;
+  font-size:1.3rem; transition:border-color .2s;
+}
+.sa-perm-item:hover { border-color:var(--accent); }
+.sa-perm-item input[type=checkbox] { width:16px; height:16px; accent-color:var(--accent); cursor:pointer; }
+
+/* ══ TABLE ══ */
+.table-wrap { overflow-x:auto; margin-top:4px; }
+table { width:100%; border-collapse:collapse; font-size:1.3rem; }
+thead th {
+  text-align:left; padding:10px 14px; color:var(--text-muted);
+  border-bottom:1px solid var(--border); font-size:1.15rem;
+  text-transform:uppercase; letter-spacing:.06em; background:var(--surface2);
+}
+tbody tr { border-bottom:1px solid rgba(0,0,0,.06); transition:background .15s; }
+tbody tr:hover { background:rgba(255,109,0,.04); }
+tbody td { padding:11px 14px; vertical-align:middle; }
+tbody td .cell-main { font-weight:600; color:var(--text); }
+tbody td .cell-sub  { color:var(--text-muted); font-size:1.15rem; margin-top:3px; }
+.tag {
+  background:rgba(255,109,0,.12); color:var(--accent);
+  border-radius:20px; padding:2px 10px; font-size:1.1rem;
+  font-family:var(--mono); display:inline-block;
+}
+.tag.green { background:rgba(0,230,118,.1); color:var(--green); }
+.tag.blue  { background:rgba(68,138,255,.1); color:var(--blue); }
+.actions { display:flex; gap:6px; }
+.empty-row td { text-align:center; color:var(--text-muted); padding:28px; font-style:italic; }
+
+/* ══ TOAST ══ */
+#toast {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:14px 20px; min-width:260px;
+  box-shadow:var(--shadow); font-size:1.35rem; display:none;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn { from{transform:translateX(120%)} to{transform:none} }
+#toast.success { border-color:var(--green); color:var(--green); }
+#toast.error   { border-color:var(--red);   color:var(--red);   }
+#toast.info    { border-color:var(--blue);  color:var(--blue);  }
+
+/* ══ SPINNER ══ */
+.spinner {
+  display:inline-block; width:18px; height:18px;
+  border:3px solid rgba(255,109,0,.2); border-top-color:var(--accent);
+  border-radius:50%; animation:spin .7s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ══ CONFIRM MODAL ══ */
+#confirmModal {
+  position:fixed; inset:0; background:rgba(0,0,0,.4);
+  display:none; align-items:center; justify-content:center; z-index:8000;
+}
+.confirm-box {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:28px 32px; max-width:380px; width:90%;
+  box-shadow:var(--shadow); text-align:center;
+}
+.confirm-box h3 { font-size:1.8rem; margin-bottom:10px; }
+.confirm-box p  { color:var(--text-muted); font-size:1.3rem; margin-bottom:22px; }
+
+/* ══ DASHBOARD ══ */
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(255,109,0,.15), rgba(255,160,0,.08));
+  border:1px solid rgba(255,109,0,.2); border-radius:var(--radius);
+  padding:22px 28px; margin-bottom:24px;
+  display:flex; align-items:center; gap:18px;
+}
+.welcome-banner .icon { font-size:4rem; }
+.welcome-banner h2 { font-size:2rem; font-weight:700; }
+.welcome-banner p  { color:var(--text-muted); font-size:1.3rem; margin-top:4px; }
+.quick-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+.quick-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px; cursor:pointer;
+  transition:all .2s; text-align:center;
+}
+.quick-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:0 8px 24px rgba(255,109,0,.15); }
+.quick-card i { font-size:3rem; color:var(--accent); margin-bottom:10px; display:block; }
+.quick-card h3 { font-size:1.5rem; }
+.quick-card p  { color:var(--text-muted); font-size:1.2rem; margin-top:4px; }
+
+/* ══ FIREBASE CONFIG WARNING ══ */
+.config-warn {
+  background:rgba(255,23,68,.08); border:1px solid rgba(255,23,68,.3);
+  border-radius:var(--radius); padding:14px 18px; margin-bottom:20px;
+  font-size:1.3rem; color:#ff8a80; display:none;
+}
+.config-warn code { background:rgba(0,0,0,.07); padding:1px 6px; border-radius:4px; font-family:var(--mono); }
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  .sidebar { width:200px; }
+  .main { padding:16px; }
+  .form-grid { grid-template-columns:1fr; }
+  .stats-row .stat-card { min-width:120px; }
+}
+@media(max-width:580px){
+  #adminPanel { flex-direction:column; }
+  .sidebar { width:100%; height:auto; position:static; flex-direction:row; flex-wrap:wrap; padding:10px; }
+  .sidebar .brand { display:none; }
+  .nav-item { padding:8px 12px; font-size:1.2rem; }
+  .sidebar-footer { display:none; }
+}
+
+/* ══ DOC CARD BUTTON BUILDER ══ */
+.dc-btn-row-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 4px;
+}
+.dc-btn-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 0;
+}
+.dc-btn-row input, .dc-btn-row select {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 8px 10px;
+  font-size: 1.3rem; font-family: var(--font); outline: none;
+  transition: border-color .2s;
+}
+.dc-btn-row input:focus { border-color: var(--accent); }
+.dc-type-toggle {
+  display: flex; border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border); flex-shrink: 0;
+}
+.dc-type-toggle button {
+  padding: 6px 12px; font-size: 1.2rem; font-weight: 600;
+  border: none; cursor: pointer; background: var(--surface2);
+  color: var(--text-muted); transition: all .15s; white-space: nowrap;
+}
+.dc-type-toggle button.active-link  { background: var(--blue);   color: #fff; }
+.dc-type-toggle button.active-popup { background: var(--accent);  color: #fff; }
+
+/* ══ CSV IMPORT CARD ══ */
+.csv-card {
+  background: linear-gradient(135deg, rgba(21,101,192,.04), rgba(21,101,192,.02));
+  border: 1.5px dashed var(--blue); border-radius: var(--radius);
+  padding: 20px 24px; margin-bottom: 28px;
+}
+.csv-card h2 { font-size:1.6rem; margin-bottom:6px; color:var(--blue); display:flex; align-items:center; gap:8px; }
+.csv-card .csv-hint {
+  font-size:1.15rem; color:var(--text-muted); margin-bottom:14px; line-height:1.5;
+}
+.csv-card .csv-hint code {
+  background:var(--surface2); border:1px solid var(--border); border-radius:4px;
+  padding:1px 6px; font-family:var(--mono); font-size:1.1rem; color:var(--accent);
+}
+.csv-drop-zone {
+  border: 2px dashed var(--border); border-radius:8px;
+  padding: 20px; text-align:center; cursor:pointer;
+  transition: all .2s; background:var(--surface); position:relative;
+}
+.csv-drop-zone:hover, .csv-drop-zone.drag-over {
+  border-color:var(--blue); background:rgba(21,101,192,.05);
+}
+.csv-drop-zone input[type=file] {
+  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+}
+.csv-drop-zone .dz-icon { font-size:3rem; margin-bottom:6px; display:block; }
+.csv-drop-zone p { color:var(--text-muted); font-size:1.25rem; }
+.csv-drop-zone strong { color:var(--blue); }
+.csv-preview-wrap { margin-top:16px; }
+.csv-preview-title {
+  font-size:1.3rem; font-weight:700; color:var(--text); margin-bottom:8px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.csv-preview-title .csv-count {
+  background:var(--blue); color:#fff; border-radius:20px;
+  padding:2px 10px; font-size:1.1rem; font-family:var(--mono);
+}
+.csv-preview-table-wrap { overflow-x:auto; max-height:240px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; }
+.csv-preview-table { width:100%; border-collapse:collapse; font-size:1.2rem; }
+.csv-preview-table th {
+  background:var(--surface2); color:var(--text-muted); padding:7px 12px;
+  text-align:left; font-size:1.1rem; text-transform:uppercase; letter-spacing:.05em;
+  position:sticky; top:0; border-bottom:1px solid var(--border);
+}
+.csv-preview-table td { padding:6px 12px; border-bottom:1px solid rgba(0,0,0,.04); vertical-align:middle; }
+.csv-preview-table tr:last-child td { border-bottom:none; }
+.csv-row-ok  td:first-child { border-left:3px solid var(--green); }
+.csv-row-err td:first-child { border-left:3px solid var(--red); }
+.csv-row-err td { color:var(--red); }
+.csv-import-bar {
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:14px;
+}
+.csv-progress {
+  flex:1; height:8px; background:var(--border); border-radius:4px; overflow:hidden; min-width:120px;
+}
+.csv-progress-inner { height:100%; background:var(--blue); width:0; transition:width .3s; border-radius:4px; }
+.csv-status { font-size:1.2rem; color:var(--text-muted); min-width:120px; }
+.btn-csv { background:var(--blue); color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:1.35rem; font-weight:700; cursor:pointer; transition:opacity .2s; display:inline-flex; align-items:center; gap:7px; }
+.btn-csv:hover { opacity:.88; }
+.btn-csv:disabled { opacity:.45; cursor:not-allowed; }
+.csv-template-link { font-size:1.2rem; color:var(--blue); cursor:pointer; text-decoration:underline; display:inline-flex; align-items:center; gap:4px; }
+
+</style>
+</head>
+<body>
+
+<!-- ████  LOGIN SCREEN  ████ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">
+      <span>GSTCell</span>
+
+    </div>
+    <label>Email</label>
+    <input type="email" id="loginEmail" placeholder="admin@gstcell.com" autocomplete="username">
+    <label>Password</label>
+    <input type="password" id="loginPwd" placeholder="••••••••" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+    <div id="loginError"></div>
+    <p style="margin-top:16px;color:var(--text-muted);font-size:1.15rem;text-align:center">
+      Only those are approved as admin can login
+    </p>
+  </div>
+</div>
+
+<!-- ████  ADMIN PANEL  ████ -->
+<div id="adminPanel">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">GST<span>Cell</span> <small>Admin Panel</small></div>
+    <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="fas fa-th-large"></i> Dashboard</div>
+    <div class="nav-item" data-page="recent" onclick="showPage('recent')"><i class="fas fa-bell"></i> Recent Updates</div>
+    <div class="nav-item" data-page="articles" onclick="showPage('articles')"><i class="fas fa-newspaper"></i> Articles</div>
+    <div class="nav-item" data-page="navlinks" onclick="showPage('navlinks')"><i class="fas fa-folder-open"></i> Nav Links</div>
+    <div class="nav-item" data-page="doccards" onclick="showPage('doccards')"><i class="fas fa-th-large"></i> Doc Cards</div>
+    <div class="nav-item" data-page="suggestions" onclick="showPage('suggestions')"><i class="fas fa-comments"></i> Suggestions</div>
+    <div class="nav-item" data-page="users" onclick="showPage('users')"><i class="fas fa-users"></i> Registered Users</div>
+    <div class="nav-item" data-page="subadmins" onclick="showPage('subadmins')" style="display:none"><i class="fas fa-user-shield"></i> Sub Admins</div>
+    <div class="sidebar-footer">
+      <div id="userEmail"></div>
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- CONFIG WARNING -->
+    <div class="config-warn" id="configWarn">
+      ⚠️ Firebase not configured yet. Open <code>gstcell-admin.html</code> and replace <code>firebaseConfig</code> with your project credentials.
+    </div>
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="welcome-banner">
+        <div class="icon">🔥</div>
+        <div>
+          <h2>Welcome to GSTCell Admin</h2>
+          <p>Manage all content that appears on gstcell.com — no Firebase console needed.</p>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="cnt-recent">—</div><div class="lbl">Recent Updates</div></div>
+        <div class="stat-card"><div class="num" id="cnt-articles">—</div><div class="lbl">Articles</div></div>
+        <div class="stat-card"><div class="num" id="cnt-doccards">—</div><div class="lbl">Doc Cards</div></div>
+        <div class="stat-card"><div class="num" id="cnt-navlinks">—</div><div class="lbl">Nav Links</div></div>
+        <div class="stat-card"><div class="num" id="cnt-suggestions">—</div><div class="lbl">Suggestions</div></div>
+        <div class="stat-card"><div class="num" id="cnt-users">—</div><div class="lbl">Registered Users</div></div>
+      </div>
+      <div class="quick-cards">
+        <div class="quick-card" onclick="showPage('recent')">
+          <i class="fas fa-bell"></i><h3>Recent Updates</h3><p>Add latest notifications</p>
+        </div>
+        <div class="quick-card" onclick="showPage('articles')">
+          <i class="fas fa-newspaper"></i><h3>Articles</h3><p>Publish news & articles</p>
+        </div>
+        <div class="quick-card" onclick="showPage('doccards')">
+          <i class="fas fa-th-large"></i><h3>Doc Cards</h3><p>Manage home page cards</p>
+        </div>
+        <div class="quick-card" onclick="showPage('navlinks')">
+          <i class="fas fa-folder-open"></i><h3>Nav Links</h3><p>Manage document menu</p>
+        </div>
+        <div class="quick-card" onclick="showPage('suggestions')">
+          <i class="fas fa-comments"></i><h3>Suggestions</h3><p>View user messages</p>
+        </div>
+        <div class="quick-card" onclick="showPage('users')">
+          <i class="fas fa-users"></i><h3>Registered Users</h3><p>View all registered accounts</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ RECENT UPDATES ══════════ -->
+    <div class="page" id="page-recent">
+      <div class="page-header">
+        <h1>🔔 Recent <span>Updates</span></h1>
+        <span class="badge">recent_updates</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-plus-circle"></i> <span id="recentFormTitle">Add New Update</span></h2>
+        <input type="hidden" id="recentEditId">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Title / Description *</label>
+            <input type="text" id="recentTitle" placeholder="e.g. Circular No. 245/2025 – Time of Supply clarification">
+          </div>
+          <div class="form-group full">
+            <label>Link (URL) *</label>
+            <input type="url" id="recentLink" placeholder="https://cbic.gov.in/...">
+          </div>
+          <div class="form-group">
+            <label>Order (lower = shown first)</label>
+            <input type="number" id="recentOrder" placeholder="1" min="1">
+          </div>
+          <div class="form-group">
+            <label>Category (optional)</label>
+            <input type="text" id="recentCategory" placeholder="e.g. CGST, KGST">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveRecent()">
+            <i class="fas fa-save"></i> <span id="recentBtnTxt">Save Update</span>
+          </button>
+          <button class="btn btn-secondary" onclick="cancelRecentEdit()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+
+
+      <!-- CSV IMPORT – Recent Updates -->
+      <div class="csv-card" id="csvCard-recent">
+        <h2><i class="fas fa-file-csv"></i> Bulk Import via CSV</h2>
+        <p class="csv-hint">
+          CSV columns (in order): <code>title</code>, <code>link</code>, <code>category</code>, <code>order</code><br>
+          First row = header (will be skipped). Missing <em>order</em> defaults to 99.
+          <span class="csv-template-link" onclick="downloadTemplate('recent')"><i class="fas fa-download"></i> Download template</span>
+        </p>
+        <div class="csv-drop-zone" id="dz-recent"
+             ondragover="dzOver(event,'recent')" ondragleave="dzLeave('recent')" ondrop="dzDrop(event,'recent')">
+          <input type="file" accept=".csv,text/csv" onchange="csvFileChosen(event,'recent')">
+          <span class="dz-icon">📄</span>
+          <p><strong>Click to choose</strong> or drag &amp; drop a CSV file here</p>
+        </div>
+        <div class="csv-preview-wrap" id="csvPreview-recent" style="display:none"></div>
+        <div class="csv-import-bar" id="csvBar-recent" style="display:none">
+          <button class="btn-csv" id="csvImportBtn-recent" onclick="runCsvImport('recent')">
+            <i class="fas fa-cloud-upload-alt"></i> Import to Firebase
+          </button>
+          <button class="btn btn-secondary" onclick="clearCsvState('recent')"><i class="fas fa-times"></i> Clear</button>
+          <div class="csv-progress"><div class="csv-progress-inner" id="csvProg-recent"></div></div>
+          <span class="csv-status" id="csvStatus-recent"></span>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> All Recent Updates</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Title</th><th>Category</th><th>Order</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="recentTable"><tr class="empty-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ARTICLES ══════════ -->
+    <div class="page" id="page-articles">
+      <div class="page-header">
+        <h1>📰 <span>Articles</span> & News</h1>
+        <span class="badge">articles</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-plus-circle"></i> <span id="articleFormTitle">Add New Article</span></h2>
+        <input type="hidden" id="articleEditId">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Title *</label>
+            <input type="text" id="artTitle" placeholder="e.g. Amendment to CGST Rules 2025">
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <input type="text" id="artCategory" placeholder="e.g. CGST Notifications, Kerala GST">
+          </div>
+          <div class="form-group">
+            <label>Image URL (optional)</label>
+            <input type="url" id="artImage" placeholder="https://drive.google.com/...">
+          </div>
+          <div class="form-group full">
+            <label>Content Paragraphs * <small style="color:var(--text-muted)">(each paragraph is a separate block)</small></label>
+            <div class="para-list" id="paraList"></div>
+            <button class="btn-add-para" onclick="addPara()"><i class="fas fa-plus"></i> Add Paragraph</button>
+          </div>
+          <div class="form-group">
+            <label>Reference 1 — Text</label>
+            <input type="text" id="artRef1Text" placeholder="e.g. Download Circular PDF">
+          </div>
+          <div class="form-group">
+            <label>Reference 1 — URL</label>
+            <input type="url" id="artRef1Link" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label>Reference 2 — Text</label>
+            <input type="text" id="artRef2Text" placeholder="Optional second reference">
+          </div>
+          <div class="form-group">
+            <label>Reference 2 — URL</label>
+            <input type="url" id="artRef2Link" placeholder="https://...">
+          </div>
+          <div class="form-group full">
+            <label>Share Link (for social share buttons)</label>
+            <input type="url" id="artShare" placeholder="https://www.gstcell.com/...">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveArticle()">
+            <i class="fas fa-save"></i> <span id="articleBtnTxt">Publish Article</span>
+          </button>
+          <button class="btn btn-secondary" onclick="cancelArticleEdit()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+
+
+      <!-- CSV IMPORT – Articles -->
+      <div class="csv-card" id="csvCard-articles">
+        <h2><i class="fas fa-file-csv"></i> Bulk Import via CSV</h2>
+        <p class="csv-hint">
+          CSV columns (in order): <code>title</code>, <code>category</code>, <code>paragraph1</code>, <code>paragraph2</code>, <code>paragraph3</code>, <code>imageUrl</code>, <code>refText1</code>, <code>refLink1</code>, <code>refText2</code>, <code>refLink2</code>, <code>shareLink</code><br>
+          Up to 3 paragraph columns supported. Extra paragraph columns are merged.
+          <span class="csv-template-link" onclick="downloadTemplate('articles')"><i class="fas fa-download"></i> Download template</span>
+        </p>
+        <div class="csv-drop-zone" id="dz-articles"
+             ondragover="dzOver(event,'articles')" ondragleave="dzLeave('articles')" ondrop="dzDrop(event,'articles')">
+          <input type="file" accept=".csv,text/csv" onchange="csvFileChosen(event,'articles')">
+          <span class="dz-icon">📄</span>
+          <p><strong>Click to choose</strong> or drag &amp; drop a CSV file here</p>
+        </div>
+        <div class="csv-preview-wrap" id="csvPreview-articles" style="display:none"></div>
+        <div class="csv-import-bar" id="csvBar-articles" style="display:none">
+          <button class="btn-csv" id="csvImportBtn-articles" onclick="runCsvImport('articles')">
+            <i class="fas fa-cloud-upload-alt"></i> Import to Firebase
+          </button>
+          <button class="btn btn-secondary" onclick="clearCsvState('articles')"><i class="fas fa-times"></i> Clear</button>
+          <div class="csv-progress"><div class="csv-progress-inner" id="csvProg-articles"></div></div>
+          <span class="csv-status" id="csvStatus-articles"></span>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> All Articles</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Title</th><th>Category</th><th>Paragraphs</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="articlesTable"><tr class="empty-row"><td colspan="4"><span class="spinner"></span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ NAV LINKS ══════════ -->
+    <div class="page" id="page-navlinks">
+      <div class="page-header">
+        <h1>🗂️ Nav <span>Links</span></h1>
+        <span class="badge">nav_links</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-plus-circle"></i> <span id="navFormTitle">Add New Document Link</span></h2>
+        <input type="hidden" id="navEditId">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Menu Group * <small style="color:var(--text-muted)">(top-level category)</small></label>
+            <input type="text" id="navMenu" placeholder="e.g. CGST Act, KGST, Finance Bill">
+          </div>
+          <div class="form-group">
+            <label>Sub-Menu * <small style="color:var(--text-muted)">(section header)</small></label>
+            <input type="text" id="navSubMenu" placeholder="e.g. Notifications 2025, Circulars">
+          </div>
+          <div class="form-group full">
+            <label>Document Name *</label>
+            <input type="text" id="navName" placeholder="e.g. Notification No. 01/2025 – CT">
+          </div>
+          <div class="form-group full">
+            <label>Document URL *</label>
+            <input type="url" id="navUrl" placeholder="https://cbic.gov.in/...">
+          </div>
+          <div class="form-group">
+            <label>Order (lower = shown first)</label>
+            <input type="number" id="navOrder" placeholder="1" min="1">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveNavLink()">
+            <i class="fas fa-save"></i> <span id="navBtnTxt">Save Link</span>
+          </button>
+          <button class="btn btn-secondary" onclick="cancelNavEdit()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+
+
+      <!-- CSV IMPORT – Nav Links -->
+      <div class="csv-card" id="csvCard-navlinks">
+        <h2><i class="fas fa-file-csv"></i> Bulk Import via CSV</h2>
+        <p class="csv-hint">
+          CSV columns (in order): <code>menu</code>, <code>subMenu</code>, <code>name</code>, <code>url</code>, <code>order</code><br>
+          All fields required except <em>order</em> (defaults to 99).
+          <span class="csv-template-link" onclick="downloadTemplate('navlinks')"><i class="fas fa-download"></i> Download template</span>
+        </p>
+        <div class="csv-drop-zone" id="dz-navlinks"
+             ondragover="dzOver(event,'navlinks')" ondragleave="dzLeave('navlinks')" ondrop="dzDrop(event,'navlinks')">
+          <input type="file" accept=".csv,text/csv" onchange="csvFileChosen(event,'navlinks')">
+          <span class="dz-icon">📄</span>
+          <p><strong>Click to choose</strong> or drag &amp; drop a CSV file here</p>
+        </div>
+        <div class="csv-preview-wrap" id="csvPreview-navlinks" style="display:none"></div>
+        <div class="csv-import-bar" id="csvBar-navlinks" style="display:none">
+          <button class="btn-csv" id="csvImportBtn-navlinks" onclick="runCsvImport('navlinks')">
+            <i class="fas fa-cloud-upload-alt"></i> Import to Firebase
+          </button>
+          <button class="btn btn-secondary" onclick="clearCsvState('navlinks')"><i class="fas fa-times"></i> Clear</button>
+          <div class="csv-progress"><div class="csv-progress-inner" id="csvProg-navlinks"></div></div>
+          <span class="csv-status" id="csvStatus-navlinks"></span>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> All Document Links</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Menu</th><th>Sub-Menu</th><th>Name</th><th>Order</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="navTable"><tr class="empty-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ DOC CARDS ══════════ -->
+    <div class="page" id="page-doccards">
+      <div class="page-header">
+        <h1>🃏 Doc <span>Cards</span></h1>
+        <span class="badge">doc_cards</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-plus-circle"></i> <span id="dcFormTitle">Add New Card</span></h2>
+        <input type="hidden" id="dcEditId">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Card Display Name *</label>
+            <input type="text" id="dcCardName" placeholder="e.g. ACT & RULES">
+          </div>
+          <div class="form-group">
+            <label>Description <small style="color:var(--text-muted)">(shown below card name on home page)</small></label>
+            <input type="text" id="dcMenu" placeholder="e.g. Central GST Acts and Rules">
+          </div>
+          <div class="form-group full">
+            <label>Card Image URL <small style="color:var(--text-muted)">(Google Drive or any public image URL)</small></label>
+            <input type="url" id="dcImageUrl" placeholder="https://lh3.googleusercontent.com/d/...">
+          </div>
+          <div class="form-group">
+            <label>Order (lower = shown first)</label>
+            <input type="number" id="dcOrder" placeholder="1" min="1">
+          </div>
+        </div>
+
+        <!-- Buttons builder -->
+        <div style="margin-top:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <h3 style="font-size:1.5rem;font-weight:700;display:flex;align-items:center;gap:8px">
+              <i class="fas fa-mouse-pointer" style="color:var(--accent)"></i> Hover Buttons
+              <small style="color:var(--text-muted);font-size:1.1rem;font-weight:400">(up to 4)</small>
+            </h3>
+            <button class="btn-add-para" onclick="addDcButton()" id="dcAddBtnBtn">
+              <i class="fas fa-plus"></i> Add Button
+            </button>
+          </div>
+          <div id="dcButtonList" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+
+        <div class="btn-row" style="margin-top:20px">
+          <button class="btn btn-primary" onclick="saveDcCard()">
+            <i class="fas fa-save"></i> <span id="dcBtnTxt">Save Card</span>
+          </button>
+          <button class="btn btn-secondary" onclick="cancelDcEdit()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Card preview list -->
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> All Doc Cards</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Image</th><th>Card Name</th><th>Description</th><th>Buttons</th><th>Order</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="dcTable"><tr class="empty-row"><td colspan="6"><span class="spinner"></span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ SUGGESTIONS ══════════ -->
+    <div class="page" id="page-suggestions">
+      <div class="page-header">
+        <h1>💬 User <span>Suggestions</span></h1>
+        <span class="badge">suggestions</span>
+      </div>
+      <div class="form-card">
+        <h2><i class="fas fa-comments"></i> All Messages</h2>
+        <p style="color:var(--text-muted);font-size:1.25rem;margin-bottom:14px">
+          Read-only view of suggestions submitted by users. You can delete inappropriate messages.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Name</th><th>Message</th><th>Time</th><th>Action</th>
+            </tr></thead>
+            <tbody id="suggestionsTable"><tr class="empty-row"><td colspan="4"><span class="spinner"></span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ REGISTERED USERS ══════════ -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <h1>👥 Registered <span>Users</span></h1>
+        <span class="badge">users</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-search"></i> Search & Filter</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Search by Name or Email</label>
+            <input type="text" id="userSearch" placeholder="Type to search…" oninput="filterUsers()">
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end">
+            <button class="btn btn-secondary" onclick="filterUsers()" style="width:100%">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> All Registered Users
+          <span class="badge" id="usersCountBadge" style="margin-left:10px">—</span>
+        </h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Registered On</th>
+            </tr></thead>
+            <tbody id="usersTable">
+              <tr class="empty-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ SUB ADMINS ══════════ -->
+    <div class="page" id="page-subadmins">
+      <div class="page-header">
+        <h1>🛡️ Sub <span>Admins</span></h1>
+        <span class="badge">sub_admins</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-user-plus"></i> Add / Edit Sub Admin</h2>
+        <p style="color:var(--text-muted);font-size:1.25rem;margin-bottom:16px">
+          Enter the email of the person you want to grant admin access to, then select which sections they can manage.
+        </p>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Sub Admin Email *</label>
+            <input type="email" id="saEmail" placeholder="subadmin@example.com">
+          </div>
+        </div>
+        <p style="font-size:1.2rem;font-weight:700;color:var(--text);margin:14px 0 10px">Allowed Sections:</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:18px" id="saPermGrid">
+          <label class="sa-perm-item"><input type="checkbox" value="dashboard"> Dashboard</label>
+          <label class="sa-perm-item"><input type="checkbox" value="recent"> Recent Updates</label>
+          <label class="sa-perm-item"><input type="checkbox" value="articles"> Articles</label>
+          <label class="sa-perm-item"><input type="checkbox" value="navlinks"> Nav Links</label>
+          <label class="sa-perm-item"><input type="checkbox" value="doccards"> Doc Cards</label>
+          <label class="sa-perm-item"><input type="checkbox" value="suggestions"> Suggestions</label>
+          <label class="sa-perm-item"><input type="checkbox" value="users"> Registered Users</label>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveSubAdmin()"><i class="fas fa-save"></i> Save Sub Admin</button>
+          <button class="btn btn-secondary" onclick="clearSubAdminForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div id="saMsg" style="margin-top:10px;font-size:1.3rem"></div>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> Current Sub Admins</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Email</th><th>Allowed Sections</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="saTable"><tr class="empty-row"><td colspan="3"><span class="spinner"></span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /adminPanel -->
+
+<!-- ████  TOAST  ████ -->
+<div id="toast"></div>
+
+<!-- ████  CONFIRM MODAL  ████ -->
+<div id="confirmModal">
+  <div class="confirm-box">
+    <h3>🗑️ Confirm Delete</h3>
+    <p id="confirmMsg">Are you sure you want to delete this item? This cannot be undone.</p>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-danger" id="confirmYes">Yes, Delete</button>
+      <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ████  SCRIPTS  ████ -->
+<script>
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
+function toast(msg, type="success") {
+  const el = document.getElementById("toast");
+  el.textContent = (type==="success"?"✅ ":type==="error"?"❌ ":"ℹ️ ") + msg;
+  el.className = type; el.style.display = "block";
+  setTimeout(() => el.style.display="none", 3500);
+}
+function escH(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function truncate(s,n=60) { return s && s.length>n ? s.slice(0,n)+"…" : (s||""); }
+
+let _confirmCallback = null;
+function confirm2(msg, cb) {
+  document.getElementById("confirmMsg").textContent = msg;
+  document.getElementById("confirmModal").style.display = "flex";
+  _confirmCallback = cb;
+}
+function closeConfirm() { document.getElementById("confirmModal").style.display="none"; }
+// confirmYes wired in DOMContentLoaded below
+
+/* ══ NAV ══ */
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("page-"+id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => {
+    if (n.getAttribute("onclick")?.includes(id)) n.classList.add("active");
+  });
+  if (id==="recent")      loadRecent();
+  if (id==="articles")    { resetArticleForm(); loadArticles(); }
+  if (id==="navlinks")    loadNavLinks();
+  if (id==="doccards")    loadDocCards();
+  if (id==="suggestions") loadSuggestions();
+  if (id==="subadmins")   loadSubAdmins();
+  if (id==="users")       loadUsers();
+}
+
+/* ══ AUTH ══ */
+function doLogin() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const pwd   = document.getElementById("loginPwd").value;
+  const errEl = document.getElementById("loginError");
+  if (!email||!pwd) { errEl.textContent="Please enter email and password."; return; }
+  errEl.textContent = "Signing in…";
+  window._authFn.signInWithEmailAndPassword(window._auth, email, pwd)
+    .catch(e => { errEl.textContent = "Error: " + e.message; });
+}
+function doLogout() {
+  window._authFn.signOut(window._auth);
+}
+
+/* ══ LOAD ALL (for dashboard counts) ══ */
+async function loadAll() {
+  // Check firebase config
+  if (!window._db) { document.getElementById("configWarn").style.display="block"; return; }
+  loadDashboardCounts();
+}
+
+async function loadDashboardCounts() {
+  const { collection, getDocs } = window._fs;
+  const db = window._db;
+  const cols = ["recent_updates","articles","nav_links","doc_cards","suggestions","users"];
+  const ids  = ["cnt-recent","cnt-articles","cnt-navlinks","cnt-doccards","cnt-suggestions","cnt-users"];
+  for (let i=0; i<cols.length; i++) {
+    try {
+      const snap = await getDocs(collection(db,cols[i]));
+      document.getElementById(ids[i]).textContent = snap.size;
+    } catch(e) { document.getElementById(ids[i]).textContent = "—"; }
+  }
+}
+
+/* ══════════════════════════════════════════
+   RECENT UPDATES CRUD
+══════════════════════════════════════════ */
+async function loadRecent() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  const db = window._db;
+  const tbody = document.getElementById("recentTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const q = query(collection(db,"recent_updates"), orderBy("order","asc"));
+    const snap = await getDocs(q);
+    if (snap.empty) { tbody.innerHTML=`<tr class="empty-row"><td colspan="5">No updates yet. Add your first one above!</td></tr>`; return; }
+    let html="", i=1;
+    snap.forEach(d => {
+      const r = d.data();
+      html += `<tr>
+        <td>${i++}</td>
+        <td><div class="cell-main">${escH(truncate(r.title,70))}</div>
+            <div class="cell-sub"><a href="${escH(r.link||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(r.link,50))}</a></div></td>
+        <td>${r.category ? `<span class="tag">${escH(r.category)}</span>` : "—"}</td>
+        <td>${r.order||"—"}</td>
+        <td><div class="actions">
+          <button class="btn btn-edit" onclick="editRecent('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-del"  onclick="deleteItem('recent_updates','${d.id}',loadRecent)"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  } catch(e) { tbody.innerHTML=`<tr class="empty-row"><td colspan="5" style="color:var(--red)">Error: ${e.message}</td></tr>`; }
+}
+
+async function saveRecent() {
+  const { collection, addDoc, updateDoc, doc, serverTimestamp } = window._fs;
+  const db = window._db;
+  const title    = document.getElementById("recentTitle").value.trim();
+  const link     = document.getElementById("recentLink").value.trim();
+  const order    = parseInt(document.getElementById("recentOrder").value)||99;
+  const category = document.getElementById("recentCategory").value.trim();
+  const editId   = document.getElementById("recentEditId").value;
+  if (!title||!link) { toast("Title and Link are required!","error"); return; }
+  try {
+    const data = { title, link, order, category, updatedAt: serverTimestamp() };
+    if (editId) {
+      await updateDoc(doc(db,"recent_updates",editId), data);
+      toast("Update edited successfully!");
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,"recent_updates"), data);
+      toast("Update added successfully!");
+    }
+    cancelRecentEdit(); loadRecent(); loadDashboardCounts();
+  } catch(e) { toast("Error: "+e.message,"error"); }
+}
+
+async function editRecent(id) {
+  const { doc, getDoc } = window._fs;
+  const d = await getDoc(doc(window._db,"recent_updates",id));
+  if (!d.exists()) return;
+  const r = d.data();
+  document.getElementById("recentEditId").value  = id;
+  document.getElementById("recentTitle").value   = r.title||"";
+  document.getElementById("recentLink").value    = r.link||"";
+  document.getElementById("recentOrder").value   = r.order||"";
+  document.getElementById("recentCategory").value= r.category||"";
+  document.getElementById("recentFormTitle").textContent = "Edit Update";
+  document.getElementById("recentBtnTxt").textContent    = "Update";
+  document.getElementById("page-recent").scrollTop = 0;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function cancelRecentEdit() {
+  ["recentEditId","recentTitle","recentLink","recentOrder","recentCategory"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("recentFormTitle").textContent = "Add New Update";
+  document.getElementById("recentBtnTxt").textContent    = "Save Update";
+}
+
+/* ══════════════════════════════════════════
+   ARTICLES CRUD
+══════════════════════════════════════════ */
+function addPara(para = {}) {
+  const text     = typeof para === "string" ? para : (para.text || "");
+  const imageUrl = typeof para === "string" ? "" : (para.imageUrl || "");
+  const list = document.getElementById("paraList");
+  const row  = document.createElement("div");
+  row.className = "para-item";
+  row.innerHTML = `
+    <div style="font-size:1.1rem;color:var(--text-muted);font-weight:600;margin-bottom:2px">📷 Image above this paragraph (optional)</div>
+    <div class="para-item-img-row">
+      <input type="text" class="para-img-url" placeholder="Paste image URL…" value="${escH(imageUrl)}"
+        oninput="const p=this.closest('.para-item').querySelector('.para-img-preview');p.src=this.value;p.style.display=this.value?'block':'none'">
+      <label style="font-size:1.15rem;color:var(--blue);cursor:pointer;white-space:nowrap">
+        <i class="fas fa-upload"></i> Upload
+        <input type="file" accept="image/*" style="display:none" onchange="handleParaImgUpload(this)">
+      </label>
+      <img class="para-item-img-preview" src="${escH(imageUrl)}" style="display:${imageUrl?'block':'none'}">
+    </div>
+    <div class="para-item-bottom">
+      <textarea class="para-text" placeholder="Paragraph text…">${escH(text)}</textarea>
+      <button class="btn-rm-para" onclick="this.closest('.para-item').remove()" title="Remove"><i class="fas fa-times"></i></button>
+    </div>`;
+  list.appendChild(row);
+}
+
+function handleParaImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const row     = input.closest(".para-item");
+    const urlInp  = row.querySelector(".para-img-url");
+    const preview = row.querySelector(".para-item-img-preview");
+    urlInp.value      = e.target.result;
+    preview.src       = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+function getParagraphs() {
+  return [...document.querySelectorAll("#paraList .para-item")]
+    .map(row => ({
+      text:     row.querySelector(".para-text")?.value.trim() || "",
+      imageUrl: row.querySelector(".para-img-url")?.value.trim() || ""
+    }))
+    .filter(p => p.text);
+}
+function resetArticleForm() {
+  ["articleEditId","artTitle","artCategory","artImage","artRef1Text","artRef1Link","artRef2Text","artRef2Link","artShare"]
+    .forEach(id=>document.getElementById(id).value="");
+  document.getElementById("paraList").innerHTML="";
+  addPara(); // start with one empty paragraph
+  document.getElementById("articleFormTitle").textContent = "Add New Article";
+  document.getElementById("articleBtnTxt").textContent    = "Publish Article";
+}
+
+async function loadArticles() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  const db = window._db;
+  const tbody = document.getElementById("articlesTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="4"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const q = query(collection(db,"articles"), orderBy("createdAt","desc"));
+    const snap = await getDocs(q);
+    if (snap.empty) { tbody.innerHTML=`<tr class="empty-row"><td colspan="4">No articles yet.</td></tr>`; return; }
+    let html="";
+    snap.forEach(d => {
+      const a = d.data();
+      const paras = Array.isArray(a.paragraphs) ? a.paragraphs : [];
+      html += `<tr>
+        <td><div class="cell-main">${escH(truncate(a.title,60))}</div></td>
+        <td><span class="tag blue">${escH(a.category||"")}</span></td>
+        <td>${paras.length} paragraph${paras.length!==1?"s":""}</td>
+        <td><div class="actions">
+          <button class="btn btn-edit" onclick="editArticle('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-del"  onclick="deleteItem('articles','${d.id}',loadArticles)"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  } catch(e) { tbody.innerHTML=`<tr class="empty-row"><td colspan="4" style="color:var(--red)">Error: ${e.message}</td></tr>`; }
+}
+
+async function saveArticle() {
+  const { collection, addDoc, updateDoc, doc, serverTimestamp } = window._fs;
+  const db = window._db;
+  const title    = document.getElementById("artTitle").value.trim();
+  const category = document.getElementById("artCategory").value.trim();
+  const paragraphs = getParagraphs();
+  const editId   = document.getElementById("articleEditId").value;
+  if (!title||!category||!paragraphs.length) { toast("Title, Category and at least one Paragraph are required!","error"); return; }
+  const data = {
+    title, category, paragraphs,
+    imageUrl:  document.getElementById("artImage").value.trim(),
+    refText1:  document.getElementById("artRef1Text").value.trim(),
+    refLink1:  document.getElementById("artRef1Link").value.trim(),
+    refText2:  document.getElementById("artRef2Text").value.trim(),
+    refLink2:  document.getElementById("artRef2Link").value.trim(),
+    shareLink: document.getElementById("artShare").value.trim(),
+    updatedAt: serverTimestamp()
+  };
+  try {
+    if (editId) {
+      await updateDoc(doc(db,"articles",editId), data);
+      toast("Article updated!");
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,"articles"), data);
+      toast("Article published!");
+    }
+    resetArticleForm(); loadArticles(); loadDashboardCounts();
+  } catch(e) { toast("Error: "+e.message,"error"); }
+}
+
+async function editArticle(id) {
+  const { doc, getDoc } = window._fs;
+  const d = await getDoc(doc(window._db,"articles",id));
+  if (!d.exists()) return;
+  const a = d.data();
+  document.getElementById("articleEditId").value = id;
+  document.getElementById("artTitle").value    = a.title||"";
+  document.getElementById("artCategory").value = a.category||"";
+  document.getElementById("artImage").value    = a.imageUrl||"";
+  document.getElementById("artRef1Text").value = a.refText1||"";
+  document.getElementById("artRef1Link").value = a.refLink1||"";
+  document.getElementById("artRef2Text").value = a.refText2||"";
+  document.getElementById("artRef2Link").value = a.refLink2||"";
+  document.getElementById("artShare").value    = a.shareLink||"";
+  document.getElementById("paraList").innerHTML = "";
+  (a.paragraphs||[""]).forEach(p => addPara(p));
+  document.getElementById("articleFormTitle").textContent = "Edit Article";
+  document.getElementById("articleBtnTxt").textContent    = "Update Article";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function cancelArticleEdit() { resetArticleForm(); }
+
+/* ══════════════════════════════════════════
+   NAV LINKS CRUD
+══════════════════════════════════════════ */
+async function loadNavLinks() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  const db = window._db;
+  const tbody = document.getElementById("navTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const q = query(collection(db,"nav_links"), orderBy("order","asc"));
+    const snap = await getDocs(q);
+    if (snap.empty) { tbody.innerHTML=`<tr class="empty-row"><td colspan="5">No nav links yet.</td></tr>`; return; }
+    let html="";
+    snap.forEach(d => {
+      const n = d.data();
+      html += `<tr>
+        <td><span class="tag">${escH(n.menu||"")}</span></td>
+        <td><span class="tag blue">${escH(n.subMenu||"")}</span></td>
+        <td><div class="cell-main">${escH(truncate(n.name,50))}</div>
+            <div class="cell-sub"><a href="${escH(n.url||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(n.url,50))}</a></div></td>
+        <td>${n.order||"—"}</td>
+        <td><div class="actions">
+          <button class="btn btn-edit" onclick="editNavLink('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-del"  onclick="deleteItem('nav_links','${d.id}',loadNavLinks)"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  } catch(e) { tbody.innerHTML=`<tr class="empty-row"><td colspan="5" style="color:var(--red)">Error: ${e.message}</td></tr>`; }
+}
+
+async function saveNavLink() {
+  const { collection, addDoc, updateDoc, doc, serverTimestamp } = window._fs;
+  const db = window._db;
+  const menu    = document.getElementById("navMenu").value.trim();
+  const subMenu = document.getElementById("navSubMenu").value.trim();
+  const name    = document.getElementById("navName").value.trim();
+  const url     = document.getElementById("navUrl").value.trim();
+  const order   = parseInt(document.getElementById("navOrder").value)||99;
+  const editId  = document.getElementById("navEditId").value;
+  if (!menu||!subMenu||!name||!url) { toast("All fields except Order are required!","error"); return; }
+  const data = { menu, subMenu, name, url, order, updatedAt: serverTimestamp() };
+  try {
+    if (editId) {
+      await updateDoc(doc(db,"nav_links",editId), data);
+      toast("Link updated!");
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,"nav_links"), data);
+      toast("Link saved!");
+    }
+    cancelNavEdit(); loadNavLinks(); loadDashboardCounts();
+  } catch(e) { toast("Error: "+e.message,"error"); }
+}
+
+async function editNavLink(id) {
+  const { doc, getDoc } = window._fs;
+  const d = await getDoc(doc(window._db,"nav_links",id));
+  if (!d.exists()) return;
+  const n = d.data();
+  document.getElementById("navEditId").value  = id;
+  document.getElementById("navMenu").value    = n.menu||"";
+  document.getElementById("navSubMenu").value = n.subMenu||"";
+  document.getElementById("navName").value    = n.name||"";
+  document.getElementById("navUrl").value     = n.url||"";
+  document.getElementById("navOrder").value   = n.order||"";
+  document.getElementById("navFormTitle").textContent = "Edit Link";
+  document.getElementById("navBtnTxt").textContent    = "Update Link";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function cancelNavEdit() {
+  ["navEditId","navMenu","navSubMenu","navName","navUrl","navOrder"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("navFormTitle").textContent = "Add New Document Link";
+  document.getElementById("navBtnTxt").textContent    = "Save Link";
+}
+
+/* ══════════════════════════════════════════
+   DOC CARDS CRUD  (collection: doc_cards)
+   Fields per doc:
+     menu       string   – matches nav_links menu
+     cardName   string   – display title on card
+     imageUrl   string   – top image
+     order      number
+     buttons    array of { label, url, type: "link"|"popup" }
+══════════════════════════════════════════ */
+
+
+// ── Button builder ──
+function addDcButton(btn = {}) {
+  const list = document.getElementById("dcButtonList");
+  if (list.querySelectorAll(".dc-btn-row-wrap").length >= 4) { toast("Maximum 4 buttons per card", "info"); return; }
+  const type        = btn.type        || "link";
+  const popupStyle  = btn.popupStyle  || "list";
+  const popupItems  = btn.popupItems  || [];
+  const popupPaired = btn.popupPaired || { leftHeading:"", rightHeading:"", rows:[] };
+  const rowId = "dcbtn_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
+
+  const isList   = popupStyle === "list";
+  const isPaired = popupStyle === "paired";
+  const isCard   = popupStyle === "card";
+
+  const row = document.createElement("div");
+  row.className = "dc-btn-row-wrap";
+  row.dataset.rowId = rowId;
+  row.innerHTML = `
+    <div class="dc-btn-row">
+      <input type="text" class="dc-btn-label" placeholder="Button label…" value="${escH(btn.label||'')}">
+      <div class="dc-type-toggle">
+        <button type="button" class="dc-type-link  ${type==='link' ?'active-link':''}"
+                onclick="dcToggleType(this,'link','${rowId}')">🔗 Link</button>
+        <button type="button" class="dc-type-popup ${type==='popup'?'active-popup':''}"
+                onclick="dcToggleType(this,'popup','${rowId}')">💬 Popup</button>
+      </div>
+      <button class="btn-rm-para" onclick="this.closest('.dc-btn-row-wrap').remove();updateAddBtnVisibility()" title="Remove">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Link URL -->
+    <div class="dc-link-section" style="display:${type==='link'?'block':'none'};margin:6px 0 0">
+      <input type="text" class="dc-btn-url" placeholder="URL (https://…)" value="${escH(btn.url||'')}"
+             style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;font-size:1.3rem;font-family:var(--font);outline:none">
+    </div>
+
+    <!-- Popup builder -->
+    <div class="dc-popup-section" style="display:${type==='popup'?'block':'none'};margin:8px 0 0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);flex-wrap:wrap;gap:8px">
+        <span style="font-size:1.25rem;font-weight:700;color:var(--text)">Popup Content</span>
+        <div class="dc-type-toggle">
+          <button type="button" class="dc-pstyle-list   ${isList  ?'active-link':''}"
+                  onclick="dcTogglePopupStyle(this,'list','${rowId}')">☰ List</button>
+          <button type="button" class="dc-pstyle-paired ${isPaired?'active-link':''}"
+                  onclick="dcTogglePopupStyle(this,'paired','${rowId}')">⇔ Paired</button>
+          <button type="button" class="dc-pstyle-card   ${isCard  ?'active-popup':''}"
+                  onclick="dcTogglePopupStyle(this,'card','${rowId}')">⊞ Card</button>
+        </div>
+      </div>
+
+      <!-- LIST / CARD -->
+      <div class="dc-section-listcard" style="display:${isPaired?'none':'block'};padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <label style="font-size:1.1rem;color:var(--text-muted);font-weight:600"><i class="fas fa-file-csv" style="color:var(--blue)"></i> Import CSV</label>
+          <input type="file" accept=".csv" class="dc-csv-lc" onchange="dcImportCSV(this,'listcard','${rowId}')" style="font-size:1.1rem;color:var(--text-muted)">
+          <span class="dc-csv-hint" style="font-size:1.1rem;color:var(--text-muted);font-style:italic">(columns: name, url)</span>
+        </div>
+        <div class="dc-popup-items-list" id="dcpopup_${rowId}"></div>
+        <button type="button" class="btn-add-para" style="margin-top:8px" onclick="addDcPopupItem('${rowId}')">
+          <i class="fas fa-plus"></i> Add Item
+        </button>
+      </div>
+
+      <!-- PAIRED -->
+      <div class="dc-section-paired" style="display:${isPaired?'block':'none'};padding:12px 14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label style="font-size:1.1rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:4px">Left Column Heading</label>
+            <input type="text" class="dc-paired-lhead" placeholder="e.g. Act / Year"
+                   value="${escH(popupPaired.leftHeading||'')}"
+                   style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;font-size:1.3rem;font-family:var(--font);outline:none">
+          </div>
+          <div>
+            <label style="font-size:1.1rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:4px">Right Column Heading</label>
+            <input type="text" class="dc-paired-rhead" placeholder="e.g. Rules / Amendment"
+                   value="${escH(popupPaired.rightHeading||'')}"
+                   style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;font-size:1.3rem;font-family:var(--font);outline:none">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <label style="font-size:1.1rem;color:var(--text-muted);font-weight:600"><i class="fas fa-file-csv" style="color:var(--blue)"></i> Import CSV</label>
+          <input type="file" accept=".csv" onchange="dcImportCSV(this,'paired','${rowId}')" style="font-size:1.1rem;color:var(--text-muted)">
+          <span style="font-size:1.1rem;color:var(--text-muted);font-style:italic">(columns: leftName, leftUrl, rightName, rightUrl)</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px">
+          <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Left Name</span>
+          <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Left URL</span>
+          <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Right Name</span>
+          <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Right URL</span>
+          <span></span>
+        </div>
+        <div class="dc-paired-rows" id="dcpaired_${rowId}"></div>
+        <button type="button" class="btn-add-para" style="margin-top:8px" onclick="addDcPairedRow('${rowId}')">
+          <i class="fas fa-plus"></i> Add Row
+        </button>
+      </div>
+    </div>
+  `;
+  list.appendChild(row);
+
+  if (isPaired) {
+    (popupPaired.rows || []).forEach(r => addDcPairedRow(rowId, r));
+  } else {
+    popupItems.forEach(item => addDcPopupItem(rowId, item));
+  }
+  updateAddBtnVisibility();
+}
+
+function dcToggleType(clickedBtn, type, rowId) {
+  const wrap = clickedBtn.closest(".dc-btn-row-wrap");
+  wrap.querySelector(".dc-type-link").classList.remove("active-link");
+  wrap.querySelector(".dc-type-popup").classList.remove("active-popup");
+  clickedBtn.classList.add(type === "link" ? "active-link" : "active-popup");
+  wrap.querySelector(".dc-link-section").style.display  = type === "link"  ? "block" : "none";
+  wrap.querySelector(".dc-popup-section").style.display = type === "popup" ? "block" : "none";
+}
+
+function dcTogglePopupStyle(clickedBtn, style, rowId) {
+  const section = clickedBtn.closest(".dc-popup-section");
+  section.querySelectorAll(".dc-type-toggle button").forEach(b => b.classList.remove("active-link","active-popup"));
+  clickedBtn.classList.add(style === "card" ? "active-popup" : "active-link");
+  section.querySelector(".dc-section-listcard").style.display = style !== "paired" ? "block" : "none";
+  section.querySelector(".dc-section-paired").style.display   = style === "paired" ? "block" : "none";
+  const hint = section.querySelector(".dc-csv-hint");
+  if (hint) hint.textContent = style === "card" ? "(columns: name, url, imageUrl)" : "(columns: name, url)";
+  if (style !== "paired") {
+    const itemsEl = document.getElementById("dcpopup_" + rowId);
+    const cur = [...(itemsEl?.querySelectorAll(".dc-popup-item-row")||[])].map(r => ({
+      name: r.querySelector(".dci-name")?.value||"", link: r.querySelector(".dci-link")?.value||"", imageUrl: r.querySelector(".dci-img")?.value||"", pdfUrl: r.querySelector(".dci-pdf")?.value||"", pdfName: r.querySelector(".dci-pdfname")?.value||""
+    }));
+    if (itemsEl) itemsEl.innerHTML = "";
+    cur.forEach(item => addDcPopupItem(rowId, item));
+  }
+}
+
+function addDcPopupItem(rowId, item = {}) {
+  const container = document.getElementById("dcpopup_" + rowId);
+  if (!container) return;
+  const isCard = container.closest(".dc-btn-row-wrap")?.querySelector(".dc-pstyle-card")?.classList.contains("active-popup");
+  const inp = (cls,ph,val) => `<input type="text" class="${cls}" placeholder="${ph}" value="${escH(val||'')}" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 9px;font-size:1.25rem;font-family:var(--font);outline:none;width:100%">`;
+  const row = document.createElement("div");
+  row.className = "dc-popup-item-row";
+  row.style.cssText = `display:grid;gap:6px;margin-bottom:6px;align-items:center;grid-template-columns:${isCard?"2fr 2fr 2fr 2fr 2fr auto":"2fr 3fr auto"}`;
+  row.innerHTML = `${inp("dci-name","Name *",item.name)}${inp("dci-link","URL / Link",item.link)}${isCard?inp("dci-img","Image URL",item.imageUrl):'<input type="hidden" class="dci-img" value="">'}${isCard?inp("dci-pdf","PDF URL (optional)",item.pdfUrl):'<input type="hidden" class="dci-pdf" value="">'}${isCard?inp("dci-pdfname","PDF Button Label (optional)",item.pdfName):'<input type="hidden" class="dci-pdfname" value="">'}
+    <button class="btn-rm-para" onclick="this.closest('.dc-popup-item-row').remove()" title="Remove"><i class="fas fa-times"></i></button>`;
+  container.appendChild(row);
+}
+
+function addDcPairedRow(rowId, r = {}) {
+  const container = document.getElementById("dcpaired_" + rowId);
+  if (!container) return;
+  const inp = (cls,ph,val) => `<input type="text" class="${cls}" placeholder="${ph}" value="${escH(val||'')}" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 9px;font-size:1.25rem;font-family:var(--font);outline:none;width:100%">`;
+  const row = document.createElement("div");
+  row.className = "dc-paired-item-row";
+  row.style.cssText = "display:grid;grid-template-columns:2fr 2fr 2fr 2fr auto;gap:6px;margin-bottom:6px;align-items:center";
+  row.innerHTML = `${inp("dcp-lname","Left Name",r.leftName)}${inp("dcp-lurl","Left URL",r.leftLink)}${inp("dcp-rname","Right Name",r.rightName)}${inp("dcp-rurl","Right URL",r.rightLink)}
+    <button class="btn-rm-para" onclick="this.closest('.dc-paired-item-row').remove()" title="Remove"><i class="fas fa-times"></i></button>`;
+  container.appendChild(row);
+}
+
+function dcImportCSV(input, mode, rowId) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const rows = parseCSV(e.target.result).slice(1).filter(r => r.some(c => c));
+    if (mode === "paired") {
+      rows.forEach(cols => {
+        const [leftName="",leftLink="",rightName="",rightLink=""] = cols;
+        addDcPairedRow(rowId, {leftName,leftLink,rightName,rightLink});
+      });
+    } else {
+      const container = document.getElementById("dcpopup_" + rowId);
+      const isCard = container?.closest(".dc-btn-row-wrap")?.querySelector(".dc-pstyle-card")?.classList.contains("active-popup");
+      rows.forEach(cols => {
+        const [name="",link="",imageUrl=""] = cols;
+        addDcPopupItem(rowId, {name,link,imageUrl:isCard?imageUrl:""});
+      });
+    }
+    toast("Imported " + rows.length + " rows", "success");
+    input.value = "";
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function updateAddBtnVisibility() {
+  const list = document.getElementById("dcButtonList");
+  document.getElementById("dcAddBtnBtn").style.display =
+    list.querySelectorAll(".dc-btn-row-wrap").length >= 4 ? "none" : "";
+}
+
+function getDcButtons() {
+  return [...document.querySelectorAll("#dcButtonList .dc-btn-row-wrap")].map(wrap => {
+    const label = wrap.querySelector(".dc-btn-label").value.trim();
+    const type  = wrap.querySelector(".dc-type-popup").classList.contains("active-popup") ? "popup" : "link";
+    const url   = type === "link" ? (wrap.querySelector(".dc-btn-url")?.value.trim()||"") : "";
+    const isCard   = wrap.querySelector(".dc-pstyle-card")?.classList.contains("active-popup");
+    const isPaired = wrap.querySelector(".dc-pstyle-paired")?.classList.contains("active-link");
+    const popupStyle = isPaired ? "paired" : isCard ? "card" : "list";
+    const popupItems = [...(wrap.querySelectorAll(".dc-popup-item-row")||[])].map(r => ({
+      name:    r.querySelector(".dci-name")?.value.trim()||"",
+      link:    r.querySelector(".dci-link")?.value.trim()||"",
+      imageUrl:r.querySelector(".dci-img")?.value.trim()||"",
+      pdfUrl:  r.querySelector(".dci-pdf")?.value.trim()||"",
+      pdfName: r.querySelector(".dci-pdfname")?.value.trim()||""
+    })).filter(i=>i.name);
+    const popupPaired = {
+      leftHeading:  wrap.querySelector(".dc-paired-lhead")?.value.trim()||"",
+      rightHeading: wrap.querySelector(".dc-paired-rhead")?.value.trim()||"",
+      rows: [...(wrap.querySelectorAll(".dc-paired-item-row")||[])].map(r=>({
+        leftName: r.querySelector(".dcp-lname")?.value.trim()||"",
+        leftLink: r.querySelector(".dcp-lurl")?.value.trim()||"",
+        rightName:r.querySelector(".dcp-rname")?.value.trim()||"",
+        rightLink:r.querySelector(".dcp-rurl")?.value.trim()||""
+      })).filter(r=>r.leftName||r.rightName)
+    };
+    return {label,type,url,popupStyle,popupItems,popupPaired};
+  }).filter(b=>b.label);
+}
+
+// ── Load table ──
+async function loadDocCards() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  const db = window._db;
+  const tbody = document.getElementById("dcTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="6"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const q = query(collection(db, "doc_cards"), orderBy("order", "asc"));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No cards yet. Add your first one above!</td></tr>`;
+      document.getElementById("cnt-doccards").textContent = 0;
+      return;
+    }
+    let html = "";
+    snap.forEach(d => {
+      const c = d.data();
+      const btns = (c.buttons||[]).map(b =>
+        `<span class="tag ${b.type==='popup'?'':'blue'}" style="margin:1px 2px;font-size:1rem">
+          ${b.type==='popup'?'💬':'🔗'} ${escH(b.label)}
+        </span>`
+      ).join("");
+      const imgHtml = c.imageUrl
+        ? `<img src="${escH(c.imageUrl)}" style="width:48px;height:32px;object-fit:cover;border-radius:4px">`
+        : `<span style="color:var(--text-muted);font-size:1.1rem">No image</span>`;
+      html += `<tr>
+        <td>${imgHtml}</td>
+        <td><div class="cell-main">${escH(c.cardName||"")}</div></td>
+        <td><span class="tag">${escH(c.menu||"")}</span></td>
+        <td>${btns||"<span style='color:var(--text-muted);font-size:1.1rem'>none</span>"}</td>
+        <td>${c.order||"—"}</td>
+        <td><div class="actions">
+          <button class="btn btn-edit" onclick="editDcCard('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-del"  onclick="deleteItem('doc_cards','${d.id}',loadDocCards)"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+    document.getElementById("cnt-doccards").textContent = snap.size;
+  } catch(e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6" style="color:var(--red)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+// ── Save ──
+async function saveDcCard() {
+  const { collection, addDoc, updateDoc, doc, serverTimestamp } = window._fs;
+  const db = window._db;
+  const menu     = document.getElementById("dcMenu").value.trim();
+  const cardName = document.getElementById("dcCardName").value.trim();
+  const imageUrl = document.getElementById("dcImageUrl").value.trim();
+  const order    = parseInt(document.getElementById("dcOrder").value) || 99;
+  const buttons  = getDcButtons();
+  const editId   = document.getElementById("dcEditId").value;
+  if (!cardName) { toast("Card Name is required!", "error"); return; }
+  const data = { menu, cardName, imageUrl, order, buttons, updatedAt: serverTimestamp() };
+  try {
+    if (editId) {
+      await updateDoc(doc(db, "doc_cards", editId), data);
+      toast("Card updated!");
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db, "doc_cards"), data);
+      toast("Card saved!");
+    }
+    cancelDcEdit(); loadDocCards(); loadDashboardCounts();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+}
+
+// ── Edit ──
+async function editDcCard(id) {
+  const { doc, getDoc } = window._fs;
+  const d = await getDoc(doc(window._db, "doc_cards", id));
+  if (!d.exists()) return;
+  const c = d.data();
+  document.getElementById("dcEditId").value  = id;
+  document.getElementById("dcMenu").value    = c.menu    || "";
+  document.getElementById("dcCardName").value= c.cardName|| "";
+  document.getElementById("dcImageUrl").value= c.imageUrl|| "";
+  document.getElementById("dcOrder").value   = c.order   || "";
+  document.getElementById("dcButtonList").innerHTML = "";
+  (c.buttons || []).forEach(b => addDcButton(b));
+  updateAddBtnVisibility();
+  document.getElementById("dcFormTitle").textContent = "Edit Card";
+  document.getElementById("dcBtnTxt").textContent    = "Update Card";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ── Cancel / reset ──
+function cancelDcEdit() {
+  ["dcEditId","dcMenu","dcCardName","dcImageUrl","dcOrder"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("dcButtonList").innerHTML = "";
+  updateAddBtnVisibility();
+  document.getElementById("dcFormTitle").textContent = "Add New Card";
+  document.getElementById("dcBtnTxt").textContent    = "Save Card";
+}
+
+/* ══════════════════════════════════════════
+   SUGGESTIONS (read + delete only)
+══════════════════════════════════════════ */
+async function loadSuggestions() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  const db = window._db;
+  const tbody = document.getElementById("suggestionsTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="4"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const q = query(collection(db,"suggestions"), orderBy("createdAt","desc"));
+    const snap = await getDocs(q);
+    if (snap.empty) { tbody.innerHTML=`<tr class="empty-row"><td colspan="4">No suggestions yet.</td></tr>`; return; }
+    let html="";
+    snap.forEach(d => {
+      const s = d.data();
+      const ts = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleString() : "—";
+      html += `<tr>
+        <td><div class="cell-main">${escH(s.name||"Anonymous")}</div></td>
+        <td>${escH(s.message||"")}</td>
+        <td style="white-space:nowrap;color:var(--text-muted);font-size:1.15rem">${ts}</td>
+        <td><button class="btn btn-del" onclick="deleteItem('suggestions','${d.id}',loadSuggestions)"><i class="fas fa-trash"></i></button></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  } catch(e) { tbody.innerHTML=`<tr class="empty-row"><td colspan="4" style="color:var(--red)">Error: ${e.message}</td></tr>`; }
+}
+
+/* ══ SHARED DELETE ══ */
+function deleteItem(colName, id, reloadFn) {
+  if (!window._deleteDoc) {
+    toast("Firebase not ready yet. Please wait a moment and try again.", "error");
+    return;
+  }
+  confirm2("Are you sure you want to permanently delete this item?", async () => {
+    try {
+      await window._deleteDoc(colName, id);
+      toast("Deleted successfully!");
+      reloadFn();
+      loadDashboardCounts();
+    } catch(e) {
+      toast("Delete failed: " + e.message, "error");
+      console.error("deleteItem error:", e);
+    }
+  });
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   CSV IMPORT ENGINE
+   Supports: recent_updates | articles | nav_links
+══════════════════════════════════════════════════════════════ */
+
+// ─── State per section ───
+const _csvState = { recent: null, articles: null, navlinks: null };
+
+// ─── Templates ───
+const CSV_TEMPLATES = {
+  recent:   { name:"recent_updates_template.csv",   content:"title,link,category,order\nCircular No. 245/2025,https://cbic.gov.in/...,CGST,1\nNotification 12/2025,https://cbic.gov.in/...,KGST,2" },
+  articles: { name:"articles_template.csv",          content:"title,category,paragraph1,paragraph2,paragraph3,imageUrl,refText1,refLink1,refText2,refLink2,shareLink\nSample Article Title,CGST,First paragraph text.,Second paragraph text.,,https://img.url,Download PDF,https://pdf.url,,," },
+  navlinks: { name:"nav_links_template.csv",         content:"menu,subMenu,name,url,order\nCGST,Notifications 2025,Notification No. 01/2025,https://cbic.gov.in/...,1\nCGST,Circulars 2025,Circular No. 01/2025,https://cbic.gov.in/...,2" }
+};
+
+function downloadTemplate(section) {
+  const t = CSV_TEMPLATES[section];
+  if (!t) return;
+  const blob = new Blob([t.content], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = t.name;
+  a.click();
+}
+
+// ─── Drag-and-drop zone ───
+function dzOver(e, section) { e.preventDefault(); document.getElementById("dz-"+section).classList.add("drag-over"); }
+function dzLeave(section)   { document.getElementById("dz-"+section).classList.remove("drag-over"); }
+function dzDrop(e, section) {
+  e.preventDefault(); dzLeave(section);
+  const file = e.dataTransfer.files[0];
+  if (file) processCSVFile(file, section);
+}
+function csvFileChosen(e, section) {
+  const file = e.target.files[0];
+  if (file) processCSVFile(file, section);
+  e.target.value = ""; // allow re-selecting same file
+}
+
+// ─── Parse CSV (handles quoted fields with commas/newlines) ───
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], next = text[i+1];
+    if (inQuotes) {
+      if (ch === '"' && next === '"') { field += '"'; i++; }
+      else if (ch === '"') { inQuotes = false; }
+      else { field += ch; }
+    } else {
+      if (ch === '"') { inQuotes = true; }
+      else if (ch === ',') { row.push(field.trim()); field = ""; }
+      else if (ch === '\r' && next === '\n') { row.push(field.trim()); rows.push(row); row = []; field = ""; i++; }
+      else if (ch === '\n' || ch === '\r') { row.push(field.trim()); rows.push(row); row = []; field = ""; }
+      else { field += ch; }
+    }
+  }
+  if (field || row.length) { row.push(field.trim()); if (row.some(c=>c)) rows.push(row); }
+  return rows;
+}
+
+// ─── Section-specific row → Firestore document mapper ───
+function mapRow(section, cols) {
+  if (section === "recent") {
+    const [title="", link="", category="", order=""] = cols;
+    const errors = [];
+    if (!title) errors.push("title required");
+    if (!link)  errors.push("link required");
+    return { data: { title, link, category, order: parseInt(order)||99 }, errors };
+  }
+  if (section === "articles") {
+    const [title="", category="", p1="", p2="", p3="",
+           imageUrl="", refText1="", refLink1="", refText2="", refLink2="", shareLink=""] = cols;
+    const errors = [];
+    if (!title)    errors.push("title required");
+    if (!category) errors.push("category required");
+    const paragraphs = [p1, p2, p3].filter(p => p.trim());
+    if (!paragraphs.length) errors.push("at least one paragraph required");
+    return { data: { title, category, paragraphs, imageUrl, refText1, refLink1, refText2, refLink2, shareLink }, errors };
+  }
+  if (section === "navlinks") {
+    const [menu="", subMenu="", name="", url="", order=""] = cols;
+    const errors = [];
+    if (!menu)    errors.push("menu required");
+    if (!subMenu) errors.push("subMenu required");
+    if (!name)    errors.push("name required");
+    if (!url)     errors.push("url required");
+    return { data: { menu, subMenu, name, url, order: parseInt(order)||99 }, errors };
+  }
+  return { data: {}, errors: ["unknown section"] };
+}
+
+// ─── Preview table column headers ───
+const PREVIEW_HEADERS = {
+  recent:   ["Title", "Link", "Category", "Order"],
+  articles: ["Title", "Category", "Para 1 (preview)", "Image URL"],
+  navlinks: ["Menu", "Sub-Menu", "Name", "URL", "Order"]
+};
+
+function processCSVFile(file, section) {
+  if (!file.name.match(/\.csv$/i) && file.type !== "text/csv") {
+    toast("Please choose a .csv file", "error"); return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const rows = parseCSV(text);
+    if (rows.length < 2) { toast("CSV appears empty or has no data rows.", "error"); return; }
+    // Skip header row
+    const dataRows = rows.slice(1).filter(r => r.some(c => c));
+    const mapped = dataRows.map(cols => mapRow(section, cols));
+    _csvState[section] = mapped;
+    renderCsvPreview(section, mapped);
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function renderCsvPreview(section, mapped) {
+  const wrap = document.getElementById("csvPreview-"+section);
+  const bar  = document.getElementById("csvBar-"+section);
+  const headers = PREVIEW_HEADERS[section];
+  const goodCount = mapped.filter(r => !r.errors.length).length;
+  const badCount  = mapped.length - goodCount;
+
+  let th = headers.map(h => `<th>${h}</th>`).join("");
+  let tbody = "";
+
+  mapped.forEach((r, i) => {
+    const hasErr = r.errors.length > 0;
+    const cls = hasErr ? "csv-row-err" : "csv-row-ok";
+    let cells = "";
+    if (section === "recent") {
+      cells = [r.data.title||"", r.data.link||"", r.data.category||"", r.data.order||""].map(v=>`<td>${escH(String(v))}</td>`).join("");
+    } else if (section === "articles") {
+      cells = [r.data.title||"", r.data.category||"", (r.data.paragraphs||[])[0]||"", r.data.imageUrl||""].map(v=>`<td>${escH(String(v).slice(0,60)+(String(v).length>60?"…":""))}</td>`).join("");
+    } else {
+      cells = [r.data.menu||"", r.data.subMenu||"", r.data.name||"", r.data.url||"", r.data.order||""].map(v=>`<td>${escH(String(v).slice(0,40)+(String(v).length>40?"…":""))}</td>`).join("");
+    }
+    if (hasErr) cells += `<td style="color:var(--red);font-size:1.1rem">${r.errors.join(", ")}</td>`;
+    tbody += `<tr class="${cls}">${cells}</tr>`;
+  });
+
+  wrap.innerHTML = `
+    <div class="csv-preview-title">
+      Preview <span>
+        <span class="csv-count" style="background:var(--green)">${goodCount} valid</span>
+        ${badCount ? `<span class="csv-count" style="background:var(--red);margin-left:4px">${badCount} error</span>` : ""}
+      </span>
+    </div>
+    <div class="csv-preview-table-wrap">
+      <table class="csv-preview-table">
+        <thead><tr>${th}${badCount?"<th>Errors</th>":""}</tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+    </div>`;
+  wrap.style.display = "block";
+  bar.style.display  = "flex";
+  document.getElementById("csvStatus-"+section).textContent = "";
+  document.getElementById("csvProg-"+section).style.width = "0";
+  document.getElementById("csvImportBtn-"+section).disabled = goodCount === 0;
+}
+
+function clearCsvState(section) {
+  _csvState[section] = null;
+  document.getElementById("csvPreview-"+section).style.display = "none";
+  document.getElementById("csvBar-"+section).style.display     = "none";
+}
+
+// ─── Run import ───
+async function runCsvImport(section) {
+  const mapped = _csvState[section];
+  if (!mapped) return;
+  const { collection, addDoc, serverTimestamp } = window._fs;
+  const db = window._db;
+
+  const colMap = { recent: "recent_updates", articles: "articles", navlinks: "nav_links" };
+  const colName = colMap[section];
+  const validRows = mapped.filter(r => !r.errors.length);
+
+  const btn      = document.getElementById("csvImportBtn-"+section);
+  const progEl   = document.getElementById("csvProg-"+section);
+  const statusEl = document.getElementById("csvStatus-"+section);
+
+  btn.disabled = true;
+  let done = 0, failed = 0;
+
+  for (const r of validRows) {
+    try {
+      const docData = { ...r.data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+      await addDoc(collection(db, colName), docData);
+      done++;
+    } catch(e) {
+      failed++;
+      console.error("Import row error:", e);
+    }
+    const pct = Math.round(((done + failed) / validRows.length) * 100);
+    progEl.style.width = pct + "%";
+    statusEl.textContent = `${done+failed} / ${validRows.length}`;
+  }
+
+  const msg = failed
+    ? `Imported ${done}, failed ${failed}`
+    : `✅ All ${done} rows imported!`;
+  statusEl.textContent = msg;
+  toast(msg, failed ? "error" : "success");
+
+  // Reload the table
+  if (section === "recent")   { loadRecent();    loadDashboardCounts(); }
+  if (section === "articles") { loadArticles();  loadDashboardCounts(); }
+  if (section === "navlinks") { loadNavLinks();  loadDashboardCounts(); }
+
+  setTimeout(() => clearCsvState(section), 2000);
+  btn.disabled = false;
+}
+
+/* ══ INIT ══ */
+document.addEventListener("DOMContentLoaded", () => {
+  // Wire confirm modal Yes button safely after DOM is ready
+  const confirmYesBtn = document.getElementById("confirmYes");
+  if (confirmYesBtn) {
+    confirmYesBtn.addEventListener("click", () => {
+      const cb = _confirmCallback;   // save BEFORE nulling
+      _confirmCallback = null;
+      closeConfirm();
+      if (typeof cb === "function") cb();
+    });
+  }
+
+  // Show config warning if Firebase not yet set up
+  setTimeout(() => {
+    if (!window._db) document.getElementById("configWarn").style.display = "block";
+  }, 3000);
+
+  // Init one empty paragraph on article form
+  resetArticleForm();
+});
+
+/* ══════════════════════════════════════════════════════
+   SUB ADMINS  (collection: sub_admins, doc id = email)
+══════════════════════════════════════════════════════ */
+async function loadSubAdmins() {
+  const { collection, getDocs } = window._fs;
+  const tbody = document.getElementById("saTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="3"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const snap = await getDocs(collection(window._db, "sub_admins"));
+    if (snap.empty) { tbody.innerHTML = `<tr class="empty-row"><td colspan="3">No sub admins yet.</td></tr>`; return; }
+    let html = "";
+    snap.forEach(d => {
+      const sa = d.data();
+      const pages = (sa.pages || []).join(", ");
+      html += `<tr>
+        <td><div class="cell-main">${escH(d.id)}</div></td>
+        <td><div class="cell-sub">${escH(pages) || "—"}</div></td>
+        <td><div class="actions">
+          <button class="btn btn-edit" onclick="editSubAdmin('${escH(d.id)}',${escH(JSON.stringify(sa.pages||[]))})">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-del" onclick="deleteSubAdmin('${escH(d.id)}')">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  } catch(e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3" style="color:var(--red)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+async function saveSubAdmin() {
+  const { doc, setDoc, serverTimestamp } = window._fs;
+  const email = document.getElementById("saEmail").value.trim().toLowerCase();
+  const msgEl = document.getElementById("saMsg");
+  msgEl.textContent = "";
+  if (!email) { msgEl.innerHTML = `<span style="color:var(--red)">Please enter an email.</span>`; return; }
+  // Collect checked permissions
+  const pages = [...document.querySelectorAll("#saPermGrid input[type=checkbox]:checked")].map(c => c.value);
+  if (!pages.length) { msgEl.innerHTML = `<span style="color:var(--red)">Select at least one section.</span>`; return; }
+  try {
+    await setDoc(doc(window._db, "sub_admins", email), { pages, updatedAt: serverTimestamp() });
+    msgEl.innerHTML = `<span style="color:var(--green)">✓ Sub admin saved!</span>`;
+    clearSubAdminForm();
+    loadSubAdmins();
+  } catch(e) { msgEl.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`; }
+}
+
+function editSubAdmin(email, pages) {
+  document.getElementById("saEmail").value = email;
+  document.querySelectorAll("#saPermGrid input[type=checkbox]").forEach(cb => {
+    cb.checked = pages.includes(cb.value);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function clearSubAdminForm() {
+  document.getElementById("saEmail").value = "";
+  document.querySelectorAll("#saPermGrid input[type=checkbox]").forEach(cb => cb.checked = false);
+  document.getElementById("saMsg").textContent = "";
+}
+
+function deleteSubAdmin(email) {
+  confirm2(`Remove sub admin access for "${email}"?`, async () => {
+    try {
+      await window._deleteDoc("sub_admins", email);
+      toast("Sub admin removed!");
+      loadSubAdmins();
+    } catch(e) { toast("Error: " + e.message, "error"); }
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   REGISTERED USERS  (collection: users)
+══════════════════════════════════════════════════════ */
+let _allUsers = [];
+
+async function loadUsers() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  const db = window._db;
+  const tbody = document.getElementById("usersTable");
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="5"><span class="spinner"></span> Loading…</td></tr>`;
+  try {
+    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    _allUsers = [];
+    snap.forEach(d => _allUsers.push({ id: d.id, ...d.data() }));
+    document.getElementById("usersCountBadge").textContent = _allUsers.length + " users";
+    document.getElementById("cnt-users").textContent = _allUsers.length;
+    renderUsersTable(_allUsers);
+  } catch(e) {
+    // Try without orderBy if no index yet
+    try {
+      const snap2 = await getDocs(collection(db, "users"));
+      _allUsers = [];
+      snap2.forEach(d => _allUsers.push({ id: d.id, ...d.data() }));
+      document.getElementById("usersCountBadge").textContent = _allUsers.length + " users";
+      document.getElementById("cnt-users").textContent = _allUsers.length;
+      renderUsersTable(_allUsers);
+    } catch(e2) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="5" style="color:var(--red)">Error: ${e2.message}</td></tr>`;
+    }
+  }
+}
+
+function renderUsersTable(users) {
+  const tbody = document.getElementById("usersTable");
+  if (!users.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">No registered users found.</td></tr>`;
+    return;
+  }
+  let html = "";
+  users.forEach((u, i) => {
+    const ts = u.createdAt?.toDate
+      ? u.createdAt.toDate().toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
+      : u.updatedAt?.toDate
+        ? u.updatedAt.toDate().toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
+        : "—";
+    html += `<tr>
+      <td style="color:var(--text-muted);font-size:1.15rem">${i + 1}</td>
+      <td><div class="cell-main">${escH(u.name || "—")}</div></td>
+      <td><div class="cell-sub">${escH(u.email || "—")}</div></td>
+      <td><div class="cell-sub">${escH(u.phone || "—")}</div></td>
+      <td style="white-space:nowrap;color:var(--text-muted);font-size:1.15rem">${ts}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+function filterUsers() {
+  const q = (document.getElementById("userSearch")?.value || "").toLowerCase().trim();
+  if (!q) { renderUsersTable(_allUsers); return; }
+  const filtered = _allUsers.filter(u =>
+    (u.name  || "").toLowerCase().includes(q) ||
+    (u.email || "").toLowerCase().includes(q) ||
+    (u.phone || "").toLowerCase().includes(q)
+  );
+  renderUsersTable(filtered);
+}
+</script>
+</body>
+</html>
