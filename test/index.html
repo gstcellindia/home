@@ -16,6 +16,9 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, getDocs, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, setDoc, getDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
+    signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyCpKgeXBwfvPDZUqbl0ro2xYTIIOYs40QI",
@@ -26,14 +29,26 @@
     appId:             "1:977774861669:web:249661743136343e4a158c"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
 
   // ─────────── expose db + helpers globally so inline scripts can use them ───────────
   window._db = db;
+  window._auth = auth;
+  window._googleProvider = googleProvider;
   window._fsHelpers = { collection, getDocs, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, setDoc, getDoc };
+  window._authFn = { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
+    signInWithPopup, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider };
   window._firebaseReady = true;
   document.dispatchEvent(new Event("firebaseReady"));
+
+  // Auth state listener
+  onAuthStateChanged(auth, user => {
+    window._currentUser = user;
+    updateAuthUI(user);
+  });
 </script>
 
 <style>
@@ -50,9 +65,10 @@
   --card-border:   #ebe8e2;
   --section-head:  #1a3a6b;
   --link-color:    #1a5cc8;
-  --font-heading:  'Playfair Display', Georgia, serif;
+  --font-heading:  'Times New Roman', Times, serif;
   --font-main:     'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono:     'DM Mono', monospace;
+  --font-nav:      'Times New Roman', Times, serif;
   --nav-height:    48px;
 }
 html { font-size: 10px; background: var(--body-bg); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
@@ -124,7 +140,8 @@ nav .wrapper {
 .nav-links > li > a,
 .nav-links > li > .desktop-item {
   color: var(--nav-text); text-decoration: none;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.09em;
+  font-size: 14.67px; font-weight: 600; letter-spacing: 0.09em;
+  font-family: var(--font-nav);
   text-transform: uppercase; padding: 0 11px;
   display: flex; align-items: center; height: var(--nav-height);
   white-space: nowrap; cursor: pointer;
@@ -180,48 +197,50 @@ nav .wrapper {
 .nav-links > li:hover .drop-menu { opacity:1; visibility:visible; transform: translateY(0); }
 .drop-menu li a {
   display: block; padding: 7px 16px;
-  font-size: 12px; font-weight: 400; letter-spacing: 0.02em;
+  font-size: 14.67px; font-weight: 400; letter-spacing: 0.02em;
+  font-family: var(--font-nav);
   color: #ccc; white-space: nowrap;
 }
 .drop-menu li a:hover { color: #fff; background: rgba(255,255,255,.05); }
 
 /* ── Mega-menu ── */
 .mega-box {
-  position: absolute; left: 50%; transform: translateX(-50%) translateY(-4px);
+  position: absolute; left: 0; right: auto; transform: translateY(-4px);
   top: var(--nav-height);
   opacity: 0; visibility: hidden;
   z-index: 400;
   transition: opacity .2s, transform .2s;
-  /* width is set dynamically via JS or inline style */
-  min-width: 200px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
 }
-.nav-links > li:hover .mega-box { opacity:1; visibility:visible; transform: translateX(-50%) translateY(0); }
+.nav-links > li:hover .mega-box { opacity:1; visibility:visible; transform: translateY(0); }
 .mega-content {
   background: var(--nav-bg);
   border-top: 2px solid var(--nav-accent);
   display: flex; gap: 0;
   padding: 14px 18px 16px;
   box-shadow: 0 10px 32px rgba(0,0,0,.3);
+  overflow-x: auto;
 }
 /* Each column */
 .mega-col {
   flex: 0 0 auto;
-  min-width: 140px;
-  max-width: 190px;
+  min-width: 130px;
   padding: 0 16px;
   border-right: 1px solid rgba(255,255,255,.07);
 }
 .mega-col:last-child { border-right: none; }
 .mega-col h4 {
-  color: var(--nav-accent); font-size: 10px; margin-bottom: 8px;
+  color: var(--nav-accent); font-size: 13.33px; margin-bottom: 8px;
   text-transform: uppercase; letter-spacing: .12em; font-weight: 700;
   border-bottom: 1px solid rgba(224,53,53,.3); padding-bottom: 6px;
-  font-family: var(--font-main); white-space: nowrap; cursor: pointer;
+  font-family: var(--font-nav); white-space: nowrap; cursor: pointer;
 }
 .mega-col h4:hover { color: #ff6b6b; }
 .mega-col ul { list-style: none; }
 .mega-col ul li a {
-  color: #b8bccf; font-size: 12px; font-weight: 400;
+  color: #b8bccf; font-size: 14.67px; font-weight: 400;
+  font-family: var(--font-nav);
   display: block; padding: 4px 0;
   line-height: 1.55; letter-spacing: 0.01em;
   white-space: nowrap; text-decoration: none;
@@ -273,7 +292,8 @@ nav .wrapper {
   .nav-links > li > a,
   .nav-links > li > .desktop-item {
     height: auto; padding: 13px 20px;
-    font-size: 12px; border-bottom: 1px solid rgba(255,255,255,.07);
+    font-size: 13.33px; font-family: var(--font-nav);
+    border-bottom: 1px solid rgba(255,255,255,.07);
     border-left: none;
   }
 
@@ -294,8 +314,8 @@ nav .wrapper {
     padding: 10px 8px; border-right: none;
     border-bottom: 1px solid rgba(255,255,255,.06);
   }
-  .mega-col h4 { font-size: 10px; }
-  .mega-col ul li a { font-size: 12px; padding: 5px 0; white-space: normal; }
+  .mega-col h4 { font-size: 13.33px; font-family: var(--font-nav); }
+  .mega-col ul li a { font-size: 14.67px; font-family: var(--font-nav); padding: 5px 0; white-space: normal; }
 
   .drop-menu {
     position: static; transform: none !important;
@@ -305,7 +325,7 @@ nav .wrapper {
     min-width: unset; width: 100%;
   }
   .nav-links > li.mob-open .drop-menu { display: block; }
-  .drop-menu li a { padding: 8px 20px; font-size: 12.5px; white-space: normal; }
+  .drop-menu li a { padding: 8px 20px; font-size: 18px; font-family: var(--font-nav); white-space: normal; }
 
   .nav-btn { margin: 12px 16px !important; height: 36px !important; width: calc(100% - 32px) !important; justify-content: center; }
 }
@@ -316,9 +336,15 @@ nav .wrapper {
 ═══════════════════════════════════════════════ */
 .doc-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   padding: 4px 0;
+}
+@media(max-width:900px){
+  .doc-cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media(max-width:600px){
+  .doc-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .doc-card {
   position: relative;
@@ -338,18 +364,27 @@ nav .wrapper {
   transform: translateY(-4px);
   border-color: #a8c4e8;
 }
+.doc-card-img-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 64.1%; /* 1/1.56 = 64.1% — enforces 1.56:1 aspect ratio */
+  flex-shrink: 0;
+  overflow: hidden;
+}
 .doc-card-img {
-  width: 100%; height: 100px;
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
   object-fit: cover;
   display: block;
-  flex-shrink: 0;
 }
 .doc-card-img-placeholder {
-  width: 100%; height: 100px;
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
   background: linear-gradient(135deg, #e8f0fb 0%, #c8daef 100%);
   display: flex; align-items: center; justify-content: center;
   font-size: 2.8rem;
-  flex-shrink: 0;
 }
 .doc-card-body {
   padding: 10px 12px 10px;
@@ -362,12 +397,12 @@ nav .wrapper {
   text-transform: uppercase;
   letter-spacing: .04em;
   line-height: 1.3;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
 }
-.doc-card-sub {
-  font-size: 1.05rem;
+.doc-card-desc {
+  font-size: 1.0rem;
   color: #5a6a80;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 /* ── Hover flyout panel ── */
@@ -439,11 +474,49 @@ nav .wrapper {
   display: none; /* shown only in mobile mega-box replacement — kept for reference */
 }
 
-/* ═══ MAIN LAYOUT ═══ */
+/* ═══ THREE COLUMN MAIN LAYOUT ═══ */
 .page-body { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
-.two-col { display: flex; gap: 24px; margin-bottom: 24px; }
-.col-left  { flex: 1; min-width: 0; }
-.col-right { width: 380px; flex-shrink: 0; }
+.three-col {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+.col-quicklinks {
+  width: 160px;
+  flex-shrink: 0;
+}
+.col-doclibrary {
+  flex: 1;
+  min-width: 0;
+}
+.col-right {
+  width: 300px;
+  flex-shrink: 0;
+}
+.col-quicklinks .ql-group { margin-bottom: 10px; }
+.col-quicklinks .ql-group-title {
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--nav-accent);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+.col-quicklinks ul { list-style: none; padding: 0; margin: 0; }
+.col-quicklinks ul li a {
+  display: block; font-size: 1.1rem; color: #2d2d3e;
+  text-decoration: none; padding: 2px 0 2px 7px;
+  border-left: 2px solid transparent;
+  transition: color .15s, border-color .15s; line-height: 1.4;
+}
+.col-quicklinks ul li a:hover {
+  color: var(--nav-accent); border-left-color: var(--nav-accent);
+}
+@media(max-width:900px){
+  .three-col { flex-wrap: wrap; }
+  .col-quicklinks { width: 100%; order: 3; }
+  .col-doclibrary { width: 100%; order: 1; flex: none; }
+  .col-right { width: 100%; order: 2; }
+}
 
 /* ═══ SECTION CARDS ═══ */
 .section-card {
@@ -453,9 +526,9 @@ nav .wrapper {
   box-shadow: 0 1px 4px rgba(0,0,0,.04);
 }
 .section-card h2 {
-  color: var(--section-head); font-size: 1.85rem; font-family: var(--font-heading);
+  color: var(--section-head); font-size: 16px; font-family: var(--font-heading);
   font-weight: 700; letter-spacing: 0.01em;
-  border-bottom: 2px solid var(--nav-accent); padding-bottom: 9px; margin-bottom: 15px;
+  border-bottom: 2px solid #1a5cc8; padding-bottom: 9px; margin-bottom: 15px;
   display: flex; align-items: center; gap: 8px;
 }
 
@@ -481,7 +554,7 @@ nav .wrapper {
 
 /* ═══ ARTICLES ═══ */
 .article-category { margin-bottom: 22px; }
-.article-category h2 { color: var(--section-head); font-size: 1.8rem; font-family: var(--font-heading); font-weight: 700; margin-bottom: 10px; }
+.article-category h2 { color: var(--section-head); font-size: 16px; font-family: var(--font-heading); font-weight: 700; margin-bottom: 10px; border-bottom: 2px solid #1a5cc8; padding-bottom: 8px; }
 article {
   border: 1px solid #ece9e3; border-radius: 10px;
   padding: 14px 16px; margin-bottom: 14px; background: #fdfcfa;
@@ -565,7 +638,7 @@ article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
   border-bottom: 2px solid var(--nav-accent);
 }
 .dc-popup-header h3 {
-  font-size: 1.5rem; font-weight: 700; letter-spacing: .04em;
+  font-size: 20px; font-weight: 700; letter-spacing: .04em;
   text-transform: uppercase; color: #fff;
 }
 .dc-popup-close {
@@ -587,7 +660,7 @@ article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
 .dc-popup-list li a {
   display: flex; align-items: center; gap: 9px;
   padding: 9px 4px; color: #1a2a50;
-  font-size: 1.3rem; text-decoration: none;
+  font-size: 17.33px; text-decoration: none;
   transition: color .15s, background .15s;
   border-radius: 6px;
 }
@@ -622,6 +695,61 @@ article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
   padding: 8px 10px; font-size: 1.15rem; font-weight: 600;
   color: #1a3a6b; line-height: 1.3;
 }
+.dc-popup-card-pdf-btn {
+  display: block; margin: 0 8px 8px;
+  background: #1a5cc8; color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 10px; font-size: 1.1rem; font-weight: 600;
+  cursor: pointer; text-align: center;
+  font-family: var(--font-main);
+  transition: background .2s;
+}
+.dc-popup-card-pdf-btn:hover { background: #0f3d8a; }
+
+/* PDF Preview Modal */
+.pdf-preview-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,10,25,.82);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 4000; padding: 16px;
+}
+.pdf-preview-overlay.open { display: flex; }
+.pdf-preview-box {
+  background: #fff; border-radius: 14px;
+  width: 100%; max-width: 860px;
+  max-height: 92vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,.4);
+  animation: dcPopIn .22s ease;
+  overflow: hidden;
+}
+.pdf-preview-header {
+  background: var(--nav-bg); color: #fff;
+  padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid var(--nav-accent);
+  flex-shrink: 0;
+}
+.pdf-preview-header h3 { font-size: 1.4rem; font-weight: 700; }
+.pdf-preview-header-btns { display: flex; align-items: center; gap: 10px; }
+.pdf-download-btn {
+  background: var(--nav-green); color: #0f1628;
+  border: none; border-radius: 6px; padding: 6px 16px;
+  font-size: 1.2rem; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: opacity .2s; font-family: var(--font-main);
+}
+.pdf-download-btn:hover { opacity: .85; }
+.pdf-close-btn {
+  background: none; border: none; color: #aaa;
+  font-size: 2rem; cursor: pointer; line-height: 1; padding: 0 4px;
+}
+.pdf-close-btn:hover { color: var(--nav-accent); }
+.pdf-preview-frame {
+  flex: 1; min-height: 0;
+  border: none; width: 100%;
+}
 
 /* Paired two-column table */
 .dc-popup-paired-table {
@@ -629,11 +757,11 @@ article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
   font-size: 1.3rem;
 }
 .dc-popup-paired-table thead th {
-  background: var(--nav-bg); color: var(--nav-accent);
+  background: #f0f4ff; color: #1a3a6b;
   padding: 10px 14px; text-align: left;
-  font-size: 1.1rem; font-weight: 700;
+  font-size: 14.67px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
-  border-bottom: 2px solid var(--nav-accent);
+  border-bottom: 2px solid #a8c4e8;
 }
 .dc-popup-paired-table tbody tr {
   border-bottom: 1px solid #eee;
@@ -757,16 +885,257 @@ article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
 
 /* ═══ FOOTER ═══ */
 footer {
-  background: var(--nav-bg); color: #888; text-align: center;
-  font-size: 1.2rem; padding: 18px; letter-spacing: 0.02em;
-  margin-top: 24px;
+  background: #0f1628;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  margin-top: 32px;
 }
-footer a { color: var(--nav-green); text-decoration: none; }
+.footer-main {
+  max-width: 1300px; margin: 0 auto;
+  padding: 40px 28px 32px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 40px;
+}
+.footer-brand .footer-logo {
+  font-family: var(--font-heading);
+  font-size: 2.4rem; font-weight: 700; font-style: italic;
+  color: #fff; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.footer-brand .footer-logo img {
+  width: 32px; height: 32px; object-fit: contain;
+}
+.footer-brand p {
+  font-size: 1.25rem; line-height: 1.65;
+  color: #94a3b8; max-width: 300px;
+}
+.footer-col h4 {
+  color: #e2b84a; font-size: 1.1rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 14px;
+}
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 9px; }
+.footer-col ul li a {
+  color: #94a3b8; text-decoration: none;
+  font-size: 1.25rem; transition: color .2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.footer-col ul li a:hover { color: #e2b84a; }
+.footer-col ul li a i { font-size: 1.1rem; width: 16px; color: #e2b84a; }
+.footer-share-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #e2b84a; color: #0f1628;
+  border: none; border-radius: 20px;
+  padding: 7px 18px; font-size: 1.2rem; font-weight: 700;
+  cursor: pointer; margin-top: 10px; transition: opacity .2s;
+  font-family: var(--font-main);
+}
+.footer-share-btn:hover { opacity: .88; }
+.footer-divider {
+  border: none; border-top: 1px solid rgba(255,255,255,.07);
+  margin: 0;
+}
+.footer-bottom {
+  max-width: 1300px; margin: 0 auto;
+  padding: 16px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom p { font-size: 1.15rem; line-height: 1.6; }
+.footer-bottom p strong { color: #e8e8ea; }
+.footer-socials { display: flex; gap: 10px; }
+.footer-social-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; text-decoration: none; transition: transform .2s, opacity .2s;
+  color: #fff;
+}
+.footer-social-btn:hover { transform: scale(1.12); opacity: .85; }
+.footer-social-btn.wa { background: #25d366; }
+.footer-social-btn.fb { background: #1877f2; }
+.footer-social-btn.tw { background: #1da1f2; }
+.footer-social-btn.sh { background: #e2b84a; color: #0f1628; }
+@media(max-width:780px){
+  .footer-main { grid-template-columns: 1fr; gap: 28px; padding: 28px 16px 20px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; padding: 14px 16px; }
+}
+
+/* ═══ AUTH UI - Banner elements ═══ */
+.admin-banner-link {
+  display: none;
+  background: rgba(224,53,53,.9);
+  color: #fff; text-decoration: none;
+  font-size: 1.1rem; font-weight: 700;
+  padding: 5px 14px; border-radius: 4px;
+  letter-spacing: 0.05em;
+  transition: background .2s;
+  white-space: nowrap;
+}
+.admin-banner-link:hover { background: #c0392b; }
+
+/* ═══ BANNER TOP-RIGHT ZONE ═══ */
+.banner-top-right {
+  position: absolute; z-index: 5;
+  top: 12px; right: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+/* ═══ BANNER AUTH ZONE (inside top-right) ═══ */
+.banner-auth-zone {
+  display: flex; align-items: center;
+}
+.banner-login-btn {
+  background: rgba(255,255,255,.18);
+  color: #fff; border: 1px solid rgba(255,255,255,.45);
+  border-radius: 20px; padding: 7px 18px;
+  font-size: 1.25rem; font-weight: 700;
+  cursor: pointer; backdrop-filter: blur(6px);
+  font-family: var(--font-main);
+  display: flex; align-items: center; gap: 7px;
+  transition: background .2s, border-color .2s;
+}
+.banner-login-btn:hover { background: rgba(255,255,255,.28); border-color: #fff; }
+
+.banner-user-chip {
+  background: rgba(10,18,40,.7);
+  color: #fff; border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px; padding: 7px 18px;
+  font-size: 1.25rem; font-weight: 600;
+  cursor: pointer; backdrop-filter: blur(4px);
+  display: flex; align-items: center; gap: 8px;
+  transition: background .2s;
+}
+.banner-user-chip:hover { background: rgba(10,18,40,.9); }
+
+.user-panel-dropdown {
+  display: none;
+  position: absolute; z-index: 100;
+  top: 52px; right: 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.22);
+  min-width: 240px;
+  padding: 12px 0;
+  animation: dropIn .18s ease;
+}
+@keyframes dropIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+.user-panel-dropdown .ud-email {
+  padding: 8px 18px 10px;
+  font-size: 1.2rem; color: #666;
+  border-bottom: 1px solid #eee;
+  word-break: break-all;
+}
+.user-panel-dropdown .ud-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px; font-size: 1.3rem; color: #333;
+  cursor: pointer; transition: background .15s;
+}
+.user-panel-dropdown .ud-item:hover { background: #f7f4ef; }
+.user-panel-dropdown .ud-item i { color: #1a5cc8; width: 16px; }
+.user-panel-dropdown .ud-item.logout { color: #e03535; }
+.user-panel-dropdown .ud-item.logout i { color: #e03535; }
+
+/* ═══ AUTH MODAL ═══ */
+.auth-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,10,25,.72);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 3000; padding: 20px;
+}
+.auth-overlay.open { display: flex; }
+.auth-box {
+  background: #fff; border-radius: 18px;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.35);
+  animation: dcPopIn .22s ease;
+  overflow: hidden;
+}
+.auth-header {
+  background: var(--nav-bg);
+  padding: 18px 22px 14px;
+  border-bottom: 2px solid var(--nav-accent);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.auth-header h2 { color: #fff; font-size: 1.6rem; font-weight: 700; }
+.auth-close {
+  background: none; border: none; color: #aaa;
+  font-size: 2rem; cursor: pointer; line-height: 1; padding: 0 4px;
+}
+.auth-close:hover { color: var(--nav-accent); }
+.auth-tabs {
+  display: flex; border-bottom: 1px solid #e8e4dc;
+}
+.auth-tab {
+  flex: 1; padding: 11px; font-size: 1.3rem; font-weight: 600;
+  border: none; background: #f8f6f2; color: #888;
+  cursor: pointer; transition: all .2s;
+}
+.auth-tab.active {
+  background: #fff; color: var(--nav-accent);
+  border-bottom: 2px solid var(--nav-accent);
+}
+.auth-body { padding: 22px 24px; }
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+.auth-field { margin-bottom: 14px; }
+.auth-field label {
+  display: block; font-size: 1.15rem; color: #666;
+  margin-bottom: 5px; font-weight: 600;
+}
+.auth-field input {
+  width: 100%; border: 1px solid #ddd; border-radius: 8px;
+  padding: 10px 14px; font-size: 1.35rem;
+  font-family: var(--font-main); outline: none; transition: border .2s;
+}
+.auth-field input:focus { border-color: #1a5cc8; }
+.auth-btn {
+  width: 100%; background: var(--nav-accent); color: #fff;
+  border: none; border-radius: 8px; padding: 12px;
+  font-size: 1.4rem; font-weight: 700; cursor: pointer;
+  margin-top: 6px; transition: opacity .2s;
+}
+.auth-btn:hover { opacity: .88; }
+.auth-google-btn {
+  width: 100%; background: #fff; color: #444;
+  border: 1px solid #ddd; border-radius: 8px; padding: 11px;
+  font-size: 1.35rem; font-weight: 600; cursor: pointer;
+  margin-top: 10px; transition: box-shadow .2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.auth-google-btn:hover { box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+.auth-google-btn img { width: 20px; height: 20px; }
+.auth-divider {
+  text-align: center; color: #bbb; font-size: 1.2rem;
+  margin: 12px 0; position: relative;
+}
+.auth-divider::before, .auth-divider::after {
+  content:''; position: absolute; top: 50%; width: 42%; height: 1px; background: #eee;
+}
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
+.auth-error { color: #e03535; font-size: 1.2rem; margin-top: 8px; text-align: center; min-height: 20px; }
+.auth-success { color: #00a854; font-size: 1.2rem; margin-top: 8px; text-align: center; }
+
+/* Nav auth button */
+.nav-auth-btn {
+  background: none; border: 1px solid rgba(255,255,255,.3);
+  color: var(--nav-text); border-radius: 4px;
+  padding: 0 12px !important; height: 28px !important;
+  font-size: 10px !important; font-weight: 600 !important;
+  cursor: pointer; transition: all .25s;
+  display: inline-flex !important; align-items: center !important;
+  gap: 5px; margin-left: 6px; letter-spacing: 0.05em;
+}
+.nav-auth-btn:hover { border-color: #fff; color: #fff; }
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:780px){
-  .two-col { flex-direction: column; }
-  .col-right { width: 100%; }
+  .three-col { flex-wrap: wrap; }
+  .col-quicklinks { width: 100%; order: 3; }
+  .col-doclibrary { width: 100%; order: 1; }
+  .col-right { width: 100%; order: 2; }
   .aiPopupMain, .aiPopupText { max-width: 95%; padding: 12px; }
 }
 @media(max-width:500px){
@@ -778,7 +1147,26 @@ footer a { color: var(--nav-green); text-decoration: none; }
 <body>
 
 <!-- ████  HEAD IMAGE  ████ -->
-<div class="headimage">
+<div class="headimage" style="position:relative">
+
+  <!-- Top-right: Admin Panel link (when admin) + Login/Username chip — side by side -->
+  <div class="banner-top-right">
+    <a href="https://www.gstcell.com/admin" class="admin-banner-link" id="adminBannerLink" target="_blank">⚙️ Admin Panel</a>
+    <div class="banner-auth-zone" id="bannerAuthZone">
+      <button class="banner-login-btn" id="bannerLoginBtn" onclick="openAuthModal()">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+    </div>
+  </div>
+
+  <!-- User dropdown panel -->
+  <div class="user-panel-dropdown" id="userPanelDropdown">
+    <div class="ud-email" id="udEmail"></div>
+    <div class="ud-item" onclick="openEditProfile()"><i class="fas fa-user-edit"></i> Edit Profile</div>
+    <div class="ud-item" onclick="openChangePassword()"><i class="fas fa-key"></i> Change Password</div>
+    <div class="ud-item logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+  </div>
+
   <div class="sitename">GST<span>Cell</span></div>
 </div>
 
@@ -788,7 +1176,6 @@ footer a { color: var(--nav-green); text-decoration: none; }
     <div class="logo"><a href="#">GSTCell</a></div>
     <ul class="nav-links" id="mainNav">
       <!-- dynamic menu items injected here by loadNavLinks() -->
-
       <li id="nav-dynamic-placeholder"></li>
     </ul>
     <span class="menu-toggle" onclick="toggleMobileMenu()">☰</span>
@@ -798,26 +1185,81 @@ footer a { color: var(--nav-green); text-decoration: none; }
 <!-- ████  MAIN BODY  ████ -->
 <div class="page-body">
 
-  <!-- TWO COLUMN LAYOUT -->
-  <div class="two-col">
+  <!-- THREE COLUMN LAYOUT -->
+  <div class="three-col">
 
-    <!-- LEFT: quick links only -->
-    <div class="col-left">
+    <!-- COL 1: Quick Links panel -->
+    <div class="col-quicklinks">
+      <div class="section-card">
+        <h2>🔗 Quick Links</h2>
+        <div class="ql-group">
+          <div class="ql-group-title">Kerala Taxes</div>
+          <ul>
+            <li><a href="https://www.keralataxes.gov.in" target="_blank">Home</a></li>
+            <li><a href="https://kitis.keralataxes.gov.in/" target="_blank">KITIS (Return Filing)</a></li>
+            <li><a href="https://www.facebook.com/keralastategst/" target="_blank">Facebook Page</a></li>
+            <li><a href="https://www.gstcell.com/sgst-directory" target="_blank">Directory</a></li>
+          </ul>
+        </div>
+        <div class="ql-group">
+          <div class="ql-group-title">CBIC</div>
+          <ul>
+            <li><a href="https://www.cbic.gov.in" target="_blank">Home</a></li>
+            <li><a href="https://taxinformation.cbic.gov.in/" target="_blank">Notification</a></li>
+            <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/circularcgst" target="_blank">Circular</a></li>
+            <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/gstInstructions" target="_blank">Instructions</a></li>
+          </ul>
+        </div>
+        <div class="ql-group">
+          <div class="ql-group-title">GST Portal</div>
+          <ul>
+            <li><a href="https://services.gst.gov.in/services/login" target="_blank">Return Filing</a></li>
+            <li><a href="http://gstcouncil.gov.in/" target="_blank">GST Council</a></li>
+            <li><a href="http://www.gstcouncil.gov.in/authority-for-advance-rulings" target="_blank">Advance Ruling</a></li>
+            <li><a href="https://www.naa.gov.in/news.php?page=1&cat=2&pagesize=10" target="_blank">National AAR</a></li>
+          </ul>
+        </div>
+        <div class="ql-group">
+          <div class="ql-group-title">eGazette</div>
+          <ul>
+            <li><a href="http://www.egazette.kerala.gov.in/archives.php?id=6" target="_blank">Ordinary Gazette</a></li>
+            <li><a href="https://compose.kerala.gov.in/egazettelink1" target="_blank">Extra Ordinary</a></li>
+            <li><a href="https://egazette.gov.in/" target="_blank">eGazette India</a></li>
+          </ul>
+        </div>
+        <div class="ql-group">
+          <div class="ql-group-title">E-Office</div>
+          <ul>
+            <li><a href="https://eoffice.kerala.gov.in/EofficePortal/letterSearchRedirect" target="_blank">Citizen Portal</a></li>
+            <li><a href="http://www.ctax.kerala.gov.in" target="_blank">GST Employee Login</a></li>
+            <li><a href="https://www.gstcell.com/my-office" target="_blank">My Office</a></li>
+          </ul>
+        </div>
+        <div class="ql-group">
+          <div class="ql-group-title">Kerala PSC</div>
+          <ul>
+            <li><a href="https://psc.kerala.gov.in/kpsc/" target="_blank">Dept. Test Login</a></li>
+            <li><a href="https://thulasi.psc.kerala.gov.in/thulasi/" target="_blank">One Time Regn.</a></li>
+            <li><a href="https://keralapsc.gov.in/rankedlist" target="_blank">Rank List</a></li>
+          </ul>
+        </div>
+      </div>
+    </div><!-- /col-quicklinks -->
 
-      <!-- QUICK POPUP LINKS (was Sheet3) -->
+    <!-- COL 2: Document Library -->
+    <div class="col-doclibrary">
       <div class="section-card">
         <h2>📂 Document Library</h2>
         <div id="quick-links-container">
           <div class="loading-text"><span class="loading-spinner"></span> Loading from Firestore…</div>
         </div>
       </div>
+    </div><!-- /col-doclibrary -->
 
-    </div><!-- /col-left -->
-
-    <!-- RIGHT: recent updates + news + chat -->
+    <!-- COL 3: Recent updates + news + chat -->
     <div class="col-right">
 
-      <!-- RECENT UPDATES (was Sheet1 of updates spreadsheet) -->
+      <!-- RECENT UPDATES -->
       <div class="section-card">
         <h2>🆕 Recent Updates</h2>
         <div id="recent-container">
@@ -834,13 +1276,14 @@ footer a { color: var(--nav-green); text-decoration: none; }
       </div>
 
       <!-- SUGGESTION / CHAT BOX (real-time Firestore) -->
-      <div class="chat-widget">
+      <div class="chat-widget" id="chatWidget" style="display:none">
         <div class="chat-header">
           <span class="status-dot"></span>
           <h3>💬 Let's Suggest</h3>
         </div>
-        <div class="name-row">
-          <input type="text" id="chatName" placeholder="Your name…" maxlength="40">
+        <div class="chat-user-bar" id="chatUserBar" style="padding:6px 14px 0;background:#fff;font-size:1.2rem;color:#555;display:none">
+          <i class="fas fa-user-circle" style="color:#1a5cc8"></i>
+          <span id="chatDisplayName" style="margin-left:5px;font-weight:600"></span>
         </div>
         <div class="chat-messages" id="chatMessages">
           <div class="loading-text"><span class="loading-spinner"></span> Connecting live chat…</div>
@@ -852,66 +1295,19 @@ footer a { color: var(--nav-green); text-decoration: none; }
         </div>
       </div>
 
-    </div><!-- /col-right -->
-  </div><!-- /two-col -->
+      <!-- Chat login prompt (shown when not logged in) -->
+      <div class="section-card" id="chatLoginPrompt" style="text-align:center;padding:20px">
+        <p style="color:#666;font-size:1.3rem;margin-bottom:12px">
+          <i class="fas fa-lock" style="color:#1a5cc8;margin-right:6px"></i>
+          Please <strong>login</strong> to use the suggestion box.
+        </p>
+        <button onclick="openAuthModal()" style="background:#1a5cc8;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:1.3rem;font-weight:700;cursor:pointer">
+          <i class="fas fa-sign-in-alt"></i> Login / Register
+        </button>
+      </div>
 
-  <!-- EXTERNAL LINK TILES (static – no data source needed) -->
-  <div class="section-card">
-    <h2>🔗 Quick Access Links</h2>
-    <div class="link-tiles">
-      <div class="link-tile">
-        <h3>Kerala Taxes</h3>
-        <ul>
-          <li><a href="https://www.keralataxes.gov.in" target="_blank">Home</a></li>
-          <li><a href="https://kitis.keralataxes.gov.in/" target="_blank">KITIS (Return Filing)</a></li>
-          <li><a href="https://www.facebook.com/keralastategst/" target="_blank">Facebook Page</a></li>
-          <li><a href="https://www.gstcell.com/sgst-directory" target="_blank">Directory</a></li>
-        </ul>
-      </div>
-      <div class="link-tile">
-        <h3>CBIC</h3>
-        <ul>
-          <li><a href="https://www.cbic.gov.in" target="_blank">Home</a></li>
-          <li><a href="https://taxinformation.cbic.gov.in/" target="_blank">Notification</a></li>
-          <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/circularcgst" target="_blank">Circular</a></li>
-          <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/gstInstructions" target="_blank">Instructions</a></li>
-        </ul>
-      </div>
-      <div class="link-tile">
-        <h3>GST Portal</h3>
-        <ul>
-          <li><a href="https://services.gst.gov.in/services/login" target="_blank">Return Filing</a></li>
-          <li><a href="http://gstcouncil.gov.in/" target="_blank">GST Council</a></li>
-          <li><a href="http://www.gstcouncil.gov.in/authority-for-advance-rulings" target="_blank">Advance Ruling</a></li>
-          <li><a href="https://www.naa.gov.in/news.php?page=1&cat=2&pagesize=10" target="_blank">National AAR</a></li>
-        </ul>
-      </div>
-      <div class="link-tile">
-        <h3>eGazette</h3>
-        <ul>
-          <li><a href="http://www.egazette.kerala.gov.in/archives.php?id=6" target="_blank">Ordinary Gazette</a></li>
-          <li><a href="https://compose.kerala.gov.in/egazettelink1" target="_blank">Extra Ordinary</a></li>
-          <li><a href="https://egazette.gov.in/" target="_blank">eGazette India</a></li>
-        </ul>
-      </div>
-      <div class="link-tile">
-        <h3>E-Office</h3>
-        <ul>
-          <li><a href="https://eoffice.kerala.gov.in/EofficePortal/letterSearchRedirect" target="_blank">Citizen Portal</a></li>
-          <li><a href="http://www.ctax.kerala.gov.in" target="_blank">GST Employee Login</a></li>
-          <li><a href="https://www.gstcell.com/my-office" target="_blank">My Office</a></li>
-        </ul>
-      </div>
-      <div class="link-tile">
-        <h3>Kerala PSC</h3>
-        <ul>
-          <li><a href="https://psc.kerala.gov.in/kpsc/" target="_blank">Dept. Test Login</a></li>
-          <li><a href="https://thulasi.psc.kerala.gov.in/thulasi/" target="_blank">One Time Regn.</a></li>
-          <li><a href="https://keralapsc.gov.in/rankedlist" target="_blank">Rank List</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+    </div><!-- /col-right -->
+  </div><!-- /three-col -->
 
 </div><!-- /page-body -->
 
@@ -1011,9 +1407,217 @@ footer a { color: var(--nav-green); text-decoration: none; }
 
 <!-- ████  FOOTER  ████ -->
 <footer>
-  <p>🔥 Powered by <strong>Firebase Firestore</strong> &nbsp;|&nbsp; GSTCell &copy; Kerala GST Department &nbsp;|&nbsp;
-  <a href="https://www.gstcell.com" target="_blank">www.gstcell.com</a></p>
+  <div class="footer-main">
+    <!-- Brand column -->
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="https://lh3.googleusercontent.com/d/1VsL2VwLkoM_htKcGmVoOOmoWM_SzBXqH" alt="GSTCell">
+        GSTCell
+      </div>
+      <p>Kerala's trusted platform for GST professionals. Access Acts, Rules, Notifications, Circulars, Advance Rulings and AI-powered GST assistance.</p>
+      <button class="footer-share-btn" onclick="shareThisSite()">
+        <i class="fas fa-share-alt"></i> Share this site
+      </button>
+    </div>
+
+    <!-- Contact column -->
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <ul>
+        <li><a href="tel:9744012007"><i class="fas fa-phone"></i> 9744012007</a></li>
+        <li><a href="mailto:gstcell.com@gmail.com"><i class="fas fa-envelope"></i> gstcell.com@gmail.com</a></li>
+        <li><a href="https://www.gstcell.com" target="_blank"><i class="fas fa-globe"></i> www.gstcell.com</a></li>
+      </ul>
+    </div>
+
+    <!-- Legal column -->
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#"><i class="fas fa-file-alt"></i> Terms &amp; Conditions</a></li>
+        <li><a href="https://www.gstcell.com" target="_blank"><i class="fas fa-external-link-alt"></i> Visit Website</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="footer-divider">
+
+  <div class="footer-bottom">
+    <p>© 2026 GSTCell. All rights reserved.<br>
+       Powered by <strong>Firebase Firestore</strong> &nbsp;|&nbsp;
+       Kerala GST Department &nbsp;|&nbsp;
+       <a href="https://www.gstcell.com" target="_blank" style="color:var(--nav-green)">www.gstcell.com</a>
+    </p>
+    <div class="footer-socials">
+      <a href="https://api.whatsapp.com/send?text=Check out GSTCell - Kerala GST Resource: https://www.gstcell.com" target="_blank" class="footer-social-btn wa"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.facebook.com/sharer.php?u=https://www.gstcell.com" target="_blank" class="footer-social-btn fb"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://twitter.com/intent/tweet?url=https://www.gstcell.com&text=Kerala GST Resource - GSTCell" target="_blank" class="footer-social-btn tw"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="footer-social-btn sh" onclick="shareThisSite();return false;"><i class="fas fa-share-alt"></i></a>
+    </div>
+  </div>
 </footer>
+
+<!-- ████  AUTH MODAL  ████ -->
+<div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuthModal()">
+  <div class="auth-box">
+    <div class="auth-header">
+      <h2>🔐 GSTCell Account</h2>
+      <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+      <button class="auth-tab" onclick="switchAuthTab('forgot')">Forgot Password</button>
+    </div>
+    <div class="auth-body">
+      <!-- LOGIN -->
+      <div class="auth-panel active" id="authPanel-login">
+        <div class="auth-field">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com">
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="auth-btn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        <div class="auth-divider">or</div>
+        <button class="auth-google-btn" onclick="doGoogleLogin()">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+          Continue with Google
+        </button>
+        <div class="auth-error" id="loginError"></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-panel" id="authPanel-register">
+        <div class="auth-field">
+          <label>Full Name</label>
+          <input type="text" id="regName" placeholder="Your full name">
+        </div>
+        <div class="auth-field">
+          <label>Phone Number</label>
+          <input type="tel" id="regPhone" placeholder="9xxxxxxxxx">
+        </div>
+        <div class="auth-field">
+          <label>Email Address</label>
+          <input type="email" id="regEmail" placeholder="you@example.com">
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="regPwd" placeholder="Min 6 characters">
+        </div>
+        <button class="auth-btn" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create Account</button>
+        <div class="auth-divider">or</div>
+        <button class="auth-google-btn" onclick="doGoogleLogin()">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+          Continue with Google
+        </button>
+        <div class="auth-error" id="registerError"></div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div class="auth-panel" id="authPanel-forgot">
+        <p style="color:#666;font-size:1.25rem;margin-bottom:14px;line-height:1.6">Enter your email and we'll send a password reset link.</p>
+        <div class="auth-field">
+          <label>Email Address</label>
+          <input type="email" id="forgotEmail" placeholder="you@example.com">
+        </div>
+        <button class="auth-btn" onclick="doForgotPassword()"><i class="fas fa-paper-plane"></i> Send Reset Link</button>
+        <div class="auth-error" id="forgotError"></div>
+        <div class="auth-success" id="forgotSuccess"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PDF PREVIEW MODAL -->
+<div class="pdf-preview-overlay" id="pdfPreviewOverlay" onclick="if(event.target===this)closePdfPreview()">
+  <div class="pdf-preview-box">
+    <div class="pdf-preview-header">
+      <h3 id="pdfPreviewTitle">Document</h3>
+      <div class="pdf-preview-header-btns">
+        <a id="pdfDownloadBtn" href="#" download class="pdf-download-btn" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <button class="pdf-close-btn" onclick="closePdfPreview()">✕</button>
+      </div>
+    </div>
+    <iframe id="pdfPreviewFrame" class="pdf-preview-frame" src="" style="height:75vh"></iframe>
+  </div>
+</div>
+
+<!-- COLLECT PROFILE MODAL (Google login without name/phone) -->
+<div class="auth-overlay" id="collectProfileOverlay">
+  <div class="auth-box">
+    <div class="auth-header">
+      <h2>👤 Complete Your Profile</h2>
+    </div>
+    <div class="auth-body">
+      <p style="color:#666;font-size:1.25rem;margin-bottom:14px;line-height:1.6">
+        Please provide your name and phone number to continue.
+      </p>
+      <div class="auth-field">
+        <label>Full Name *</label>
+        <input type="text" id="cprofName" placeholder="Your full name">
+      </div>
+      <div class="auth-field">
+        <label>Phone Number *</label>
+        <input type="tel" id="cprofPhone" placeholder="9xxxxxxxxx">
+      </div>
+      <button class="auth-btn" onclick="saveCollectedProfile()"><i class="fas fa-save"></i> Save & Continue</button>
+      <div class="auth-error" id="cprofError"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="auth-overlay" id="editProfileOverlay" onclick="if(event.target===this)closeEditProfile()">
+  <div class="auth-box">
+    <div class="auth-header">
+      <h2>✏️ Edit Profile</h2>
+      <button class="auth-close" onclick="closeEditProfile()">✕</button>
+    </div>
+    <div class="auth-body">
+      <div class="auth-field">
+        <label>Full Name</label>
+        <input type="text" id="epName" placeholder="Your full name">
+      </div>
+      <div class="auth-field">
+        <label>Phone Number</label>
+        <input type="tel" id="epPhone" placeholder="9xxxxxxxxx">
+      </div>
+      <button class="auth-btn" onclick="saveEditProfile()"><i class="fas fa-save"></i> Save Changes</button>
+      <div class="auth-error" id="epError"></div>
+      <div class="auth-success" id="epSuccess"></div>
+    </div>
+  </div>
+</div>
+<div class="auth-overlay" id="changePwdOverlay" onclick="if(event.target===this)closeChangePwd()">
+  <div class="auth-box">
+    <div class="auth-header">
+      <h2>🔑 Change Password</h2>
+      <button class="auth-close" onclick="closeChangePwd()">✕</button>
+    </div>
+    <div class="auth-body">
+      <div class="auth-field">
+        <label>Current Password</label>
+        <input type="password" id="cpCurrent" placeholder="Current password">
+      </div>
+      <div class="auth-field">
+        <label>New Password</label>
+        <input type="password" id="cpNew" placeholder="New password (min 6 chars)">
+      </div>
+      <div class="auth-field">
+        <label>Confirm New Password</label>
+        <input type="password" id="cpConfirm" placeholder="Re-enter new password">
+      </div>
+      <button class="auth-btn" onclick="doChangePassword()"><i class="fas fa-save"></i> Update Password</button>
+      <div class="auth-error" id="cpError"></div>
+      <div class="auth-success" id="cpSuccess"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ████  SCRIPTS  ████ -->
 <script>
@@ -1153,6 +1757,7 @@ function buildArticleEl(a) {
   const el = document.createElement("article");
   el.innerHTML = `<h3>${a.title || ''}</h3>`;
 
+  // Top-level article image (legacy field)
   if (a.imageUrl) {
     const img = document.createElement("img");
     img.src = a.imageUrl; img.alt = ""; img.style.maxWidth = "100%";
@@ -1160,15 +1765,33 @@ function buildArticleEl(a) {
   }
 
   const paras = Array.isArray(a.paragraphs) ? a.paragraphs : [];
+
+  function buildPara(para) {
+    // Support both old string format and new {text, imageUrl} object format
+    const text     = typeof para === "string" ? para : (para.text || "");
+    const imgUrl   = typeof para === "string" ? "" : (para.imageUrl || "");
+    const frag = document.createDocumentFragment();
+    if (imgUrl) {
+      const img = document.createElement("img");
+      img.src = imgUrl; img.alt = "";
+      img.style.cssText = "max-width:100%;border-radius:6px;margin:6px 0 4px;display:block;";
+      frag.appendChild(img);
+    }
+    const p = document.createElement("p");
+    p.textContent = text;
+    frag.appendChild(p);
+    return frag;
+  }
+
   if (paras.length > 0) {
-    const p0 = document.createElement("p"); p0.textContent = paras[0]; el.appendChild(p0);
+    el.appendChild(buildPara(paras[0]));
   }
 
   let extraWrap;
   if (paras.length > 1) {
     extraWrap = document.createElement("div");
     extraWrap.style.display = "none";
-    paras.slice(1).forEach(t => { const p = document.createElement("p"); p.textContent = t; extraWrap.appendChild(p); });
+    paras.slice(1).forEach(para => extraWrap.appendChild(buildPara(para)));
     el.appendChild(extraWrap);
     const tb = document.createElement("button"); tb.className = "toggle-btn"; tb.textContent = "Read More…";
     tb.onclick = () => {
@@ -1284,8 +1907,8 @@ async function loadNavLinks() {
           }
 
           const imgSection = meta.imageUrl
-            ? `<img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName || ""}" loading="lazy">`
-            : `<div class="doc-card-img-placeholder">📁</div>`;
+            ? `<div class="doc-card-img-wrap"><img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName || ""}" loading="lazy"></div>`
+            : `<div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>`;
 
           const card = document.createElement("div");
           card.className = "doc-card";
@@ -1293,6 +1916,7 @@ async function loadNavLinks() {
             ${imgSection}
             <div class="doc-card-body">
               <div class="doc-card-title">${meta.cardName || meta.menu || ""}</div>
+              ${meta.menu ? `<div class="doc-card-desc">${meta.menu}</div>` : ""}
             </div>
             <div class="doc-card-flyout">${flyoutInner}</div>
           `;
@@ -1344,11 +1968,48 @@ async function loadNavLinks() {
           </div>`;
       }
 
-      // Set mega-box width dynamically based on number of columns (cap at 6)
-      const numCols = Math.min(subMenus.length, 6);
-      const colW = 152; // px per column (min-width 130 + 22 padding)
-      const boxW = numCols * colW + 36; // + outer padding
-      li.querySelector(".mega-box").style.width = boxW + "px";
+      // Clamp mega-box on mouseenter so we can measure actual rendered width
+      const box = li.querySelector(".mega-box");
+      if (box) {
+        li.addEventListener("mouseenter", function clampBox() {
+          // Temporarily make box measurable
+          box.style.visibility = "hidden";
+          box.style.opacity    = "0";
+          box.style.display    = "block";
+          box.style.left       = "0";
+          box.style.right      = "auto";
+
+          const liRect  = li.getBoundingClientRect();
+          const boxW    = box.offsetWidth;
+          const vw      = window.innerWidth;
+          const MARGIN  = 12;
+
+          const rightEdge = liRect.left + boxW + MARGIN;
+          const leftEdge  = liRect.right - boxW - MARGIN;
+
+          if (rightEdge > vw && leftEdge < 0) {
+            // Too wide for either side — centre it under the nav item
+            const centreOffset = (liRect.left + liRect.width / 2) - boxW / 2;
+            const clamped = Math.max(MARGIN, Math.min(centreOffset, vw - boxW - MARGIN));
+            box.style.left  = (clamped - liRect.left) + "px";
+            box.style.right = "auto";
+          } else if (rightEdge > vw) {
+            // Would overflow right — shift left by exact overhang
+            const overhang = rightEdge - vw;
+            box.style.left  = -overhang + "px";
+            box.style.right = "auto";
+          } else {
+            // Fits opening rightward from li
+            box.style.left  = "0";
+            box.style.right = "auto";
+          }
+
+          // Restore
+          box.style.visibility = "";
+          box.style.opacity    = "";
+          box.style.display    = "";
+        });
+      }
 
       navList.appendChild(li);
     });
@@ -1382,11 +2043,15 @@ function startChatListener() {
     }
     snap.forEach(d => {
       const m = d.data();
-      const isMe = m.name === (document.getElementById("chatName").value.trim() || "__nobody__");
+      const isMe = window._currentUser && m.uid === window._currentUser.uid;
+      const isAdmin = m.email === "gstcell.com@gmail.com" || m.isAdmin === true;
+      const adminBadge = isAdmin
+        ? `<span style="background:#e03535;color:#fff;font-size:.75rem;font-weight:700;padding:1px 6px;border-radius:3px;letter-spacing:.05em;margin-left:5px;vertical-align:middle">ADMIN</span>`
+        : "";
       const el = document.createElement("div");
       el.className = `msg ${isMe ? "outgoing" : "incoming"}`;
       const ts = m.createdAt?.toDate ? m.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : "";
-      el.innerHTML = `<div class="bubble"><strong>${m.name || 'Anonymous'}:</strong> ${escHtml(m.message)}</div>
+      el.innerHTML = `<div class="bubble"><strong>${m.name || 'Anonymous'}${adminBadge}:</strong> ${escHtml(m.message)}</div>
                       <div class="meta">${ts}</div>`;
       box.appendChild(el);
     });
@@ -1398,13 +2063,40 @@ function startChatListener() {
 
 async function sendChat() {
   if (!window._firebaseReady) { alert("Firebase not yet connected."); return; }
+  const user = window._currentUser;
+  if (!user) { openAuthModal(); return; }
+
+  // If Google user has no saved name/phone, collect first
+  if (!window._chatUserName || !window._chatUserPhone) {
+    const profile = await fetchUserProfile(user);
+    if (!profile?.name || !profile?.phone) {
+      // Pre-fill if google displayName exists
+      const el = document.getElementById("cprofName");
+      if (el && user.displayName) el.value = user.displayName;
+      document.getElementById("collectProfileOverlay").classList.add("open");
+      // Store pending message to send after profile saved
+      window._pendingChatMsg = document.getElementById("chatInput").value.trim();
+      return;
+    }
+    window._chatUserName  = profile.name;
+    window._chatUserPhone = profile.phone;
+    document.getElementById("chatDisplayName").textContent = profile.name;
+  }
+
   const { collection, addDoc, serverTimestamp } = window._fsHelpers;
-  const db = window._db;
-  const name = document.getElementById("chatName").value.trim() || "Anonymous";
-  const msg  = document.getElementById("chatInput").value.trim();
+  const db  = window._db;
+  const msg = document.getElementById("chatInput").value.trim();
   if (!msg) return;
   try {
-    await addDoc(collection(db, "suggestions"), { name, message: msg, createdAt: serverTimestamp() });
+    await addDoc(collection(db, "suggestions"), {
+      name: window._chatUserName,
+      phone: window._chatUserPhone || "",
+      uid: user.uid,
+      email: user.email || "",
+      isAdmin: user.email === "gstcell.com@gmail.com",
+      message: msg,
+      createdAt: serverTimestamp()
+    });
     document.getElementById("chatInput").value = "";
   } catch (e) { alert("Could not send: " + e.message); }
 }
@@ -1483,14 +2175,34 @@ function openDcPopup(encodedData) {
         const grid = document.createElement("div");
         grid.className = "dc-popup-cards";
         visible.forEach(item => {
-          const a = document.createElement("a");
-          a.className = "dc-popup-card";
-          a.href = item.link || "#"; a.target = "_blank";
-          a.innerHTML = item.imageUrl
-            ? `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy">`
+          const card = document.createElement("div");
+          card.className = "dc-popup-card";
+
+          // Image / placeholder — clicking goes to link
+          const imgWrap = document.createElement("a");
+          imgWrap.href = item.link || "#";
+          imgWrap.target = "_blank";
+          imgWrap.style.textDecoration = "none";
+          imgWrap.style.color = "inherit";
+          imgWrap.innerHTML = item.imageUrl
+            ? `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy" style="width:100%;height:80px;object-fit:cover;display:block">`
             : `<div class="dc-popup-card-placeholder">📄</div>`;
-          a.innerHTML += `<div class="dc-popup-card-label">${item.name}</div>`;
-          grid.appendChild(a);
+          imgWrap.innerHTML += `<div class="dc-popup-card-label">${item.name}</div>`;
+          card.appendChild(imgWrap);
+
+          // PDF button (only if pdfUrl is set)
+          if (item.pdfUrl) {
+            const pdfBtn = document.createElement("button");
+            pdfBtn.className = "dc-popup-card-pdf-btn";
+            const btnLabel = item.pdfName || "View PDF";
+            pdfBtn.innerHTML = `<i class="fas fa-file-pdf"></i> ${btnLabel}`;
+            pdfBtn.onclick = (e) => {
+              e.stopPropagation();
+              openPdfPreview(item.pdfName || item.name, item.pdfUrl);
+            };
+            card.appendChild(pdfBtn);
+          }
+          grid.appendChild(card);
         });
         body.appendChild(grid);
       } else {
@@ -1550,6 +2262,330 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 function escHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH UI
+═══════════════════════════════════════════════ */
+const ADMIN_EMAIL = "gstcell.com@gmail.com";
+
+function updateAuthUI(user) {
+  const adminLink    = document.getElementById("adminBannerLink");
+  const authZone     = document.getElementById("bannerAuthZone");
+  const chatWidget   = document.getElementById("chatWidget");
+  const chatPrompt   = document.getElementById("chatLoginPrompt");
+
+  if (user) {
+    // For Google users already signed in — ensure their profile exists in Firestore
+    if (window._db) {
+      const { doc, getDoc, setDoc, serverTimestamp } = window._fsHelpers;
+      const ref  = doc(window._db, "users", user.uid);
+      getDoc(ref).then(snap => {
+        if (!snap.exists()) {
+          setDoc(ref, {
+            name:      user.displayName || "",
+            email:     user.email       || "",
+            phone:     "",
+            provider:  user.providerData?.[0]?.providerId || "unknown",
+            createdAt: serverTimestamp()
+          });
+        }
+      }).catch(() => {});
+    }
+
+    // Fetch profile from Firestore to get stored name
+    fetchUserProfile(user).then(profile => {
+      const name = profile?.name || user.displayName || user.email.split("@")[0];
+      // Replace login button with name chip in banner auth zone
+      authZone.innerHTML = `
+        <div class="banner-user-chip" onclick="toggleUserPanel()">
+          <i class="fas fa-user-circle"></i>
+          <span>${escHtml(name)}</span>
+          <span style="font-size:0.9em;opacity:.7">▾</span>
+        </div>`;
+      // Store name for chat
+      window._chatUserName  = name;
+      window._chatUserPhone = profile?.phone || "";
+      // Show name in chat bar
+      document.getElementById("chatDisplayName").textContent = name;
+      document.getElementById("chatUserBar").style.display = "flex";
+      document.getElementById("udEmail").textContent = user.email;
+    });
+
+    if (user.email === ADMIN_EMAIL) adminLink.style.display = "block";
+    else adminLink.style.display = "none";
+
+    // Show chat, hide login prompt
+    chatWidget.style.display = "block";
+    chatPrompt.style.display = "none";
+  } else {
+    authZone.innerHTML = `
+      <button class="banner-login-btn" id="bannerLoginBtn" onclick="openAuthModal()">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>`;
+    adminLink.style.display = "none";
+    window._chatUserName  = null;
+    window._chatUserPhone = null;
+    // Hide chat, show login prompt
+    chatWidget.style.display  = "none";
+    chatPrompt.style.display  = "block";
+    closeUserPanel();
+  }
+}
+
+async function fetchUserProfile(user) {
+  try {
+    const { doc, getDoc } = window._fsHelpers;
+    const snap = await getDoc(doc(window._db, "users", user.uid));
+    return snap.exists() ? snap.data() : null;
+  } catch(e) { return null; }
+}
+
+function openAuthModal() {
+  document.getElementById("authOverlay").classList.add("open");
+}
+function closeAuthModal() {
+  document.getElementById("authOverlay").classList.remove("open");
+  ["loginError","registerError","forgotError","forgotSuccess"].forEach(id => {
+    const el = document.getElementById(id); if(el) el.textContent = "";
+  });
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll(".auth-tab").forEach((t,i) => {
+    t.classList.toggle("active", ["login","register","forgot"][i] === tab);
+  });
+  document.querySelectorAll(".auth-panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("authPanel-" + tab).classList.add("active");
+}
+
+async function doLogin() {
+  if (!window._authFn) return;
+  const email = document.getElementById("loginEmail").value.trim();
+  const pwd   = document.getElementById("loginPwd").value;
+  const errEl = document.getElementById("loginError");
+  errEl.textContent = "";
+  try {
+    await window._authFn.signInWithEmailAndPassword(window._auth, email, pwd);
+    closeAuthModal();
+  } catch(e) {
+    errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim();
+  }
+}
+
+async function doRegister() {
+  if (!window._authFn) return;
+  const name  = document.getElementById("regName").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const pwd   = document.getElementById("regPwd").value;
+  const errEl = document.getElementById("registerError");
+  errEl.textContent = "";
+  if (!name) { errEl.textContent = "Please enter your name."; return; }
+  try {
+    const cred = await window._authFn.createUserWithEmailAndPassword(window._auth, email, pwd);
+    // Save extra profile info to Firestore
+    if (window._db) {
+      const { doc, setDoc, serverTimestamp } = window._fsHelpers;
+      await setDoc(doc(window._db, "users", cred.user.uid), { name, phone, email, createdAt: serverTimestamp() });
+    }
+    closeAuthModal();
+  } catch(e) {
+    errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim();
+  }
+}
+
+async function doGoogleLogin() {
+  if (!window._authFn || !window._googleProvider) return;
+  try {
+    const result = await window._authFn.signInWithPopup(window._auth, window._googleProvider);
+    const user = result.user;
+
+    // Save to Firestore users collection if not already there
+    if (window._db && user) {
+      const { doc, getDoc, setDoc, serverTimestamp } = window._fsHelpers;
+      const ref  = doc(window._db, "users", user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        // First time Google login — save what we have from Google
+        await setDoc(ref, {
+          name:      user.displayName || "",
+          email:     user.email       || "",
+          phone:     "",               // will be filled later via Edit Profile / collect modal
+          provider:  "google",
+          createdAt: serverTimestamp()
+        });
+      }
+    }
+    closeAuthModal();
+  } catch(e) {
+    const errLogin = document.getElementById("loginError");
+    const errReg   = document.getElementById("registerError");
+    if(errLogin) errLogin.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim();
+    if(errReg)   errReg.textContent   = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim();
+  }
+}
+
+async function doForgotPassword() {
+  if (!window._authFn) return;
+  const email = document.getElementById("forgotEmail").value.trim();
+  const errEl = document.getElementById("forgotError");
+  const okEl  = document.getElementById("forgotSuccess");
+  errEl.textContent = ""; okEl.textContent = "";
+  try {
+    await window._authFn.sendPasswordResetEmail(window._auth, email);
+    okEl.textContent = "✓ Reset link sent! Check your inbox.";
+  } catch(e) {
+    errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim();
+  }
+}
+
+async function doLogout() {
+  if (!window._authFn) return;
+  closeUserPanel();
+  await window._authFn.signOut(window._auth);
+}
+
+function toggleUserPanel() {
+  const panel = document.getElementById("userPanelDropdown");
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+function closeUserPanel() {
+  const panel = document.getElementById("userPanelDropdown");
+  if(panel) panel.style.display = "none";
+}
+document.addEventListener("click", e => {
+  if (!e.target.closest("#bannerAuthZone") && !e.target.closest("#userPanelDropdown") && !e.target.closest(".banner-top-right")) closeUserPanel();
+});
+
+/* ── Collect profile (Google users missing name/phone) ── */
+async function saveCollectedProfile() {
+  const user = window._currentUser;
+  if (!user) return;
+  const name  = document.getElementById("cprofName").value.trim();
+  const phone = document.getElementById("cprofPhone").value.trim();
+  const errEl = document.getElementById("cprofError");
+  errEl.textContent = "";
+  if (!name)  { errEl.textContent = "Please enter your name.";  return; }
+  if (!phone) { errEl.textContent = "Please enter your phone number."; return; }
+  try {
+    const { doc, setDoc, serverTimestamp } = window._fsHelpers;
+    await setDoc(doc(window._db, "users", user.uid), { name, phone, email: user.email, updatedAt: serverTimestamp() }, { merge: true });
+    window._chatUserName  = name;
+    window._chatUserPhone = phone;
+    document.getElementById("chatDisplayName").textContent = name;
+    document.getElementById("collectProfileOverlay").classList.remove("open");
+    // Update banner chip name
+    const zone = document.getElementById("bannerAuthZone");
+    if (zone) zone.querySelector("span") && (zone.querySelector(".banner-user-chip span").textContent = name);
+    // Send pending chat if any
+    if (window._pendingChatMsg) {
+      document.getElementById("chatInput").value = window._pendingChatMsg;
+      window._pendingChatMsg = null;
+      await sendChat();
+    }
+  } catch(e) { errEl.textContent = e.message; }
+}
+
+/* ── Edit Profile ── */
+async function openEditProfile() {
+  closeUserPanel();
+  const user = window._currentUser;
+  if (!user) return;
+  const profile = await fetchUserProfile(user);
+  document.getElementById("epName").value  = profile?.name  || user.displayName || "";
+  document.getElementById("epPhone").value = profile?.phone || "";
+  document.getElementById("epError").textContent   = "";
+  document.getElementById("epSuccess").textContent = "";
+  document.getElementById("editProfileOverlay").classList.add("open");
+}
+function closeEditProfile() {
+  document.getElementById("editProfileOverlay").classList.remove("open");
+}
+async function saveEditProfile() {
+  const user = window._currentUser;
+  if (!user) return;
+  const name  = document.getElementById("epName").value.trim();
+  const phone = document.getElementById("epPhone").value.trim();
+  const errEl = document.getElementById("epError");
+  const okEl  = document.getElementById("epSuccess");
+  errEl.textContent = ""; okEl.textContent = "";
+  if (!name) { errEl.textContent = "Name cannot be empty."; return; }
+  try {
+    const { doc, setDoc, serverTimestamp } = window._fsHelpers;
+    await setDoc(doc(window._db, "users", user.uid), { name, phone, email: user.email, updatedAt: serverTimestamp() }, { merge: true });
+    window._chatUserName  = name;
+    window._chatUserPhone = phone;
+    document.getElementById("chatDisplayName").textContent = name;
+    // Update banner chip
+    const chipSpans = document.querySelectorAll(".banner-user-chip span");
+    if (chipSpans.length) chipSpans[0].textContent = name;
+    okEl.textContent = "✓ Profile updated!";
+    setTimeout(() => closeEditProfile(), 1500);
+  } catch(e) { errEl.textContent = e.message; }
+}
+
+function openChangePassword() {
+  closeUserPanel();
+  document.getElementById("changePwdOverlay").classList.add("open");
+  ["cpCurrent","cpNew","cpConfirm"].forEach(id => document.getElementById(id).value = "");
+  ["cpError","cpSuccess"].forEach(id => document.getElementById(id).textContent = "");
+}
+function closeChangePwd() {
+  document.getElementById("changePwdOverlay").classList.remove("open");
+}
+async function doChangePassword() {
+  const user = window._currentUser;
+  if (!user) return;
+  const current = document.getElementById("cpCurrent").value;
+  const newPwd  = document.getElementById("cpNew").value;
+  const confirm = document.getElementById("cpConfirm").value;
+  const errEl   = document.getElementById("cpError");
+  const okEl    = document.getElementById("cpSuccess");
+  errEl.textContent = ""; okEl.textContent = "";
+  if (newPwd !== confirm) { errEl.textContent = "Passwords do not match."; return; }
+  if (newPwd.length < 6) { errEl.textContent = "Password must be at least 6 characters."; return; }
+  try {
+    const { reauthenticateWithCredential, EmailAuthProvider, updatePassword } = window._authFn;
+    const cred = EmailAuthProvider.credential(user.email, current);
+    await reauthenticateWithCredential(user, cred);
+    await updatePassword(user, newPwd);
+    okEl.textContent = "✓ Password updated successfully!";
+    setTimeout(() => closeChangePwd(), 2000);
+  } catch(e) {
+    errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim();
+  }
+}
+
+
+
+/* ═══ PDF PREVIEW ═══ */
+function openPdfPreview(title, pdfUrl) {
+  document.getElementById("pdfPreviewTitle").textContent = title || "Document";
+  var embedUrl    = pdfUrl;
+  var downloadUrl = pdfUrl;
+  var driveMatch  = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch) {
+    var fileId  = driveMatch[1];
+    embedUrl    = "https://drive.google.com/file/d/" + fileId + "/preview";
+    downloadUrl = "https://drive.google.com/uc?export=download&id=" + fileId;
+  }
+  document.getElementById("pdfPreviewFrame").src = embedUrl;
+  document.getElementById("pdfDownloadBtn").href  = downloadUrl;
+  document.getElementById("pdfPreviewOverlay").classList.add("open");
+}
+function closePdfPreview() {
+  document.getElementById("pdfPreviewOverlay").classList.remove("open");
+  document.getElementById("pdfPreviewFrame").src = "";
+}
+function shareThisSite() {
+  if (navigator.share) {
+    navigator.share({ title: "GSTCell", text: "Kerala's GST Resource Platform", url: "https://www.gstcell.com" });
+  } else {
+    navigator.clipboard.writeText("https://www.gstcell.com")
+      .then(() => alert("Link copied to clipboard!"))
+      .catch(() => window.open("https://api.whatsapp.com/send?text=Check out GSTCell: https://www.gstcell.com", "_blank"));
+  }
 }
 </script>
 </body>
