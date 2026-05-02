@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GSTCell – Your complete resource for GST Acts, Rules, Notifications, Circulars, Tax Rate Finder, Advance Rulings, and AI-powered GST assistance for Kerala tax professionals.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1VsL2VwLkoM_htKcGmVoOOmoWM_SzBXqH">
+<title>🏠 Home - GST Cell (Firebase)</title>
+
+<!-- ██████████████████████  FIREBASE SDK  ██████████████████████ -->
+<script type="module">
+  // ─── REPLACE these values with your own Firebase project config ───
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, setDoc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCpKgeXBwfvPDZUqbl0ro2xYTIIOYs40QI",
+    authDomain:        "gstcell-afe30.firebaseapp.com",
+    projectId:         "gstcell-afe30",
+    storageBucket:     "gstcell-afe30.firebasestorage.app",
+    messagingSenderId: "977774861669",
+    appId:             "1:977774861669:web:249661743136343e4a158c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ─────────── expose db + helpers globally so inline scripts can use them ───────────
+  window._db = db;
+  window._fsHelpers = { collection, getDocs, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, setDoc, getDoc };
+  window._firebaseReady = true;
+  document.dispatchEvent(new Event("firebaseReady"));
+</script>
+
+<style>
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS — Elegant light theme
+═══════════════════════════════════════════════════ */
+:root {
+  --nav-bg:        #1c1f26;
+  --nav-accent:    #e03535;
+  --nav-text:      #e8e8ea;
+  --nav-green:     #5fd67a;
+  --body-bg:       #f8f6f2;
+  --card-bg:       #ffffff;
+  --card-border:   #ebe8e2;
+  --section-head:  #1a3a6b;
+  --link-color:    #1a5cc8;
+  --font-heading:  'Playfair Display', Georgia, serif;
+  --font-main:     'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:     'DM Mono', monospace;
+  --nav-height:    48px;
+}
+html { font-size: 10px; background: var(--body-bg); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-main); font-size: 1.45rem; line-height: 1.65; color: #22222e; letter-spacing: 0.01em; }
+
+
+/* ═══ HEAD IMAGE ═══ */
+.headimage {
+  background-image: url('https://lh3.googleusercontent.com/d/1sitChJR4HMammhoEKMSRATww76l0RR3-');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 28rem;
+  position: relative;
+}
+.headimage::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, rgba(10,18,40,.52) 0%, transparent 70%);
+}
+.sitename {
+  position: relative; z-index: 1;
+  font-size: clamp(4rem, 7vw, 9rem);
+  margin-left: 8%;
+  font-family: var(--font-heading);
+  font-style: italic; font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0,0,0,.4);
+  padding-top: 5rem;
+  letter-spacing: -0.02em;
+}
+.sitename span { color: var(--nav-green); font-style: italic; font-weight: 400; }
+
+/* ═══════════════════════════
+   NAV BAR  — fully responsive
+═══════════════════════════ */
+nav {
+  position: relative; width: 100%;
+  background: var(--nav-bg);
+  margin-bottom: 2.4rem;
+  z-index: 300;
+}
+nav .wrapper {
+  max-width: 1400px; padding: 0 28px;
+  height: var(--nav-height);
+  margin: auto; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+
+/* Logo */
+.wrapper .logo a {
+  color: var(--nav-green); font-size: 16px; font-weight: 700;
+  text-decoration: none; letter-spacing: 0.06em;
+  font-family: var(--font-heading); font-style: italic;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* ── Desktop nav list ── */
+.wrapper .nav-links {
+  display: flex; list-style: none;
+  gap: 0; align-items: stretch;
+  flex: 1; justify-content: flex-end;
+}
+.nav-links > li {
+  position: relative;
+  display: flex; align-items: center;
+}
+.nav-links > li > a,
+.nav-links > li > .desktop-item {
+  color: var(--nav-text); text-decoration: none;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.09em;
+  text-transform: uppercase; padding: 0 11px;
+  display: flex; align-items: center; height: var(--nav-height);
+  white-space: nowrap; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .25s, border-color .25s;
+}
+.nav-links > li > a:hover,
+.nav-links > li > .desktop-item:hover { color: #fff; border-bottom-color: var(--nav-accent); }
+
+.nav-taxrate-btn {
+  background: var(--nav-accent) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 0 14px !important;
+  height: 32px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.07em !important;
+  border-bottom: none !important;
+  margin: 0 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px;
+  cursor: pointer;
+  transition: opacity .2s !important;
+}
+.nav-taxrate-btn:hover { opacity: .85 !important; }
+
+/* AI button */
+.nav-btn {
+  background: var(--nav-accent);
+  color: #fff !important; border-radius: 4px;
+  padding: 0 14px !important; height: 30px !important;
+  font-size: 11px !important; font-weight: 700 !important;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: background .25s, opacity .25s;
+  display: inline-flex !important; align-items: center !important;
+  border-bottom: none !important; margin-left: 6px;
+}
+.nav-btn:hover { opacity: .85; }
+
+/* ── Drop-down (simple) ── */
+.drop-menu {
+  position: absolute; top: var(--nav-height); left: 0;
+  background: var(--nav-bg);
+  min-width: 180px; opacity: 0; visibility: hidden;
+  border-top: 2px solid var(--nav-accent);
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  z-index: 400; list-style: none;
+  transition: opacity .2s, transform .2s;
+  transform: translateY(-4px);
+}
+.nav-links > li:hover .drop-menu { opacity:1; visibility:visible; transform: translateY(0); }
+.drop-menu li a {
+  display: block; padding: 7px 16px;
+  font-size: 12px; font-weight: 400; letter-spacing: 0.02em;
+  color: #ccc; white-space: nowrap;
+}
+.drop-menu li a:hover { color: #fff; background: rgba(255,255,255,.05); }
+
+/* ── Mega-menu ── */
+.mega-box {
+  position: absolute; left: 50%; transform: translateX(-50%) translateY(-4px);
+  top: var(--nav-height);
+  opacity: 0; visibility: hidden;
+  z-index: 400;
+  transition: opacity .2s, transform .2s;
+  /* width is set dynamically via JS or inline style */
+  min-width: 200px;
+}
+.nav-links > li:hover .mega-box { opacity:1; visibility:visible; transform: translateX(-50%) translateY(0); }
+.mega-content {
+  background: var(--nav-bg);
+  border-top: 2px solid var(--nav-accent);
+  display: flex; gap: 0;
+  padding: 14px 18px 16px;
+  box-shadow: 0 10px 32px rgba(0,0,0,.3);
+}
+/* Each column */
+.mega-col {
+  flex: 0 0 auto;
+  min-width: 140px;
+  max-width: 190px;
+  padding: 0 16px;
+  border-right: 1px solid rgba(255,255,255,.07);
+}
+.mega-col:last-child { border-right: none; }
+.mega-col h4 {
+  color: var(--nav-accent); font-size: 10px; margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: .12em; font-weight: 700;
+  border-bottom: 1px solid rgba(224,53,53,.3); padding-bottom: 6px;
+  font-family: var(--font-main); white-space: nowrap; cursor: pointer;
+}
+.mega-col h4:hover { color: #ff6b6b; }
+.mega-col ul { list-style: none; }
+.mega-col ul li a {
+  color: #b8bccf; font-size: 12px; font-weight: 400;
+  display: block; padding: 4px 0;
+  line-height: 1.55; letter-spacing: 0.01em;
+  white-space: nowrap; text-decoration: none;
+  transition: color .15s, padding-left .15s;
+}
+.mega-col ul li a:hover { color: #fff; padding-left: 4px; }
+.mega-col ul li a::before {
+  content: '›'; margin-right: 5px;
+  color: var(--nav-accent); font-size: 13px;
+}
+.mega-see-more {
+  display: inline-block; margin-top: 6px;
+  color: #f0a500; font-size: 11px; font-style: italic;
+  cursor: pointer; text-decoration: none;
+  transition: color .15s;
+}
+.mega-see-more:hover { color: #ffd060; text-decoration: underline; }
+
+/* loading pill inside menus */
+.nav-loading { color: #888; font-size: 11px; font-style: italic; padding: 4px 16px; }
+
+/* ── Mobile hamburger ── */
+.menu-toggle {
+  display: none; background: none; border: none;
+  color: #fff; font-size: 22px; cursor: pointer;
+  padding: 6px; line-height: 1; flex-shrink: 0;
+}
+
+/* ── Mobile drawer ── */
+@media (max-width: 860px) {
+  .menu-toggle { display: block; }
+
+  .wrapper .nav-links {
+    display: none;
+    position: absolute; top: var(--nav-height); left: 0; right: 0;
+    background: #13161d;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    max-height: calc(100vh - var(--nav-height));
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    z-index: 500;
+  }
+  .wrapper .nav-links.mobile-open { display: flex; }
+
+  .nav-links > li { flex-direction: column; align-items: stretch; }
+  .nav-links > li > a,
+  .nav-links > li > .desktop-item {
+    height: auto; padding: 13px 20px;
+    font-size: 12px; border-bottom: 1px solid rgba(255,255,255,.07);
+    border-left: none;
+  }
+
+  /* In mobile, mega-box becomes inline expandable */
+  .mega-box {
+    position: static; transform: none !important;
+    opacity: 1 !important; visibility: visible !important;
+    display: none; min-width: unset; width: 100%;
+  }
+  .nav-links > li.mob-open .mega-box { display: block; }
+  .mega-content {
+    flex-direction: column; gap: 0; padding: 8px 12px;
+    box-shadow: none; border-top: none;
+    background: #0f1218;
+  }
+  .mega-col {
+    min-width: unset; max-width: unset;
+    padding: 10px 8px; border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .mega-col h4 { font-size: 10px; }
+  .mega-col ul li a { font-size: 12px; padding: 5px 0; white-space: normal; }
+
+  .drop-menu {
+    position: static; transform: none !important;
+    opacity: 1 !important; visibility: visible !important;
+    display: none; box-shadow: none;
+    border-top: none; background: #0f1218;
+    min-width: unset; width: 100%;
+  }
+  .nav-links > li.mob-open .drop-menu { display: block; }
+  .drop-menu li a { padding: 8px 20px; font-size: 12.5px; white-space: normal; }
+
+  .nav-btn { margin: 12px 16px !important; height: 36px !important; width: calc(100% - 32px) !important; justify-content: center; }
+}
+
+
+/* ═══════════════════════════════════════════════
+   DOC-MENU CARD GRID  (image-2 style)
+═══════════════════════════════════════════════ */
+.doc-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  padding: 4px 0;
+}
+.doc-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e0e7f0;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(26,60,107,.06);
+  transition: box-shadow .25s, transform .25s, border-color .25s;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+}
+.doc-card:hover {
+  box-shadow: 0 10px 28px rgba(26,60,107,.16);
+  transform: translateY(-4px);
+  border-color: #a8c4e8;
+}
+.doc-card-img {
+  width: 100%; height: 100px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+.doc-card-img-placeholder {
+  width: 100%; height: 100px;
+  background: linear-gradient(135deg, #e8f0fb 0%, #c8daef 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem;
+  flex-shrink: 0;
+}
+.doc-card-body {
+  padding: 10px 12px 10px;
+  flex: 1;
+}
+.doc-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a5cc8;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.doc-card-sub {
+  font-size: 1.05rem;
+  color: #5a6a80;
+  line-height: 1.35;
+}
+
+/* ── Hover flyout panel ── */
+/* ── Hover flyout panel ── */
+.doc-card-flyout {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,20,45,.95);
+  color: #e8ecf4;
+  padding: 18px 14px 14px;
+  opacity: 0;
+  visibility: hidden;
+  overflow-y: auto;
+  transition: opacity .22s, visibility .22s;
+  border-radius: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+.doc-card:hover .doc-card-flyout {
+  opacity: 1;
+  visibility: visible;
+}
+.dc-flyout-title {
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  border-bottom: 1px solid rgba(224,53,53,.4);
+  padding-bottom: 7px;
+  margin-bottom: 4px;
+}
+.dc-flyout-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 9px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity .15s, transform .15s;
+  line-height: 1.3;
+  border: none;
+}
+.dc-flyout-btn:hover { opacity: .88; transform: translateY(-1px); }
+.dc-flyout-btn--link {
+  background: #1a5cc8;
+  color: #fff;
+}
+.dc-flyout-btn--popup {
+  background: var(--nav-accent);
+  color: #fff;
+}
+.dc-flyout-hint {
+  color: #6680aa;
+  font-size: 11px;
+  font-style: italic;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ── Nav panel styled like image-1 (dark multi-col list) ── */
+.nav-panel {
+  display: none; /* shown only in mobile mega-box replacement — kept for reference */
+}
+
+/* ═══ MAIN LAYOUT ═══ */
+.page-body { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+.two-col { display: flex; gap: 24px; margin-bottom: 24px; }
+.col-left  { flex: 1; min-width: 0; }
+.col-right { width: 380px; flex-shrink: 0; }
+
+/* ═══ SECTION CARDS ═══ */
+.section-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 20px 22px; margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+.section-card h2 {
+  color: var(--section-head); font-size: 1.85rem; font-family: var(--font-heading);
+  font-weight: 700; letter-spacing: 0.01em;
+  border-bottom: 2px solid var(--nav-accent); padding-bottom: 9px; margin-bottom: 15px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+
+/* ═══ RECENT UPDATES ═══ */
+.recent-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 0; border-bottom: 1px dotted #e8e4dc; font-size: 1.35rem; line-height: 1.5;
+}
+.recent-item:last-child { border-bottom: none; }
+.recent-item .new-badge {
+  background: var(--nav-accent); color: #fff; font-size: .8rem;
+  padding: 2px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 3px;
+  font-weight: 700; letter-spacing: 0.06em; font-family: var(--font-main);
+}
+.recent-item a { color: var(--link-color); text-decoration: none; font-weight: 500; }
+.recent-item a:hover { text-decoration: underline; }
+.see-more-btn {
+  background: none; border: none; color: var(--nav-accent);
+  font-size: 1.2rem; cursor: pointer; text-decoration: underline;
+  margin-top: 8px;
+}
+
+/* ═══ ARTICLES ═══ */
+.article-category { margin-bottom: 22px; }
+.article-category h2 { color: var(--section-head); font-size: 1.8rem; font-family: var(--font-heading); font-weight: 700; margin-bottom: 10px; }
+article {
+  border: 1px solid #ece9e3; border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 14px; background: #fdfcfa;
+}
+article h3 { font-size: 1.55rem; color: #1a1a2e; margin-bottom: 7px; font-family: var(--font-heading); font-weight: 600; line-height: 1.35; }
+article p { font-size: 1.35rem; color: #3d3d4e; line-height: 1.75; margin-bottom: 8px; }
+article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
+.ref-links { margin-top: 8px; font-size: 1.2rem; font-weight: 500; }
+.ref-links a { color: var(--link-color); margin-right: 8px; }
+.toggle-btn, .cat-toggle-btn {
+  background: var(--section-head); color: #fff; border: none;
+  border-radius: 5px; padding: 5px 14px; font-size: 1.15rem; font-weight: 600; cursor: pointer;
+  margin-top: 8px; transition: background .2s;
+}
+.toggle-btn:hover, .cat-toggle-btn:hover { background: var(--nav-accent); }
+.social-share { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.share-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #1a5cc8; color: #fff; display: flex; align-items: center; justify-content: center;
+  text-decoration: none; font-size: 15px; transition: transform .2s, background .2s;
+}
+.share-btn:hover { transform: scale(1.12); background: #0f3d8a; }
+
+/* ═══ QUICK LINKS MENU ═══ */
+.quick-popup-container { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 0; }
+.quick-popup-group {
+  border: 1px solid #e4e0d8; border-radius: 10px; overflow: hidden;
+  background: #fff; min-width: 210px; flex: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.quick-popup-group .qp-header {
+  background: var(--nav-bg); color: var(--nav-accent);
+  font-size: 1.1rem; font-weight: 700; padding: 9px 14px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.quick-popup-group ul { list-style: none; padding: 6px 0; }
+.quick-popup-group ul li a {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 14px; color: #2d2d3e; font-size: 1.28rem; text-decoration: none;
+}
+.quick-popup-group ul li a:hover { background: #f7f4ef; color: var(--nav-accent); }
+.quick-popup-group ul li a .fa-file-pdf-o { color: #e03535; }
+
+/* ═══ EXTERNAL LINK TILES ═══ */
+.link-tiles { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.link-tile {
+  border: 1px solid #e4e0d8; border-radius: 10px; padding: 14px 16px;
+  background: #fff; flex: 1; min-width: 150px;
+  transition: box-shadow .2s, transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.link-tile:hover { box-shadow: 0 4px 16px rgba(0,0,0,.09); transform: translateY(-2px); }
+.link-tile h3 { color: var(--section-head); font-size: 1.45rem; margin-bottom: 8px; font-family: var(--font-heading); font-weight: 600; }
+.link-tile ul { list-style: none; }
+.link-tile ul li a { color: var(--link-color); font-size: 1.22rem; text-decoration: none; display: block; padding: 3px 0; }
+.link-tile ul li a:hover { text-decoration: underline; }
+
+/* ═══ DOC-CARD POPUP MODAL ═══ */
+.dc-popup-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,10,25,.72);
+  backdrop-filter: blur(3px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 2000; padding: 20px;
+}
+.dc-popup-overlay.open { display: flex; }
+.dc-popup-box {
+  background: #fff; border-radius: 16px;
+  max-width: 700px; width: 100%;
+  max-height: 88vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,.35);
+  animation: dcPopIn .22s ease;
+}
+@keyframes dcPopIn { from{transform:scale(.94);opacity:0} to{transform:scale(1);opacity:1} }
+.dc-popup-header {
+  background: var(--nav-bg);
+  color: #fff; padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; border-radius: 16px 16px 0 0;
+  border-bottom: 2px solid var(--nav-accent);
+}
+.dc-popup-header h3 {
+  font-size: 1.5rem; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: #fff;
+}
+.dc-popup-close {
+  background: none; border: none; color: #aaa;
+  font-size: 2rem; cursor: pointer; line-height: 1;
+  transition: color .15s; padding: 0 4px;
+}
+.dc-popup-close:hover { color: var(--nav-accent); }
+.dc-popup-body {
+  overflow-y: auto; padding: 20px 22px; flex: 1;
+}
+
+/* List style */
+.dc-popup-list { list-style: none; }
+.dc-popup-list li {
+  border-bottom: 1px solid #eee;
+}
+.dc-popup-list li:last-child { border-bottom: none; }
+.dc-popup-list li a {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 4px; color: #1a2a50;
+  font-size: 1.3rem; text-decoration: none;
+  transition: color .15s, background .15s;
+  border-radius: 6px;
+}
+.dc-popup-list li a:hover { color: var(--nav-accent); background: #fff8f8; padding-left: 10px; }
+.dc-popup-list li a::before {
+  content: '›'; color: var(--nav-accent); font-size: 1.6rem; font-weight: 700; flex-shrink: 0;
+}
+
+/* Card style */
+.dc-popup-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+.dc-popup-card {
+  border: 1px solid #e0e7f0; border-radius: 10px;
+  overflow: hidden; text-decoration: none; color: inherit;
+  transition: box-shadow .2s, transform .2s;
+  display: flex; flex-direction: column;
+}
+.dc-popup-card:hover { box-shadow: 0 6px 20px rgba(26,60,107,.15); transform: translateY(-3px); }
+.dc-popup-card img {
+  width: 100%; height: 80px; object-fit: cover; display: block;
+}
+.dc-popup-card-placeholder {
+  width: 100%; height: 80px;
+  background: linear-gradient(135deg,#e8f0fb,#c8daef);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+}
+.dc-popup-card-label {
+  padding: 8px 10px; font-size: 1.15rem; font-weight: 600;
+  color: #1a3a6b; line-height: 1.3;
+}
+
+/* Paired two-column table */
+.dc-popup-paired-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 1.3rem;
+}
+.dc-popup-paired-table thead th {
+  background: var(--nav-bg); color: var(--nav-accent);
+  padding: 10px 14px; text-align: left;
+  font-size: 1.1rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  border-bottom: 2px solid var(--nav-accent);
+}
+.dc-popup-paired-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background .12s;
+}
+.dc-popup-paired-table tbody tr:hover { background: #f7f9ff; }
+.dc-popup-paired-table tbody tr:last-child { border-bottom: none; }
+.dc-popup-paired-table td {
+  padding: 8px 14px; vertical-align: middle;
+  width: 50%;
+}
+.dc-popup-paired-table td:first-child {
+  border-right: 1px solid #eee;
+}
+.dc-popup-paired-table td a {
+  color: #1a3a6b; text-decoration: none;
+  font-weight: 500; display: flex; align-items: center; gap: 6px;
+  transition: color .15s;
+}
+.dc-popup-paired-table td a:hover { color: var(--nav-accent); }
+.dc-popup-paired-table td a::before {
+  content: '›'; color: var(--nav-accent); font-size: 1.4rem; font-weight: 700;
+}
+.dc-popup-paired-table td:empty::after {
+  content: '—'; color: #ccc; font-style: italic;
+}
+
+/* Show more */
+.dc-popup-show-more {
+  display: block; margin: 14px auto 0;
+  background: none; border: 1px solid var(--nav-accent);
+  color: var(--nav-accent); border-radius: 6px;
+  padding: 6px 20px; font-size: 1.2rem; font-weight: 600;
+  cursor: pointer; transition: background .2s, color .2s;
+}
+.dc-popup-show-more:hover { background: var(--nav-accent); color: #fff; }
+
+/* ═══ AI POPUP OVERLAY ═══ */
+.aiPopupOverlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,.6); display: none;
+  justify-content: center; align-items: center; z-index: 1000;
+}
+.aiPopupMain {
+  background: #fff; padding: 24px; border-radius: 12px;
+  max-width: 620px; width: 92%; max-height: 92vh; overflow-y: auto;
+}
+.aiPopupTiles {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap: 16px 20px; margin-bottom: 16px;
+}
+.aiPopupTile {
+  border: 1px solid #ddd; border-radius: 8px; overflow: hidden;
+  cursor: pointer; transition: transform .2s, box-shadow .2s;
+}
+.aiPopupTile:hover { transform: scale(1.04); box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+.aiPopupTile img { width:100%; display:block; }
+.aiPopupTile label { display:block; text-align:center; font-weight:bold; padding: 4px; font-size:1.1rem; cursor:pointer; }
+.aiPopupTileWrapper { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.aiPopupTileWrapper button {
+  width:100%; padding: 6px; border:none; border-radius:6px;
+  background: linear-gradient(135deg,#4690cc,#6ea8d4); color:#fff;
+  cursor:pointer; font-size:1.1rem; font-weight:bold; transition: all .2s;
+}
+.aiPopupTileWrapper button:hover { background: linear-gradient(135deg,#005a9e,#004080); }
+.aiPopupClose { float:right; font-size:1.5rem; cursor:pointer; font-weight:bold; color:var(--nav-accent); }
+.aiPopupDisclaimer { font-size:1.1rem; color:#444; margin-top:12px; text-align:justify; font-style:italic; }
+.aiPopupText { background:#fff; padding:20px; border-radius:12px; max-width:620px; width:92%; max-height:92vh; overflow-y:auto; }
+.aiPopupText h2 { color: var(--section-head); }
+.aiPopupText h3 { color: #006699; margin-top:10px; }
+.aiPopupText p, .aiPopupText li { font-size:1.3rem; margin-bottom:8px; line-height:1.6; }
+
+/* ═══ CHAT WIDGET ═══ */
+.chat-widget {
+  border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden;
+  margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+.chat-header {
+  background: var(--nav-bg); color: #fff;
+  padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+}
+.chat-header h3 { font-size: 1.45rem; font-family: var(--font-heading); font-weight: 600; }
+.chat-header .status-dot { width:8px; height:8px; background: var(--nav-green); border-radius:50%; animation:pulse 2s infinite; }
+.chat-messages {
+  height: 240px; overflow-y: auto; padding: 12px 14px;
+  background: #faf9f6; display: flex; flex-direction: column; gap: 10px;
+}
+.msg { max-width: 75%; }
+.msg.incoming { align-self: flex-start; }
+.msg.outgoing { align-self: flex-end; }
+.msg .bubble { padding: 8px 13px; border-radius: 14px; font-size: 1.28rem; line-height: 1.6; }
+.msg.incoming .bubble { background: #fff; border: 1px solid #e4e0d8; border-radius: 0 14px 14px 14px; }
+.msg.outgoing .bubble { background: #1a5cc8; color: #fff; border-radius: 14px 0 14px 14px; }
+.msg .meta { font-size: 1rem; color: #aaa; margin-top: 3px; font-style: italic; }
+.msg.outgoing .meta { text-align: right; }
+.chat-input-row {
+  display: flex; gap: 8px; padding: 10px 14px;
+  border-top: 1px solid #ede9e2; background: #fff;
+}
+.chat-input-row input {
+  flex:1; border: 1px solid #ddd; border-radius: 20px;
+  padding: 7px 14px; font-size: 1.3rem; outline: none; font-family: var(--font-main);
+}
+.chat-input-row input:focus { border-color: #1a5cc8; }
+.chat-input-row button {
+  background: var(--nav-accent); color: #fff; border:none;
+  border-radius: 20px; padding: 7px 18px; font-size: 1.25rem; font-weight: 600; cursor:pointer;
+}
+.name-row { display:flex; gap:8px; padding: 8px 14px 0; background:#fff; }
+.name-row input { flex:1; border:1px solid #ddd; border-radius:8px; padding: 6px 12px; font-size: 1.2rem; }
+
+/* ═══ LOADING SPINNER ═══ */
+.loading-spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 3px solid #eee; border-top-color: var(--nav-accent);
+  border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.loading-text { color: #999; font-size: 1.2rem; padding: 8px; font-style: italic; }
+
+/* ═══ FOOTER ═══ */
+footer {
+  background: var(--nav-bg); color: #888; text-align: center;
+  font-size: 1.2rem; padding: 18px; letter-spacing: 0.02em;
+  margin-top: 24px;
+}
+footer a { color: var(--nav-green); text-decoration: none; }
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:780px){
+  .two-col { flex-direction: column; }
+  .col-right { width: 100%; }
+  .aiPopupMain, .aiPopupText { max-width: 95%; padding: 12px; }
+}
+@media(max-width:500px){
+  .page-body { padding: 0 12px; }
+  .section-card { padding: 14px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ████  HEAD IMAGE  ████ -->
+<div class="headimage">
+  <div class="sitename">GST<span>Cell</span></div>
+</div>
+
+<!-- ████  NAV BAR  ████ -->
+<nav>
+  <div class="wrapper">
+    <div class="logo"><a href="#">GSTCell</a></div>
+    <ul class="nav-links" id="mainNav">
+      <!-- dynamic menu items injected here by loadNavLinks() -->
+
+      <li id="nav-dynamic-placeholder"></li>
+    </ul>
+    <span class="menu-toggle" onclick="toggleMobileMenu()">☰</span>
+  </div>
+</nav>
+
+<!-- ████  MAIN BODY  ████ -->
+<div class="page-body">
+
+  <!-- TWO COLUMN LAYOUT -->
+  <div class="two-col">
+
+    <!-- LEFT: quick links only -->
+    <div class="col-left">
+
+      <!-- QUICK POPUP LINKS (was Sheet3) -->
+      <div class="section-card">
+        <h2>📂 Document Library</h2>
+        <div id="quick-links-container">
+          <div class="loading-text"><span class="loading-spinner"></span> Loading from Firestore…</div>
+        </div>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <!-- RIGHT: recent updates + news + chat -->
+    <div class="col-right">
+
+      <!-- RECENT UPDATES (was Sheet1 of updates spreadsheet) -->
+      <div class="section-card">
+        <h2>🆕 Recent Updates</h2>
+        <div id="recent-container">
+          <div class="loading-text"><span class="loading-spinner"></span> Loading…</div>
+        </div>
+      </div>
+
+      <!-- ARTICLES / NEWS -->
+      <div class="section-card" style="background: #fffdf0; border-color: #f5e9b0;">
+        <h2>📰 News & Updates</h2>
+        <div id="articles-container">
+          <div class="loading-text"><span class="loading-spinner"></span> Loading articles from Firestore…</div>
+        </div>
+      </div>
+
+      <!-- SUGGESTION / CHAT BOX (real-time Firestore) -->
+      <div class="chat-widget">
+        <div class="chat-header">
+          <span class="status-dot"></span>
+          <h3>💬 Let's Suggest</h3>
+        </div>
+        <div class="name-row">
+          <input type="text" id="chatName" placeholder="Your name…" maxlength="40">
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="loading-text"><span class="loading-spinner"></span> Connecting live chat…</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Type a suggestion…" maxlength="500"
+                 onkeydown="if(event.key==='Enter') sendChat()">
+          <button onclick="sendChat()">Send</button>
+        </div>
+      </div>
+
+    </div><!-- /col-right -->
+  </div><!-- /two-col -->
+
+  <!-- EXTERNAL LINK TILES (static – no data source needed) -->
+  <div class="section-card">
+    <h2>🔗 Quick Access Links</h2>
+    <div class="link-tiles">
+      <div class="link-tile">
+        <h3>Kerala Taxes</h3>
+        <ul>
+          <li><a href="https://www.keralataxes.gov.in" target="_blank">Home</a></li>
+          <li><a href="https://kitis.keralataxes.gov.in/" target="_blank">KITIS (Return Filing)</a></li>
+          <li><a href="https://www.facebook.com/keralastategst/" target="_blank">Facebook Page</a></li>
+          <li><a href="https://www.gstcell.com/sgst-directory" target="_blank">Directory</a></li>
+        </ul>
+      </div>
+      <div class="link-tile">
+        <h3>CBIC</h3>
+        <ul>
+          <li><a href="https://www.cbic.gov.in" target="_blank">Home</a></li>
+          <li><a href="https://taxinformation.cbic.gov.in/" target="_blank">Notification</a></li>
+          <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/circularcgst" target="_blank">Circular</a></li>
+          <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/gstInstructions" target="_blank">Instructions</a></li>
+        </ul>
+      </div>
+      <div class="link-tile">
+        <h3>GST Portal</h3>
+        <ul>
+          <li><a href="https://services.gst.gov.in/services/login" target="_blank">Return Filing</a></li>
+          <li><a href="http://gstcouncil.gov.in/" target="_blank">GST Council</a></li>
+          <li><a href="http://www.gstcouncil.gov.in/authority-for-advance-rulings" target="_blank">Advance Ruling</a></li>
+          <li><a href="https://www.naa.gov.in/news.php?page=1&cat=2&pagesize=10" target="_blank">National AAR</a></li>
+        </ul>
+      </div>
+      <div class="link-tile">
+        <h3>eGazette</h3>
+        <ul>
+          <li><a href="http://www.egazette.kerala.gov.in/archives.php?id=6" target="_blank">Ordinary Gazette</a></li>
+          <li><a href="https://compose.kerala.gov.in/egazettelink1" target="_blank">Extra Ordinary</a></li>
+          <li><a href="https://egazette.gov.in/" target="_blank">eGazette India</a></li>
+        </ul>
+      </div>
+      <div class="link-tile">
+        <h3>E-Office</h3>
+        <ul>
+          <li><a href="https://eoffice.kerala.gov.in/EofficePortal/letterSearchRedirect" target="_blank">Citizen Portal</a></li>
+          <li><a href="http://www.ctax.kerala.gov.in" target="_blank">GST Employee Login</a></li>
+          <li><a href="https://www.gstcell.com/my-office" target="_blank">My Office</a></li>
+        </ul>
+      </div>
+      <div class="link-tile">
+        <h3>Kerala PSC</h3>
+        <ul>
+          <li><a href="https://psc.kerala.gov.in/kpsc/" target="_blank">Dept. Test Login</a></li>
+          <li><a href="https://thulasi.psc.kerala.gov.in/thulasi/" target="_blank">One Time Regn.</a></li>
+          <li><a href="https://keralapsc.gov.in/rankedlist" target="_blank">Rank List</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-body -->
+
+<!-- ████  AI ASSISTANT POPUP  ████ -->
+<div class="aiPopupOverlay" id="aiPopupMainOverlay" onclick="if(event.target===this)closeMainPopup()">
+  <div class="aiPopupMain">
+    <span class="aiPopupClose" onclick="closeMainPopup()">✕</span>
+    <h2 style="margin-bottom:16px;">🤖 AI Assistant – Choose a Tool</h2>
+    <div class="aiPopupTiles">
+      <div class="aiPopupTileWrapper">
+        <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-6937083030308191bbed121da51a919b-gst-notice-examiner')">
+          <img src="https://lh3.googleusercontent.com/d/1u5a1MneXVHqDq7BqCPh-YXeZ3OcsWxWI" alt="Notice Examiner">
+          <label>Notice Examiner</label>
+        </div>
+        <button onclick="openTextPopup('aiText1')">Prompt Guide</button>
+      </div>
+      <div class="aiPopupTileWrapper">
+        <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-69726d7b52bc8191bd22715224bc2495-gst-audit-assistant')">
+          <img src="https://lh3.googleusercontent.com/d/1p7ROVph_euOQ1c830Jid3ISpIhdAO6Td" alt="Audit Assistant">
+          <label>Audit Assistant</label>
+        </div>
+        <button onclick="openTextPopup('aiText2')">Prompt Guide</button>
+      </div>
+      <div class="aiPopupTileWrapper">
+        <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-697fa0c235b48191a29b359a2e7daf6c-gst-drafting-assistant')">
+          <img src="https://lh3.googleusercontent.com/d/17qXvaqChqHFRGNGzm2QBEw9fdJe1a5Qg" alt="Drafting Assistant">
+          <label>Drafting Assistant</label>
+        </div>
+        <button onclick="openTextPopup('aiText3')">Prompt Guide</button>
+      </div>
+      <div class="aiPopupTileWrapper">
+        <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-6978ecbb2d4481918f1847206b100506-bank-statement-analyst')">
+          <img src="https://lh3.googleusercontent.com/d/1SGRj79o2hCsiVwNqgLFm6NZXGOeBAa7f" alt="Bank Statement">
+          <label>Bank Statement Analyst</label>
+        </div>
+        <button onclick="openTextPopup('aiText4')">Prompt Guide</button>
+      </div>
+      <div class="aiPopupTileWrapper">
+        <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-69203abff4b48191aa9f970fe9127864-gst-mentor')">
+          <img src="https://lh3.googleusercontent.com/d/1vTmDFXd7suTOnL5MDiG-ZftxF9DvXK5l" alt="GST Mentor">
+          <label>GST Mentor</label>
+        </div>
+        <button onclick="openTextPopup('aiText5')">Prompt Guide</button>
+      </div>
+      <div class="aiPopupTileWrapper">
+        <div class="aiPopupTile" onclick="openLink('https://chatgpt.com/g/g-6998907abf208191b28bc060cc866ecc-gst-prompt-maker')">
+          <img src="https://lh3.googleusercontent.com/d/1jEYbz_e3kWgVkGyjIvlsU5_mqPCrRx4r" alt="Prompt Maker">
+          <label>Prompt Maker</label>
+        </div>
+        <button onclick="openTextPopup('aiText6')">Prompt Guide</button>
+      </div>
+    </div>
+    <div class="aiPopupDisclaimer">
+      <strong>Disclaimer:</strong> AI-generated GST guidance is for general information only and does not constitute legal or financial advice. Always verify against official GST Acts and notifications. Developed by <strong>Sri. Rajesh Damodaran, ASTO</strong>, State GST Dept.
+    </div>
+  </div>
+</div>
+
+<!-- AI Text Popup -->
+<div class="aiPopupOverlay" id="aiTextOverlay" onclick="if(event.target===this)closeTextPopup()">
+  <div class="aiPopupText">
+    <span class="aiPopupClose" onclick="closeTextPopup()">✕</span>
+    <div id="aiTextContent"></div>
+  </div>
+</div>
+
+<!-- Hidden AI guide texts -->
+<div style="display:none">
+  <div id="aiText1">
+    <h2>GST Notice Examiner – Usage Guide</h2>
+    <h3>Basic Review Prompt</h3>
+    <p>Upload the notice and type: <em>"Review this GST Show Cause Notice draft and list all errors."</em></p>
+    <h3>Advanced Prompt</h3>
+    <p><em>"Act as a senior GST Investigation Expert. Review for: linguistic issues, legal citation errors, factual inconsistencies, computational errors, procedural lapses."</em></p>
+  </div>
+  <div id="aiText2"><p><a href="https://docs.google.com/uc?id=1CRV5IvU4iqj_KtvPNQr_rSIYB_iF2zeu" target="_blank">Click here for Audit Prompt Guide</a></p></div>
+  <div id="aiText3"><p>Will be provided soon.</p></div>
+  <div id="aiText4">
+    <h2>Bank Statement Analysis Guide</h2>
+    <p>Upload the CSV/Excel bank statement and prompt: <em>"Analyze this bank statement for GST fraud risk indicators and produce an Anomaly & GST Risk Report."</em></p>
+    <p>The report will include: Executive Summary, Anomaly Register, Counter-party Risk List, Questions to Issue, Next Actions Checklist.</p>
+  </div>
+  <div id="aiText5"><p>Will be provided soon.</p></div>
+  <div id="aiText6"><p>Will be provided soon.</p></div>
+</div>
+
+<!-- ████  DOC-CARD CONTENT POPUP  ████ -->
+<div class="dc-popup-overlay" id="dcPopupOverlay" onclick="if(event.target===this)closeDcPopup()">
+  <div class="dc-popup-box">
+    <div class="dc-popup-header">
+      <h3 id="dcPopupTitle">Documents</h3>
+      <button class="dc-popup-close" onclick="closeDcPopup()">✕</button>
+    </div>
+    <div class="dc-popup-body" id="dcPopupBody"></div>
+  </div>
+</div>
+
+<!-- ████  FOOTER  ████ -->
+<footer>
+  <p>🔥 Powered by <strong>Firebase Firestore</strong> &nbsp;|&nbsp; GSTCell &copy; Kerala GST Department &nbsp;|&nbsp;
+  <a href="https://www.gstcell.com" target="_blank">www.gstcell.com</a></p>
+</footer>
+
+<!-- ████  SCRIPTS  ████ -->
+<script>
+/* ────────────────────────────────────────────────
+   FIREBASE DATA LOADERS
+   All use window._db + window._fsHelpers which are
+   set by the ES module above once Firebase is ready.
+──────────────────────────────────────────────── */
+
+function waitForFirebase(cb) {
+  if (window._firebaseReady) { cb(); }
+  else { document.addEventListener("firebaseReady", cb, { once: true }); }
+}
+
+waitForFirebase(() => { loadAll(); });
+
+
+function loadAll() {
+  loadRecentUpdates();
+  loadArticles();
+  loadNavLinks();
+  startChatListener();
+}
+
+/* ═══════════════════════════════════════════════
+   1.  RECENT UPDATES  (collection: recent_updates)
+   Expected doc fields:
+     title: string
+     link:  string (URL)
+     order: number  (for sorting)
+═══════════════════════════════════════════════ */
+async function loadRecentUpdates() {
+  const { collection, getDocs, query, orderBy, limit } = window._fsHelpers;
+  const db = window._db;
+  const container = document.getElementById("recent-container");
+  try {
+    const q = query(collection(db, "recent_updates"), orderBy("order", "asc"), limit(20));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = '<p class="loading-text">No updates yet.</p>'; return; }
+
+    let items = [];
+    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+
+    const defaultMax = 7;
+    let expanded = false;
+
+    function render() {
+      container.innerHTML = "";
+      items.forEach((item, i) => {
+        const el = document.createElement("div");
+        el.className = "recent-item";
+        el.style.display = (i < defaultMax || expanded) ? "flex" : "none";
+        el.innerHTML = `
+          <span class="new-badge">NEW</span>
+          <a href="${item.link || '#'}" target="_blank">${item.title || '(Untitled)'}</a>`;
+        container.appendChild(el);
+      });
+      if (items.length > defaultMax) {
+        const btn = document.createElement("button");
+        btn.className = "see-more-btn";
+        btn.textContent = expanded ? "See Less" : "See More";
+        btn.onclick = () => { expanded = !expanded; render(); };
+        container.appendChild(btn);
+      }
+    }
+    render();
+  } catch (e) {
+    container.innerHTML = `<p class="loading-text" style="color:red">Error: ${e.message}</p>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   2.  ARTICLES  (collection: articles)
+   Expected doc fields:
+     title:       string
+     category:    string
+     paragraphs:  array of strings
+     imageUrl:    string (optional)
+     refText1 / refLink1 / refText2 / refLink2
+     shareLink:   string (optional)
+     createdAt:   timestamp
+═══════════════════════════════════════════════ */
+async function loadArticles() {
+  const { collection, getDocs, query, orderBy } = window._fsHelpers;
+  const db = window._db;
+  const container = document.getElementById("articles-container");
+  try {
+    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = '<p class="loading-text">No articles yet.</p>'; return; }
+
+    // Group by category
+    const cats = {};
+    snap.forEach(d => {
+      const a = { id: d.id, ...d.data() };
+      if (!cats[a.category]) cats[a.category] = [];
+      cats[a.category].push(a);
+    });
+
+    container.innerHTML = "";
+    Object.keys(cats).forEach(cat => {
+      const catDiv = document.createElement("div");
+      catDiv.className = "article-category";
+      catDiv.innerHTML = `<h2>${cat}</h2>`;
+
+      const articles = cats[cat];
+      const maxVisible = 2;
+      const visible   = articles.slice(0, maxVisible);
+      const hidden    = articles.slice(maxVisible);
+
+      visible.forEach(a => catDiv.appendChild(buildArticleEl(a)));
+
+      const hiddenWrap = document.createElement("div");
+      hiddenWrap.style.display = "none";
+      hidden.forEach(a => hiddenWrap.appendChild(buildArticleEl(a)));
+      catDiv.appendChild(hiddenWrap);
+
+      if (hidden.length > 0) {
+        const btn = document.createElement("button");
+        btn.className = "cat-toggle-btn";
+        btn.textContent = "See More";
+        btn.onclick = () => {
+          const open = hiddenWrap.style.display !== "none";
+          hiddenWrap.style.display = open ? "none" : "block";
+          btn.textContent = open ? "See More" : "See Less";
+        };
+        catDiv.appendChild(btn);
+      }
+      container.appendChild(catDiv);
+    });
+  } catch (e) {
+    container.innerHTML = `<p class="loading-text" style="color:red">Error: ${e.message}</p>`;
+  }
+}
+
+function buildArticleEl(a) {
+  const el = document.createElement("article");
+  el.innerHTML = `<h3>${a.title || ''}</h3>`;
+
+  if (a.imageUrl) {
+    const img = document.createElement("img");
+    img.src = a.imageUrl; img.alt = ""; img.style.maxWidth = "100%";
+    el.appendChild(img);
+  }
+
+  const paras = Array.isArray(a.paragraphs) ? a.paragraphs : [];
+  if (paras.length > 0) {
+    const p0 = document.createElement("p"); p0.textContent = paras[0]; el.appendChild(p0);
+  }
+
+  let extraWrap;
+  if (paras.length > 1) {
+    extraWrap = document.createElement("div");
+    extraWrap.style.display = "none";
+    paras.slice(1).forEach(t => { const p = document.createElement("p"); p.textContent = t; extraWrap.appendChild(p); });
+    el.appendChild(extraWrap);
+    const tb = document.createElement("button"); tb.className = "toggle-btn"; tb.textContent = "Read More…";
+    tb.onclick = () => {
+      const open = extraWrap.style.display !== "none";
+      extraWrap.style.display = open ? "none" : "block";
+      tb.textContent = open ? "Read More…" : "Show Less";
+    };
+    el.appendChild(tb);
+  }
+
+  // References
+  const refs = document.createElement("div"); refs.className = "ref-links";
+  if (a.refText1 && a.refLink1) refs.innerHTML += `<i class="fa fa-file-pdf-o" style="color:red"></i> <a href="${a.refLink1}" target="_blank">${a.refText1}</a>`;
+  if (a.refText2 && a.refLink2) refs.innerHTML += ` | <i class="fa fa-file-pdf-o" style="color:red"></i> <a href="${a.refLink2}" target="_blank">${a.refText2}</a>`;
+  el.appendChild(refs);
+
+  // Social share
+  if (a.shareLink) {
+    const sc = document.createElement("div"); sc.className = "social-share";
+    const platforms = [
+      { name:"Facebook", url:`https://www.facebook.com/sharer.php?u=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-facebook" },
+      { name:"WhatsApp", url:`https://api.whatsapp.com/send?text=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-whatsapp" },
+      { name:"Email",    url:`mailto:?body=${encodeURIComponent(a.shareLink)}`, icon:"fas fa-envelope" },
+      { name:"LinkedIn", url:`https://www.linkedin.com/shareArticle?url=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-linkedin" },
+      { name:"X",        url:`https://twitter.com/intent/tweet?url=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-twitter" },
+    ];
+    platforms.forEach(pl => {
+      const btn = document.createElement("a");
+      btn.href = pl.url; btn.target = "_blank"; btn.title = pl.name; btn.className = "share-btn";
+      btn.innerHTML = `<i class="${pl.icon}"></i>`;
+      sc.appendChild(btn);
+    });
+    el.appendChild(sc);
+  }
+  return el;
+}
+
+/* ═══════════════════════════════════════════════
+   3.  NAV LINKS  (collection: nav_links)
+   Expected doc fields:
+     menu:    string  (top-level group, e.g. "CGST Act")
+     subMenu: string  (column header, e.g. "2024 Notifications")
+     name:    string  (link label)
+     url:     string  (href)
+     order:   number
+═══════════════════════════════════════════════ */
+async function loadNavLinks() {
+  const { collection, getDocs, query, orderBy } = window._fsHelpers;
+  const db = window._db;
+  const container = document.getElementById("quick-links-container");
+  const navList = document.getElementById("mainNav");
+  const placeholder = document.getElementById("nav-dynamic-placeholder");
+
+  try {
+    const q = query(collection(db, "nav_links"), orderBy("order", "asc"));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      container.innerHTML = '<p class="loading-text">No document links yet.</p>';
+      if (placeholder) placeholder.remove();
+      return;
+    }
+
+    // Group: menu → subMenu → links[]
+    const groups = {};
+    const menuOrder = [];
+    snap.forEach(d => {
+      const item = { id: d.id, ...d.data() };
+      if (!groups[item.menu]) { groups[item.menu] = {}; menuOrder.push(item.menu); }
+      if (!groups[item.menu][item.subMenu]) groups[item.menu][item.subMenu] = [];
+      groups[item.menu][item.subMenu].push(item);
+    });
+
+    // ─── Quick links panel — only show cards uploaded from admin (doc_cards collection) ───
+    container.innerHTML = "";
+
+    const { collection: col2, getDocs: get2, query: q2, orderBy: ob2 } = window._fsHelpers;
+    const grid = document.createElement("div");
+    grid.className = "doc-cards-grid";
+
+    try {
+      const dcSnap = await get2(q2(col2(db, "doc_cards"), ob2("order", "asc")));
+      if (dcSnap.empty) {
+        container.innerHTML = '<p class="loading-text">No cards configured yet. Add cards from the Admin panel.</p>';
+      } else {
+        dcSnap.forEach(d => {
+          const meta = d.data();
+          const buttons = Array.isArray(meta.buttons) ? meta.buttons.filter(b => b.label) : [];
+
+          // Build flyout buttons
+          let flyoutInner = `<div class="dc-flyout-title">${meta.cardName || meta.menu || ""}</div>`;
+          if (buttons.length) {
+            flyoutInner += buttons.map(b => {
+              if (b.type === "popup") {
+                // Encode popup items as JSON in data attribute
+                const safeData = encodeURIComponent(JSON.stringify({
+                  title: b.label,
+                  style: b.popupStyle || "list",
+                  items: b.popupItems || [],
+                  paired: b.popupPaired || { leftHeading:"", rightHeading:"", rows:[] }
+                }));
+                return `<button class="dc-flyout-btn dc-flyout-btn--popup"
+                          onclick="openDcPopup('${safeData}')">
+                          💬 ${b.label}
+                        </button>`;
+              } else {
+                return `<a class="dc-flyout-btn dc-flyout-btn--link"
+                          href="${b.url}" target="_blank">🔗 ${b.label}</a>`;
+              }
+            }).join("");
+          } else {
+            flyoutInner += `<p class="dc-flyout-hint">No buttons configured yet.</p>`;
+          }
+
+          const imgSection = meta.imageUrl
+            ? `<img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName || ""}" loading="lazy">`
+            : `<div class="doc-card-img-placeholder">📁</div>`;
+
+          const card = document.createElement("div");
+          card.className = "doc-card";
+          card.innerHTML = `
+            ${imgSection}
+            <div class="doc-card-body">
+              <div class="doc-card-title">${meta.cardName || meta.menu || ""}</div>
+            </div>
+            <div class="doc-card-flyout">${flyoutInner}</div>
+          `;
+          grid.appendChild(card);
+        });
+        container.appendChild(grid);
+      }
+    } catch(e) {
+      container.innerHTML = `<p class="loading-text" style="color:red">Error loading cards: ${e.message}</p>`;
+    }
+
+    // ─── Dynamic nav bar menus ───
+    // Remove placeholder; insert one <li> per unique menu value
+    if (placeholder) placeholder.remove();
+    menuOrder.forEach(menu => {
+      const li = document.createElement("li");
+      const isTaxRate = menu.toUpperCase().includes("TAX RATE");
+
+      // Build subMenu columns: one mega-col per subMenu, See more after 10 items
+      const subMenus = Object.keys(groups[menu]).slice(0, 6); // cap at 6 columns
+      const SHOW_MAX = 10;
+      const colsHtml = subMenus.map(sub => {
+        const allItems = groups[menu][sub];
+        const visItems = allItems.slice(0, SHOW_MAX);
+        const hidItems = allItems.slice(SHOW_MAX);
+        const visHtml = visItems
+          .map(item => `<li><a href="${item.url}" target="_blank">${item.name}</a></li>`)
+          .join("");
+        const hidHtml = hidItems.length
+          ? `<li class="mega-hidden-items" style="display:none">${
+              hidItems.map(item => `<a href="${item.url}" target="_blank" style="display:block;color:#b8bccf;font-size:12px;padding:4px 0;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#b8bccf'"><span style='color:var(--nav-accent);margin-right:5px'>›</span>${item.name}</a>`).join("")
+            }</li>
+            <li><a class="mega-see-more" onclick="this.closest('ul').querySelector('.mega-hidden-items').style.display='block';this.style.display='none'">See more »</a></li>`
+          : "";
+        return `<div class="mega-col"><h4>${sub}</h4><ul>${visHtml}${hidHtml}</ul></div>`;
+      }).join("");
+
+      if (isTaxRate) {
+        li.innerHTML = `
+          <span class="desktop-item nav-taxrate-btn">🧮 ${menu} ▾</span>
+          <div class="mega-box">
+            <div class="mega-content">${colsHtml}</div>
+          </div>`;
+      } else {
+        li.innerHTML = `
+          <a class="desktop-item">${menu} ▾</a>
+          <div class="mega-box">
+            <div class="mega-content">${colsHtml}</div>
+          </div>`;
+      }
+
+      // Set mega-box width dynamically based on number of columns (cap at 6)
+      const numCols = Math.min(subMenus.length, 6);
+      const colW = 152; // px per column (min-width 130 + 22 padding)
+      const boxW = numCols * colW + 36; // + outer padding
+      li.querySelector(".mega-box").style.width = boxW + "px";
+
+      navList.appendChild(li);
+    });
+
+  } catch (e) {
+    container.innerHTML = `<p class="loading-text" style="color:red">Error: ${e.message}</p>`;
+    console.error("loadNavLinks error:", e);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   4.  LIVE CHAT / SUGGESTIONS
+       (collection: suggestions, real-time listener)
+   Expected doc fields:
+     name:      string
+     message:   string
+     createdAt: serverTimestamp
+═══════════════════════════════════════════════ */
+function startChatListener() {
+  const { collection, query, orderBy, limit, onSnapshot } = window._fsHelpers;
+  const db = window._db;
+  const box = document.getElementById("chatMessages");
+  const q = query(collection(db, "suggestions"), orderBy("createdAt", "asc"), limit(50));
+
+  box.innerHTML = "";
+  onSnapshot(q, snap => {
+    box.innerHTML = "";
+    if (snap.empty) {
+      box.innerHTML = '<div class="loading-text">No suggestions yet. Be the first!</div>';
+      return;
+    }
+    snap.forEach(d => {
+      const m = d.data();
+      const isMe = m.name === (document.getElementById("chatName").value.trim() || "__nobody__");
+      const el = document.createElement("div");
+      el.className = `msg ${isMe ? "outgoing" : "incoming"}`;
+      const ts = m.createdAt?.toDate ? m.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : "";
+      el.innerHTML = `<div class="bubble"><strong>${m.name || 'Anonymous'}:</strong> ${escHtml(m.message)}</div>
+                      <div class="meta">${ts}</div>`;
+      box.appendChild(el);
+    });
+    box.scrollTop = box.scrollHeight;
+  }, err => {
+    box.innerHTML = `<div class="loading-text" style="color:red">Chat error: ${err.message}</div>`;
+  });
+}
+
+async function sendChat() {
+  if (!window._firebaseReady) { alert("Firebase not yet connected."); return; }
+  const { collection, addDoc, serverTimestamp } = window._fsHelpers;
+  const db = window._db;
+  const name = document.getElementById("chatName").value.trim() || "Anonymous";
+  const msg  = document.getElementById("chatInput").value.trim();
+  if (!msg) return;
+  try {
+    await addDoc(collection(db, "suggestions"), { name, message: msg, createdAt: serverTimestamp() });
+    document.getElementById("chatInput").value = "";
+  } catch (e) { alert("Could not send: " + e.message); }
+}
+
+
+/* ═══ DOC-CARD CUSTOM POPUP ═══ */
+function openDcPopup(encodedData) {
+  const data = JSON.parse(decodeURIComponent(encodedData));
+  document.getElementById("dcPopupTitle").textContent = data.title || "Documents";
+  const body = document.getElementById("dcPopupBody");
+  const style = data.style || "list";
+  const SHOW_LIMIT = 10;
+
+  if (style === "paired") {
+    // ── Paired two-column table ──
+    const paired = data.paired || { leftHeading:"", rightHeading:"", rows:[] };
+    const rows   = Array.isArray(paired.rows) ? paired.rows : [];
+    body.innerHTML = "";
+
+    function renderPaired(showAll) {
+      body.innerHTML = "";
+      const visible   = showAll ? rows : rows.slice(0, SHOW_LIMIT);
+      const remaining = rows.length - visible.length;
+
+      const table = document.createElement("table");
+      table.className = "dc-popup-paired-table";
+      // Headings
+      if (paired.leftHeading || paired.rightHeading) {
+        const thead = document.createElement("thead");
+        thead.innerHTML = `<tr>
+          <th>${paired.leftHeading || "Left"}</th>
+          <th>${paired.rightHeading || "Right"}</th>
+        </tr>`;
+        table.appendChild(thead);
+      }
+      const tbody = document.createElement("tbody");
+      visible.forEach(r => {
+        const tr = document.createElement("tr");
+        const mkCell = (name, link) => {
+          const td = document.createElement("td");
+          if (link) {
+            const a = document.createElement("a");
+            a.href = link; a.target = "_blank"; a.textContent = name || "";
+            td.appendChild(a);
+          } else {
+            td.textContent = name || "";
+          }
+          return td;
+        };
+        tr.appendChild(mkCell(r.leftName,  r.leftLink));
+        tr.appendChild(mkCell(r.rightName, r.rightLink));
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      body.appendChild(table);
+
+      if (remaining > 0) {
+        const btn = document.createElement("button");
+        btn.className = "dc-popup-show-more";
+        btn.textContent = "Show " + remaining + " more…";
+        btn.onclick = () => renderPaired(true);
+        body.appendChild(btn);
+      }
+    }
+    renderPaired(false);
+
+  } else {
+    // ── List / Card ──
+    const items = Array.isArray(data.items) ? data.items.filter(i => i.name) : [];
+    function renderItems(showAll) {
+      body.innerHTML = "";
+      const visible   = showAll ? items : items.slice(0, SHOW_LIMIT);
+      const remaining = items.length - visible.length;
+
+      if (style === "card") {
+        const grid = document.createElement("div");
+        grid.className = "dc-popup-cards";
+        visible.forEach(item => {
+          const a = document.createElement("a");
+          a.className = "dc-popup-card";
+          a.href = item.link || "#"; a.target = "_blank";
+          a.innerHTML = item.imageUrl
+            ? `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy">`
+            : `<div class="dc-popup-card-placeholder">📄</div>`;
+          a.innerHTML += `<div class="dc-popup-card-label">${item.name}</div>`;
+          grid.appendChild(a);
+        });
+        body.appendChild(grid);
+      } else {
+        const ul = document.createElement("ul");
+        ul.className = "dc-popup-list";
+        visible.forEach(item => {
+          ul.innerHTML += `<li><a href="${item.link||'#'}" target="_blank">${item.name}</a></li>`;
+        });
+        body.appendChild(ul);
+      }
+
+      if (remaining > 0) {
+        const btn = document.createElement("button");
+        btn.className = "dc-popup-show-more";
+        btn.textContent = "Show " + remaining + " more…";
+        btn.onclick = () => renderItems(true);
+        body.appendChild(btn);
+      }
+    }
+    renderItems(false);
+  }
+
+  document.getElementById("dcPopupOverlay").classList.add("open");
+}
+function closeDcPopup() {
+  document.getElementById("dcPopupOverlay").classList.remove("open");
+}
+
+/* ═══ POPUP HELPERS ═══ */
+function openMainPopup() { document.getElementById("aiPopupMainOverlay").style.display = "flex"; }
+function closeMainPopup() { document.getElementById("aiPopupMainOverlay").style.display = "none"; }
+function openLink(url) { window.open(url, "_blank"); }
+function openTextPopup(id) {
+  document.getElementById("aiTextContent").innerHTML = document.getElementById(id)?.innerHTML || "";
+  document.getElementById("aiTextOverlay").style.display = "flex";
+}
+function closeTextPopup() { document.getElementById("aiTextOverlay").style.display = "none"; }
+function toggleMobileMenu() {
+  const nl = document.getElementById("mainNav");
+  nl.classList.toggle("mobile-open");
+}
+
+// Mobile: tap nav items with submenus to expand/collapse
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("mainNav").addEventListener("click", e => {
+    // Only in mobile mode
+    if (window.innerWidth > 860) return;
+    const li = e.target.closest("li");
+    if (!li) return;
+    const hasSub = li.querySelector(".mega-box, .drop-menu");
+    if (!hasSub) return;
+    // Don't follow links when toggling submenu
+    if (e.target.tagName === "A" && e.target.closest(".mega-box, .drop-menu")) return;
+    e.preventDefault();
+    li.classList.toggle("mob-open");
+  });
+});
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+</script>
+</body>
+</html>
