@@ -191,10 +191,13 @@ nav .wrapper {
   border-top: 2px solid var(--nav-accent);
   box-shadow: 0 8px 24px rgba(0,0,0,.28);
   z-index: 400; list-style: none;
-  transition: opacity .2s, transform .2s;
+  transition: opacity .22s ease .05s, transform .22s ease .05s, visibility 0s ease .27s;
   transform: translateY(-4px);
 }
-.nav-links > li:hover .drop-menu { opacity:1; visibility:visible; transform: translateY(0); }
+.nav-links > li:hover .drop-menu {
+  opacity:1; visibility:visible; transform: translateY(0);
+  transition: opacity .22s ease .28s, transform .22s ease .28s, visibility 0s ease .28s;
+}
 .drop-menu li a {
   display: block; padding: 7px 16px;
   font-size: 14.67px; font-weight: 400; letter-spacing: 0.02em;
@@ -209,11 +212,14 @@ nav .wrapper {
   top: var(--nav-height);
   opacity: 0; visibility: hidden;
   z-index: 400;
-  transition: opacity .2s, transform .2s;
+  transition: opacity .22s ease .05s, transform .22s ease .05s, visibility 0s ease .27s;
   width: max-content;
   max-width: calc(100vw - 24px);
 }
-.nav-links > li:hover .mega-box { opacity:1; visibility:visible; transform: translateY(0); }
+.nav-links > li:hover .mega-box {
+  opacity:1; visibility:visible; transform: translateY(0);
+  transition: opacity .22s ease .28s, transform .22s ease .28s, visibility 0s ease .28s;
+}
 .mega-content {
   background: var(--nav-bg);
   border-top: 2px solid var(--nav-accent);
@@ -410,8 +416,8 @@ nav .wrapper {
 .doc-card-flyout {
   position: absolute;
   inset: 0;
-  background: rgba(10,20,45,.95);
-  color: #e8ecf4;
+  background: rgba(232, 241, 255, 0.97);
+  color: #1a2a4a;
   padding: 18px 14px 14px;
   opacity: 0;
   visibility: hidden;
@@ -429,12 +435,12 @@ nav .wrapper {
   visibility: visible;
 }
 .dc-flyout-title {
-  color: #fff;
+  color: #1a3a6b;
   font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
-  border-bottom: 1px solid rgba(224,53,53,.4);
+  border-bottom: 1px solid rgba(26,60,107,.25);
   padding-bottom: 7px;
   margin-bottom: 4px;
 }
@@ -1655,7 +1661,7 @@ footer {
     <h3>Advanced Prompt</h3>
     <p><em>"Act as a senior GST Investigation Expert. Review for: linguistic issues, legal citation errors, factual inconsistencies, computational errors, procedural lapses."</em></p>
   </div>
-  <div id="aiText2"><p><a href="https://docs.google.com/uc?id=1CRV5IvU4iqj_KtvPNQr_rSIYB_iF2zeu" target="_blank">Click here for Audit Prompt Guide</a></p></div>
+  <div id="aiText2"><p><a href="#" onclick="event.preventDefault();closeTextPopup();openPdfPreview('Audit Prompt Guide','https://drive.google.com/file/d/1CRV5IvU4iqj_KtvPNQr_rSIYB_iF2zeu/view')">Click here for Audit Prompt Guide</a></p></div>
   <div id="aiText3"><p>Will be provided soon.</p></div>
   <div id="aiText4">
     <h2>Bank Statement Analysis Guide</h2>
@@ -1859,7 +1865,7 @@ footer {
     <div class="pdf-preview-header">
       <h3 id="pdfPreviewTitle">Document</h3>
       <div class="pdf-preview-header-btns">
-        <a id="pdfDownloadBtn" href="#" download class="pdf-download-btn" target="_blank">
+        <a id="pdfDownloadBtn" href="#" class="pdf-download-btn" target="_blank">
           <i class="fas fa-download"></i> Download
         </a>
         <button class="pdf-close-btn" onclick="closePdfPreview()">✕</button>
@@ -2130,24 +2136,24 @@ function buildArticleEl(a) {
   if (a.refText2 && a.refLink2) refs.innerHTML += ` | <i class="fa fa-file-pdf-o" style="color:red"></i> <a href="${a.refLink2}" target="_blank">${a.refText2}</a>`;
   el.appendChild(refs);
 
-  // Social share
-  if (a.shareLink) {
-    const sc = document.createElement("div"); sc.className = "social-share";
-    const platforms = [
-      { name:"Facebook", url:`https://www.facebook.com/sharer.php?u=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-facebook" },
-      { name:"WhatsApp", url:`https://api.whatsapp.com/send?text=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-whatsapp" },
-      { name:"Email",    url:`mailto:?body=${encodeURIComponent(a.shareLink)}`, icon:"fas fa-envelope" },
-      { name:"LinkedIn", url:`https://www.linkedin.com/shareArticle?url=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-linkedin" },
-      { name:"X",        url:`https://twitter.com/intent/tweet?url=${encodeURIComponent(a.shareLink)}`, icon:"fab fa-twitter" },
-    ];
-    platforms.forEach(pl => {
-      const btn = document.createElement("a");
-      btn.href = pl.url; btn.target = "_blank"; btn.title = pl.name; btn.className = "share-btn";
-      btn.innerHTML = `<i class="${pl.icon}"></i>`;
-      sc.appendChild(btn);
-    });
-    el.appendChild(sc);
-  }
+  // Social share — always shown; use a.shareLink if set, otherwise share the page URL with the article title
+  const shareUrl  = a.shareLink || window.location.href;
+  const shareText = encodeURIComponent((a.title || "GSTCell") + " – " + shareUrl);
+  const sc = document.createElement("div"); sc.className = "social-share";
+  const platforms = [
+    { name:"WhatsApp", url:`https://api.whatsapp.com/send?text=${shareText}`, icon:"fab fa-whatsapp" },
+    { name:"Facebook", url:`https://www.facebook.com/sharer.php?u=${encodeURIComponent(shareUrl)}`, icon:"fab fa-facebook" },
+    { name:"Email",    url:`mailto:?subject=${encodeURIComponent(a.title||'GSTCell')}&body=${shareText}`, icon:"fas fa-envelope" },
+    { name:"LinkedIn", url:`https://www.linkedin.com/shareArticle?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(a.title||'')}`, icon:"fab fa-linkedin" },
+    { name:"X / Twitter", url:`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(a.title||'')}`, icon:"fab fa-twitter" },
+  ];
+  platforms.forEach(pl => {
+    const btn = document.createElement("a");
+    btn.href = pl.url; btn.target = "_blank"; btn.title = pl.name; btn.className = "share-btn";
+    btn.innerHTML = `<i class="${pl.icon}"></i>`;
+    sc.appendChild(btn);
+  });
+  el.appendChild(sc);
   return el;
 }
 
