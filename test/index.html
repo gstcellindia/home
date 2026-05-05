@@ -140,7 +140,7 @@ nav .wrapper {
 .nav-links > li > a,
 .nav-links > li > .desktop-item {
   color: var(--nav-text); text-decoration: none;
-  font-size: 14.67px; font-weight: 600; letter-spacing: 0.09em;
+  font-size: 14.67px; font-weight: 400; letter-spacing: 0.09em;
   font-family: var(--font-nav);
   text-transform: uppercase; padding: 0 11px;
   display: flex; align-items: center; height: var(--nav-height);
@@ -158,7 +158,7 @@ nav .wrapper {
   padding: 0 14px !important;
   height: 32px !important;
   font-size: 11px !important;
-  font-weight: 700 !important;
+  font-weight: 400 !important;
   letter-spacing: 0.07em !important;
   border-bottom: none !important;
   margin: 0 6px !important;
@@ -497,6 +497,7 @@ nav .wrapper {
 .col-quicklinks .ql-group { margin-bottom: 10px; }
 .col-quicklinks .ql-group-title {
   font-size: 1.05rem; font-weight: 700;
+  font-family: 'Times New Roman', Times, serif;
   color: var(--nav-accent);
   text-transform: uppercase; letter-spacing: 0.06em;
   margin-bottom: 3px;
@@ -504,6 +505,7 @@ nav .wrapper {
 .col-quicklinks ul { list-style: none; padding: 0; margin: 0; }
 .col-quicklinks ul li a {
   display: block; font-size: 1.1rem; color: #2d2d3e;
+  font-family: 'Times New Roman', Times, serif;
   text-decoration: none; padding: 2px 0 2px 7px;
   border-left: 2px solid transparent;
   transition: color .15s, border-color .15s; line-height: 1.4;
@@ -1175,8 +1177,65 @@ footer {
   <div class="wrapper">
     <div class="logo"><a href="#">GSTCell</a></div>
     <ul class="nav-links" id="mainNav">
-      <!-- dynamic menu items injected here by loadNavLinks() -->
-      <li id="nav-dynamic-placeholder"></li>
+      <!-- ── Hard-coded top-level items (instant render, no flicker) ── -->
+      <!-- Dropdowns are populated dynamically by loadNavLinks()        -->
+
+      <li id="nav-item-ACT_RULE">
+        <a class="desktop-item" onclick="toggleMobileItem(this)">ACT &amp; RULE ▾</a>
+        <div class="mega-box">
+          <div class="mega-content">
+            <span class="nav-loading">Loading…</span>
+          </div>
+        </div>
+      </li>
+
+      <li id="nav-item-NOTIFICATION">
+        <a class="desktop-item" onclick="toggleMobileItem(this)">NOTIFICATION ▾</a>
+        <div class="mega-box">
+          <div class="mega-content">
+            <span class="nav-loading">Loading…</span>
+          </div>
+        </div>
+      </li>
+
+      <li id="nav-item-CIRCULAR">
+        <a class="desktop-item" onclick="toggleMobileItem(this)">CIRCULAR ▾</a>
+        <div class="mega-box">
+          <div class="mega-content">
+            <span class="nav-loading">Loading…</span>
+          </div>
+        </div>
+      </li>
+
+      <li id="nav-item-GST">
+        <a class="desktop-item" onclick="toggleMobileItem(this)">GST ▾</a>
+        <div class="mega-box">
+          <div class="mega-content">
+            <span class="nav-loading">Loading…</span>
+          </div>
+        </div>
+      </li>
+
+      <li id="nav-item-FINANCE_BILL_ACT">
+        <a class="desktop-item" onclick="toggleMobileItem(this)">FINANCE BILL &amp; ACT ▾</a>
+        <div class="mega-box">
+          <div class="mega-content">
+            <span class="nav-loading">Loading…</span>
+          </div>
+        </div>
+      </li>
+
+      <li id="nav-item-TAX_RATE">
+        <span class="desktop-item nav-taxrate-btn">🧮 TAX RATE ▾</span>
+        <div class="mega-box">
+          <div class="mega-content">
+            <span class="nav-loading">Loading…</span>
+          </div>
+        </div>
+      </li>
+
+      <!-- placeholder for any extra menus defined in Firestore but not above -->
+      <li id="nav-dynamic-placeholder" style="display:none"></li>
     </ul>
     <span class="menu-toggle" onclick="toggleMobileMenu()">☰</span>
   </div>
@@ -1251,8 +1310,165 @@ footer {
       <div class="section-card">
         <h2>📂 Document Library</h2>
         <div id="quick-links-container">
-          <div class="loading-text"><span class="loading-spinner"></span> Loading from Firestore…</div>
-        </div>
+
+          <!-- ══════════════════════════════════════════════════════════
+               Hard-coded card grid — name & description render instantly.
+               Images and flyout buttons are injected by loadNavLinks()
+               once Firestore responds. Each card has a data-card-name
+               attribute that the JS uses to match the Firestore doc.
+          ══════════════════════════════════════════════════════════ -->
+          <div class="doc-cards-grid" id="doc-cards-grid">
+
+            <!-- Row 1 -->
+            <div class="doc-card" data-card-name="ACT & RULES">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">ACT &amp; RULES</div>
+                <div class="doc-card-desc">Act &amp; Rules</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">ACT &amp; RULES</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="TAX RATE FINDER">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">TAX RATE FINDER</div>
+                <div class="doc-card-desc">Tax Rate Finder</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">TAX RATE FINDER</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="NOTIFICATIONS">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">NOTIFICATIONS</div>
+                <div class="doc-card-desc">Notifications</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">NOTIFICATIONS</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="CIRCULAR">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">CIRCULAR</div>
+                <div class="doc-card-desc">Circular</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">CIRCULAR</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="doc-card" data-card-name="ADVANCE RULING">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">ADVANCE RULING</div>
+                <div class="doc-card-desc">Advance Ruling</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">ADVANCE RULING</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="REVERSE CHARGE">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">REVERSE CHARGE</div>
+                <div class="doc-card-desc">Reverse Charge</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">REVERSE CHARGE</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="BUDGET SPEECH">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">BUDGET SPEECH</div>
+                <div class="doc-card-desc">Budget Speech</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">BUDGET SPEECH</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="FINANCE BILL & ACT">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">FINANCE BILL &amp; ACT</div>
+                <div class="doc-card-desc">Finance Bill &amp; Act</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">FINANCE BILL &amp; ACT</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="doc-card" data-card-name="GOVERNMENT ORDER">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">GOVERNMENT ORDER</div>
+                <div class="doc-card-desc">Government Order</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">GOVERNMENT ORDER</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="INSTRUCTIONS">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">INSTRUCTIONS</div>
+                <div class="doc-card-desc">Instructions</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">INSTRUCTIONS</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="REMOVAL OF DIFFICULTIES">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">REMOVAL OF DIFFICULTIES</div>
+                <div class="doc-card-desc">Removal of Difficulties</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">REMOVAL OF DIFFICULTIES</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="SERVICE MATTER">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">SERVICE MATTER</div>
+                <div class="doc-card-desc">Service Matter</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">SERVICE MATTER</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="doc-card" data-card-name="SALARY MATTERS">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">SALARY MATTERS</div>
+                <div class="doc-card-desc">Tools for the purpose of matters related to Salary</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">SALARY MATTERS</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="KERALA FLOOD CESS">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">KERALA FLOOD CESS</div>
+                <div class="doc-card-desc">Rules &amp; Notifications</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">KERALA FLOOD CESS</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="JUDGMENT">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">JUDGMENT</div>
+                <div class="doc-card-desc">Court Judgments</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">JUDGMENT</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+            <div class="doc-card" data-card-name="SALARY MATTERS2">
+              <div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>
+              <div class="doc-card-body">
+                <div class="doc-card-title">SALARY MATTERS</div>
+                <div class="doc-card-desc">Tools for the purpose of matters related to salary</div>
+              </div>
+              <div class="doc-card-flyout"><div class="dc-flyout-title">SALARY MATTERS</div><p class="dc-flyout-hint">Loading…</p></div>
+            </div>
+
+          </div><!-- /doc-cards-grid -->
+        </div><!-- /quick-links-container -->
       </div>
     </div><!-- /col-doclibrary -->
 
@@ -1865,78 +2081,172 @@ async function loadNavLinks() {
       groups[item.menu][item.subMenu].push(item);
     });
 
-    // ─── Quick links panel — only show cards uploaded from admin (doc_cards collection) ───
-    container.innerHTML = "";
+    // ─── Quick links panel — inject images & flyout buttons into hard-coded card shells ───
+    // The grid is already in the DOM (hard-coded in HTML) — do NOT clear the container.
+    const existingGrid = document.getElementById("doc-cards-grid");
 
     const { collection: col2, getDocs: get2, query: q2, orderBy: ob2 } = window._fsHelpers;
-    const grid = document.createElement("div");
-    grid.className = "doc-cards-grid";
 
     try {
       const dcSnap = await get2(q2(col2(db, "doc_cards"), ob2("order", "asc")));
+
       if (dcSnap.empty) {
-        container.innerHTML = '<p class="loading-text">No cards configured yet. Add cards from the Admin panel.</p>';
+        // No Firestore data — just leave the hard-coded shells as-is (no images, no flyout buttons)
       } else {
+        // Build a map: normalised cardName → Firestore metadata
+        const cardMap = {};
         dcSnap.forEach(d => {
           const meta = d.data();
-          const buttons = Array.isArray(meta.buttons) ? meta.buttons.filter(b => b.label) : [];
-
-          // Build flyout buttons
-          let flyoutInner = `<div class="dc-flyout-title">${meta.cardName || meta.menu || ""}</div>`;
-          if (buttons.length) {
-            flyoutInner += buttons.map(b => {
-              if (b.type === "popup") {
-                // Encode popup items as JSON in data attribute
-                const safeData = encodeURIComponent(JSON.stringify({
-                  title: b.label,
-                  style: b.popupStyle || "list",
-                  items: b.popupItems || [],
-                  paired: b.popupPaired || { leftHeading:"", rightHeading:"", rows:[] }
-                }));
-                return `<button class="dc-flyout-btn dc-flyout-btn--popup"
-                          onclick="openDcPopup('${safeData}')">
-                          💬 ${b.label}
-                        </button>`;
-              } else {
-                return `<a class="dc-flyout-btn dc-flyout-btn--link"
-                          href="${b.url}" target="_blank">🔗 ${b.label}</a>`;
-              }
-            }).join("");
-          } else {
-            flyoutInner += `<p class="dc-flyout-hint">No buttons configured yet.</p>`;
-          }
-
-          const imgSection = meta.imageUrl
-            ? `<div class="doc-card-img-wrap"><img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName || ""}" loading="lazy"></div>`
-            : `<div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>`;
-
-          const card = document.createElement("div");
-          card.className = "doc-card";
-          card.innerHTML = `
-            ${imgSection}
-            <div class="doc-card-body">
-              <div class="doc-card-title">${meta.cardName || meta.menu || ""}</div>
-              ${meta.menu ? `<div class="doc-card-desc">${meta.menu}</div>` : ""}
-            </div>
-            <div class="doc-card-flyout">${flyoutInner}</div>
-          `;
-          grid.appendChild(card);
+          const key = (meta.cardName || meta.menu || "").trim().toUpperCase();
+          // Store by key; if duplicate key, last write wins (matches original behaviour)
+          cardMap[key] = meta;
         });
-        container.appendChild(grid);
+
+        if (existingGrid) {
+          // ── Populate pre-existing hard-coded cards ──
+          const hardCards = existingGrid.querySelectorAll(".doc-card[data-card-name]");
+          hardCards.forEach(card => {
+            const rawName = card.getAttribute("data-card-name").trim().toUpperCase();
+            // Try exact match first, then strip trailing digit used for duplicates (e.g. "SALARY MATTERS2")
+            const baseKey = rawName.replace(/\d+$/, "");
+            const meta = cardMap[rawName] || cardMap[baseKey];
+            if (!meta) return; // no Firestore data for this card — leave skeleton as-is
+
+            const buttons = Array.isArray(meta.buttons) ? meta.buttons.filter(b => b.label) : [];
+
+            // ── Inject image ──
+            const imgWrap = card.querySelector(".doc-card-img-wrap");
+            if (imgWrap) {
+              imgWrap.innerHTML = meta.imageUrl
+                ? `<img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName || ""}" loading="lazy">`
+                : `<div class="doc-card-img-placeholder">📁</div>`;
+            }
+
+            // ── Inject flyout buttons ──
+            const flyout = card.querySelector(".doc-card-flyout");
+            if (flyout) {
+              let flyoutInner = `<div class="dc-flyout-title">${meta.cardName || meta.menu || ""}</div>`;
+              if (buttons.length) {
+                flyoutInner += buttons.map(b => {
+                  if (b.type === "popup") {
+                    const safeData = encodeURIComponent(JSON.stringify({
+                      title: b.label,
+                      style: b.popupStyle || "list",
+                      items: b.popupItems || [],
+                      paired: b.popupPaired || { leftHeading:"", rightHeading:"", rows:[] }
+                    }));
+                    return `<button class="dc-flyout-btn dc-flyout-btn--popup"
+                              onclick="openDcPopup('${safeData}')">
+                              💬 ${b.label}
+                            </button>`;
+                  } else {
+                    return `<a class="dc-flyout-btn dc-flyout-btn--link"
+                              href="${b.url}" target="_blank">🔗 ${b.label}</a>`;
+                  }
+                }).join("");
+              } else {
+                flyoutInner += `<p class="dc-flyout-hint">No buttons configured yet.</p>`;
+              }
+              flyout.innerHTML = flyoutInner;
+            }
+          });
+
+          // ── Append any extra Firestore cards not in the hard-coded list ──
+          const hardNames = new Set(
+            Array.from(hardCards).map(c => c.getAttribute("data-card-name").trim().toUpperCase().replace(/\d+$/, ""))
+          );
+          dcSnap.forEach(d => {
+            const meta = d.data();
+            const key = (meta.cardName || meta.menu || "").trim().toUpperCase();
+            if (hardNames.has(key)) return; // already handled above
+
+            const buttons = Array.isArray(meta.buttons) ? meta.buttons.filter(b => b.label) : [];
+            let flyoutInner = `<div class="dc-flyout-title">${meta.cardName || meta.menu || ""}</div>`;
+            if (buttons.length) {
+              flyoutInner += buttons.map(b => {
+                if (b.type === "popup") {
+                  const safeData = encodeURIComponent(JSON.stringify({
+                    title: b.label, style: b.popupStyle || "list",
+                    items: b.popupItems || [],
+                    paired: b.popupPaired || { leftHeading:"", rightHeading:"", rows:[] }
+                  }));
+                  return `<button class="dc-flyout-btn dc-flyout-btn--popup" onclick="openDcPopup('${safeData}')">💬 ${b.label}</button>`;
+                } else {
+                  return `<a class="dc-flyout-btn dc-flyout-btn--link" href="${b.url}" target="_blank">🔗 ${b.label}</a>`;
+                }
+              }).join("");
+            } else {
+              flyoutInner += `<p class="dc-flyout-hint">No buttons configured yet.</p>`;
+            }
+
+            const imgSection = meta.imageUrl
+              ? `<div class="doc-card-img-wrap"><img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName || ""}" loading="lazy"></div>`
+              : `<div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>`;
+
+            const card = document.createElement("div");
+            card.className = "doc-card";
+            card.innerHTML = `
+              ${imgSection}
+              <div class="doc-card-body">
+                <div class="doc-card-title">${meta.cardName || meta.menu || ""}</div>
+                ${meta.menu ? `<div class="doc-card-desc">${meta.menu}</div>` : ""}
+              </div>
+              <div class="doc-card-flyout">${flyoutInner}</div>`;
+            existingGrid.appendChild(card);
+          });
+
+        } else {
+          // Fallback: existingGrid not found — build a fresh grid (original behaviour)
+          const grid = document.createElement("div");
+          grid.className = "doc-cards-grid";
+          dcSnap.forEach(d => {
+            const meta = d.data();
+            const buttons = Array.isArray(meta.buttons) ? meta.buttons.filter(b => b.label) : [];
+            let flyoutInner = `<div class="dc-flyout-title">${meta.cardName || meta.menu || ""}</div>`;
+            flyoutInner += buttons.length
+              ? buttons.map(b => b.type === "popup"
+                  ? `<button class="dc-flyout-btn dc-flyout-btn--popup" onclick="openDcPopup('${encodeURIComponent(JSON.stringify({ title:b.label, style:b.popupStyle||"list", items:b.popupItems||[], paired:b.popupPaired||{leftHeading:"",rightHeading:"",rows:[]} }))}')">💬 ${b.label}</button>`
+                  : `<a class="dc-flyout-btn dc-flyout-btn--link" href="${b.url}" target="_blank">🔗 ${b.label}</a>`).join("")
+              : `<p class="dc-flyout-hint">No buttons configured yet.</p>`;
+            const imgSection = meta.imageUrl
+              ? `<div class="doc-card-img-wrap"><img class="doc-card-img" src="${meta.imageUrl}" alt="${meta.cardName||""}" loading="lazy"></div>`
+              : `<div class="doc-card-img-wrap"><div class="doc-card-img-placeholder">📁</div></div>`;
+            const card = document.createElement("div");
+            card.className = "doc-card";
+            card.innerHTML = `${imgSection}<div class="doc-card-body"><div class="doc-card-title">${meta.cardName||meta.menu||""}</div>${meta.menu?`<div class="doc-card-desc">${meta.menu}</div>`:""}</div><div class="doc-card-flyout">${flyoutInner}</div>`;
+            grid.appendChild(card);
+          });
+          container.appendChild(grid);
+        }
       }
     } catch(e) {
-      container.innerHTML = `<p class="loading-text" style="color:red">Error loading cards: ${e.message}</p>`;
+      if (existingGrid) {
+        // Leave hard-coded shells visible even if Firestore fails
+        console.error("doc_cards load error:", e);
+      } else {
+        container.innerHTML = `<p class="loading-text" style="color:red">Error loading cards: ${e.message}</p>`;
+      }
     }
 
     // ─── Dynamic nav bar menus ───
-    // Remove placeholder; insert one <li> per unique menu value
+    // Map Firestore menu names → the hard-coded <li> IDs in the HTML.
+    // Any menu not matched gets appended as a new <li> (future-proof).
+    const MENU_ID_MAP = {
+      "ACT & RULE":        "nav-item-ACT_RULE",
+      "NOTIFICATION":      "nav-item-NOTIFICATION",
+      "CIRCULAR":          "nav-item-CIRCULAR",
+      "GST":               "nav-item-GST",
+      "FINANCE BILL & ACT":"nav-item-FINANCE_BILL_ACT",
+      "TAX RATE":          "nav-item-TAX_RATE",
+    };
+
     if (placeholder) placeholder.remove();
+
     menuOrder.forEach(menu => {
-      const li = document.createElement("li");
       const isTaxRate = menu.toUpperCase().includes("TAX RATE");
 
-      // Build subMenu columns: one mega-col per subMenu, See more after 10 items
-      const subMenus = Object.keys(groups[menu]).slice(0, 6); // cap at 6 columns
+      // Build subMenu columns: one mega-col per subMenu, capped at 6 columns, 10 items each
+      const subMenus = Object.keys(groups[menu]).slice(0, 6);
       const SHOW_MAX = 10;
       const colsHtml = subMenus.map(sub => {
         const allItems = groups[menu][sub];
@@ -1954,25 +2264,40 @@ async function loadNavLinks() {
         return `<div class="mega-col"><h4>${sub}</h4><ul>${visHtml}${hidHtml}</ul></div>`;
       }).join("");
 
-      if (isTaxRate) {
-        li.innerHTML = `
-          <span class="desktop-item nav-taxrate-btn">🧮 ${menu} ▾</span>
-          <div class="mega-box">
-            <div class="mega-content">${colsHtml}</div>
-          </div>`;
+      // Normalise the menu key for lookup (trim + collapse spaces)
+      const menuKey = menu.trim().replace(/\s+/g, " ").toUpperCase();
+      const matchedKey = Object.keys(MENU_ID_MAP).find(k => k.toUpperCase() === menuKey);
+      const existingLi = matchedKey ? document.getElementById(MENU_ID_MAP[matchedKey]) : null;
+
+      let li;
+      if (existingLi) {
+        // ── Populate the pre-rendered hard-coded <li> ──
+        li = existingLi;
+        const megaContent = li.querySelector(".mega-content");
+        if (megaContent) megaContent.innerHTML = colsHtml;
       } else {
-        li.innerHTML = `
-          <a class="desktop-item">${menu} ▾</a>
-          <div class="mega-box">
-            <div class="mega-content">${colsHtml}</div>
-          </div>`;
+        // ── New menu from Firestore not in the hard-coded list — append it ──
+        li = document.createElement("li");
+        if (isTaxRate) {
+          li.innerHTML = `
+            <span class="desktop-item nav-taxrate-btn">🧮 ${menu} ▾</span>
+            <div class="mega-box">
+              <div class="mega-content">${colsHtml}</div>
+            </div>`;
+        } else {
+          li.innerHTML = `
+            <a class="desktop-item" onclick="toggleMobileItem(this)">${menu} ▾</a>
+            <div class="mega-box">
+              <div class="mega-content">${colsHtml}</div>
+            </div>`;
+        }
+        navList.appendChild(li);
       }
 
-      // Clamp mega-box on mouseenter so we can measure actual rendered width
+      // ── Clamp mega-box on mouseenter so it never overflows viewport ──
       const box = li.querySelector(".mega-box");
       if (box) {
         li.addEventListener("mouseenter", function clampBox() {
-          // Temporarily make box measurable
           box.style.visibility = "hidden";
           box.style.opacity    = "0";
           box.style.display    = "block";
@@ -1988,30 +2313,24 @@ async function loadNavLinks() {
           const leftEdge  = liRect.right - boxW - MARGIN;
 
           if (rightEdge > vw && leftEdge < 0) {
-            // Too wide for either side — centre it under the nav item
             const centreOffset = (liRect.left + liRect.width / 2) - boxW / 2;
             const clamped = Math.max(MARGIN, Math.min(centreOffset, vw - boxW - MARGIN));
             box.style.left  = (clamped - liRect.left) + "px";
             box.style.right = "auto";
           } else if (rightEdge > vw) {
-            // Would overflow right — shift left by exact overhang
             const overhang = rightEdge - vw;
             box.style.left  = -overhang + "px";
             box.style.right = "auto";
           } else {
-            // Fits opening rightward from li
             box.style.left  = "0";
             box.style.right = "auto";
           }
 
-          // Restore
           box.style.visibility = "";
           box.style.opacity    = "";
           box.style.display    = "";
         });
       }
-
-      navList.appendChild(li);
     });
 
   } catch (e) {
