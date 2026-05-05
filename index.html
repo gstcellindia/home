@@ -701,7 +701,7 @@ nav .wrapper {
   padding: 2px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 3px;
   font-weight: 700; letter-spacing: 0.06em; font-family: var(--font-main);
 }
-.recent-item a { color: var(--link-color); text-decoration: none; font-weight: 500; }
+.recent-item a { color: var(--link-color); text-decoration: none; font-weight: 500; font-family: 'Times New Roman', Times, serif; }
 .recent-item a:hover { text-decoration: underline; }
 .see-more-btn {
   background: none; border: none; color: var(--nav-accent);
@@ -1842,7 +1842,7 @@ footer {
       <h2 style="color:#fff;font-size:1.6rem;font-family:'Times New Roman',serif;margin:0">📋 Terms &amp; Conditions / Disclaimer</h2>
       <button onclick="document.getElementById('tcOverlay').style.display='none'" style="background:none;border:none;color:#aaa;font-size:2rem;cursor:pointer;line-height:1">✕</button>
     </div>
-    <div style="padding:24px 28px;overflow-y:auto;font-family:'Times New Roman',serif;font-size:14px;line-height:1.8;color:#333">
+    <div style="padding:24px 28px;overflow-y:auto;font-family:'Times New Roman',serif;font-size:14px;line-height:1.8;color:#333;text-align:justify">
 
       <h3 style="color:#1a3a6b;margin-bottom:8px">1. Nature of this Website</h3>
       <p><strong>GSTCell (www.gstcell.com) is not a Government website.</strong> It is a privately owned and operated information platform maintained by <strong>Ashwin M Das</strong>, Kachani, Karakulam P O, Thiruvananthapuram. This website is not affiliated with, endorsed by, or connected to the Government of India, the Kerala Government, the Central Board of Indirect Taxes and Customs (CBIC), or the Kerala GST Department in any official capacity.</p>
@@ -2466,25 +2466,68 @@ async function loadNavLinks() {
         const allItems = groups[menu][sub];
         const visItems = allItems.slice(0, SHOW_MAX);
         const hidItems = allItems.slice(SHOW_MAX);
-        const visHtml = visItems
-          .map(item => `<li><a href="${item.url}" target="_blank">${item.name}</a></li>`)
-          .join("");
-        const hidHtml = hidItems.length
-          ? `<li class="mega-hidden-items" style="display:none">${
-              hidItems.map(item => `<a href="${item.url}" target="_blank" style="display:block;color:#b8bccf;font-size:12px;padding:4px 0;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#b8bccf'"><span style='color:var(--nav-accent);margin-right:5px'>›</span>${item.name}</a>`).join("")
-            }</li>
-            <li><a class="mega-see-more" onclick="this.closest('ul').querySelector('.mega-hidden-items').style.display='block';this.style.display='none'">See more »</a></li>`
-          : "";
-        return `<div class="mega-col"><div class="mega-col-header"><h4>${sub}</h4><button class="mega-col-toggle" onclick="toggleMegaCol(this)">+</button></div><ul>${visHtml}${hidHtml}</ul></div>`;
+
+        const col = document.createElement("div");
+        col.className = "mega-col";
+
+        const header = document.createElement("div");
+        header.className = "mega-col-header";
+        const h4 = document.createElement("h4");
+        h4.textContent = sub;
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = "mega-col-toggle";
+        toggleBtn.textContent = "+";
+        toggleBtn.addEventListener("click", function(){ toggleMegaCol(this); });
+        header.appendChild(h4);
+        header.appendChild(toggleBtn);
+        col.appendChild(header);
+
+        const ul = document.createElement("ul");
+        visItems.forEach(item => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = item.url; a.target = "_blank"; a.textContent = item.name;
+          li.appendChild(a); ul.appendChild(li);
+        });
+
+        if (hidItems.length) {
+          hidItems.forEach(item => {
+            const li = document.createElement("li");
+            li.style.display = "none";
+            li.className = "mega-hidden-item";
+            const a = document.createElement("a");
+            a.href = item.url; a.target = "_blank"; a.textContent = item.name;
+            li.appendChild(a); ul.appendChild(li);
+          });
+          const seeMoreLi = document.createElement("li");
+          const seeMoreA = document.createElement("a");
+          seeMoreA.className = "mega-see-more";
+          seeMoreA.textContent = "See more »";
+          seeMoreA.style.cursor = "pointer";
+          seeMoreA.addEventListener("click", function() {
+            ul.querySelectorAll(".mega-hidden-item").forEach(li => li.style.display = "");
+            seeMoreLi.remove();
+          });
+          seeMoreLi.appendChild(seeMoreA);
+          ul.appendChild(seeMoreLi);
+        }
+
+        col.appendChild(ul);
+        return col;   // returns DOM element
       }
 
-      // Split into chunks of COLS_PER_ROW, each chunk becomes one .mega-row
-      const colsHtml = [];
-      for (let i = 0; i < subMenus.length; i += COLS_PER_ROW) {
-        const chunk = subMenus.slice(i, i + COLS_PER_ROW);
-        colsHtml.push(`<div class="mega-row">${chunk.map(buildCol).join("")}</div>`);
+      // Build rows of COLS_PER_ROW, injecting DOM elements directly
+      function buildMegaContent() {
+        const content = document.createElement("div");
+        content.className = "mega-content";
+        for (let i = 0; i < subMenus.length; i += COLS_PER_ROW) {
+          const row = document.createElement("div");
+          row.className = "mega-row";
+          subMenus.slice(i, i + COLS_PER_ROW).forEach(sub => row.appendChild(buildCol(sub)));
+          content.appendChild(row);
+        }
+        return content;
       }
-      const allColsHtml = colsHtml.join("");
 
       // Normalise the menu key for lookup (trim + collapse spaces)
       const menuKey = menu.trim().replace(/\s+/g, " ").toUpperCase();
@@ -2496,7 +2539,7 @@ async function loadNavLinks() {
         // ── Populate the pre-rendered hard-coded <li> ──
         li = existingLi;
         const megaContent = li.querySelector(".mega-content");
-        if (megaContent) megaContent.innerHTML = allColsHtml;
+        if (megaContent) megaContent.replaceWith(buildMegaContent());
       } else {
         // ── New menu from Firestore not in the hard-coded list — append it ──
         li = document.createElement("li");
@@ -2504,17 +2547,14 @@ async function loadNavLinks() {
           li.innerHTML = `
             <span class="desktop-item nav-taxrate-btn">🧮 ${menu} ▾</span>
             <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand ${menu}">+</button>
-            <div class="mega-box">
-              <div class="mega-content">${allColsHtml}</div>
-            </div>`;
+            <div class="mega-box"></div>`;
         } else {
           li.innerHTML = `
             <a class="desktop-item">${menu} ▾</a>
             <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand ${menu}">+</button>
-            <div class="mega-box">
-              <div class="mega-content">${allColsHtml}</div>
-            </div>`;
+            <div class="mega-box"></div>`;
         }
+        li.querySelector(".mega-box").appendChild(buildMegaContent());
         navList.appendChild(li);
       }
 
