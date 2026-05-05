@@ -525,12 +525,12 @@ nav .wrapper {
 /* ── Mobile/Tablet: pill-button card grid ── */
 @media(max-width:900px){
   .three-col { flex-wrap: wrap; }
-  .col-quicklinks { width: 100%; order: 2; flex: none; }
+  .col-quicklinks { width: 100%; order: 2; flex: none; overflow-x: hidden; }
   .col-doclibrary { width: 100%; order: 1; flex: none; }
   .col-right { width: 100%; order: 3; }
 
   /* Quick Links section card becomes a pill grid */
-  .col-quicklinks .section-card { padding: 14px 12px; }
+  .col-quicklinks .section-card { padding: 14px 12px; box-sizing: border-box; overflow-x: hidden; }
 
   /* Each ql-group becomes a bordered card */
   .col-quicklinks .ql-group {
@@ -561,7 +561,9 @@ nav .wrapper {
     font-family: 'Times New Roman', Times, serif;
     font-weight: 700;
     border-left: none;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
     box-shadow: 0 2px 6px rgba(2,119,189,.3);
     transition: opacity .2s, transform .15s;
     box-sizing: border-box;
@@ -571,13 +573,19 @@ nav .wrapper {
   /* Group grid: 2 cols on mobile, 3 cols on tablet */
   .ql-groups-wrap {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .col-quicklinks .ql-group {
+    min-width: 0;
+    overflow: hidden;
   }
 }
 @media(min-width:601px) and (max-width:900px){
   .ql-groups-wrap {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
