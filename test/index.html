@@ -494,6 +494,8 @@ nav .wrapper {
   width: 300px;
   flex-shrink: 0;
 }
+
+/* ── Desktop Quick Links (sidebar list style) ── */
 .col-quicklinks .ql-group { margin-bottom: 10px; }
 .col-quicklinks .ql-group-title {
   font-size: 12px; font-weight: 700;
@@ -513,11 +515,64 @@ nav .wrapper {
 .col-quicklinks ul li a:hover {
   color: var(--nav-accent); border-left-color: var(--nav-accent);
 }
+
+/* ── Mobile/Tablet: pill-button card grid ── */
 @media(max-width:900px){
   .three-col { flex-wrap: wrap; }
-  .col-quicklinks { width: 100%; order: 3; }
+  .col-quicklinks { width: 100%; order: 2; flex: none; }
   .col-doclibrary { width: 100%; order: 1; flex: none; }
-  .col-right { width: 100%; order: 2; }
+  .col-right { width: 100%; order: 3; }
+
+  /* Quick Links section card becomes a pill grid */
+  .col-quicklinks .section-card { padding: 14px 12px; }
+
+  /* Each ql-group becomes a bordered card */
+  .col-quicklinks .ql-group {
+    border: 2px solid #2ecc40;
+    border-radius: 10px;
+    padding: 10px 12px 12px;
+    margin-bottom: 12px;
+    background: #fff;
+  }
+  .col-quicklinks .ql-group-title {
+    font-size: 15px; font-weight: 700;
+    font-family: 'Times New Roman', Times, serif;
+    color: #1a1a1a;
+    text-transform: none; letter-spacing: 0;
+    margin-bottom: 8px;
+  }
+  .col-quicklinks ul { display: flex; flex-wrap: wrap; gap: 7px; }
+  .col-quicklinks ul li { flex: none; width: 100%; }
+  .col-quicklinks ul li a {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
+    color: #fff !important;
+    border-radius: 30px;
+    font-size: 13px;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 700;
+    border-left: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(2,119,189,.3);
+    transition: opacity .2s, transform .15s;
+    box-sizing: border-box;
+  }
+  .col-quicklinks ul li a:hover { opacity: .88; transform: translateY(-1px); }
+
+  /* Group grid: 2 cols on mobile, 3 cols on tablet */
+  .ql-groups-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+@media(min-width:601px) and (max-width:900px){
+  .ql-groups-wrap {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ═══ SECTION CARDS ═══ */
@@ -1134,10 +1189,9 @@ footer {
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:780px){
-  .three-col { flex-wrap: wrap; }
-  .col-quicklinks { width: 100%; order: 3; }
+  .col-quicklinks { width: 100%; order: 2; }
   .col-doclibrary { width: 100%; order: 1; }
-  .col-right { width: 100%; order: 2; }
+  .col-right { width: 100%; order: 3; }
   .aiPopupMain, .aiPopupText { max-width: 95%; padding: 12px; }
 }
 @media(max-width:500px){
@@ -1251,6 +1305,7 @@ footer {
     <div class="col-quicklinks">
       <div class="section-card">
         <h2>🔗 Quick Links</h2>
+        <div class="ql-groups-wrap">
         <div class="ql-group">
           <div class="ql-group-title">Kerala Taxes</div>
           <ul>
@@ -1302,13 +1357,14 @@ footer {
             <li><a href="https://keralapsc.gov.in/rankedlist" target="_blank">Rank List</a></li>
           </ul>
         </div>
+        </div><!-- /ql-groups-wrap -->
       </div>
     </div><!-- /col-quicklinks -->
 
     <!-- COL 2: Document Library -->
     <div class="col-doclibrary">
       <div class="section-card">
-        <h2>📂 Document Library</h2>
+        <h2>📂 Library</h2>
         <div id="quick-links-container">
 
           <!-- ══════════════════════════════════════════════════════════
@@ -1630,7 +1686,7 @@ footer {
         <img src="https://lh3.googleusercontent.com/d/1VsL2VwLkoM_htKcGmVoOOmoWM_SzBXqH" alt="GSTCell">
         GSTCell
       </div>
-      <p>Kerala's trusted platform for GST professionals. Access Acts, Rules, Notifications, Circulars, Advance Rulings and AI-powered GST assistance.</p>
+      <p>A trusted platform for GST professionals. Access Acts, Rules, Notifications, Circulars, Advance Rulings and AI-powered GST assistance.</p>
       <button class="footer-share-btn" onclick="shareThisSite()">
         <i class="fas fa-share-alt"></i> Share this site
       </button>
@@ -1638,9 +1694,11 @@ footer {
 
     <!-- Contact column -->
     <div class="footer-col">
-      <h4>Contact Us</h4>
+      <h4>Owner / Contact</h4>
       <ul>
-        <li><a href="tel:9744012007"><i class="fas fa-phone"></i> 9744012007</a></li>
+        <li style="color:#ccc;font-size:1.25rem;line-height:1.6"><i class="fas fa-user" style="margin-right:6px"></i> Ashwin M Das</li>
+        <li style="color:#ccc;font-size:1.25rem;line-height:1.6"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i> Kachani, Karakulam P O, Thiruvananthapuram</li>
+        <li><a href="tel:9400096941"><i class="fas fa-phone"></i> 9400096941</a></li>
         <li><a href="mailto:gstcell.com@gmail.com"><i class="fas fa-envelope"></i> gstcell.com@gmail.com</a></li>
         <li><a href="https://www.gstcell.com" target="_blank"><i class="fas fa-globe"></i> www.gstcell.com</a></li>
       </ul>
@@ -1650,7 +1708,7 @@ footer {
     <div class="footer-col">
       <h4>Legal</h4>
       <ul>
-        <li><a href="#"><i class="fas fa-file-alt"></i> Terms &amp; Conditions</a></li>
+        <li><a href="#" onclick="document.getElementById('tcOverlay').style.display='flex';return false;"><i class="fas fa-file-alt"></i> Terms &amp; Conditions</a></li>
         <li><a href="https://www.gstcell.com" target="_blank"><i class="fas fa-external-link-alt"></i> Visit Website</a></li>
       </ul>
     </div>
@@ -1659,9 +1717,7 @@ footer {
   <hr class="footer-divider">
 
   <div class="footer-bottom">
-    <p>© 2026 GSTCell. All rights reserved.<br>
-       Powered by <strong>Firebase Firestore</strong> &nbsp;|&nbsp;
-       Kerala GST Department &nbsp;|&nbsp;
+    <p>© 2026 GSTCell. All rights reserved. &nbsp;|&nbsp;
        <a href="https://www.gstcell.com" target="_blank" style="color:var(--nav-green)">www.gstcell.com</a>
     </p>
     <div class="footer-socials">
@@ -1672,6 +1728,56 @@ footer {
     </div>
   </div>
 </footer>
+
+<!-- ████  TERMS & CONDITIONS MODAL  ████ -->
+<div id="tcOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:14px;max-width:680px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden">
+    <div style="background:#1c1f26;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <h2 style="color:#fff;font-size:1.6rem;font-family:'Times New Roman',serif;margin:0">📋 Terms &amp; Conditions / Disclaimer</h2>
+      <button onclick="document.getElementById('tcOverlay').style.display='none'" style="background:none;border:none;color:#aaa;font-size:2rem;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div style="padding:24px 28px;overflow-y:auto;font-family:'Times New Roman',serif;font-size:14px;line-height:1.8;color:#333">
+
+      <h3 style="color:#1a3a6b;margin-bottom:8px">1. Nature of this Website</h3>
+      <p><strong>GSTCell (www.gstcell.com) is not a Government website.</strong> It is a privately owned and operated information platform maintained by <strong>Ashwin M Das</strong>, Kachani, Karakulam P O, Thiruvananthapuram. This website is not affiliated with, endorsed by, or connected to the Government of India, the Kerala Government, the Central Board of Indirect Taxes and Customs (CBIC), or the Kerala GST Department in any official capacity.</p>
+
+      <h3 style="color:#1a3a6b;margin-top:18px;margin-bottom:8px">2. Disclaimer</h3>
+      <p>All information, documents, notifications, circulars, acts, rules, and other content made available on this website are provided for <strong>general information and reference purposes only</strong>. While every effort is made to ensure the accuracy and completeness of the content, <strong>GSTCell makes no warranty, express or implied</strong>, as to the accuracy, reliability, timeliness, or completeness of any information on this site.</p>
+      <p style="margin-top:10px"><strong>Users are strongly advised to verify and confirm all information with the data available on the official websites</strong>, including but not limited to:</p>
+      <ul style="margin:8px 0 10px 18px">
+        <li>Kerala GST Department – <a href="https://www.keralataxes.gov.in" target="_blank" style="color:#1a5cc8">www.keralataxes.gov.in</a></li>
+        <li>CBIC – <a href="https://www.cbic.gov.in" target="_blank" style="color:#1a5cc8">www.cbic.gov.in</a></li>
+        <li>GST Portal – <a href="https://www.gst.gov.in" target="_blank" style="color:#1a5cc8">www.gst.gov.in</a></li>
+        <li>eGazette India – <a href="https://egazette.gov.in" target="_blank" style="color:#1a5cc8">egazette.gov.in</a></li>
+      </ul>
+      <p>GSTCell shall not be held responsible or liable for any loss, damage, or inconvenience arising from reliance on information published on this website.</p>
+
+      <h3 style="color:#1a3a6b;margin-top:18px;margin-bottom:8px">3. Intellectual Property</h3>
+      <p>All original content, design, and code on this website are the intellectual property of GSTCell. Documents sourced from government portals remain the property of the respective government authorities and are reproduced here solely for ease of reference.</p>
+
+      <h3 style="color:#1a3a6b;margin-top:18px;margin-bottom:8px">4. External Links</h3>
+      <p>This website contains links to external websites. GSTCell does not control the content of those sites and accepts no responsibility for them or for any loss or damage that may arise from your use of them.</p>
+
+      <h3 style="color:#1a3a6b;margin-top:18px;margin-bottom:8px">5. Changes to Terms</h3>
+      <p>GSTCell reserves the right to modify these Terms &amp; Conditions at any time without prior notice. Continued use of the website constitutes acceptance of the revised terms.</p>
+
+      <h3 style="color:#1a3a6b;margin-top:18px;margin-bottom:8px">6. Contact</h3>
+      <p>For queries, please contact:<br>
+        <strong>Ashwin M Das</strong><br>
+        Kachani, Karakulam P O, Thiruvananthapuram<br>
+        📞 <a href="tel:9400096941" style="color:#1a5cc8">9400096941</a><br>
+        ✉️ <a href="mailto:gstcell.com@gmail.com" style="color:#1a5cc8">gstcell.com@gmail.com</a>
+      </p>
+
+      <p style="margin-top:20px;padding:12px;background:#fff8e1;border-left:4px solid #f0a500;border-radius:4px;font-size:13px">
+        <strong>⚠️ Important:</strong> This is not a Government website. All information herein must be confirmed with the data available on official government websites before being relied upon for any legal, financial, or administrative purpose.
+      </p>
+    </div>
+    <div style="padding:14px 28px;border-top:1px solid #eee;flex-shrink:0;text-align:right">
+      <button onclick="document.getElementById('tcOverlay').style.display='none'" style="background:#1a3a6b;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Times New Roman',serif">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- ████  AUTH MODAL  ████ -->
 <div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuthModal()">
