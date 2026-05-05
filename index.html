@@ -223,10 +223,17 @@ nav .wrapper {
 .mega-content {
   background: var(--nav-bg);
   border-top: 2px solid var(--nav-accent);
-  display: flex; gap: 0;
+  display: flex; flex-direction: column; gap: 0;
   padding: 14px 18px 16px;
   box-shadow: 0 10px 32px rgba(0,0,0,.3);
-  overflow-x: auto;
+}
+/* Each row of columns inside the mega-menu */
+.mega-row {
+  display: flex; flex-direction: row; gap: 0;
+}
+.mega-row + .mega-row {
+  border-top: 1px solid rgba(255,255,255,.07);
+  margin-top: 10px; padding-top: 4px;
 }
 /* Each column */
 .mega-col {
@@ -275,6 +282,10 @@ nav .wrapper {
   padding: 6px; line-height: 1; flex-shrink: 0;
 }
 
+/* + expand button — hidden on desktop, shown only in mobile drawer */
+.mob-expand-btn { display: none; }
+.mega-col-toggle { display: none; }
+
 /* ── Mobile drawer ── */
 @media (max-width: 860px) {
   .menu-toggle { display: block; }
@@ -294,7 +305,6 @@ nav .wrapper {
   }
   .wrapper .nav-links.mobile-open { display: flex; }
 
-  .nav-links > li { flex-direction: column; align-items: stretch; }
   .nav-links > li > a,
   .nav-links > li > .desktop-item {
     height: auto; padding: 13px 20px;
@@ -302,6 +312,53 @@ nav .wrapper {
     border-bottom: 1px solid rgba(255,255,255,.07);
     border-left: none;
   }
+
+  /* Mobile nav item row: heading + expand button as a flex row */
+  .nav-links > li { position: relative; }
+
+  /* Wrap the top-level label + button in a row */
+  .nav-links > li > a,
+  .nav-links > li > .desktop-item {
+    /* override the earlier padding-right; button is now in flow */
+    padding-right: 20px;
+  }
+
+  /* The li itself is already flex-column; we create an inner row
+     by making the label and button siblings inside a pseudo-row.
+     We achieve this by making the <li> itself a row for the first
+     two children (label + button), then stacking the mega-box below. */
+  .nav-links > li {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+  /* label takes all remaining width */
+  .nav-links > li > a,
+  .nav-links > li > .desktop-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  /* mega-box / drop-menu fills full row width below */
+  .nav-links > li > .mega-box,
+  .nav-links > li > .drop-menu {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  .mob-expand-btn {
+    display: flex;
+    align-items: center; justify-content: center;
+    flex: 0 0 48px;
+    width: 48px;
+    background: none; border: none;
+    border-left: 1px solid rgba(255,255,255,.10);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    color: #fff; font-size: 22px; line-height: 1;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .mob-expand-btn:hover { background: rgba(255,255,255,.08); }
+  .nav-links > li.mob-open .mob-expand-btn { color: var(--nav-accent); }
 
   /* In mobile, mega-box becomes inline expandable */
   .mega-box {
@@ -311,16 +368,45 @@ nav .wrapper {
   }
   .nav-links > li.mob-open .mega-box { display: block; }
   .mega-content {
-    flex-direction: column; gap: 0; padding: 8px 12px;
+    display: block; gap: 0; padding: 8px 12px;
     box-shadow: none; border-top: none;
     background: #0f1218;
+  }
+  .mega-row {
+    display: block;
+    border-top: none;
+    margin-top: 0; padding-top: 0;
   }
   .mega-col {
     min-width: unset; max-width: unset;
     padding: 10px 8px; border-right: none;
     border-bottom: 1px solid rgba(255,255,255,.06);
   }
-  .mega-col h4 { font-size: 13.33px; font-family: var(--font-nav); }
+  /* Each subMenu heading row: heading text + its own + button */
+  .mega-col-header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(224,53,53,.3); padding-bottom: 6px; margin-bottom: 8px;
+  }
+  .mega-col h4 {
+    border-bottom: none !important; padding-bottom: 0 !important; margin-bottom: 0 !important;
+    font-size: 13.33px; font-family: var(--font-nav);
+  }
+  .mega-col-toggle {
+    background: none; border: 1px solid rgba(224,53,53,.5);
+    color: var(--nav-accent); border-radius: 50%;
+    width: 22px; height: 22px; font-size: 16px; line-height: 1;
+    cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s;
+  }
+  .mega-col-toggle:hover { background: var(--nav-accent); color: #fff; }
+  .mega-col.col-open .mega-col-toggle { background: var(--nav-accent); color: #fff; }
+  .mega-col-toggle {
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Items hidden by default in mobile; shown when col-open */
+  .mega-col ul { display: none; }
+  .mega-col.col-open ul { display: block; }
   .mega-col ul li a { font-size: 14.67px; font-family: var(--font-nav); padding: 5px 0; white-space: normal; }
 
   .drop-menu {
@@ -1249,7 +1335,8 @@ footer {
       <!-- Dropdowns are populated dynamically by loadNavLinks()        -->
 
       <li id="nav-item-ACT_RULE">
-        <a class="desktop-item" onclick="toggleMobileItem(this)">ACT &amp; RULE ▾</a>
+        <a class="desktop-item">ACT &amp; RULE ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand ACT &amp; RULE">+</button>
         <div class="mega-box">
           <div class="mega-content">
             <span class="nav-loading">Loading…</span>
@@ -1258,7 +1345,8 @@ footer {
       </li>
 
       <li id="nav-item-NOTIFICATION">
-        <a class="desktop-item" onclick="toggleMobileItem(this)">NOTIFICATION ▾</a>
+        <a class="desktop-item">NOTIFICATION ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand NOTIFICATION">+</button>
         <div class="mega-box">
           <div class="mega-content">
             <span class="nav-loading">Loading…</span>
@@ -1267,7 +1355,8 @@ footer {
       </li>
 
       <li id="nav-item-CIRCULAR">
-        <a class="desktop-item" onclick="toggleMobileItem(this)">CIRCULAR ▾</a>
+        <a class="desktop-item">CIRCULAR ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand CIRCULAR">+</button>
         <div class="mega-box">
           <div class="mega-content">
             <span class="nav-loading">Loading…</span>
@@ -1276,7 +1365,8 @@ footer {
       </li>
 
       <li id="nav-item-GST">
-        <a class="desktop-item" onclick="toggleMobileItem(this)">GST ▾</a>
+        <a class="desktop-item">GST ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand GST">+</button>
         <div class="mega-box">
           <div class="mega-content">
             <span class="nav-loading">Loading…</span>
@@ -1285,7 +1375,8 @@ footer {
       </li>
 
       <li id="nav-item-FINANCE_BILL_ACT">
-        <a class="desktop-item" onclick="toggleMobileItem(this)">FINANCE BILL &amp; ACT ▾</a>
+        <a class="desktop-item">FINANCE BILL &amp; ACT ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand FINANCE BILL &amp; ACT">+</button>
         <div class="mega-box">
           <div class="mega-content">
             <span class="nav-loading">Loading…</span>
@@ -1295,6 +1386,7 @@ footer {
 
       <li id="nav-item-TAX_RATE">
         <span class="desktop-item nav-taxrate-btn">🧮 TAX RATE ▾</span>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand TAX RATE">+</button>
         <div class="mega-box">
           <div class="mega-content">
             <span class="nav-loading">Loading…</span>
@@ -2365,10 +2457,12 @@ async function loadNavLinks() {
     menuOrder.forEach(menu => {
       const isTaxRate = menu.toUpperCase().includes("TAX RATE");
 
-      // Build subMenu columns: one mega-col per subMenu, capped at 6 columns, 10 items each
-      const subMenus = Object.keys(groups[menu]).slice(0, 6);
+      // Build subMenu columns: chunk into rows of 6 so box width = content, no blank slots
+      const subMenus = Object.keys(groups[menu]);
+      const COLS_PER_ROW = 5;
       const SHOW_MAX = 10;
-      const colsHtml = subMenus.map(sub => {
+
+      function buildCol(sub) {
         const allItems = groups[menu][sub];
         const visItems = allItems.slice(0, SHOW_MAX);
         const hidItems = allItems.slice(SHOW_MAX);
@@ -2381,8 +2475,16 @@ async function loadNavLinks() {
             }</li>
             <li><a class="mega-see-more" onclick="this.closest('ul').querySelector('.mega-hidden-items').style.display='block';this.style.display='none'">See more »</a></li>`
           : "";
-        return `<div class="mega-col"><h4>${sub}</h4><ul>${visHtml}${hidHtml}</ul></div>`;
-      }).join("");
+        return `<div class="mega-col"><div class="mega-col-header"><h4>${sub}</h4><button class="mega-col-toggle" onclick="toggleMegaCol(this)">+</button></div><ul>${visHtml}${hidHtml}</ul></div>`;
+      }
+
+      // Split into chunks of COLS_PER_ROW, each chunk becomes one .mega-row
+      const colsHtml = [];
+      for (let i = 0; i < subMenus.length; i += COLS_PER_ROW) {
+        const chunk = subMenus.slice(i, i + COLS_PER_ROW);
+        colsHtml.push(`<div class="mega-row">${chunk.map(buildCol).join("")}</div>`);
+      }
+      const allColsHtml = colsHtml.join("");
 
       // Normalise the menu key for lookup (trim + collapse spaces)
       const menuKey = menu.trim().replace(/\s+/g, " ").toUpperCase();
@@ -2394,21 +2496,23 @@ async function loadNavLinks() {
         // ── Populate the pre-rendered hard-coded <li> ──
         li = existingLi;
         const megaContent = li.querySelector(".mega-content");
-        if (megaContent) megaContent.innerHTML = colsHtml;
+        if (megaContent) megaContent.innerHTML = allColsHtml;
       } else {
         // ── New menu from Firestore not in the hard-coded list — append it ──
         li = document.createElement("li");
         if (isTaxRate) {
           li.innerHTML = `
             <span class="desktop-item nav-taxrate-btn">🧮 ${menu} ▾</span>
+            <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand ${menu}">+</button>
             <div class="mega-box">
-              <div class="mega-content">${colsHtml}</div>
+              <div class="mega-content">${allColsHtml}</div>
             </div>`;
         } else {
           li.innerHTML = `
-            <a class="desktop-item" onclick="toggleMobileItem(this)">${menu} ▾</a>
+            <a class="desktop-item">${menu} ▾</a>
+            <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand ${menu}">+</button>
             <div class="mega-box">
-              <div class="mega-content">${colsHtml}</div>
+              <div class="mega-content">${allColsHtml}</div>
             </div>`;
         }
         navList.appendChild(li);
@@ -2684,21 +2788,22 @@ function toggleMobileMenu() {
   nl.classList.toggle("mobile-open");
 }
 
-// Mobile: tap nav items with submenus to expand/collapse
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("mainNav").addEventListener("click", e => {
-    // Only in mobile mode
-    if (window.innerWidth > 860) return;
-    const li = e.target.closest("li");
-    if (!li) return;
-    const hasSub = li.querySelector(".mega-box, .drop-menu");
-    if (!hasSub) return;
-    // Don't follow links when toggling submenu
-    if (e.target.tagName === "A" && e.target.closest(".mega-box, .drop-menu")) return;
-    e.preventDefault();
-    li.classList.toggle("mob-open");
-  });
-});
+// Toggle a top-level nav <li> open/closed via its + button
+function toggleMobileItem(btn) {
+  if (window.innerWidth > 860) return; // desktop: ignore
+  const li = btn.closest("li");
+  if (!li) return;
+  const isOpen = li.classList.toggle("mob-open");
+  btn.textContent = isOpen ? "−" : "+";
+}
+
+// Toggle an individual mega-col's sub-items via its + button
+function toggleMegaCol(btn) {
+  const col = btn.closest(".mega-col");
+  if (!col) return;
+  const isOpen = col.classList.toggle("col-open");
+  btn.textContent = isOpen ? "−" : "+";
+}
 function escHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
