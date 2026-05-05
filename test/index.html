@@ -140,7 +140,7 @@ nav .wrapper {
 .nav-links > li > a,
 .nav-links > li > .desktop-item {
   color: var(--nav-text); text-decoration: none;
-  font-size: 14.67px; font-weight: 400; letter-spacing: 0.09em;
+  font-size: 16px; font-weight: 400; letter-spacing: 0.09em;
   font-family: var(--font-nav);
   text-transform: uppercase; padding: 0 11px;
   display: flex; align-items: center; height: var(--nav-height);
@@ -157,7 +157,7 @@ nav .wrapper {
   border-radius: 6px !important;
   padding: 0 14px !important;
   height: 32px !important;
-  font-size: 11px !important;
+  font-size: 13px !important;
   font-weight: 400 !important;
   letter-spacing: 0.07em !important;
   border-bottom: none !important;
@@ -496,7 +496,7 @@ nav .wrapper {
 }
 .col-quicklinks .ql-group { margin-bottom: 10px; }
 .col-quicklinks .ql-group-title {
-  font-size: 1.05rem; font-weight: 700;
+  font-size: 12px; font-weight: 700;
   font-family: 'Times New Roman', Times, serif;
   color: var(--nav-accent);
   text-transform: uppercase; letter-spacing: 0.06em;
@@ -504,7 +504,7 @@ nav .wrapper {
 }
 .col-quicklinks ul { list-style: none; padding: 0; margin: 0; }
 .col-quicklinks ul li a {
-  display: block; font-size: 1.1rem; color: #2d2d3e;
+  display: block; font-size: 13px; color: #2d2d3e;
   font-family: 'Times New Roman', Times, serif;
   text-decoration: none; padding: 2px 0 2px 7px;
   border-left: 2px solid transparent;
@@ -1511,8 +1511,8 @@ footer {
         </div>
       </div>
 
-      <!-- Chat login prompt (shown when not logged in) -->
-      <div class="section-card" id="chatLoginPrompt" style="text-align:center;padding:20px">
+      <!-- Chat login prompt (shown when not logged in) — hidden from public -->
+      <div class="section-card" id="chatLoginPrompt" style="display:none;text-align:center;padding:20px">
         <p style="color:#666;font-size:1.3rem;margin-bottom:12px">
           <i class="fas fa-lock" style="color:#1a5cc8;margin-right:6px"></i>
           Please <strong>login</strong> to use the suggestion box.
@@ -2645,9 +2645,9 @@ function updateAuthUI(user) {
     adminLink.style.display = "none";
     window._chatUserName  = null;
     window._chatUserPhone = null;
-    // Hide chat, show login prompt
+    // Hide both chat widget and login prompt when logged out — suggestion box is invisible to public
     chatWidget.style.display  = "none";
-    chatPrompt.style.display  = "block";
+    chatPrompt.style.display  = "none";
     closeUserPanel();
   }
 }
