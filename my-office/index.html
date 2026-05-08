@@ -8,6 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- XLSX loaded with defer so it never blocks the page or inline script -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <style>
 /* ─── Variables ────────────────────────────────────────────────────────────── */
 :root{
@@ -162,7 +166,7 @@ td:last-child{border-right:none}
 td.num{text-align:right;color:#1d4ed8}
 td.gstin{color:var(--accent3);font-weight:600;letter-spacing:.3px;cursor:pointer;position:relative;transition:background .15s,color .15s;}
 td.gstin:hover{background:#d1fae5;color:#065f46;border-radius:4px;}
-td.gstin::after{content:'📤 Click to send to Sheet';position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#1e293b;color:#fff;font-size:10px;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;z-index:50;font-family:'JetBrains Mono',monospace;}
+td.gstin::after{content:'📤 Click to send to Firebase';position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#1e293b;color:#fff;font-size:10px;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;z-index:50;font-family:'JetBrains Mono',monospace;}
 td.gstin:hover::after{opacity:1;}
 td.gstin.sending{animation:pulse-gstin .6s infinite alternate;}
 @keyframes pulse-gstin{from{background:#d1fae5;}to{background:#6ee7b7;}}
@@ -274,34 +278,55 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
 /* ─── Login Page ────────────────────────────────────────────────────────────── */
 #pg-login{ min-height:calc(100vh - 60px); background:var(--bg) }
 .login-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;
-  padding:44px 40px 36px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(30,58,95,.10);
+  padding:44px 40px 36px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(30,58,95,.10);
   animation:fup .3s ease;text-align:center}
 .login-logo{width:64px;height:64px;background:linear-gradient(135deg,#1a56db,#6366f1);
   border-radius:16px;display:flex;align-items:center;justify-content:center;
   font-size:28px;font-weight:800;color:#fff;margin:0 auto 18px}
 .login-box h2{font-size:20px;font-weight:800;margin-bottom:4px}
 .login-box p{font-size:13px;color:var(--muted);margin-bottom:28px}
-.login-fld{margin-bottom:16px;text-align:left}
-.login-fld label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;
-  letter-spacing:.4px;color:var(--muted);text-transform:uppercase}
-.login-fld input{width:100%;background:#f8fafc;border:1.5px solid var(--border);
-  color:var(--text);border-radius:9px;padding:10px 14px;
-  font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;
-  transition:border-color .18s,box-shadow .18s}
-.login-fld input:focus{border-color:var(--accent);background:#fff;
-  box-shadow:0 0 0 3px rgba(26,86,219,.10)}
-.login-btn{width:100%;background:var(--accent);border:none;color:#fff;border-radius:9px;
-  padding:11px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
-  cursor:pointer;transition:all .18s;margin-top:6px;letter-spacing:.2px}
-.login-btn:hover{background:var(--accent-h);box-shadow:0 4px 14px rgba(26,86,219,.25)}
+.google-btn{width:100%;background:#fff;border:1.5px solid var(--border);color:#3c4043;
+  border-radius:9px;padding:12px 16px;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.google-btn:hover{border-color:#4285f4;box-shadow:0 2px 8px rgba(66,133,244,.18);background:#f8faff}
+.google-btn svg{flex-shrink:0}
+.login-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--muted);font-size:12px}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .login-err{background:#fff1f2;border:1px solid #fecdd3;color:#be123c;border-radius:8px;
-  padding:9px 13px;font-size:12px;margin-top:12px;display:none}
+  padding:9px 13px;font-size:12px;margin-top:12px;display:none;text-align:left}
+.login-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:8px;
+  padding:9px 13px;font-size:12px;margin-top:12px;display:none;text-align:left}
 .login-user-badge{display:inline-flex;align-items:center;gap:7px;background:#eff6ff;
   border:1px solid #bfdbfe;border-radius:20px;padding:4px 13px 4px 8px;
   font-size:12px;font-weight:700;color:var(--accent);margin-left:auto;cursor:pointer;
   transition:all .15s}
 .login-user-badge:hover{background:#dbeafe}
 .login-user-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--accent3)}
+
+/* ─── User Management Panel ─────────────────────────────────────────────────── */
+.um-panel{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:24px;margin-top:24px;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.um-panel h3{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.um-add{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:flex-end}
+.um-add input,.um-add select{background:#f8fafc;border:1.5px solid var(--border);color:var(--text);
+  border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;
+  outline:none;transition:border-color .18s}
+.um-add input{flex:1;min-width:200px}
+.um-add input:focus,.um-add select:focus{border-color:var(--accent)}
+.um-add select{min-width:130px}
+.um-table{width:100%;border-collapse:collapse;font-size:12px}
+.um-table th{background:#f1f5f9;padding:8px 12px;text-align:left;font-size:11px;
+  color:var(--muted);font-weight:700;letter-spacing:.3px;border-bottom:1px solid var(--border)}
+.um-table td{padding:9px 12px;border-bottom:1px solid #f1f5f9;font-family:'JetBrains Mono',monospace}
+.um-table tr:last-child td{border-bottom:none}
+.um-table tr:hover td{background:#f8fafc}
+.role-badge{display:inline-block;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:700}
+.role-admin{background:#eff6ff;color:var(--accent)}
+.role-user{background:#f0fdf4;color:var(--accent3)}
+.um-del{background:none;border:1px solid #fecdd3;color:var(--danger);border-radius:5px;
+  padding:3px 9px;font-size:11px;cursor:pointer;transition:all .14s}
+.um-del:hover{background:#fff1f2}
 </style>
 </head>
 <body>
@@ -331,20 +356,15 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
 <div class="pg on" id="pg-login">
   <div id="pg-login-inner" style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px)">
     <div class="login-box">
-      <div class="login-logo">G</div>
+      <div class="login-logo">🏛️</div>
       <h2>GST Data Manager</h2>
-      <p>Sign in to continue to your dashboard</p>
-      <div class="login-fld">
-        <label>Username</label>
-        <input type="text" id="login-user" placeholder="Enter username" autocomplete="username" />
-      </div>
-      <div class="login-fld">
-        <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password"
-               onkeydown="if(event.key==='Enter')doLogin()" />
-      </div>
-      <button class="login-btn" onclick="doLogin()">Sign In →</button>
-      <div class="login-err" id="login-err">⚠️ Invalid username or password.</div>
+      <p>Sign in with your authorised Google account to continue</p>
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        Sign in with Google
+      </button>
+      <div class="login-err" id="login-err"></div>
+      <div class="login-info" id="login-info">⏳ Signing you in…</div>
     </div>
   </div>
 </div>
@@ -354,10 +374,10 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
   <div class="main">
     <div class="hero">
       <h2>Choose Your <em>Data Source</em></h2>
-      <p>Import taxpayer data from a local Excel file, or connect directly to your Google Spreadsheet to read any sheet tab.</p>
+      <p>Import taxpayer data from a local Excel file, or connect directly to your Firebase database to read and manage data.</p>
     </div>
-    <div class="cards">
-      <div class="card" onclick="goToViewer()">
+    <div class="cards" id="home-cards">
+      <div class="card" id="card-upload" onclick="goToViewer()" style="display:none">
         <div class="cico cb">📊</div>
         <h3>Upload Excel File</h3>
         <p>Import a local .xlsx / .xls file. Supports all GST portal reports including GSTR-3B, Active, Suspended, Cancelled, Defaulter.</p>
@@ -366,8 +386,14 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
       <div class="card" onclick="goTo('pg-reports')">
         <div class="cico cg">📋</div>
         <h3>Live Report</h3>
-        <p>View, search, sort, edit and download all records from your Google Sheet in a full paginated table.</p>
-        <span class="ctag g">Live Data · Edit · Download</span>
+        <p>View, search, sort, edit and download all records from your Firebase database in a full paginated table.</p>
+        <span class="ctag g">Firebase · Edit · Download</span>
+      </div>
+      <div class="card" id="card-users" onclick="goTo('pg-users')" style="display:none">
+        <div class="cico" style="background:linear-gradient(135deg,#f3e8ff,#ede9fe)">👥</div>
+        <h3>Manage Users</h3>
+        <p>Add or remove authorised users, assign admin or normal roles to control access.</p>
+        <span class="ctag" style="background:#f5f3ff;color:var(--accent2)">Admin Only</span>
       </div>
     </div>
   </div>
@@ -397,8 +423,8 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
   <div class="main">
     <button class="back" onclick="goTo('pg-home')">← Home</button>
     <div class="gsp">
-      <h2>📊 Fetch from Google Sheet</h2>
-      <p>Select a sheet tab to load data directly from the connected Google Spreadsheet.</p>
+      <h2>📊 Fetch from Firebase</h2>
+      <p>Select a sheet tab to load data directly from your Firebase database.</p>
       <input type="hidden" id="api-url-input" />
       <div id="api-saved" style="display:none"></div>
       <div class="fld">
@@ -423,10 +449,10 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px">
       <div>
         <h2 style="font-size:22px;font-weight:800">📊 <em style="color:var(--accent);font-style:normal">Live</em> Report</h2>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px">Fetched directly from Google Sheet · sorted by sheet order</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Fetched directly from Firebase · sorted by sheet order</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <button class="btn" id="lr-refresh-btn" onclick="loadLiveReport(true)" title="Refresh from Google Sheet">🔄 Refresh</button>
+        <button class="btn" id="lr-refresh-btn" onclick="loadLiveReport(true)" title="Refresh from Firebase">🔄 Refresh</button>
         <button class="btn" onclick="openDownloadModal()" title="Download PDF or Excel">⬇ Download</button>
       </div>
     </div>
@@ -502,7 +528,7 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
 
     <div class="tw">
       <div class="ts" id="lr-tblwrap">
-        <div class="loading"><div class="sp"></div>Loading from Google Sheet…</div>
+        <div class="loading"><div class="sp"></div>Loading from Firebase…</div>
       </div>
       <div class="pgn" id="lr-pgn" style="display:none">
         <div class="pi" id="lr-pinfo">—</div>
@@ -512,6 +538,37 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
 
     <!-- Update notification bar -->
     <div id="lr-update-bar" style="display:none;align-items:center;gap:14px;background:#dcfce7;border:2px solid #86efac;border-radius:10px;padding:12px 18px;margin-top:12px;font-size:13px;font-family:'JetBrains Mono',monospace;color:#15803d"></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 5 – USER MANAGEMENT (Admin only) ══════════════════════════════ -->
+<div class="pg" id="pg-users">
+  <div class="main">
+    <button class="back" onclick="goTo('pg-home')">← Home</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div>
+        <h2 style="font-size:22px;font-weight:800">👥 User Management</h2>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">Add / remove authorised users · Admin only</div>
+      </div>
+    </div>
+
+    <div class="um-panel">
+      <h3>➕ Add New User</h3>
+      <div class="um-add">
+        <input type="email" id="um-email" placeholder="user@example.com" />
+        <select id="um-role">
+          <option value="admin">Admin (Full Access)</option>
+          <option value="user" selected>Normal User (Live Report only)</option>
+        </select>
+        <button class="btn pr" onclick="umAddUser()" style="white-space:nowrap;padding:8px 18px">Add User</button>
+      </div>
+      <div id="um-msg" style="font-size:12px;margin-bottom:14px"></div>
+
+      <h3 style="margin-top:8px">📋 Authorised Users</h3>
+      <div id="um-list" style="overflow-x:auto">
+        <div class="loading"><div class="sp"></div>Loading users…</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -625,62 +682,487 @@ mark{background:#fde68a;color:#92400e;border-radius:2px;padding:0 1px}
      JAVASCRIPT
 ═══════════════════════════════════════════════════════════════════════════ -->
 <script>
-// ─── USER CONFIG ─────────────────────────────────────────────────────────────
-var USERS = {
-  'kannurnorth': { password: 'north123', api: 'https://script.google.com/macros/s/AKfycbxLVNZqbacxHrPOw98D36uFi6sshFI3IeX4fqWvM4ZXR0ra3aZt_87dPJcZau8qpknX/exec', label: 'Kannur North' },
-  'kannursouth': { password: 'south 123', api: 'https://script.google.com/macros/s/BBfycbz6SOpVmvWm3McqzZSwpeOwUlaXGamO_VQCJRiozWCQg-RDp9JLIF5coJPmVo5XCgVR/exec', label: 'Kannur South' }
+// ─── FIREBASE CONFIG ──────────────────────────────────────────────────────────
+var firebaseConfig = {
+  apiKey: "AIzaSyDio2h42TUmtINP2vlNwiSPbus3cpMAIsw",
+  authDomain: "kannurnorth-68637.firebaseapp.com",
+  projectId: "kannurnorth-68637",
+  storageBucket: "kannurnorth-68637.firebasestorage.app",
+  messagingSenderId: "237233866907",
+  appId: "1:237233866907:web:7838481f40c2d1ccf1de3e",
+  measurementId: "G-33PRHEQNJ7"
 };
+firebase.initializeApp(firebaseConfig);
+var db   = firebase.firestore();
+var auth = firebase.auth();
+
+// ─── HARDCODED SEED USERS (bootstrapped into Firestore on first run) ──────────
+// After first run these live in Firestore; admin can add/remove from UI.
+var SEED_USERS = [
+  { email: 'la.binu@gmail.com',          role: 'admin' },
+  { email: 'dept.exam.psc@gmail.com',    role: 'admin' },
+  { email: 'sgstkannurnorth@gmail.com',  role: 'user'  },
+  { email: 'binula.ctd@kerala.gov.in',   role: 'user'  }
+];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 var wb=null, curSheet='', rawData=[], headers=[], filtered=[];
 var sortCol=-1, sortDir='asc', curPage=1, rpp=50;
 var fileName='', srcType='', apiUrl='';
 var gsSheetNames=[];
-var currentUser = null;
+var _usedC=[];
+var currentUser   = null;   // Firestore user key (email)
+var currentRole   = null;   // 'admin' | 'user'
+var currentEmail  = null;
+
+// ─── AUTH HELPERS ─────────────────────────────────────────────────────────────
+function seedUsersIfNeeded() {
+  // Seed SEED_USERS into Firestore/app_users if doc missing
+  var batch = db.batch();
+  var seeded = false;
+  return Promise.all(SEED_USERS.map(function(u) {
+    var id = u.email.replace(/[.@]/g, '_');
+    var ref = db.collection('app_users').doc(id);
+    return ref.get().then(function(snap) {
+      if (!snap.exists) {
+        batch.set(ref, { email: u.email, role: u.role, addedAt: new Date().toISOString() });
+        seeded = true;
+      }
+    });
+  })).then(function() {
+    return seeded ? batch.commit() : Promise.resolve();
+  });
+}
+
+function getUserRole(email) {
+  var id = email.replace(/[.@]/g, '_');
+  return db.collection('app_users').doc(id).get().then(function(snap) {
+    if (!snap.exists) return null;
+    return snap.data().role || null;
+  });
+}
+
+// ─── GOOGLE LOGIN ─────────────────────────────────────────────────────────────
+function doGoogleLogin() {
+  var infoEl = document.getElementById('login-info');
+  var errEl  = document.getElementById('login-err');
+  infoEl.style.display = 'block';
+  infoEl.textContent   = '⏳ Opening Google sign-in…';
+  errEl.style.display  = 'none';
+
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(function(result) {
+      var email = result.user.email;
+      infoEl.textContent = '⏳ Checking access for ' + email + '…';
+      return seedUsersIfNeeded().then(function() {
+        return getUserRole(email);
+      }).then(function(role) {
+        infoEl.style.display = 'none';
+        if (!role) {
+          auth.signOut();
+          errEl.style.display = 'block';
+          errEl.textContent = '⛔ Access denied. Your account (' + email + ') is not authorised. Please contact the administrator.';
+          return;
+        }
+        _onLoginSuccess(email, role, result.user.displayName || email);
+      });
+    })
+    .catch(function(err) {
+      infoEl.style.display = 'none';
+      errEl.style.display = 'block';
+      if (err.code === 'auth/popup-closed-by-user') {
+        errEl.textContent = '⚠️ Sign-in cancelled.';
+      } else {
+        errEl.textContent = '❌ ' + (err.message || 'Sign-in failed.');
+      }
+    });
+}
+
+function _onLoginSuccess(email, role, displayName) {
+  currentEmail = email;
+  currentUser  = email; // used as Firestore user key
+  currentRole  = role;
+  apiUrl       = 'firebase';
+
+  document.getElementById('user-badge').style.display = 'flex';
+  document.getElementById('user-badge-name').textContent = displayName;
+
+  // Show/hide home cards based on role
+  document.getElementById('card-upload').style.display = (role === 'admin') ? '' : 'none';
+  document.getElementById('card-users').style.display  = (role === 'admin') ? '' : 'none';
+
+  goTo('pg-home');
+  fetchSheetNames();
+}
+
+function doLogout() {
+  auth.signOut().then(function() {
+    currentUser  = null;
+    currentRole  = null;
+    currentEmail = null;
+    apiUrl = '';
+    wb = null; rawData = []; headers = []; filtered = [];
+    gsSheetNames = [];
+    document.getElementById('user-badge').style.display = 'none';
+    document.getElementById('user-badge-name').textContent = '—';
+    var errEl = document.getElementById('login-err');
+    if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+    var infoEl = document.getElementById('login-info');
+    if (infoEl) { infoEl.style.display = 'none'; }
+    document.getElementById('upload-prompt').style.display = 'block';
+    document.getElementById('viewer-content').style.display = 'none';
+    goToLoginPage();
+  });
+}
+
+// ─── USER MANAGEMENT (Admin) ──────────────────────────────────────────────────
+function umLoadUsers() {
+  var el = document.getElementById('um-list');
+  el.innerHTML = '<div class="loading"><div class="sp"></div>Loading…</div>';
+  db.collection('app_users').orderBy('addedAt').get().then(function(snap) {
+    if (snap.empty) { el.innerHTML = '<p style="color:var(--muted);font-size:13px">No users yet.</p>'; return; }
+    var h = '<table class="um-table"><thead><tr><th>#</th><th>Email</th><th>Role</th><th>Added</th><th></th></tr></thead><tbody>';
+    var i = 0;
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      i++;
+      var roleBadge = d.role === 'admin'
+        ? '<span class="role-badge role-admin">Admin</span>'
+        : '<span class="role-badge role-user">Normal User</span>';
+      var added = d.addedAt ? d.addedAt.substring(0,10) : '—';
+      var isMe = (d.email === currentEmail);
+      h += '<tr><td class="rn">' + i + '</td>'
+        + '<td>' + d.email + (isMe ? ' <span style="font-size:10px;color:var(--accent3)">(you)</span>' : '') + '</td>'
+        + '<td>' + roleBadge + '</td>'
+        + '<td style="color:var(--muted)">' + added + '</td>'
+        + '<td>' + (isMe ? '' : '<button class="um-del" onclick="umDeleteUser(\'' + doc.id + '\',\'' + d.email + '\')">✕ Remove</button>') + '</td>'
+        + '</tr>';
+    });
+    h += '</tbody></table>';
+    el.innerHTML = h;
+  }).catch(function(e) {
+    el.innerHTML = '<div class="err">⚠️ ' + e.message + '</div>';
+  });
+}
+
+function umAddUser() {
+  var email = (document.getElementById('um-email').value || '').trim().toLowerCase();
+  var role  = document.getElementById('um-role').value;
+  var msg   = document.getElementById('um-msg');
+  if (!email || !email.includes('@')) {
+    msg.style.color = 'var(--danger)'; msg.textContent = '⚠️ Enter a valid email address.'; return;
+  }
+  msg.style.color = 'var(--accent)'; msg.textContent = '⏳ Adding…';
+  var id = email.replace(/[.@]/g, '_');
+  db.collection('app_users').doc(id).set({
+    email: email, role: role, addedAt: new Date().toISOString()
+  }).then(function() {
+    msg.style.color = 'var(--accent3)';
+    msg.textContent = '✅ ' + email + ' added as ' + role + '.';
+    document.getElementById('um-email').value = '';
+    umLoadUsers();
+  }).catch(function(e) {
+    msg.style.color = 'var(--danger)'; msg.textContent = '❌ ' + e.message;
+  });
+}
+
+function umDeleteUser(docId, email) {
+  if (!confirm('Remove ' + email + ' from authorised users?')) return;
+  db.collection('app_users').doc(docId).delete().then(function() {
+    showToast('✅ ' + email + ' removed.', 'tok');
+    umLoadUsers();
+  }).catch(function(e) {
+    showToast('❌ ' + e.message, 'terr');
+  });
+}
+// Each user's data lives in:
+//   db.collection('users').doc(userKey).collection('gst_records') — one doc per GSTIN
+//   db.collection('users').doc(userKey).collection('metadata').doc('sheet_names')
+// Each gst_record doc has fields matching the column indices 0–N, plus _rowOrder (number).
+
+function fbCol(sub) {
+  var key = (currentUser || 'unknown').replace(/[.@]/g, '_');
+  return db.collection('users').doc(key).collection(sub);
+}
+
+// Fetch all sheet (collection) names stored in metadata
+function fbGetSheetNames() {
+  return fbCol('metadata').doc('sheet_names').get().then(function(snap) {
+    if (!snap.exists) return [];
+    var d = snap.data();
+    return d.names || [];
+  });
+}
+
+// Save / overwrite sheet names list
+function fbSaveSheetNames(names) {
+  return fbCol('metadata').doc('sheet_names').set({ names: names });
+}
+
+// ── CHUNKED STORAGE ─────────────────────────────────────────────────────────
+// Firestore max doc = 1 MB. Rows are split across chunk docs + JSON-stringified.
+//   sheets/{name}          -> { headers:[], chunkCount:N }
+//   sheets/{name}_chunk_0  -> { rows: ["[...]",...] }  etc.
+var FB_CHUNK_SIZE = 400;
+
+function fbGetSheetData(sheetName) {
+  return fbCol('sheets').doc(sheetName).get().then(function(snap) {
+    if (!snap.exists) return { headers: [], rows: [] };
+    var meta = snap.data();
+    var headers = meta.headers || [];
+    var chunkCount = meta.chunkCount || 0;
+    if (!chunkCount && meta.rows) {
+      var legacyRows = (meta.rows || []).map(function(r) {
+        if (typeof r === 'string') { try { return JSON.parse(r); } catch(e) { return []; } }
+        return r;
+      });
+      return { headers: headers, rows: legacyRows };
+    }
+    if (chunkCount === 0) return { headers: headers, rows: [] };
+    var p = [];
+    for (var i = 0; i < chunkCount; i++) p.push(fbCol('sheets').doc(sheetName + '_chunk_' + i).get());
+    return Promise.all(p).then(function(snaps) {
+      var rows = [];
+      snaps.forEach(function(cs) {
+        if (!cs.exists) return;
+        (cs.data().rows || []).forEach(function(r) {
+          if (typeof r === 'string') { try { rows.push(JSON.parse(r)); } catch(e) {} } else rows.push(r);
+        });
+      });
+      return { headers: headers, rows: rows };
+    });
+  });
+}
+
+function fbSetSheetData(sheetName, data) {
+  var rows = data.rows || [], headers = data.headers || [], chunks = [];
+  for (var i = 0; i < rows.length; i += FB_CHUNK_SIZE) chunks.push(rows.slice(i, i + FB_CHUNK_SIZE));
+  if (!chunks.length) chunks = [[]];
+  var wp = chunks.map(function(cr, idx) {
+    return fbCol('sheets').doc(sheetName + '_chunk_' + idx).set({ rows: cr.map(function(r) { return JSON.stringify(r); }) });
+  });
+  return Promise.all(wp).then(function() {
+    return fbCol('sheets').doc(sheetName).set({ headers: headers, chunkCount: chunks.length });
+  });
+}
+
+// getReportData — reads the primary "Active" sheet for the live report
+function fbGetReportData() {
+  // Try to read from a dedicated "report" document first, then fall back to first sheet
+  return fbGetSheetNames().then(function(names) {
+    var target = names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      return { ok: true, data: data };
+    });
+  });
+}
+
+// appendRow — add a new row to the Active sheet document
+function fbAppendRow(gstin, rowData, colHeaders) {
+  return fbGetSheetNames().then(function(names) {
+    var target = names.find(function(n){ return /active/i.test(n); }) || names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      // Check duplicate
+      var gstinColIdx = colHeaders.indexOf(colHeaders.find(function(h){ return /gstin/i.test(h); }));
+      var exists = data.rows.some(function(r){ return (r[gstinColIdx]||'').trim() === gstin; });
+      if (exists) return { ok: true, skipped: true };
+      // Auto serial: set col A = last row's col A + 1
+      var lastSerial = 0;
+      if (data.rows.length > 0) {
+        var last = parseInt(data.rows[data.rows.length-1][0]);
+        if (!isNaN(last)) lastSerial = last;
+      }
+      rowData[0] = String(lastSerial + 1);
+      // Col S (index 18): copy from row (newIndex - 4)
+      var newIdx = data.rows.length;
+      if (newIdx >= 4) rowData[18] = data.rows[newIdx-4][18] || '';
+      data.rows.push(rowData);
+      return fbSetSheetData(target, data).then(function(){ return { ok: true, skipped: false }; });
+    });
+  });
+}
+
+// updateRow — update specific cells in a sheet row by 1-based sheet row number
+function fbUpdateRow(sheetRow, updates) {
+  return fbGetSheetNames().then(function(names) {
+    var target = names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      var rowIdx = sheetRow - 2; // header=row1, data starts at row2 → index 0
+      if (rowIdx < 0 || rowIdx >= data.rows.length) return { ok: false, error: 'Row not found' };
+      updates.forEach(function(u) {
+        data.rows[rowIdx][u.col - 1] = u.value; // col is 1-based
+      });
+      return fbSetSheetData(target, data).then(function(){ return { ok: true }; });
+    });
+  });
+}
+
+// syncActive — append new GSTINs not already present
+function fbSyncActive(allRows, gstinColIdx, colHeaders) {
+  return fbGetSheetNames().then(function(names) {
+    var target = names.find(function(n){ return /active/i.test(n); }) || names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      var existingGstins = {};
+      data.rows.forEach(function(r){ existingGstins[(r[gstinColIdx]||'').trim().toUpperCase()] = true; });
+      var added = 0, skipped = 0;
+      allRows.forEach(function(row) {
+        var g = (row[gstinColIdx]||'').trim().toUpperCase();
+        if (!g || existingGstins[g]) { skipped++; return; }
+        data.rows.push(row.slice());
+        existingGstins[g] = true;
+        added++;
+      });
+      if (!data.headers || !data.headers.length) data.headers = colHeaders;
+      // Save updated sheet names list if this is a new sheet
+      return fbSetSheetData(target, data).then(function(){
+        if (names.indexOf(target) === -1) {
+          names.push(target);
+          return fbSaveSheetNames(names);
+        }
+      }).then(function(){ return { ok: true, data: { added: added, skipped: skipped, total: allRows.length } }; });
+    });
+  });
+}
+
+// syncCancelled — mark matching rows as CANCELLED in col Q (index 16)
+function fbSyncCancelled(allRows, gstinColIdx) {
+  return fbGetSheetNames().then(function(names) {
+    var target = names.find(function(n){ return /active/i.test(n); }) || names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      var cancelGstins = {};
+      allRows.forEach(function(r){ cancelGstins[(r[gstinColIdx]||'').trim().toUpperCase()] = true; });
+      var cancelled = 0, skipped = 0;
+      data.rows.forEach(function(r) {
+        var g = (r[gstinColIdx]||'').trim().toUpperCase();
+        if (cancelGstins[g]) {
+          if ((r[16]||'').toUpperCase() !== 'CANCELLED') { r[16] = 'CANCELLED'; cancelled++; }
+          else skipped++;
+        }
+      });
+      return fbSetSheetData(target, data).then(function(){
+        return { ok: true, data: { cancelled: cancelled, skipped: skipped, total: allRows.length } };
+      });
+    });
+  });
+}
+
+// syncSuspended — clear col P (index 15), set col P = SUSPENDED for matching GSTINs
+function fbSyncSuspended(allRows, gstinColIdx) {
+  return fbGetSheetNames().then(function(names) {
+    var target = names.find(function(n){ return /active/i.test(n); }) || names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      var suspGstins = {};
+      allRows.forEach(function(r){ suspGstins[(r[gstinColIdx]||'').trim().toUpperCase()] = true; });
+      // Clear all col P first
+      data.rows.forEach(function(r){ r[15] = ''; });
+      var suspended = 0, skipped = 0;
+      data.rows.forEach(function(r) {
+        var g = (r[gstinColIdx]||'').trim().toUpperCase();
+        if (suspGstins[g]) { r[15] = 'SUSPENDED'; suspended++; }
+      });
+      skipped = allRows.length - suspended;
+      return fbSetSheetData(target, data).then(function(){
+        return { ok: true, data: { suspended: suspended, skipped: skipped, total: allRows.length } };
+      });
+    });
+  });
+}
+
+// sync3BNonFilers — update col T (index 19) and col U (index 20) for matching GSTINs
+function fbSync3BNonFilers(rows3b) {
+  // rows3b: [[gstin, defaulterCount, sgstPaid], ...]
+  return fbGetSheetNames().then(function(names) {
+    var target = names.find(function(n){ return /active/i.test(n); }) || names[0] || 'Active';
+    return fbGetSheetData(target).then(function(data) {
+      // First clear cols T & U
+      data.rows.forEach(function(r){ r[19] = ''; r[20] = ''; });
+      var map = {};
+      rows3b.forEach(function(r){ map[(r[0]||'').trim().toUpperCase()] = r; });
+      var updated = 0, skipped = 0;
+      data.rows.forEach(function(r) {
+        var g = (r[1]||'').trim().toUpperCase(); // GSTIN is col B = index 1
+        if (map[g]) { r[19] = map[g][1]; r[20] = map[g][2]; updated++; }
+        else skipped++;
+      });
+      return fbSetSheetData(target, data).then(function(){
+        return { ok: true, data: { updated: updated, skipped: skipped, total: rows3b.length } };
+      });
+    });
+  });
+}
+
+// Store sync job chunks in memory (replacing Apps Script chunked upload)
+var _syncJobChunks = {};  // jobId -> {chunks:[], mode:'', gstinColIdx:0, colHeaders:[]}
+
+// Firebase-backed gasPost replacement: routes by action
+function gasPost(payload) {
+  var action = payload.action;
+
+  if (action === 'getSheetNames') {
+    return fbGetSheetNames().then(function(names) {
+      if (!names.length) names = ['Active'];
+      return { ok: true, data: names };
+    });
+  }
+
+  if (action === 'getSheetData') {
+    return fbGetSheetData(payload.sheet).then(function(data) {
+      return { ok: true, data: data };
+    });
+  }
+
+  if (action === 'getReportData') {
+    return fbGetReportData();
+  }
+
+  if (action === 'appendRow') {
+    return fbAppendRow(payload.gstin, payload.rowData, payload.headers);
+  }
+
+  if (action === 'updateRow') {
+    return fbUpdateRow(payload.sheetRow, payload.updates);
+  }
+
+  if (action === 'uploadChunk') {
+    var jid = payload.jobId;
+    if (!_syncJobChunks[jid]) _syncJobChunks[jid] = { chunks: [] };
+    _syncJobChunks[jid].chunks[payload.chunkIdx] = payload.chunk;
+    return Promise.resolve({ ok: true });
+  }
+
+  if (action === 'finalizeSync') {
+    var jid = payload.jobId;
+    var job  = _syncJobChunks[jid];
+    if (!job) return Promise.resolve({ ok: false, error: 'Job not found' });
+    // Flatten all chunks
+    var allRows = [];
+    (job.chunks || []).forEach(function(c){ if(c) allRows = allRows.concat(c); });
+    delete _syncJobChunks[jid];
+    var mode    = payload.mode;
+    var gci     = payload.gstinColIdx;
+    var hdrs    = payload.colHeaders;
+
+    if (mode === 'active')        return fbSyncActive(allRows, gci, hdrs);
+    if (mode === 'cancelled')     return fbSyncCancelled(allRows, gci);
+    if (mode === 'suspended')     return fbSyncSuspended(allRows, gci);
+    if (mode === '3b_non_filers') {
+      // For 3B mode allRows are [[gstin,defaulterCount,sgstPaid],...]
+      return fbSync3BNonFilers(allRows);
+    }
+    return Promise.resolve({ ok: false, error: 'Unknown mode: ' + mode });
+  }
+
+  return Promise.resolve({ ok: false, error: 'Unknown action: ' + action });
+}
 
 var HT=[/^sr\.?\s*no\.?$/i,/^sl\.?\s*no\.?$/i,/^s\.?\s*no\.?$/i,/^gstin$/i,/^trade\s*name$/i,/^legal\s*name$/i,/^taxpayer/i,/^return/i,/^3b/i];
 var ET=[/^page\s*total$/i,/^grand\s*total$/i];
 
-// ─── LOGIN ────────────────────────────────────────────────────────────────────
-function doLogin() {
-  var u = (document.getElementById('login-user').value || '').trim().toLowerCase();
-  var p = document.getElementById('login-pass').value;
-  var errEl = document.getElementById('login-err');
-  if (USERS[u] && USERS[u].password === p) {
-    errEl.style.display = 'none';
-    currentUser = u;
-    apiUrl = USERS[u].api;
-    document.getElementById('user-badge').style.display = 'flex';
-    document.getElementById('user-badge-name').textContent = USERS[u].label;
-    document.getElementById('login-pass').value = '';
-    goTo('pg-home');
-    fetchSheetNames();
-  } else {
-    errEl.style.display = 'block';
-    document.getElementById('login-pass').value = '';
-    document.getElementById('login-pass').focus();
-  }
-}
-
-function doLogout() {
-  currentUser = null;
-  apiUrl = '';
-  wb = null; rawData = []; headers = []; filtered = [];
-  gsSheetNames = [];
-  document.getElementById('user-badge').style.display = 'none';
-  document.getElementById('user-badge-name').textContent = '—';
-  document.getElementById('login-user').value = '';
-  document.getElementById('login-pass').value = '';
-  document.getElementById('login-err').style.display = 'none';
-  // Reset viewer state
-  document.getElementById('upload-prompt').style.display = 'block';
-  document.getElementById('viewer-content').style.display = 'none';
-  goToLoginPage();
-}
-
+// ─── NAVIGATION HELPERS ───────────────────────────────────────────────────────
 function goToLoginPage() {
-  ['pg-login','pg-home','pg-upload','pg-gsheet','pg-viewer','pg-reports'].forEach(function(p){
-    document.getElementById(p).classList.remove('on');
+  ['pg-login','pg-home','pg-upload','pg-gsheet','pg-viewer','pg-reports','pg-users'].forEach(function(p){
+    var el = document.getElementById(p); if(el) el.classList.remove('on');
   });
   document.getElementById('pg-login').classList.add('on');
   document.getElementById('hsub').textContent = 'Please sign in to continue';
@@ -691,6 +1173,7 @@ function goToLoginPage() {
 
 // Navigate to viewer page without opening file picker
 function goToViewer() {
+  if (currentRole !== 'admin') { showToast('⛔ Admin access required.', 'terr'); return; }
   goTo('pg-viewer');
 }
 
@@ -698,9 +1181,32 @@ function goToViewer() {
 function _initApp() {
   try {
     _wireUploadListeners();
+    // Show login page immediately; Firebase Auth will redirect if already signed in
     goToLoginPage();
-    var loginInput = document.getElementById('login-user');
-    if (loginInput) loginInput.focus();
+    // Firebase Auth state observer — auto-login if session persists
+    auth.onAuthStateChanged(function(user) {
+      if (user) {
+        var email = user.email;
+        seedUsersIfNeeded().then(function() {
+          return getUserRole(email);
+        }).then(function(role) {
+          if (!role) {
+            auth.signOut();
+            goToLoginPage();
+            var errEl = document.getElementById('login-err');
+            if (errEl) { errEl.style.display = 'block'; errEl.textContent = '⛔ Access denied for ' + email; }
+            return;
+          }
+          _onLoginSuccess(email, role, user.displayName || email);
+        }).catch(function(e) {
+          console.error('Auth check error:', e);
+          goToLoginPage();
+        });
+      } else {
+        // No session — stay on login
+        if (currentUser) doLogout();
+      }
+    });
   } catch(e) {
     console.error('Init error:', e);
   }
@@ -718,16 +1224,21 @@ var SUBS={
   'pg-upload':'Upload your Excel file',
   'pg-gsheet':'Select a sheet tab to load',
   'pg-viewer':'Browse & manage your data',
-  'pg-reports':'Live reports from Google Sheet'
+  'pg-reports':'Live reports from Firebase',
+  'pg-users':'Manage authorised users'
 };
 function goTo(id){
-  // Guard: if not logged in, redirect to login (except for login page itself)
+  // Guard: if not logged in, redirect to login
   if (id !== 'pg-login' && !currentUser) { goToLoginPage(); return; }
-  ['pg-login','pg-home','pg-upload','pg-gsheet','pg-viewer','pg-reports'].forEach(function(p){
-    document.getElementById(p).classList.remove('on');
+  // Guard: admin-only pages
+  if ((id === 'pg-viewer' || id === 'pg-upload' || id === 'pg-users') && currentRole !== 'admin') {
+    showToast('⛔ Admin access required.', 'terr'); return;
+  }
+  ['pg-login','pg-home','pg-upload','pg-gsheet','pg-viewer','pg-reports','pg-users'].forEach(function(p){
+    var el = document.getElementById(p); if(el) el.classList.remove('on');
   });
   document.getElementById(id).classList.add('on');
-  var s={'pg-home':1,'pg-upload':2,'pg-gsheet':2,'pg-viewer':3,'pg-reports':2};
+  var s={'pg-home':1,'pg-upload':2,'pg-gsheet':2,'pg-viewer':3,'pg-reports':2,'pg-users':2};
   var c=s[id]||1;
   ['bc1','bc2','bc3'].forEach(function(b,i){
     document.getElementById(b).classList.toggle('on',i+1<=c);
@@ -735,12 +1246,13 @@ function goTo(id){
   document.getElementById('hsub').textContent=SUBS[id]||'';
   window.scrollTo(0,0);
   if(id==='pg-reports') loadReportData();
+  if(id==='pg-users')   umLoadUsers();
 }
 function viewerBack(){goTo('pg-home');}
 
 // ─── FETCH SHEET NAMES FROM APPS SCRIPT ──────────────────────────────────────
 function fetchSheetNames(){
-  if(!apiUrl)return;
+  if(!currentUser)return;
   var sel=document.getElementById('gs-tab-sel');
   var loadBtn=document.getElementById('gs-load-btn');
   if(!sel) return; // element not in DOM yet
@@ -784,15 +1296,15 @@ function loadGSheetTab(){
         showErr('gserr','No table detected (needs a header row with Sr.No./Sl.No./S.No. or at least 3 filled columns).');
         return;
       }
-      srcType='gsheet'; curSheet=tab; fileName='GoogleSheet:'+tab;
+      srcType='gsheet'; curSheet=tab; fileName='Firebase:'+tab;
       headers=result.headers;
       rawData=result.rows.map(function(row){
         var obj={};
         row.forEach(function(v,i){obj[i]=String(v);});
         return obj;
       });
-      document.getElementById('vfico').textContent='📊';
-      document.getElementById('vfname').textContent='Google Sheet — "'+tab+'"';
+      document.getElementById('vfico').textContent='🔥';
+      document.getElementById('vfname').textContent='Firebase — "'+tab+'"';
       document.getElementById('vfmeta').textContent=
         rawData.length+' rows · '+headers.length+' cols · Loaded '+new Date().toLocaleTimeString();
       document.getElementById('st-sht').textContent=tab.length>14?tab.slice(0,14)+'…':tab;
@@ -1023,6 +1535,7 @@ function parseExcelSheet(name){
       usedC.push(ci);
   }
   headers=usedC.map(function(ci){return rawH[ci]||('Col '+(ci+1));});
+  _usedC = usedC.slice();
   rawData=dataRows.map(function(row){
     var obj={};
     usedC.forEach(function(ci,ji){obj[ji]=String(row[ci]||'').trim();});
@@ -1065,7 +1578,7 @@ function renderTable(){
         ?v.replace(new RegExp('('+er(q)+')','gi'),'<mark>$1</mark>'):eh(v);
       var cl='';
       if(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(v)){
-        h+='<td class="gstin" title="Click to send this row to Google Sheet" onclick="sendRowToSheet('+absIdx+',this)">'+d+'</td>';
+        h+='<td class="gstin" title="Click to send this row to Firebase" onclick="sendRowToSheet('+absIdx+',this)">'+d+'</td>';
       } else {
         if(v!==''&&!isNaN(v.replace(/,/g,'')))cl='num';
         h+='<td class="'+cl+'" title="'+eh(v)+'">'+d+'</td>';
@@ -1198,37 +1711,6 @@ function setSyncBar(txt, state, pct) {
   }
 }
 
-// ─── CORE HTTP HELPER (POST + JSON body) ─────────────────────────────────────
-// Why POST?
-//  1. Apps Script GET redirects strip CORS headers → ERR_FAILED / CORS block.
-//  2. Large payloads sent as GET query params exceed URL limits → 413 errors.
-// The Apps Script reads e.postData.contents and routes by payload.action.
-function gasPost(payload) {
-  return fetch(apiUrl, {
-    method:  'POST',
-    headers: { 'Content-Type': 'text/plain' }, // text/plain avoids CORS preflight OPTIONS
-    body:    JSON.stringify(payload),
-    redirect:'follow'
-  })
-  .then(function(r) {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.text();
-  })
-  .then(function(txt) {
-    var clean = txt.replace(/^\/\*.*?\*\/\s*/,'').replace(/^\s*throw\s+[^;]+;\s*/,'').trim();
-    return JSON.parse(clean);
-  });
-}
-// gasGet kept only for fetchSheetNames / loadGSheetTab which are still GET-safe (small payload)
-function gasGet(url) {
-  return fetch(url, { redirect: 'follow' })
-    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(function(txt) {
-      var clean = txt.replace(/^\/\*.*?\*\/\s*/,'').replace(/^\s*throw\s+[^;]+;\s*/,'').trim();
-      return JSON.parse(clean);
-    });
-}
-
 // ─── Detect mode from sheet name and update sync button label ─────────────────
 function getSyncMode() {
   // Check both the sheet tab name and the file name
@@ -1245,16 +1727,16 @@ function updateSyncBtn() {
   var mode = getSyncMode();
   if (mode === 'active') {
     btn.textContent = '📥 Add New (Active)';
-    btn.title = 'Appends new GSTINs not already in the Google Sheet';
+    btn.title = 'Appends new GSTINs not already in Firebase';
   } else if (mode === 'cancelled') {
     btn.textContent = '🚫 Mark Cancelled';
-    btn.title = 'Marks matching LIVE rows as CANCELLED in the Google Sheet';
+    btn.title = 'Marks matching LIVE rows as CANCELLED in Firebase';
   } else if (mode === 'suspended') {
     btn.textContent = '⏸ Mark Suspended';
-    btn.title = 'Clears col P, then writes SUSPENDED in col P for matching GSTINs';
+    btn.title = 'Clears col P, then writes SUSPENDED in col P for matching GSTINs in Firebase';
   } else if (mode === '3b_non_filers') {
     btn.textContent = '📋 Sync 3B Defaulters';
-    btn.title = 'Saves No. of GSTR-3B Defaulters → col T and Total SGST Paid → col U for matching GSTINs';
+    btn.title = 'Saves No. of GSTR-3B Defaulters → col T and Total SGST Paid → col U for matching GSTINs in Firebase';
   } else {
     btn.textContent = '🔄 Update Existing';
     btn.title = '';
@@ -1266,7 +1748,7 @@ function runSync() {
   var mode = getSyncMode();
 
   // Guard checks
-  if (!apiUrl)         { setSyncBar('Error: API URL not configured.', 'error'); return; }
+  if (!currentUser)    { setSyncBar('Error: Not logged in.', 'error'); return; }
   if (!rawData.length) { setSyncBar('Error: No data loaded yet.', 'error'); return; }
 
   if (mode === 'unknown') {
@@ -1317,7 +1799,7 @@ function runSync() {
     });
     btn.disabled = true;
     btn.textContent = '⏳ Syncing…';
-    setSyncBar('⏳ Sending ' + rows3b.length.toLocaleString() + ' rows to Google Sheet…', 'loading', 0);
+    setSyncBar('⏳ Sending ' + rows3b.length.toLocaleString() + ' rows to Firebase…', 'loading', 0);
     // Columns T & U are cleared inside process3BNonFilers on the Apps Script side
     // Split into chunks
     var CHUNK3B = 150;
@@ -1328,7 +1810,7 @@ function runSync() {
     function resetBtn3b() { btn.disabled = false; updateSyncBtn(); }
     function upload3bNext(idx) {
       if (idx >= chunks3b.length) {
-        setSyncBar('⏳ Finalising in Google Sheet…', 'loading', 99);
+        setSyncBar('⏳ Finalising in Firebase…', 'loading', 99);
         gasPost({ action: 'finalizeSync', jobId: jobId3b, mode: '3b_non_filers', gstinColIdx: 0, colHeaders: ['GSTIN','ReturnDefault','SGSTPaid'] })
           .then(function(res) {
             resetBtn3b();
@@ -1380,11 +1862,14 @@ function runSync() {
   // (this is the duplicate header/summary row that appears as row 2 in the GST portal export)
   var allRows = [];
   var skippedRow2 = 0;
+  var _acIdx = _usedC.length ? _usedC.indexOf(28) : -1;
+  var _aeIdx = _usedC.length ? _usedC.indexOf(30) : -1;
   rawData.forEach(function(obj) {
     var rowArr = headers.map(function(_, i) { return obj[i] || ''; });
-    if (mode === 'active' && String(rowArr[gci] || '').trim() === '2') {
-      skippedRow2++;
-      return;
+    if (mode === 'active' && String(rowArr[gci] || '').trim() === '2') { skippedRow2++; return; }
+    if (mode === 'active') {
+      if (_acIdx !== -1) rowArr[16] = obj[_acIdx] || rowArr[16] || '';
+      if (_aeIdx !== -1) rowArr[18] = obj[_aeIdx] || rowArr[18] || '';
     }
     allRows.push(rowArr);
   });
@@ -1407,7 +1892,7 @@ function runSync() {
   function uploadNext(idx) {
     if (idx >= chunks.length) {
       // All chunks uploaded — finalize
-      setSyncBar('⏳ Processing in Google Sheet… please wait', 'loading', 99);
+      setSyncBar('⏳ Processing in Firebase… please wait', 'loading', 99);
 
       gasPost({
         action:      'finalizeSync',
@@ -1455,7 +1940,7 @@ function runSync() {
 var _sendingCell = null;
 
 function sendRowToSheet(rowIdx, cellEl) {
-  if (!apiUrl) { showToast('⚠️ API URL not configured.', 'terr'); return; }
+  if (!currentUser) { showToast('⚠️ Not logged in.', 'terr'); return; }
 
   // Only allowed when the sheet name contains "Active"
   if (!/active/i.test(curSheet)) {
@@ -1483,11 +1968,16 @@ function sendRowToSheet(rowIdx, cellEl) {
   //    The Apps Script will copy col S from the row that is 4 positions above
   //    the newly appended row (i.e. newRowNumber - 4).   ← was col Q index 16
   rowArr[18] = '';
+  if (_usedC.length) {
+    var _acI = _usedC.indexOf(28); var _aeI = _usedC.indexOf(30);
+    if (_acI !== -1) rowArr[16] = row[_acI] || '';
+    if (_aeI !== -1) rowArr[18] = row[_aeI] || '';
+  }
 
   if (_sendingCell) _sendingCell.classList.remove('sending');
   _sendingCell = cellEl;
   cellEl.classList.add('sending');
-  showToast('⏳ Sending ' + gstin + ' to Sheet…', 'tinfo');
+  showToast('⏳ Sending ' + gstin + ' to Firebase…', 'tinfo');
 
   gasPost({
     action:          'appendRow',
@@ -1503,7 +1993,7 @@ function sendRowToSheet(rowIdx, cellEl) {
       if (res.skipped) {
         showToast('ℹ️ ' + gstin + ' already exists — row skipped.', 'tinfo');
       } else {
-        showToast('✅ ' + gstin + ' appended to Sheet (col Q = LIVE)', 'tok');
+        showToast('✅ ' + gstin + ' appended to Firebase (col Q = LIVE)', 'tok');
         cellEl.style.background = '#bbf7d0';
         setTimeout(function() { cellEl.style.background = ''; }, 1800);
       }
@@ -1567,10 +2057,10 @@ function loadReportData() {
 function loadLiveReport(force) {
   if (_lrLoading) return;
   if (!force && _lrRawData.length) { lrRenderTable(); return; }
-  if (!apiUrl) { showErr('lr-load-err', 'Not connected to Google Sheet. Please log in.'); return; }
+  if (!currentUser) { showErr('lr-load-err', 'Not connected to Firebase. Please log in.'); return; }
   _lrLoading = true;
   clrErr('lr-load-err');
-  document.getElementById('lr-tblwrap').innerHTML = '<div class="loading"><div class="sp"></div>Fetching from Google Sheet…</div>';
+  document.getElementById('lr-tblwrap').innerHTML = '<div class="loading"><div class="sp"></div>Fetching from Firebase…</div>';
   document.getElementById('lr-pgn').style.display = 'none';
   document.getElementById('lr-stat').textContent = '';
 
@@ -1903,9 +2393,9 @@ function lrSaveRow(absIdx, sheetRow) {
       lrRenderTable();
       var bar = document.getElementById('lr-update-bar');
       bar.style.display = 'flex';
-      bar.innerHTML = '✅ Row updated successfully in Google Sheet (sheet row ' + sheetRow + ')';
+      bar.innerHTML = '✅ Row updated successfully in Firebase (sheet row ' + sheetRow + ')';
       setTimeout(function() { bar.style.display = 'none'; }, 5000);
-      showToast('✅ Row updated in Sheet', 'tok');
+      showToast('✅ Row updated in Firebase', 'tok');
     })
     .catch(function(e) {
       showToast('❌ Network error: ' + e.message, 'terr');
@@ -1944,8 +2434,9 @@ function openDownloadModal() {
     wrap.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;padding:4px 6px;border-radius:5px;transition:background .12s';
     wrap.onmouseover = function() { this.style.background = '#eff6ff'; };
     wrap.onmouseout  = function() { this.style.background = ''; };
+    var DL_DEFAULT_CHECKED = [0, 1, 2, 3, 4, 5]; // GSTIN, Trade Name, Address, Email, Mobile, Officer
     var cb = document.createElement('input');
-    cb.type = 'checkbox'; cb.id = id; cb.value = ci; cb.checked = true;
+    cb.type = 'checkbox'; cb.id = id; cb.value = ci; cb.checked = (DL_DEFAULT_CHECKED.indexOf(ci) !== -1);
     cb.style.accentColor = 'var(--accent)';
     wrap.appendChild(cb);
     var span = document.createElement('span'); span.textContent = lbl;
@@ -2013,14 +2504,14 @@ function dlPDF() {
   tableHTML += '</tbody></table>';
 
   var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-    '<title>Live Report</title>' +
-    '<style>body{font-family:Arial,sans-serif;padding:20px;} h2{font-size:16px;margin-bottom:4px} .meta{font-size:11px;color:#64748b;margin-bottom:16px} @media print{button{display:none}}</style>' +
-    '</head><body>' +
+    '<title>Live Report<\/title>' +
+    '<style>body{font-family:Arial,sans-serif;padding:20px;} h2{font-size:16px;margin-bottom:4px} .meta{font-size:11px;color:#64748b;margin-bottom:16px} @media print{button{display:none}}<\/style>' +
+    '<\/head><body>' +
     '<h2>📊 GST Live Report</h2>' +
     '<div class="meta">Generated: ' + new Date().toLocaleString() + ' &nbsp;·&nbsp; ' + _lrFiltered.length + ' records</div>' +
     '<button onclick="window.print()" style="margin-bottom:14px;padding:7px 18px;background:#1a56db;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">🖨 Print / Save as PDF</button>' +
     tableHTML +
-    '</body></html>';
+    '<\/body><\/html>';
 
   var w = window.open('', '_blank');
   if (w) { w.document.write(html); w.document.close(); }
