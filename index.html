@@ -631,12 +631,12 @@ article img { max-width: 100%; border-radius: 6px; margin-bottom: 8px; }
 /* PDF Preview */
 .pdf-preview-overlay {
   position: fixed; inset: 0; background: rgba(5,10,25,.82); backdrop-filter: blur(4px);
-  display: none; align-items: center; justify-content: center; z-index: 4000; padding: 16px;
+  display: none; align-items: center; justify-content: center; z-index: 4000; padding: 6px;
 }
 .pdf-preview-overlay.open { display: flex; }
 .pdf-preview-box {
-  background: #fff; border-radius: 14px; width: 100%; max-width: 860px;
-  max-height: 92vh; display: flex; flex-direction: column;
+  background: #fff; border-radius: 14px; width: 100%; max-width: 960px;
+  max-height: 96vh; height: 96vh; display: flex; flex-direction: column;
   box-shadow: 0 24px 64px rgba(0,0,0,.4); animation: dcPopIn .22s ease; overflow: hidden;
 }
 .pdf-preview-header {
@@ -1218,7 +1218,7 @@ footer { background: #0f1628; color: #94a3b8; font-size: 1.2rem; margin-top: 32p
         <button class="pdf-close-btn" onclick="closePdfPreview()">✕</button>
       </div>
     </div>
-    <iframe id="pdfPreviewFrame" class="pdf-preview-frame" src="" style="height:75vh"></iframe>
+    <iframe id="pdfPreviewFrame" class="pdf-preview-frame" src="" style="height:85vh"></iframe>
   </div>
 </div>
 
