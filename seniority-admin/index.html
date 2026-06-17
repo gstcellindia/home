@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seniority Admin — Kerala GST</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+:root{
+  --navy:#0f2044;--navy2:#1a3a6b;--gold:#c9a84c;
+  --accent:#1a56db;--green:#16a34a;--red:#dc2626;--orange:#ea580c;
+  --bg:#f4f6fb;--white:#fff;--border:#dde3f0;--text:#1a1a2e;--muted:#6b7080;
+  --sidebar-w:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:var(--navy);color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:20px 18px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-logo .title{font-size:15px;font-weight:700;color:var(--gold);}
+.sidebar-logo .sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+.sidebar-section{padding:16px 12px 6px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:rgba(255,255,255,.65);cursor:pointer;border-radius:6px;margin:1px 6px;font-size:13px;transition:all .18s;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.nav-item.active{background:var(--accent);color:#fff;}
+.nav-item i{width:16px;text-align:center;font-size:13px;}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid rgba(255,255,255,.08);}
+.sidebar-footer a{color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.sidebar-footer a:hover{color:#fff;}
+
+/* ── MAIN ── */
+.main-area{margin-left:var(--sidebar-w);flex:1;padding:0;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;}
+.topbar h1{font-size:18px;font-weight:700;color:var(--navy2);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn{padding:7px 16px;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s;font-family:'Inter',sans-serif;}
+.btn:hover{opacity:.85;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-success{background:var(--green);color:#fff;}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-warning{background:var(--orange);color:#fff;}
+.btn-secondary{background:#e8edf5;color:var(--navy2);}
+.btn-sm{padding:4px 10px;font-size:11.5px;border-radius:5px;}
+
+.page{display:none;padding:24px 28px;flex:1;}
+.page.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:12px;border:1px solid var(--border);margin-bottom:20px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-header h2{font-size:14px;font-weight:700;color:var(--navy2);}
+.card-body{padding:20px;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.form-grid .full{grid-column:1/-1;}
+.form-group label{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;background:#fff;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+.form-group small{color:var(--muted);font-size:11px;margin-top:3px;display:block;}
+.btn-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.msg{padding:8px 14px;border-radius:7px;font-size:12.5px;margin-top:10px;display:none;}
+.msg.ok{background:#dcfce7;color:#15803d;}
+.msg.err{background:#fee2e2;color:#b91c1c;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;position:sticky;top:0;z-index:2;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:hover{background:#f0f4fb;}
+tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
+.td-name{font-weight:600;color:var(--navy2);}
+.td-sl{text-align:center;font-weight:700;color:var(--muted);width:50px;}
+.badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:600;}
+.badge-active{background:#dcfce7;color:#166534;}
+.badge-retired{background:#fee2e2;color:#991b1b;}
+.badge-promoted{background:#dbeafe;color:#1e40af;}
+.empty-row td{text-align:center;padding:36px;color:var(--muted);}
+.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid #ddd;border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── INSERT POSITION ── */
+.insert-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f8f9ff;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;}
+.insert-wrap label{font-size:12px;font-weight:600;color:var(--navy2);}
+.insert-wrap select{padding:5px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;font-family:'Inter',sans-serif;}
+
+/* ── CSV AREA ── */
+.csv-info{background:#f0f4fb;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--navy2);margin-bottom:12px;line-height:1.8;}
+.csv-info code{background:var(--white);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;font-family:monospace;}
+
+/* ── CADRE MANAGER ── */
+.cadre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.cadre-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:16px;}
+.cadre-card .cadre-name{font-weight:700;font-size:14px;color:var(--navy2);margin-bottom:8px;}
+.cadre-card .cadre-meta{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.cadre-card .cadre-actions{display:flex;gap:6px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.toast.show{opacity:1;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:5000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:14px;width:92%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.28);}
+.modal-header{background:var(--navy);color:#fff;padding:14px 20px;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:15px;font-weight:700;}
+.modal-close{background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:#fff;}
+.modal-body{padding:20px;}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s;}
+  .sidebar.open{transform:none;}
+  .main-area{margin-left:0;}
+  .form-grid{grid-template-columns:1fr;}
+  .page{padding:16px;}
+  .topbar{padding:12px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="title">Seniority Admin</div>
+    <div class="sub">Kerala State GST Dept.</div>
+  </div>
+  <div class="sidebar-section">Officers</div>
+  <div class="nav-item active" data-page="officers" onclick="showPage('officers')"><i class="fas fa-users"></i> Officer Entry</div>
+  <div class="nav-item" data-page="csv" onclick="showPage('csv')"><i class="fas fa-file-csv"></i> CSV Upload</div>
+  <div class="sidebar-section">Configuration</div>
+  <div class="nav-item" data-page="cadres" onclick="showPage('cadres')"><i class="fas fa-layer-group"></i> Manage Cadres</div>
+  <div class="sidebar-footer">
+    <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+    <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
+  </div>
+</nav>
+
+<!-- Login Modal -->
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#0f2044,#1a3a6b);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.4);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:32px;margin-bottom:8px;">📋</div>
+      <h2 style="font-size:20px;font-weight:700;color:#0f2044;">Seniority Admin</h2>
+      <p style="font-size:13px;color:#6b7080;margin-top:4px;">Kerala State GST Department</p>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;">Email</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;">Password</label>
+      <input type="password" id="loginPwd" placeholder="••••••••" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button onclick="doLogin()" style="width:100%;padding:12px;background:#1a56db;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Sign In</button>
+    <div id="loginError" style="color:#dc2626;font-size:12.5px;text-align:center;margin-top:10px;min-height:18px;"></div>
+    <p style="text-align:center;margin-top:14px;font-size:12px;color:#6b7080;">Use your GSTCell account credentials</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-area">
+  <div class="topbar">
+    <h1 id="pageTitle">Officer Entry</h1>
+    <div class="topbar-right">
+      <span id="authStatus" style="font-size:12px;color:var(--muted)"></span>
+      <button class="btn btn-secondary" onclick="confirmLogout()" id="logoutBtn" style="display:none"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: OFFICERS ══ -->
+  <div class="page active" id="page-officers">
+
+    <!-- Add / Edit Form -->
+    <div class="card">
+      <div class="card-header">
+        <h2 id="formTitle">➕ Add Officer</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="clearForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cadre *</label>
+            <select id="fCadre" onchange="onCadreChange()">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sl. No *</label>
+            <input type="number" id="fSlNo" placeholder="e.g. 1" min="1">
+          </div>
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="fName" placeholder="Full name of officer">
+          </div>
+          <div class="form-group">
+            <label>Order No.</label>
+            <input type="text" id="fOrderNo" placeholder="e.g. GO(Ms) 123/2024">
+          </div>
+          <div class="form-group">
+            <label>Feeder Category</label>
+            <input type="text" id="fFeeder" placeholder="e.g. Deputy Commissioner">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="fDob">
+          </div>
+          <div class="form-group">
+            <label>Retirement Age</label>
+            <select id="fRetAge">
+              <option value="60">60 years</option>
+              <option value="56">56 years</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="fStatus">
+              <option value="active">Active</option>
+              <option value="retired">Retired</option>
+              <option value="promoted">Promoted</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Insert Position -->
+        <div class="insert-wrap" style="margin-top:14px;">
+          <label>Insert Position:</label>
+          <select id="fInsertPos">
+            <option value="end">At End (append)</option>
+            <option value="start">At Beginning</option>
+            <option value="before">Before Officer ↓</option>
+            <option value="after">After Officer ↓</option>
+          </select>
+          <select id="fInsertRef" style="display:none;min-width:200px;">
+            <option value="">— Select Reference Officer —</option>
+          </select>
+        </div>
+
+        <input type="hidden" id="fEditId">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveOfficer()"><i class="fas fa-save"></i> Save Officer</button>
+          <button class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div class="msg" id="formMsg"></div>
+      </div>
+    </div>
+
+    <!-- Officers Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📋 Officers List</h2>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="filterCadre" onchange="loadOfficersTable()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;">
+            <option value="">All Cadres</option>
+          </select>
+          <input type="text" id="officerSearch" placeholder="Search…" oninput="filterOfficersTable()" style="padding:6px 11px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;width:160px;">
+          <button class="btn btn-success btn-sm" onclick="downloadTableCSV()"><i class="fas fa-download"></i> Download CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:50px">Sl.</th>
+                <th>Name</th>
+                <th>Cadre</th>
+                <th>Order No.</th>
+                <th>Feeder Category</th>
+                <th>DOB</th>
+                <th>Ret. Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="officersTableBody">
+              <tr class="empty-row"><td colspan="9"><span class="spinner"></span> Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: CSV ══ -->
+  <div class="page" id="page-csv">
+
+    <!-- Step 1: Download -->
+    <div class="card">
+      <div class="card-header"><h2>Step 1 — Download Template</h2></div>
+      <div class="card-body">
+        <div class="csv-info">
+          <strong>CSV columns:</strong>
+          <code>sl_no</code>, <code>name</code>, <code>order_no</code>, <code>feeder_category</code>,
+          <code>dob</code> (YYYY-MM-DD), <code>retirement_age</code> (56 or 60), <code>status</code> (active / retired / promoted)<br>
+          Download the template → fill in officer details in Excel/Sheets → save as CSV → upload below.
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="downloadTemplate()"><i class="fas fa-file-csv"></i> Blank Template</button>
+          <button class="btn btn-secondary" onclick="downloadFilledTemplate()"><i class="fas fa-file-csv"></i> Sample Template</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="card">
+      <div class="card-header" style="background:#f0f7ff;"><h2>Step 2 — Upload Filled CSV</h2></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Target Cadre *</label>
+            <select id="csvCadre">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Insert Position</label>
+            <select id="csvInsertPos">
+              <option value="end">Append at End</option>
+              <option value="start">Insert at Beginning</option>
+              <option value="replace">Replace All (clears existing first)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Select CSV File *</label>
+            <input type="file" id="csvFile" accept=".csv" style="padding:6px;">
+            <small>File auto-previews below when selected</small>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="uploadCSV()" style="font-size:14px;padding:10px 22px;">
+            <i class="fas fa-upload"></i> Upload &amp; Import to Firestore
+          </button>
+        </div>
+        <div class="msg" id="csvMsg"></div>
+        <div id="csvPreview" style="margin-top:16px;display:none;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy2);padding:8px 0;">Preview (first 5 rows of your file):</div>
+          <div class="tbl-wrap" style="max-height:220px;border:1px solid var(--border);border-radius:8px;">
+            <table id="csvPreviewTable"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download existing -->
+    <div class="card">
+      <div class="card-header"><h2>Step 3 — Download Existing Data</h2></div>
+      <div class="card-body" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <select id="dlCadreFilter" style="padding:7px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;">
+          <option value="">All Cadres</option>
+        </select>
+        <button class="btn btn-success" onclick="downloadTableCSVFromCsvPage()">
+          <i class="fas fa-download"></i> Download Current Officers as CSV
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ PAGE: CADRES ══ -->
+  <div class="page" id="page-cadres">
+    <div class="card">
+      <div class="card-header"><h2>⚡ Quick Strength Update</h2></div>
+      <div class="card-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">Update sanctioned strength for each cadre without editing the full form.</p>
+        <div id="strengthGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+          <div style="color:var(--muted);text-align:center;padding:20px;"><span class="spinner"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>➕ Add / Edit Cadre</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cadre ID * <small>(lowercase, no spaces)</small></label>
+            <input type="text" id="cId" placeholder="e.g. jc" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')">
+          </div>
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="cName" placeholder="e.g. Joint Commissioner">
+          </div>
+          <div class="form-group">
+            <label>Short Name *</label>
+            <input type="text" id="cShort" placeholder="e.g. JC">
+          </div>
+          <div class="form-group">
+            <label>Sanctioned Strength</label>
+            <input type="number" id="cSanctioned" placeholder="e.g. 10" min="1">
+          </div>
+          <div class="form-group">
+            <label>Feeder Cadre ID</label>
+            <select id="cFeeder">
+              <option value="">— None (bottom cadre) —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Display Order</label>
+            <input type="number" id="cOrder" placeholder="0 = top" min="0">
+          </div>
+        </div>
+        <input type="hidden" id="cEditId">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveCadre()"><i class="fas fa-save"></i> Save Cadre</button>
+          <button class="btn btn-secondary" onclick="clearCadreForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div class="msg" id="cadreMsg"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2>📋 All Cadres</h2></div>
+      <div class="card-body">
+        <div class="cadre-grid" id="cadreGrid">
+          <div style="color:var(--muted);padding:20px;text-align:center"><span class="spinner"></span> Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-area -->
+
+<!-- Edit Officer Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>✏️ Edit Officer</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Sl. No</label><input type="number" id="mSlNo"></div>
+        <div class="form-group"><label>Name *</label><input type="text" id="mName"></div>
+        <div class="form-group"><label>Order No.</label><input type="text" id="mOrderNo"></div>
+        <div class="form-group"><label>Feeder Category</label><input type="text" id="mFeeder"></div>
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="mDob"></div>
+        <div class="form-group"><label>Retirement Age</label>
+          <select id="mRetAge"><option value="60">60</option><option value="56">56</option></select>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select id="mStatus"><option value="active">Active</option><option value="retired">Retired</option><option value="promoted">Promoted</option></select>
+        </div>
+        <div class="form-group"><label>Cadre</label><select id="mCadre"></select></div>
+      </div>
+      <input type="hidden" id="mEditId">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveEditModal()"><i class="fas fa-save"></i> Save</button>
+        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      </div>
+      <div class="msg" id="modalMsg"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, orderBy, serverTimestamp, writeBatch }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCpKgeXBwfvPDZUqbl0ro2xYTIIOYs40QI",
+    authDomain:        "gstcell-afe30.firebaseapp.com",
+    projectId:         "gstcell-afe30",
+    storageBucket:     "gstcell-afe30.firebasestorage.app",
+    messagingSenderId: "977774861669",
+    appId:             "1:977774861669:web:249661743136343e4a158c"
+  };
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  window._db   = db;
+  window._auth = auth;
+  window._fs   = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, orderBy, serverTimestamp, writeBatch };
+  window._authFn = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
+
+  onAuthStateChanged(auth, user => {
+    window._currentUser = user;
+    if(user){
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('authStatus').textContent = user.email;
+      document.getElementById('logoutBtn').style.display = 'flex';
+      document.dispatchEvent(new Event('adminReady'));
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+  });
+</script>
+
+<script>
+const DEFAULT_CADRES = [
+  { id:'jc',   name:'Joint Commissioner',                  short:'JC',   sanctioned:10,  feeder:'dchg', order:0 },
+  { id:'dchg', name:'Deputy Commissioner (Higher Grade)', short:'DCHG', sanctioned:20,  feeder:'dc',   order:1 },
+  { id:'dc',   name:'Deputy Commissioner',                short:'DC',   sanctioned:40,  feeder:'ac',   order:2 },
+  { id:'ac',   name:'Assistant Commissioner',             short:'AC',   sanctioned:80,  feeder:'sto',  order:3 },
+  { id:'sto',  name:'State Tax Officer',                  short:'STO',  sanctioned:200, feeder:'dsto', order:4 },
+  { id:'dsto', name:'Deputy State Tax Officer',           short:'DSTO', sanctioned:400, feeder:null,   order:5 },
+];
+
+let _cadres   = [];
+let _officers = []; // flat list
+let _filteredOfficers = [];
+
+// ── HELPERS ──
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(d){ if(!d)return '—'; const dt=new Date(d); return isNaN(dt)?d:dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+function retDate(dob,age){ if(!dob||!age)return null; const dt=new Date(dob); dt.setFullYear(dt.getFullYear()+parseInt(age)); return dt; }
+function showMsg(id,msg,type){ const el=document.getElementById(id); el.textContent=msg; el.className='msg '+(type||'ok'); el.style.display='block'; setTimeout(()=>el.style.display='none',4000); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector(`[data-page="${id}"]`).classList.add('active');
+  const titles={officers:'Officer Entry',csv:'CSV Upload / Download',cadres:'Manage Cadres'};
+  document.getElementById('pageTitle').textContent = titles[id]||id;
+}
+
+// ── LOGIN ──
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPwd').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if(!email||!pwd){ errEl.textContent='Please enter email and password.'; return; }
+  window._authFn.signInWithEmailAndPassword(window._auth, email, pwd)
+    .catch(e=>{ errEl.textContent = e.message.replace('Firebase:','').replace(/\(.*\)/,'').trim(); });
+}
+function confirmLogout(){
+  if(confirm('Logout?')) window._authFn.signOut(window._auth).then(()=>location.reload());
+}
+
+// ── INIT ──
+document.addEventListener('adminReady', async () => {
+  await loadCadres();
+  await loadOfficers();
+  populateCadreSelects();
+});
+
+async function loadCadres(){
+  const { collection, getDocs } = window._fs;
+  try {
+    const snap = await getDocs(collection(window._db,'seniority_cadres'));
+    if(!snap.empty){ _cadres=[]; snap.forEach(d=>_cadres.push({id:d.id,...d.data()})); _cadres.sort((a,b)=>(a.order||0)-(b.order||0)); }
+    else { _cadres = DEFAULT_CADRES; await seedDefaultCadres(); }
+  } catch(e){ _cadres=DEFAULT_CADRES; }
+  renderCadreGrid();
+}
+
+async function seedDefaultCadres(){
+  const { doc, setDoc } = window._fs;
+  for(const c of DEFAULT_CADRES){
+    try{ await setDoc(doc(window._db,'seniority_cadres',c.id),c); }catch(e){}
+  }
+}
+
+async function loadOfficers(){
+  const { collection, getDocs, query, orderBy } = window._fs;
+  try {
+    const snap = await getDocs(query(collection(window._db,'seniority_officers'),orderBy('cadre','asc'),orderBy('sl_no','asc')));
+    _officers = [];
+    snap.forEach(d=>_officers.push({id:d.id,...d.data()}));
+  } catch(e){ _officers=[]; }
+  loadOfficersTable();
+}
+
+function populateCadreSelects(){
+  const selects = ['fCadre','filterCadre','csvCadre','mCadre','dlCadreFilter'];
+  selects.forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    const isFilter=(id==='filterCadre'||id==='dlCadreFilter');
+    el.innerHTML=(isFilter?'<option value="">All Cadres</option>':'<option value="">— Select Cadre —</option>')+
+      _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  });
+  const cFeeder = document.getElementById('cFeeder');
+  if(cFeeder){
+    cFeeder.innerHTML='<option value="">— None (bottom cadre) —</option>'+
+      _cadres.map(c=>`<option value="${c.id}">${escH(c.name)}</option>`).join('');
+  }
+}
+
+function downloadTableCSVFromCsvPage(){
+  const cadreFilter = document.getElementById('dlCadreFilter').value;
+  const officers    = cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice();
+  const headers     = ['sl_no','name','cadre','order_no','feeder_category','dob','retirement_age','status'];
+  const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
+  const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  triggerDownload(csv,`seniority_${cadreFilter||'all'}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+
+// ── OFFICER FORM ──
+function onCadreChange(){
+  const cadreId = document.getElementById('fCadre').value;
+  const pos     = document.getElementById('fInsertPos').value;
+  populateInsertRef(cadreId);
+}
+
+function populateInsertRef(cadreId){
+  const pos    = document.getElementById('fInsertPos').value;
+  const refSel = document.getElementById('fInsertRef');
+  refSel.style.display = (pos==='before'||pos==='after') ? 'inline-block' : 'none';
+  const officers = _officers.filter(o=>o.cadre===cadreId);
+  refSel.innerHTML = '<option value="">— Select Reference Officer —</option>'+
+    officers.map(o=>`<option value="${o.id}">${o.sl_no}. ${escH(o.name)}</option>`).join('');
+}
+
+document.getElementById('fInsertPos').addEventListener('change',function(){
+  const cadreId = document.getElementById('fCadre').value;
+  populateInsertRef(cadreId);
+});
+
+async function saveOfficer(){
+  const cadreId  = document.getElementById('fCadre').value;
+  const name     = document.getElementById('fName').value.trim();
+  const slNo     = parseInt(document.getElementById('fSlNo').value)||0;
+  const orderNo  = document.getElementById('fOrderNo').value.trim();
+  const feeder   = document.getElementById('fFeeder').value.trim();
+  const dob      = document.getElementById('fDob').value;
+  const retAge   = document.getElementById('fRetAge').value;
+  const status   = document.getElementById('fStatus').value;
+  const insertPos= document.getElementById('fInsertPos').value;
+  const insertRef= document.getElementById('fInsertRef').value;
+
+  if(!cadreId||!name){ showMsg('formMsg','Cadre and Name are required.','err'); return; }
+
+  const { collection, addDoc, getDocs, query, orderBy, updateDoc, doc, serverTimestamp } = window._fs;
+  showMsg('formMsg','Saving…','ok');
+
+  try {
+    // Renumber existing officers if inserting at specific position
+    let finalSlNo = slNo;
+    if(insertPos==='start'||insertPos==='before'||insertPos==='after'){
+      const cadreOfficers = _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      let insertAt = 1;
+      if(insertPos==='start') insertAt=1;
+      else if(insertPos==='end') insertAt=(cadreOfficers[cadreOfficers.length-1]?.sl_no||0)+1;
+      else {
+        const refO = cadreOfficers.find(o=>o.id===insertRef);
+        if(refO) insertAt = refO.sl_no + (insertPos==='after'?1:0);
+      }
+      finalSlNo = insertAt;
+      // Shift up officers at or after insertAt
+      for(const o of cadreOfficers){
+        if((o.sl_no||0)>=insertAt){
+          await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+1});
+        }
+      }
+    }
+
+    await addDoc(collection(window._db,'seniority_officers'),{
+      cadre:cadreId, sl_no:finalSlNo, name, order_no:orderNo,
+      feeder_category:feeder, dob, retirement_age:retAge, status,
+      createdAt:serverTimestamp()
+    });
+    showMsg('formMsg','✓ Officer saved.','ok');
+    toast('Officer added: '+name);
+    clearForm();
+    await loadOfficers();
+  } catch(e){ showMsg('formMsg','Error: '+e.message,'err'); }
+}
+
+function clearForm(){
+  ['fCadre','fSlNo','fName','fOrderNo','fFeeder','fDob','fEditId'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  document.getElementById('fRetAge').value='60';
+  document.getElementById('fStatus').value='active';
+  document.getElementById('fInsertPos').value='end';
+  document.getElementById('fInsertRef').style.display='none';
+  document.getElementById('formTitle').textContent='➕ Add Officer';
+}
+
+// ── OFFICERS TABLE ──
+function loadOfficersTable(){
+  const cadreFilter = document.getElementById('filterCadre').value;
+  _filteredOfficers = cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice();
+  renderOfficersTable(_filteredOfficers);
+}
+function filterOfficersTable(){
+  const q = (document.getElementById('officerSearch').value||'').toLowerCase();
+  const filtered = q ? _filteredOfficers.filter(o=>(o.name||'').toLowerCase().includes(q)||(o.order_no||'').toLowerCase().includes(q)) : _filteredOfficers;
+  renderOfficersTable(filtered);
+}
+function renderOfficersTable(officers){
+  const tbody = document.getElementById('officersTableBody');
+  if(!officers.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="9">No officers found.</td></tr>'; return; }
+  tbody.innerHTML = officers.map(o=>{
+    const cadre = _cadres.find(c=>c.id===o.cadre);
+    const rd    = retDate(o.dob,o.retirement_age||60);
+    const statusBadge = o.status==='retired'?'<span class="badge badge-retired">Retired</span>':o.status==='promoted'?'<span class="badge badge-promoted">Promoted</span>':'<span class="badge badge-active">Active</span>';
+    return `<tr>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(cadre?.short||o.cadre||'')}</td>
+      <td style="font-size:12px;">${escH(o.order_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.feeder_category||'')}</td>
+      <td style="font-size:12px;">${fmtDate(o.dob)}</td>
+      <td style="font-size:12px;">${rd?fmtDate(rd.toISOString().split('T')[0]):'—'}</td>
+      <td>${statusBadge}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-secondary btn-sm" onclick="openEditModal('${o.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteOfficer('${o.id}','${escH(o.name||'')}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EDIT MODAL ──
+function openEditModal(id){
+  const o = _officers.find(x=>x.id===id); if(!o)return;
+  document.getElementById('mEditId').value  = id;
+  document.getElementById('mSlNo').value    = o.sl_no||'';
+  document.getElementById('mName').value    = o.name||'';
+  document.getElementById('mOrderNo').value = o.order_no||'';
+  document.getElementById('mFeeder').value  = o.feeder_category||'';
+  document.getElementById('mDob').value     = o.dob||'';
+  document.getElementById('mRetAge').value  = o.retirement_age||'60';
+  document.getElementById('mStatus').value  = o.status||'active';
+  // Populate mCadre
+  const mCadre = document.getElementById('mCadre');
+  mCadre.innerHTML = _cadres.map(c=>`<option value="${c.id}"${c.id===o.cadre?' selected':''}>${escH(c.name)}</option>`).join('');
+  document.getElementById('modalMsg').style.display='none';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal(){ document.getElementById('editModal').classList.remove('open'); }
+
+async function saveEditModal(){
+  const id     = document.getElementById('mEditId').value;
+  const name   = document.getElementById('mName').value.trim();
+  if(!id||!name){ showMsg('modalMsg','Name is required.','err'); return; }
+  const { doc, updateDoc } = window._fs;
+  showMsg('modalMsg','Saving…','ok');
+  try{
+    await updateDoc(doc(window._db,'seniority_officers',id),{
+      sl_no:parseInt(document.getElementById('mSlNo').value)||0,
+      name, order_no:document.getElementById('mOrderNo').value.trim(),
+      feeder_category:document.getElementById('mFeeder').value.trim(),
+      dob:document.getElementById('mDob').value,
+      retirement_age:document.getElementById('mRetAge').value,
+      status:document.getElementById('mStatus').value,
+      cadre:document.getElementById('mCadre').value,
+    });
+    showMsg('modalMsg','✓ Saved.','ok');
+    toast('Officer updated.');
+    closeEditModal();
+    await loadOfficers();
+  } catch(e){ showMsg('modalMsg','Error: '+e.message,'err'); }
+}
+
+async function deleteOfficer(id, name){
+  if(!confirm(`Delete officer "${name}"?`)) return;
+  const { doc, deleteDoc } = window._fs;
+  try{ await deleteDoc(doc(window._db,'seniority_officers',id)); toast('Deleted: '+name); await loadOfficers(); }
+  catch(e){ toast('Error: '+e.message); }
+}
+
+// ── CSV ──
+function downloadTemplate(){
+  const csv = 'sl_no,name,order_no,feeder_category,dob,retirement_age,status\n';
+  triggerDownload(csv,'seniority_template.csv');
+}
+function downloadFilledTemplate(){
+  const csv = `sl_no,name,order_no,feeder_category,dob,retirement_age,status
+1,Sample Officer A,GO(P) 12/2020/Taxes,Deputy Commissioner,1970-05-15,60,active
+2,Sample Officer B,GO(P) 34/2021/Taxes,Deputy Commissioner,1968-11-22,60,active
+3,Sample Officer C,GO(P) 56/2019/Taxes,Deputy Commissioner,1966-03-08,56,retiring
+`;
+  triggerDownload(csv,'seniority_sample.csv');
+}
+function triggerDownload(content, filename){
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(content);
+  a.download = filename; a.click();
+}
+
+document.getElementById('csvFile').addEventListener('change', function(){
+  const file = this.files[0]; if(!file)return;
+  const reader = new FileReader();
+  reader.onload = e => previewCSV(e.target.result);
+  reader.readAsText(file);
+});
+
+function previewCSV(text){
+  const rows   = parseCSV(text);
+  const prev   = document.getElementById('csvPreview');
+  const tbl    = document.getElementById('csvPreviewTable');
+  if(!rows.length){ prev.style.display='none'; return; }
+  const headers= rows[0];
+  const data   = rows.slice(1,6);
+  tbl.querySelector('thead').innerHTML = '<tr>'+headers.map(h=>`<th>${escH(h)}</th>`).join('')+'</tr>';
+  tbl.querySelector('tbody').innerHTML = data.map(r=>'<tr>'+r.map(c=>`<td>${escH(c)}</td>`).join('')+'</tr>').join('');
+  prev.style.display='block';
+}
+
+function parseCSV(text){
+  return text.trim().split('\n').map(line=>{
+    const result=[]; let cur=''; let inQ=false;
+    for(let i=0;i<line.length;i++){
+      if(line[i]==='"'&&line[i+1]==='"'){cur+='"';i++;}
+      else if(line[i]==='"'){inQ=!inQ;}
+      else if(line[i]===','&&!inQ){result.push(cur.trim());cur='';}
+      else cur+=line[i];
+    }
+    result.push(cur.trim());
+    return result;
+  });
+}
+
+async function uploadCSV(){
+  const cadreId   = document.getElementById('csvCadre').value;
+  const insertPos = document.getElementById('csvInsertPos').value;
+  const file      = document.getElementById('csvFile').files[0];
+  if(!cadreId){ showMsg('csvMsg','Please select a cadre.','err'); return; }
+  if(!file){ showMsg('csvMsg','Please select a CSV file.','err'); return; }
+  showMsg('csvMsg','<span class="spinner"></span> Processing…','ok');
+
+  const text = await file.text();
+  const rows = parseCSV(text);
+  if(rows.length<2){ showMsg('csvMsg','CSV has no data rows.','err'); return; }
+  const headers = rows[0].map(h=>h.toLowerCase().trim());
+  const data    = rows.slice(1).filter(r=>r.some(c=>c.trim()));
+
+  const required=['name'];
+  for(const h of required){ if(!headers.includes(h)){ showMsg('csvMsg',`Missing required column: ${h}`,'err'); return; } }
+
+  const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, serverTimestamp } = window._fs;
+
+  try {
+    // If replace, delete existing
+    if(insertPos==='replace'){
+      const snap = await getDocs(collection(window._db,'seniority_officers'));
+      const toDelete = [];
+      snap.forEach(d=>{ if(d.data().cadre===cadreId) toDelete.push(d.id); });
+      for(const id of toDelete) await deleteDoc(doc(window._db,'seniority_officers',id));
+    }
+
+    // Determine start sl_no
+    const existing = _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    let startSl = insertPos==='start' ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
+    if(insertPos==='start' && existing.length){
+      // Shift existing up
+      for(const o of existing) await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+data.length});
+    }
+
+    let added=0;
+    for(let i=0;i<data.length;i++){
+      const row=data[i];
+      const get=(field)=>{ const idx=headers.indexOf(field); return idx>=0?(row[idx]||'').trim():''; };
+      const sl = parseInt(get('sl_no'))||startSl+i;
+      await addDoc(collection(window._db,'seniority_officers'),{
+        cadre:cadreId, sl_no:sl,
+        name:get('name'), order_no:get('order_no'),
+        feeder_category:get('feeder_category'),
+        dob:get('dob'), retirement_age:get('retirement_age')||'60',
+        status:get('status')||'active',
+        createdAt:serverTimestamp()
+      });
+      added++;
+    }
+    showMsg('csvMsg',`✓ ${added} officers imported successfully.`,'ok');
+    toast(`${added} officers imported.`);
+    await loadOfficers();
+  } catch(e){ showMsg('csvMsg','Error: '+e.message,'err'); }
+}
+
+function downloadTableCSV(){
+  const cadreFilter = document.getElementById('filterCadre').value;
+  const officers    = cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice();
+  const headers     = ['sl_no','name','cadre','order_no','feeder_category','dob','retirement_age','status'];
+  const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
+  const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  triggerDownload(csv,`seniority_${cadreFilter||'all'}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+
+// ── CADRES ──
+function renderCadreGrid(){
+  const grid = document.getElementById('cadreGrid');
+  if(!_cadres.length){ grid.innerHTML='<div style="color:var(--muted);padding:20px;">No cadres yet.</div>'; return; }
+  grid.innerHTML = _cadres.map(c=>{
+    const feederCadre = _cadres.find(x=>x.id===c.feeder);
+    const count = _officers.filter(o=>o.cadre===c.id&&o.status!=='retired'&&o.status!=='promoted').length;
+    const vacancy = Math.max(0,(c.sanctioned||0)-count);
+    return `<div class="cadre-card">
+      <div class="cadre-name">${escH(c.name)}</div>
+      <div class="cadre-meta">
+        <b>${escH(c.short)}</b> &nbsp;|&nbsp; Sanctioned: <b>${c.sanctioned||'—'}</b><br>
+        Working: <b>${count}</b> &nbsp;|&nbsp; Vacancy: <b style="color:${vacancy>0?'var(--red)':'var(--green)'}">${vacancy}</b><br>
+        Feeder: ${feederCadre?escH(feederCadre.name):'—'} &nbsp;|&nbsp; Order: ${c.order||0}
+      </div>
+      <div class="cadre-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editCadre('${c.id}')"><i class="fas fa-edit"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCadre('${c.id}','${escH(c.name)}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+  renderStrengthGrid();
+}
+
+function renderStrengthGrid(){
+  const grid = document.getElementById('strengthGrid');
+  if(!grid) return;
+  grid.innerHTML = _cadres.map(c => {
+    const count = _officers.filter(o=>o.cadre===c.id&&o.status!=='retired'&&o.status!=='promoted').length;
+    const vacancy = Math.max(0,(c.sanctioned||0)-count);
+    return `<div style="background:#f8f9ff;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--navy2);margin-bottom:10px;">${escH(c.name)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;white-space:nowrap;">Sanctioned:</label>
+        <input type="number" id="str_${c.id}" value="${c.sanctioned||0}" min="0"
+          style="width:80px;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;"
+          onkeydown="if(event.key==='Enter')saveStrength('${c.id}')">
+        <button class="btn btn-primary btn-sm" onclick="saveStrength('${c.id}')">Save</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);">
+        Working: <b>${count}</b> &nbsp;|&nbsp; Vacancy: <b style="color:${vacancy>0?'var(--red)':'var(--green)'}">${vacancy}</b>
+      </div>
+      <div id="strMsg_${c.id}" style="font-size:11.5px;margin-top:4px;min-height:16px;"></div>
+    </div>`;
+  }).join('');
+}
+
+async function saveStrength(cadreId){
+  const val = parseInt(document.getElementById(`str_${cadreId}`).value)||0;
+  const msgEl = document.getElementById(`strMsg_${cadreId}`);
+  const { doc, setDoc } = window._fs;
+  const cadre = _cadres.find(c=>c.id===cadreId);
+  if(!cadre) return;
+  try {
+    await setDoc(doc(window._db,'seniority_cadres',cadreId), {...cadre, sanctioned:val});
+    cadre.sanctioned = val;
+    msgEl.style.color='var(--green)'; msgEl.textContent='✓ Saved';
+    setTimeout(()=>msgEl.textContent='',2000);
+    renderCadreGrid();
+  } catch(e){ msgEl.style.color='var(--red)'; msgEl.textContent='Error: '+e.message; }
+}
+
+function editCadre(id){
+  const c = _cadres.find(x=>x.id===id); if(!c)return;
+  document.getElementById('cId').value        = c.id;
+  document.getElementById('cName').value      = c.name;
+  document.getElementById('cShort').value     = c.short;
+  document.getElementById('cSanctioned').value= c.sanctioned||'';
+  document.getElementById('cOrder').value     = c.order||0;
+  document.getElementById('cEditId').value    = id;
+  const sel = document.getElementById('cFeeder');
+  sel.innerHTML='<option value="">— None —</option>'+_cadres.filter(x=>x.id!==id).map(x=>`<option value="${x.id}"${x.id===c.feeder?' selected':''}>${escH(x.name)}</option>`).join('');
+  sel.value = c.feeder||'';
+  showPage('cadres');
+}
+
+async function saveCadre(){
+  const id    = document.getElementById('cId').value.trim();
+  const name  = document.getElementById('cName').value.trim();
+  const short = document.getElementById('cShort').value.trim();
+  const sanct = parseInt(document.getElementById('cSanctioned').value)||0;
+  const feeder= document.getElementById('cFeeder').value;
+  const order = parseInt(document.getElementById('cOrder').value)||0;
+  if(!id||!name||!short){ showMsg('cadreMsg','ID, Name and Short Name are required.','err'); return; }
+  const { doc, setDoc } = window._fs;
+  showMsg('cadreMsg','Saving…','ok');
+  try{
+    await setDoc(doc(window._db,'seniority_cadres',id),{id,name,short,sanctioned:sanct,feeder:feeder||null,order});
+    showMsg('cadreMsg','✓ Cadre saved.','ok');
+    toast('Cadre saved: '+name);
+    clearCadreForm();
+    await loadCadres();
+    populateCadreSelects();
+  } catch(e){ showMsg('cadreMsg','Error: '+e.message,'err'); }
+}
+
+async function deleteCadre(id, name){
+  const count = _officers.filter(o=>o.cadre===id).length;
+  if(!confirm(`Delete cadre "${name}"?${count>0?` Warning: ${count} officer(s) will become orphaned.`:''}`)) return;
+  const { doc, deleteDoc } = window._fs;
+  try{ await deleteDoc(doc(window._db,'seniority_cadres',id)); toast('Cadre deleted.'); await loadCadres(); populateCadreSelects(); }
+  catch(e){ toast('Error: '+e.message); }
+}
+
+function clearCadreForm(){
+  ['cId','cName','cShort','cSanctioned','cOrder','cEditId'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  const sel=document.getElementById('cFeeder'); if(sel)sel.value='';
+}
+</script>
+</body>
+</html>
