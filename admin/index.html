@@ -35,7 +35,7 @@
 
   window._db   = db;
   window._auth = auth;
-  window._fs   = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, getDoc, setDoc };
+  window._fs   = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, getDoc, setDoc, where: () => {} };
   window._authFn = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
 
   // ── Direct delete helper: runs inside module scope so doc() & deleteDoc() are native ──
@@ -541,6 +541,9 @@ tbody td .cell-sub  { color:var(--text-muted); font-size:1.15rem; margin-top:3px
     <div class="nav-item" data-page="doccards" onclick="showPage('doccards')"><i class="fas fa-th-large"></i> Doc Cards</div>
     <div class="nav-item" data-page="suggestions" onclick="showPage('suggestions')"><i class="fas fa-comments"></i> Suggestions</div>
     <div class="nav-item" data-page="users" onclick="showPage('users')"><i class="fas fa-users"></i> Registered Users</div>
+    <div class="nav-item" data-page="quicklinks" onclick="showPage('quicklinks')"><i class="fas fa-link"></i> Quick Links</div>
+    <div class="nav-item" data-page="hmcapprovals" onclick="showPage('hmcapprovals')"><i class="fas fa-user-check"></i> HMC Approvals <span id="hmcPendingBadge" style="display:none;background:#e53e3e;color:#fff;border-radius:10px;padding:1px 7px;font-size:1rem;margin-left:4px;">0</span></div>
+    <a class="nav-item" href="seniority-admin.html" target="_blank" style="text-decoration:none;"><i class="fas fa-list-ol"></i> Seniority Admin ↗</a>
     <div class="nav-item" data-page="subadmins" onclick="showPage('subadmins')" style="display:none"><i class="fas fa-user-shield"></i> Sub Admins</div>
     <div class="sidebar-footer">
       <div id="userEmail"></div>
@@ -1031,6 +1034,143 @@ tbody td .cell-sub  { color:var(--text-muted); font-size:1.15rem; margin-top:3px
       </div>
     </div>
 
+    <!-- ══════════ QUICK LINKS ══════════ -->
+    <div class="page" id="page-quicklinks">
+      <div class="page-header">
+        <h1>🔗 Quick <span>Links</span></h1>
+        <span class="badge">quick_links</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-plus-circle"></i> Add / Edit Quick Link</h2>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Group Heading *</label>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <select id="qlGroupSelect" onchange="qlHandleGroupSelect()" style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:1.25rem;background:#fff;">
+                <option value="">— New heading —</option>
+              </select>
+              <span style="color:var(--text-muted);font-size:1.1rem;">or type new:</span>
+              <input type="text" id="qlGroup" placeholder="New heading name" style="flex:1;" oninput="qlHandleGroupInput()">
+            </div>
+            <small style="color:var(--text-muted)">Select existing heading from dropdown, or type a new one below.</small>
+          </div>
+          <div class="form-group">
+            <label>Link Label *</label>
+            <input type="text" id="qlLabel" placeholder="e.g. Return Filing">
+          </div>
+          <div class="form-group full">
+            <label>URL *</label>
+            <input type="url" id="qlUrl" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label>Order within group</label>
+            <input type="number" id="qlOrder" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label>Group Order (on page)</label>
+            <input type="number" id="qlGroupOrder" placeholder="0" min="0">
+          </div>
+        </div>
+        <input type="hidden" id="qlEditId">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveQuickLink()"><i class="fas fa-save"></i> Save Link</button>
+          <button class="btn btn-secondary" onclick="clearQuickLinkForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div id="qlMsg" style="margin-top:10px;font-size:1.3rem"></div>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-list"></i> All Quick Links
+          <button class="btn btn-secondary" onclick="qlSeedDefaults()" style="margin-left:12px;padding:5px 14px;font-size:1.1rem;" title="Import the default Kerala Taxes, CBIC, GST Portal etc. links into Firestore">⬆ Import Default Links</button>
+        </h2>
+        <p style="color:var(--text-muted);font-size:1.2rem;margin-bottom:8px;">Click <strong>Import Default Links</strong> once to seed the standard headings (Kerala Taxes, CBIC, GST Portal, eGazette, E-Office, Kerala PSC) into Firestore. Skips any that already exist.</p>
+        <div id="qlGroupsContainer">
+          <tr class="empty-row"><td><span class="spinner"></span> Loading…</td></tr>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ HMC APPROVALS ══════════ -->
+    <div class="page" id="page-hmcapprovals">
+      <div class="page-header">
+        <h1>✅ HMC <span>Approvals</span></h1>
+        <span class="badge">hmc_users</span>
+      </div>
+
+      <div class="form-card">
+        <h2><i class="fas fa-clock"></i> Pending Approvals
+          <span class="badge" id="hmcPendingCount" style="margin-left:8px">—</span>
+        </h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Name of Office</th><th>Designation</th><th>Phone</th><th>Email</th><th>Registered</th><th>Action</th>
+            </tr></thead>
+            <tbody id="hmcPendingTable">
+              <tr class="empty-row"><td colspan="7"><span class="spinner"></span> Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="form-card" style="margin-top:16px">
+        <h2><i class="fas fa-check-circle"></i> Approved Members</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Name of Office</th><th>Designation</th><th>Phone</th><th>Email</th><th>Action</th>
+            </tr></thead>
+            <tbody id="hmcApprovedTable">
+              <tr class="empty-row"><td colspan="6"><span class="spinner"></span> Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="form-card" style="margin-top:16px">
+        <h2><i class="fas fa-database"></i> HMC Data Management</h2>
+        <p style="color:var(--text-muted);font-size:1.25rem;margin-bottom:16px">Delete all entries for a year, or move entries from one year to another.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Select Member</label>
+            <select id="hmcDataUid" onchange="hmcLoadUserYears()" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:1.25rem;width:100%;">
+              <option value="">— Select approved member —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Financial Year</label>
+            <select id="hmcDataYear" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:1.25rem;width:100%;">
+              <option value="">— Select year —</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row" style="flex-wrap:wrap;gap:10px;">
+          <button class="btn btn-danger" onclick="hmcDeleteYear()"><i class="fas fa-trash"></i> Delete All Entries for This Year</button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:1.2rem;color:var(--text-muted);white-space:nowrap;">Move to year:</label>
+            <input type="text" id="hmcMoveToYear" placeholder="e.g. 2024-25" maxlength="10" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:1.2rem;width:120px;">
+            <button class="btn btn-primary" onclick="hmcMoveYear()"><i class="fas fa-exchange-alt"></i> Move</button>
+          </div>
+        </div>
+        <div id="hmcDataMsg" style="margin-top:10px;font-size:1.3rem;"></div>
+      </div>
+
+    </div>
+
+    <!-- Reject Modal -->
+    <div id="rejectModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:12px;padding:28px;max-width:440px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,.3);">
+        <h3 style="margin-bottom:14px;color:#b91c1c;">❌ Reject Application</h3>
+        <p style="font-size:1.25rem;color:#555;margin-bottom:14px;">Enter a rejection reason that will be shown to the applicant:</p>
+        <textarea id="rejectMsg" rows="4" style="width:100%;border:1px solid #d1d5db;border-radius:8px;padding:10px;font-size:1.25rem;font-family:inherit;resize:vertical;box-sizing:border-box;" placeholder="e.g. This office is not registered for HMC access."></textarea>
+        <input type="hidden" id="rejectUid">
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
+          <button class="btn btn-secondary" onclick="document.getElementById('rejectModal').style.display='none'">Cancel</button>
+          <button class="btn btn-danger" onclick="submitReject()">Reject</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div><!-- /adminPanel -->
 
@@ -1089,6 +1229,8 @@ function showPage(id) {
   if (id==="suggestions") loadSuggestions();
   if (id==="subadmins")   loadSubAdmins();
   if (id==="users")       loadUsers();
+  if (id==="quicklinks")  loadQuickLinks();
+  if (id==="hmcapprovals") loadHmcApprovals();
 }
 
 /* ══ AUTH ══ */
@@ -1110,6 +1252,7 @@ async function loadAll() {
   // Check firebase config
   if (!window._db) { document.getElementById("configWarn").style.display="block"; return; }
   loadDashboardCounts();
+  checkHmcPendingBadge();
 }
 
 async function loadDashboardCounts() {
@@ -1143,7 +1286,7 @@ async function loadRecent() {
       html += `<tr>
         <td>${i++}</td>
         <td><div class="cell-main">${escH(truncate(r.title,70))}</div>
-            <div class="cell-sub"><a href="${escH(r.link||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(r.link,50))}</a></div></td>
+            <div class="cell-sub"><a href="https://www.gstcell.com/admin/${escH(r.link||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(r.link,50))}</a></div></td>
         <td>${r.category ? `<span class="tag">${escH(r.category)}</span>` : "—"}</td>
         <td>${r.order||"—"}</td>
         <td><div class="actions">
@@ -1218,7 +1361,7 @@ function addPara(para = {}) {
         <i class="fas fa-upload"></i> Upload
         <input type="file" accept="image/*" style="display:none" onchange="handleParaImgUpload(this)">
       </label>
-      <img class="para-item-img-preview" src="${escH(imageUrl)}" style="display:${imageUrl?'block':'none'}">
+      <img class="para-item-img-preview" src="https://www.gstcell.com/admin/${escH(imageUrl)}" style="display:${imageUrl?'block':'none'}">
     </div>
     <div class="para-item-bottom">
       <textarea class="para-text" placeholder="Paragraph text…">${escH(text)}</textarea>
@@ -1357,7 +1500,7 @@ async function loadNavLinks() {
         <td><span class="tag">${escH(n.menu||"")}</span></td>
         <td><span class="tag blue">${escH(n.subMenu||"")}</span></td>
         <td><div class="cell-main">${escH(truncate(n.name,50))}</div>
-            <div class="cell-sub"><a href="${escH(n.url||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(n.url,50))}</a></div></td>
+            <div class="cell-sub"><a href="https://www.gstcell.com/admin/${escH(n.url||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(n.url,50))}</a></div></td>
         <td>${n.order||"—"}</td>
         <td><div class="actions">
           <button class="btn btn-edit" onclick="editNavLink('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
@@ -1668,7 +1811,7 @@ async function loadDocCards() {
         </span>`
       ).join("");
       const imgHtml = c.imageUrl
-        ? `<img src="${escH(c.imageUrl)}" style="width:48px;height:32px;object-fit:cover;border-radius:4px">`
+        ? `<img src="https://www.gstcell.com/admin/${escH(c.imageUrl)}" style="width:48px;height:32px;object-fit:cover;border-radius:4px">`
         : `<span style="color:var(--text-muted);font-size:1.1rem">No image</span>`;
       html += `<tr>
         <td>${imgHtml}</td>
@@ -2166,6 +2309,388 @@ function filterUsers() {
     (u.phone || "").toLowerCase().includes(q)
   );
   renderUsersTable(filtered);
+}
+
+/* ══════════════════════════════════════════
+   QUICK LINKS
+══════════════════════════════════════════ */
+function qlHandleGroupSelect() {
+  const sel = document.getElementById('qlGroupSelect');
+  const txt = document.getElementById('qlGroup');
+  if (sel.value) { txt.value = sel.value; txt.style.opacity = '0.5'; txt.readOnly = true; }
+  else { txt.value = ''; txt.style.opacity = '1'; txt.readOnly = false; txt.focus(); }
+}
+function qlHandleGroupInput() {
+  const txt = document.getElementById('qlGroup');
+  const sel = document.getElementById('qlGroupSelect');
+  if (txt.value) { sel.value = ''; txt.readOnly = false; txt.style.opacity = '1'; }
+}
+
+let _allQuickLinks = [];
+
+async function loadQuickLinks() {
+  const { collection, getDocs } = window._fs;
+  const container = document.getElementById('qlGroupsContainer');
+  container.innerHTML = '<p style="color:var(--text-muted);padding:10px"><span class="spinner"></span> Loading…</p>';
+  try {
+    const snap = await getDocs(collection(window._db, 'quick_links'));
+    _allQuickLinks = [];
+    snap.forEach(d => _allQuickLinks.push({ id: d.id, ...d.data() }));
+    // Populate heading dropdown
+    const groups = [...new Set(_allQuickLinks.map(l => l.group).filter(Boolean))].sort();
+    const sel = document.getElementById('qlGroupSelect');
+    if (sel) {
+      sel.innerHTML = '<option value="">— New heading —</option>' +
+        groups.map(g => `<option value="${escH(g)}">${escH(g)}</option>`).join('');
+    }
+    renderQuickLinks();
+  } catch(e) { container.innerHTML = `<p style="color:red">Error: ${e.message}</p>`; }
+}
+
+function renderQuickLinks() {
+  const container = document.getElementById('qlGroupsContainer');
+  if (!_allQuickLinks.length) { container.innerHTML = '<p style="color:var(--text-muted);padding:10px">No quick links yet.</p>'; return; }
+  const groups = {};
+  _allQuickLinks.forEach(l => {
+    if (!groups[l.group]) groups[l.group] = { order: l.groupOrder || 0, items: [] };
+    groups[l.group].items.push(l);
+  });
+  let html = '';
+  Object.entries(groups).sort((a,b) => a[1].order - b[1].order).forEach(([grp, {items}]) => {
+    html += `<div style="margin-bottom:18px;">
+      <div style="font-weight:700;color:var(--accent);font-size:1.2rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);padding-bottom:6px;margin-bottom:8px;">${escH(grp)}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:1.25rem;">
+        <thead><tr><th style="text-align:left;padding:6px 8px;background:var(--surface2);">Label</th><th style="text-align:left;padding:6px 8px;background:var(--surface2);">URL</th><th style="text-align:center;padding:6px 8px;background:var(--surface2);">Order</th><th style="padding:6px 8px;background:var(--surface2);">Actions</th></tr></thead>
+        <tbody>`;
+    items.forEach(l => {
+      html += `<tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:6px 8px;">${escH(l.label||'')}</td>
+        <td style="padding:6px 8px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><a href="${escH(l.url||'#')}" target="_blank" style="color:var(--accent);font-size:1.1rem;">${escH(l.url||'')}</a></td>
+        <td style="padding:6px 8px;text-align:center;">${l.order||0}</td>
+        <td style="padding:6px 8px;text-align:center;white-space:nowrap;">
+          <button class="btn btn-secondary" style="padding:4px 10px;font-size:1.1rem;" onclick="editQuickLink('${l.id}')"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-danger" style="padding:4px 10px;font-size:1.1rem;" onclick="deleteQuickLink('${l.id}','${escH(l.label||'')}')"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+  container.innerHTML = html;
+}
+
+async function saveQuickLink() {
+  // Group comes from text field (filled by dropdown selection OR direct typing)
+  const group  = (document.getElementById('qlGroup').value || '').trim();
+  const label  = document.getElementById('qlLabel').value.trim();
+  const url    = document.getElementById('qlUrl').value.trim();
+  const order  = parseInt(document.getElementById('qlOrder').value) || 0;
+  const gOrder = parseInt(document.getElementById('qlGroupOrder').value) || 0;
+  const editId = document.getElementById('qlEditId').value.trim();
+  const msgEl  = document.getElementById('qlMsg');
+  if (!group) { msgEl.innerHTML = '<span style="color:red">Please select or type a Group Heading.</span>'; return; }
+  if (!label) { msgEl.innerHTML = '<span style="color:red">Link Label is required.</span>'; return; }
+  if (!url)   { msgEl.innerHTML = '<span style="color:red">URL is required.</span>'; return; }
+  const { collection, addDoc, doc, updateDoc, serverTimestamp } = window._fs;
+  msgEl.innerHTML = '<span class="spinner"></span> Saving…';
+  try {
+    const data = { group, label, url, order, groupOrder: gOrder, updatedAt: serverTimestamp() };
+    if (editId) {
+      await updateDoc(doc(window._db, 'quick_links', editId), data);
+      msgEl.innerHTML = '<span style="color:green">✓ Updated.</span>';
+    } else {
+      await addDoc(collection(window._db, 'quick_links'), { ...data, createdAt: serverTimestamp() });
+      msgEl.innerHTML = '<span style="color:green">✓ Saved.</span>';
+    }
+    clearQuickLinkForm();
+    await loadQuickLinks();
+  } catch(e) { msgEl.innerHTML = `<span style="color:red">Error: ${e.message}</span>`; }
+}
+
+function editQuickLink(id) {
+  const l = _allQuickLinks.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('qlGroup').value      = l.group || '';
+  document.getElementById('qlLabel').value      = l.label || '';
+  document.getElementById('qlUrl').value        = l.url || '';
+  document.getElementById('qlOrder').value      = l.order || 0;
+  document.getElementById('qlGroupOrder').value = l.groupOrder || 0;
+  document.getElementById('qlEditId').value     = id;
+  document.getElementById('qlMsg').innerHTML    = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteQuickLink(id, label) {
+  confirm2(`Delete "${label}"?`, async () => {
+    const { doc, deleteDoc } = window._fs;
+    try { await window._deleteDoc('quick_links', id); toast('Deleted.'); await loadQuickLinks(); }
+    catch(e) { toast('Error: '+e.message, 'error'); }
+  });
+}
+
+function clearQuickLinkForm() {
+  ['qlGroup','qlLabel','qlUrl','qlOrder','qlGroupOrder','qlEditId'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const sel = document.getElementById('qlGroupSelect');
+  if (sel) sel.value = '';
+  document.getElementById('qlMsg').innerHTML = '';
+}
+
+// ── Seed default hardcoded quick links into Firestore ──
+const QL_DEFAULTS = [
+  // group, label, url, order, groupOrder
+  { group:'Kerala Taxes',  label:'Home',                    url:'https://www.keralataxes.gov.in',                                         order:0, groupOrder:0 },
+  { group:'Kerala Taxes',  label:'KITIS (Return Filing)',   url:'https://kitis.keralataxes.gov.in/',                                      order:1, groupOrder:0 },
+  { group:'Kerala Taxes',  label:'Facebook Page',           url:'https://www.facebook.com/keralastategst/',                               order:2, groupOrder:0 },
+  { group:'Kerala Taxes',  label:'Directory',               url:'https://www.gstcell.com/sgst-directory',                                 order:3, groupOrder:0 },
+  { group:'CBIC',          label:'Home',                    url:'https://www.cbic.gov.in',                                                order:0, groupOrder:1 },
+  { group:'CBIC',          label:'Notification',            url:'https://taxinformation.cbic.gov.in/',                                    order:1, groupOrder:1 },
+  { group:'CBIC',          label:'Circular',                url:'https://www.cbic.gov.in/htdocs-cbec/gst/circularcgst',                  order:2, groupOrder:1 },
+  { group:'CBIC',          label:'Instructions',            url:'https://www.cbic.gov.in/htdocs-cbec/gst/gstInstructions',               order:3, groupOrder:1 },
+  { group:'GST Portal',    label:'Return Filing',           url:'https://services.gst.gov.in/services/login',                            order:0, groupOrder:2 },
+  { group:'GST Portal',    label:'GST Council',             url:'http://gstcouncil.gov.in/',                                              order:1, groupOrder:2 },
+  { group:'GST Portal',    label:'Advance Ruling',          url:'http://www.gstcouncil.gov.in/authority-for-advance-rulings',            order:2, groupOrder:2 },
+  { group:'GST Portal',    label:'National AAR',            url:'https://www.naa.gov.in/news.php?page=1&cat=2&pagesize=10',              order:3, groupOrder:2 },
+  { group:'eGazette',      label:'Ordinary Gazette',        url:'http://www.egazette.kerala.gov.in/archives.php?id=6',                  order:0, groupOrder:3 },
+  { group:'eGazette',      label:'Extra Ordinary',          url:'https://compose.kerala.gov.in/egazettelink1',                           order:1, groupOrder:3 },
+  { group:'eGazette',      label:'eGazette India',          url:'https://egazette.gov.in/',                                              order:2, groupOrder:3 },
+  { group:'E-Office',      label:'Citizen Portal',          url:'https://eoffice.kerala.gov.in/EofficePortal/letterSearchRedirect',      order:0, groupOrder:4 },
+  { group:'E-Office',      label:'GST Employee Login',      url:'http://www.ctax.kerala.gov.in',                                         order:1, groupOrder:4 },
+  { group:'E-Office',      label:'My Office',               url:'https://www.inforack.in',                                               order:2, groupOrder:4 },
+  { group:'Kerala PSC',    label:'Dept. Test Login',        url:'https://psc.kerala.gov.in/kpsc/',                                       order:0, groupOrder:5 },
+  { group:'Kerala PSC',    label:'One Time Regn.',          url:'https://thulasi.psc.kerala.gov.in/thulasi/',                            order:1, groupOrder:5 },
+  { group:'Kerala PSC',    label:'Rank List',               url:'https://keralapsc.gov.in/rankedlist',                                   order:2, groupOrder:5 },
+];
+
+async function qlSeedDefaults() {
+  const msgEl = document.getElementById('qlMsg');
+  msgEl.innerHTML = '<span class="spinner"></span> Importing defaults…';
+  const { collection, addDoc, serverTimestamp } = window._fs;
+  try {
+    // Get existing labels to avoid duplicates
+    const existing = new Set(_allQuickLinks.map(l => `${l.group}|${l.label}`));
+    let added = 0, skipped = 0;
+    for (const item of QL_DEFAULTS) {
+      const key = `${item.group}|${item.label}`;
+      if (existing.has(key)) { skipped++; continue; }
+      await addDoc(collection(window._db, 'quick_links'), { ...item, createdAt: serverTimestamp() });
+      added++;
+    }
+    msgEl.innerHTML = `<span style="color:green">✓ Imported ${added} links. Skipped ${skipped} already existing.</span>`;
+    await loadQuickLinks();
+  } catch(e) { msgEl.innerHTML = `<span style="color:red">Error: ${e.message}</span>`; }
+}
+
+/* ══════════════════════════════════════════
+   HMC APPROVALS
+══════════════════════════════════════════ */
+async function loadHmcApprovals() {
+  const { collection, getDocs } = window._fs;
+  const pendingTb  = document.getElementById('hmcPendingTable');
+  const approvedTb = document.getElementById('hmcApprovedTable');
+  pendingTb.innerHTML  = '<tr class="empty-row"><td colspan="7"><span class="spinner"></span> Loading…</td></tr>';
+  approvedTb.innerHTML = '<tr class="empty-row"><td colspan="6"><span class="spinner"></span> Loading…</td></tr>';
+  try {
+    const snap = await getDocs(collection(window._db, 'hmc_users'));
+    const pending = [], approved = [];
+    snap.forEach(d => {
+      const u = { id: d.id, ...d.data() };
+      if (u.approvalStatus === 'approved') approved.push(u);
+      else if (u.approvalStatus !== 'rejected') pending.push(u);
+    });
+    // Update badge
+    const badge = document.getElementById('hmcPendingBadge');
+    const countEl = document.getElementById('hmcPendingCount');
+    if (badge) { badge.textContent = pending.length; badge.style.display = pending.length > 0 ? 'inline' : 'none'; }
+    if (countEl) countEl.textContent = pending.length;
+
+    // Populate member dropdown for data management
+    const memberSel = document.getElementById('hmcDataUid');
+    if (memberSel) {
+      memberSel.innerHTML = '<option value="">— Select approved member —</option>' +
+        approved.map(u => `<option value="${u.id}">${escH(u.name||u.email||u.id)}</option>`).join('');
+    }
+
+    // Render pending
+    if (!pending.length) {
+      pendingTb.innerHTML = '<tr class="empty-row"><td colspan="7">No pending approvals.</td></tr>';
+    } else {
+      pendingTb.innerHTML = pending.map((u,i) => {
+        const ts = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+        return `<tr>
+          <td>${i+1}</td>
+          <td><div class="cell-main">${escH(u.name||'—')}</div></td>
+          <td><div class="cell-sub">${escH(u.designation||'—')}</div></td>
+          <td>${escH(u.phone||'—')}</td>
+          <td>${escH(u.email||'—')}</td>
+          <td style="white-space:nowrap;font-size:1.15rem;color:var(--text-muted)">${ts}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-primary" style="padding:4px 10px;font-size:1.1rem;background:#16a34a;margin-right:4px;" onclick="approveHmcUser('${u.id}','${escH(u.name||'')}')"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn btn-danger" style="padding:4px 10px;font-size:1.1rem;" onclick="openRejectModal('${u.id}')"><i class="fas fa-times"></i> Reject</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Render approved
+    if (!approved.length) {
+      approvedTb.innerHTML = '<tr class="empty-row"><td colspan="6">No approved members yet.</td></tr>';
+    } else {
+      approvedTb.innerHTML = approved.map((u,i) => `<tr>
+        <td>${i+1}</td>
+        <td><div class="cell-main">${escH(u.name||'—')}</div></td>
+        <td><div class="cell-sub">${escH(u.designation||'—')}</div></td>
+        <td>${escH(u.phone||'—')}</td>
+        <td>${escH(u.email||'—')}</td>
+        <td>
+          <button class="btn btn-danger" style="padding:4px 10px;font-size:1.1rem;" onclick="revokeHmcUser('${u.id}','${escH(u.name||'')}')"><i class="fas fa-ban"></i> Revoke</button>
+        </td>
+      </tr>`).join('');
+    }
+  } catch(e) {
+    pendingTb.innerHTML = `<tr class="empty-row"><td colspan="7" style="color:red">Error: ${e.message}</td></tr>`;
+  }
+}
+
+async function hmcLoadUserYears() {
+  const uid = document.getElementById('hmcDataUid').value;
+  const yearSel = document.getElementById('hmcDataYear');
+  yearSel.innerHTML = '<option value="">— Loading… —</option>';
+  if (!uid) { yearSel.innerHTML = '<option value="">— Select year —</option>'; return; }
+  try {
+    const { doc, getDoc } = window._fs;
+    const snap = await getDoc(doc(window._db, 'hmc_daybook', uid));
+    const years = snap.exists() ? (snap.data().years || []) : [];
+    yearSel.innerHTML = '<option value="">— Select year —</option>' +
+      years.sort().map(y => `<option value="${escH(y)}">${escH(y)}</option>`).join('');
+  } catch(e) { yearSel.innerHTML = '<option value="">Error loading years</option>'; }
+}
+
+async function hmcDeleteYear() {
+  const uid  = document.getElementById('hmcDataUid').value;
+  const year = document.getElementById('hmcDataYear').value;
+  const msg  = document.getElementById('hmcDataMsg');
+  if (!uid || !year) { msg.innerHTML = '<span style="color:red">Please select a member and year.</span>'; return; }
+  const memberName = document.getElementById('hmcDataUid').options[document.getElementById('hmcDataUid').selectedIndex].text;
+  confirm2(`Delete ALL entries for ${memberName} — year ${year}? This cannot be undone.`, async () => {
+    msg.innerHTML = '<span class="spinner"></span> Deleting…';
+    try {
+      const { collection, getDocs, doc, getDoc, setDoc } = window._fs;
+      // Delete all entries in the year
+      const colPath = `hmc_daybook/${uid}/years/${year}/entries`;
+      const snap = await getDocs(collection(window._db, colPath));
+      const delPromises = [];
+      snap.forEach(d => delPromises.push(window._deleteDoc(colPath, d.id)));
+      await Promise.all(delPromises);
+      // Also delete the meta/balances doc
+      try { await window._deleteDoc(`hmc_daybook/${uid}/years/${year}/meta`, 'balances'); } catch(e) {}
+      // Remove year from years list
+      const mainSnap = await getDoc(doc(window._db, 'hmc_daybook', uid));
+      if (mainSnap.exists()) {
+        const years = (mainSnap.data().years || []).filter(y => y !== year);
+        await setDoc(doc(window._db, 'hmc_daybook', uid), { years }, { merge: true });
+      }
+      msg.innerHTML = `<span style="color:green">✓ All entries for ${year} deleted.</span>`;
+      await hmcLoadUserYears();
+    } catch(e) { msg.innerHTML = `<span style="color:red">Error: ${e.message}</span>`; }
+  });
+}
+
+async function hmcMoveYear() {
+  const uid     = document.getElementById('hmcDataUid').value;
+  const fromYear= document.getElementById('hmcDataYear').value;
+  const toYear  = document.getElementById('hmcMoveToYear').value.trim();
+  const msg     = document.getElementById('hmcDataMsg');
+  if (!uid || !fromYear) { msg.innerHTML = '<span style="color:red">Please select a member and source year.</span>'; return; }
+  if (!toYear || !/^\d{4}-\d{2}$/.test(toYear)) { msg.innerHTML = '<span style="color:red">Enter target year in format YYYY-YY (e.g. 2024-25).</span>'; return; }
+  if (fromYear === toYear) { msg.innerHTML = '<span style="color:red">Source and target year are the same.</span>'; return; }
+  const memberName = document.getElementById('hmcDataUid').options[document.getElementById('hmcDataUid').selectedIndex].text;
+  confirm2(`Move all entries for ${memberName} from ${fromYear} → ${toYear}?`, async () => {
+    msg.innerHTML = '<span class="spinner"></span> Moving…';
+    try {
+      const { collection, getDocs, addDoc, doc, getDoc, setDoc, serverTimestamp } = window._fs;
+      // Read all entries from source year
+      const srcPath = `hmc_daybook/${uid}/years/${fromYear}/entries`;
+      const dstPath = `hmc_daybook/${uid}/years/${toYear}/entries`;
+      const snap = await getDocs(collection(window._db, srcPath));
+      const rows = [];
+      snap.forEach(d => rows.push({ id: d.id, data: d.data() }));
+      // Write to target year
+      for (const r of rows) {
+        await addDoc(collection(window._db, dstPath), r.data);
+      }
+      // Copy meta/balances if exists
+      try {
+        const balSnap = await getDoc(doc(window._db, `hmc_daybook/${uid}/years/${fromYear}/meta/balances`));
+        if (balSnap.exists()) {
+          await setDoc(doc(window._db, `hmc_daybook/${uid}/years/${toYear}/meta/balances`), balSnap.data());
+        }
+      } catch(e) {}
+      // Delete source entries
+      const delPromises = rows.map(r => window._deleteDoc(srcPath, r.id));
+      await Promise.all(delPromises);
+      try { await window._deleteDoc(`hmc_daybook/${uid}/years/${fromYear}/meta`, 'balances'); } catch(e) {}
+      // Update years list
+      const mainSnap = await getDoc(doc(window._db, 'hmc_daybook', uid));
+      if (mainSnap.exists()) {
+        const years = [...new Set([...(mainSnap.data().years||[]).filter(y=>y!==fromYear), toYear])].sort();
+        await setDoc(doc(window._db, 'hmc_daybook', uid), { years }, { merge: true });
+      }
+      msg.innerHTML = `<span style="color:green">✓ ${rows.length} entries moved from ${fromYear} to ${toYear}.</span>`;
+      await hmcLoadUserYears();
+    } catch(e) { msg.innerHTML = `<span style="color:red">Error: ${e.message}</span>`; }
+  });
+}
+
+async function approveHmcUser(uid, name) {
+  const { doc, updateDoc } = window._fs;
+  try {
+    await updateDoc(doc(window._db, 'hmc_users', uid), { approvalStatus: 'approved', rejectionMsg: '' });
+    toast(`✓ ${name || 'User'} approved.`);
+    await loadHmcApprovals();
+  } catch(e) { toast('Error: '+e.message, 'error'); }
+}
+
+function openRejectModal(uid) {
+  document.getElementById('rejectUid').value = uid;
+  document.getElementById('rejectMsg').value = '';
+  document.getElementById('rejectModal').style.display = 'flex';
+}
+
+async function submitReject() {
+  const uid = document.getElementById('rejectUid').value;
+  const msg = document.getElementById('rejectMsg').value.trim();
+  if (!msg) { alert('Please enter a rejection reason.'); return; }
+  const { doc, updateDoc } = window._fs;
+  try {
+    await updateDoc(doc(window._db, 'hmc_users', uid), { approvalStatus: 'rejected', rejectionMsg: msg });
+    document.getElementById('rejectModal').style.display = 'none';
+    toast('Application rejected.');
+    await loadHmcApprovals();
+  } catch(e) { toast('Error: '+e.message, 'error'); }
+}
+
+async function revokeHmcUser(uid, name) {
+  confirm2(`Revoke access for "${name}"? Their status will be set back to pending.`, async () => {
+    const { doc, updateDoc } = window._fs;
+    try {
+      await updateDoc(doc(window._db, 'hmc_users', uid), { approvalStatus: 'pending', rejectionMsg: '' });
+      toast(`Access revoked for ${name}.`);
+      await loadHmcApprovals();
+    } catch(e) { toast('Error: '+e.message, 'error'); }
+  });
+}
+
+// Check pending HMC count on load
+async function checkHmcPendingBadge() {
+  try {
+    const { collection, getDocs } = window._fs;
+    const snap = await getDocs(collection(window._db, 'hmc_users'));
+    let count = 0;
+    snap.forEach(d => { const s = d.data().approvalStatus; if (!s || s === 'pending') count++; });
+    const badge = document.getElementById('hmcPendingBadge');
+    if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline' : 'none'; }
+  } catch(e) {}
 }
 </script>
 </body>
