@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seniority List — Kerala GST Department</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+:root {
+  --navy:   #0f2044;
+  --navy2:  #1a3a6b;
+  --gold:   #c9a84c;
+  --gold2:  #e8c96a;
+  --cream:  #f8f5ef;
+  --white:  #ffffff;
+  --border: #d8d0c0;
+  --text:   #1a1a2e;
+  --muted:  #6b7080;
+  --red:    #b91c1c;
+  --green:  #15803d;
+  --accent: #1a56db;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--text);font-size:14px;line-height:1.6;}
+
+/* ── HEADER ── */
+.site-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid rgba(255,255,255,.1);}
+.header-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.02em;}
+.header-logo span{color:#fff;font-weight:300;}
+.header-nav a{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;margin-left:20px;transition:color .2s;}
+.header-nav a:hover{color:var(--gold);}
+.header-banner{padding:28px 32px 24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.header-banner h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1.2;}
+.header-banner h1 span{color:var(--gold);}
+.header-banner p{color:rgba(255,255,255,.65);font-size:13px;margin-top:6px;}
+.header-meta{text-align:right;font-size:12px;color:rgba(255,255,255,.5);}
+.header-meta strong{color:var(--gold2);font-size:14px;display:block;}
+
+/* ── CADRE TABS ── */
+.cadre-tabs{background:var(--navy);padding:0 32px;display:flex;gap:0;overflow-x:auto;border-top:1px solid rgba(255,255,255,.08);}
+.cadre-tab{padding:12px 18px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s;letter-spacing:.03em;}
+.cadre-tab:hover{color:#fff;}
+.cadre-tab.active{color:var(--gold);border-bottom-color:var(--gold);font-weight:600;}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:1300px;margin:0 auto;padding:24px 24px;}
+.panel-row{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start;}
+@media(max-width:900px){.panel-row{grid-template-columns:1fr;}.cadre-tabs{padding:0 16px;}.header-top,.header-banner{padding:16px;}.main{padding:16px;}}
+
+/* ── STAT CARDS ── */
+.stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.stat-card{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.stat-card .value{font-size:26px;font-weight:700;font-family:'Playfair Display',serif;color:var(--navy2);}
+.stat-card .value.red{color:var(--red);}
+.stat-card .value.green{color:var(--green);}
+.stat-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ── VACANCY PANEL ── */
+.vacancy-panel{background:#fff;border-radius:12px;border:1px solid var(--border);padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.vacancy-panel h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy2);border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:14px;}
+.vac-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dotted var(--border);font-size:13px;}
+.vac-row:last-child{border-bottom:none;}
+.vac-row .vname{color:var(--muted);}
+.vac-row .vval{font-weight:600;color:var(--navy2);}
+.vac-row .vval.red{color:var(--red);}
+.vac-row .vval.green{color:var(--green);}
+
+/* ── PROMOTION ESTIMATOR ── */
+.promo-panel{background:#fff;border-radius:12px;border:1px solid var(--border);padding:18px;margin-top:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.promo-panel h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy2);border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:14px;}
+.promo-select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;margin-bottom:10px;background:#fff;}
+.promo-result{background:var(--cream);border-radius:8px;padding:12px;font-size:13px;border:1px solid var(--border);}
+.promo-result .est-date{font-size:18px;font-weight:700;color:var(--navy2);font-family:'Playfair Display',serif;margin-bottom:4px;}
+.promo-result .est-sub{font-size:11px;color:var(--muted);}
+
+/* ── SENIORITY TABLE ── */
+.table-card{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.table-toolbar h2{font-size:15px;font-weight:700;color:var(--navy2);}
+.table-toolbar-right{display:flex;align-items:center;gap:8px;}
+.search-box{padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;width:200px;outline:none;font-family:'Inter',sans-serif;}
+.search-box:focus{border-color:var(--accent);}
+.btn-dl{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--navy2);color:#fff;display:inline-flex;align-items:center;gap:5px;transition:opacity .2s;}
+.btn-dl:hover{opacity:.85;}
+.seniority-table{width:100%;border-collapse:collapse;}
+.seniority-table thead th{background:var(--navy);color:#fff;padding:10px 14px;text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;position:sticky;top:0;z-index:2;}
+.seniority-table tbody tr{border-bottom:1px solid #f0ece4;transition:background .15s;}
+.seniority-table tbody tr:hover{background:#f8f6f0;}
+.seniority-table tbody tr.retiring-soon{background:#fff8e1;}
+.seniority-table tbody tr.retired{opacity:.55;}
+.seniority-table td{padding:9px 14px;font-size:13px;vertical-align:middle;}
+.seniority-table td.sl{font-weight:700;color:var(--muted);text-align:center;width:48px;}
+.seniority-table td.name{font-weight:600;color:var(--navy2);}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-active{background:#dcfce7;color:#15803d;}
+.badge-retired{background:#fee2e2;color:#b91c1c;}
+.badge-promoted{background:#dbeafe;color:#1e40af;}
+.badge-soon{background:#fef9c3;color:#854d0e;}
+.ret-date{font-size:11.5px;color:var(--muted);}
+.ret-date.soon{color:#b45309;font-weight:600;}
+.table-wrap{overflow-x:auto;max-height:520px;overflow-y:auto;}
+.empty-msg{text-align:center;padding:48px;color:var(--muted);font-size:14px;}
+.loader{text-align:center;padding:40px;color:var(--muted);}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid #ddd;border-top-color:var(--navy2);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:18px;font-size:12px;margin-top:32px;}
+footer a{color:var(--gold);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<!-- Login Gate -->
+<div id="loginGate" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0f2044,#1a3a6b);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.4);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:32px;margin-bottom:8px;">📋</div>
+      <h2 style="font-size:20px;font-weight:700;color:#0f2044;">Seniority List</h2>
+      <p style="font-size:13px;color:#6b7080;margin-top:4px;">Kerala State GST Department</p>
+      <p style="font-size:12px;color:#6b7080;margin-top:6px;">Please sign in with your GSTCell account to access the seniority list.</p>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Email</label>
+      <input type="email" id="gateEmail" placeholder="your@email.com" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')gateLogin()">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Password</label>
+      <input type="password" id="gatePwd" placeholder="••••••••" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')gateLogin()">
+    </div>
+    <button onclick="gateLogin()" style="width:100%;padding:12px;background:#1a56db;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Sign In</button>
+    <div id="gateError" style="color:#dc2626;font-size:12.5px;text-align:center;margin-top:10px;min-height:18px;"></div>
+  </div>
+</div>
+  <div class="header-top">
+    <div class="header-logo">Kerala <span>GST</span></div>
+    <nav class="header-nav">
+      <span id="snUserInfo" style="color:rgba(255,255,255,.5);font-size:12px;"></span>
+      <a href="seniority-admin.html">Admin</a>
+      <button id="snLogoutBtn" onclick="snLogout()" style="display:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:5px;padding:5px 12px;font-size:12px;cursor:pointer;margin-left:10px;">Sign Out</button>
+    </nav>
+  </div>
+  <div class="header-banner">
+    <div>
+      <h1>Seniority <span>List</span></h1>
+      <p>Kerala State Goods &amp; Services Tax Department — Officer Seniority Register</p>
+    </div>
+    <div class="header-meta">
+      <strong id="lastUpdated">—</strong>
+      Last Updated
+    </div>
+  </div>
+  <div class="cadre-tabs" id="cadreTabs">
+    <div class="loader"><span class="spinner"></span></div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="panel-row">
+
+    <!-- LEFT: Stats + Vacancy + Promoton Estimator -->
+    <div>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="label">Total Officers</div>
+          <div class="value" id="statTotal">—</div>
+          <div class="sub">in this cadre</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Vacancy</div>
+          <div class="value red" id="statVacancy">—</div>
+          <div class="sub" id="statVacancySub">of sanctioned strength</div>
+        </div>
+      </div>
+
+      <div class="vacancy-panel">
+        <h3>📊 Cadre Strength</h3>
+        <div class="vac-row"><span class="vname">Sanctioned Strength</span><span class="vval" id="vacSanctioned">—</span></div>
+        <div class="vac-row"><span class="vname">Working Strength</span><span class="vval" id="vacWorking">—</span></div>
+        <div class="vac-row"><span class="vname">Vacancy</span><span class="vval red" id="vacVacancy">—</span></div>
+        <div class="vac-row"><span class="vname">Retiring within 1 year</span><span class="vval" id="vacRetiring1">—</span></div>
+        <div class="vac-row"><span class="vname">Retiring within 2 years</span><span class="vval" id="vacRetiring2">—</span></div>
+      </div>
+
+      <div class="promo-panel">
+        <h3>🔼 Promotion Estimator</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Select an officer from the feeder cadre to estimate their promotion date to this cadre.</p>
+        <select class="promo-select" id="promoFeederSelect" onchange="estimatePromotion()">
+          <option value="">— Select feeder cadre officer —</option>
+        </select>
+        <div class="promo-result" id="promoResult" style="display:none;">
+          <div class="est-date" id="promoEstDate"></div>
+          <div class="est-sub" id="promoEstSub"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Table -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <h2 id="tableTitle">Seniority List</h2>
+        <div class="table-toolbar-right">
+          <input type="text" class="search-box" placeholder="🔍 Search officer…" id="searchInput" oninput="filterTable()">
+          <button class="btn-dl" onclick="downloadCSV()"><i class="fas fa-download"></i> CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="seniority-table">
+          <thead>
+            <tr>
+              <th style="width:48px;">Sl. No</th>
+              <th>Name</th>
+              <th>Order No.</th>
+              <th>Feeder Category</th>
+              <th>Date of Birth</th>
+              <th>Retirement Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="seniorityTableBody">
+            <tr><td colspan="7" class="loader"><span class="spinner"></span> Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  © 2026 Kerala State GST Department &nbsp;|&nbsp;
+  <a href="seniority-admin.html">Admin Panel</a>
+</footer>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, onSnapshot, doc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCpKgeXBwfvPDZUqbl0ro2xYTIIOYs40QI",
+    authDomain:        "gstcell-afe30.firebaseapp.com",
+    projectId:         "gstcell-afe30",
+    storageBucket:     "gstcell-afe30.firebasestorage.app",
+    messagingSenderId: "977774861669",
+    appId:             "1:977774861669:web:249661743136343e4a158c"
+  };
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+  window._snDb  = db;
+  window._snFs  = { collection, getDocs, query, orderBy, onSnapshot, doc, getDoc };
+  window._snAuth = auth;
+  window._snAuthFn = { signInWithEmailAndPassword, signOut };
+
+  onAuthStateChanged(auth, user => {
+    window._snUser = user;
+    const gate = document.getElementById('loginGate');
+    const logoutBtn = document.getElementById('snLogoutBtn');
+    const userInfo  = document.getElementById('snUserInfo');
+    if(user){
+      gate.style.display = 'none';
+      if(logoutBtn) logoutBtn.style.display='inline-flex';
+      if(userInfo)  userInfo.textContent = user.email;
+      document.dispatchEvent(new Event('snReady'));
+    } else {
+      gate.style.display = 'flex';
+    }
+  });
+</script>
+
+<script>
+function gateLogin(){
+  const email = document.getElementById('gateEmail').value.trim();
+  const pwd   = document.getElementById('gatePwd').value;
+  const errEl = document.getElementById('gateError');
+  errEl.textContent='';
+  if(!email||!pwd){ errEl.textContent='Please enter email and password.'; return; }
+  window._snAuthFn.signInWithEmailAndPassword(window._snAuth, email, pwd)
+    .catch(e=>{ errEl.textContent=e.message.replace('Firebase:','').replace(/\(.*\)/,'').trim(); });
+}
+function snLogout(){
+  window._snAuthFn.signOut(window._snAuth).then(()=>{
+    document.getElementById('loginGate').style.display='flex';
+    document.getElementById('snLogoutBtn').style.display='none';
+    document.getElementById('snUserInfo').textContent='';
+  });
+}
+
+const DEFAULT_CADRES = [
+  { id:'jc',   name:'Joint Commissioner',                    short:'JC',   sanctioned:10, feeder:'dchg' },
+  { id:'dchg', name:'Deputy Commissioner (Higher Grade)',    short:'DCHG', sanctioned:20, feeder:'dc'   },
+  { id:'dc',   name:'Deputy Commissioner',                   short:'DC',   sanctioned:40, feeder:'ac'   },
+  { id:'ac',   name:'Assistant Commissioner',                short:'AC',   sanctioned:80, feeder:'sto'  },
+  { id:'sto',  name:'State Tax Officer',                     short:'STO',  sanctioned:200,feeder:'dsto' },
+  { id:'dsto', name:'Deputy State Tax Officer',              short:'DSTO', sanctioned:400,feeder:null   },
+];
+
+let _cadres   = [];
+let _officers = {}; // cadreId → []
+let _activeCadre = null;
+
+function fmtDate(d){
+  if(!d) return '—';
+  const dt = new Date(d);
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function retDate(dob, retAge){
+  if(!dob||!retAge) return null;
+  const dt = new Date(dob);
+  dt.setFullYear(dt.getFullYear() + parseInt(retAge));
+  return dt;
+}
+function daysDiff(dt){ return (dt - new Date()) / 86400000; }
+
+document.addEventListener('snReady', async () => {
+  const db  = window._snDb;
+  const { collection, getDocs, query, orderBy } = window._snFs;
+
+  // Load cadres
+  try {
+    const snap = await getDocs(collection(db, 'seniority_cadres'));
+    if (!snap.empty) {
+      _cadres = [];
+      snap.forEach(d => _cadres.push({ id: d.id, ...d.data() }));
+      _cadres.sort((a,b) => (a.order||0)-(b.order||0));
+    } else {
+      _cadres = DEFAULT_CADRES;
+    }
+  } catch(e) {
+    _cadres = DEFAULT_CADRES;
+  }
+
+  // Build tabs
+  const tabsEl = document.getElementById('cadreTabs');
+  tabsEl.innerHTML = '';
+  _cadres.forEach((c,i) => {
+    const tab = document.createElement('div');
+    tab.className = 'cadre-tab' + (i===0?' active':'');
+    tab.textContent = c.short || c.name;
+    tab.title = c.name;
+    tab.onclick = () => selectCadre(c.id);
+    tab.dataset.cadre = c.id;
+    tabsEl.appendChild(tab);
+  });
+
+  // Load all officers
+  try {
+    const snap = await getDocs(query(collection(db,'seniority_officers'), orderBy('cadre','asc'), orderBy('sl_no','asc')));
+    snap.forEach(d => {
+      const o = { id: d.id, ...d.data() };
+      if(!_officers[o.cadre]) _officers[o.cadre] = [];
+      _officers[o.cadre].push(o);
+    });
+    Object.keys(_officers).forEach(k => _officers[k].sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+  } catch(e) {
+    console.error('Error loading officers:', e);
+  }
+
+  // Last updated
+  document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+
+  if(_cadres.length) selectCadre(_cadres[0].id);
+});
+
+function selectCadre(cadreId){
+  _activeCadre = cadreId;
+  document.querySelectorAll('.cadre-tab').forEach(t => t.classList.toggle('active', t.dataset.cadre === cadreId));
+  const cadre   = _cadres.find(c=>c.id===cadreId);
+  const officers = (_officers[cadreId]||[]).slice();
+  renderTable(cadre, officers);
+  renderStats(cadre, officers);
+  populateFeederSelect(cadre);
+}
+
+function renderTable(cadre, officers){
+  document.getElementById('tableTitle').textContent = cadre?.name || 'Seniority List';
+  const tbody = document.getElementById('seniorityTableBody');
+  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
+  const search = (document.getElementById('searchInput').value||'').toLowerCase();
+  const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)) : officers;
+  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">No results found.</td></tr>`; return; }
+
+  tbody.innerHTML = filtered.map(o => {
+    const rd   = retDate(o.dob, o.retirement_age||60);
+    const days = rd ? daysDiff(rd) : null;
+    const isRetired  = o.status === 'retired' || (rd && days < 0);
+    const isPromoted = o.status === 'promoted';
+    const isSoon     = !isRetired && rd && days > 0 && days < 365;
+    const rowClass   = isRetired ? 'retired' : isSoon ? 'retiring-soon' : '';
+    const statusBadge= isRetired  ? '<span class="badge badge-retired">Retired</span>'
+                     : isPromoted ? '<span class="badge badge-promoted">Promoted</span>'
+                     : isSoon     ? '<span class="badge badge-soon">Retiring Soon</span>'
+                     :              '<span class="badge badge-active">Active</span>';
+    const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
+    return `<tr class="${rowClass}">
+      <td class="sl">${o.sl_no||''}</td>
+      <td class="name">${escH(o.name||'')}</td>
+      <td>${escH(o.order_no||'')}</td>
+      <td>${escH(o.feeder_category||'')}</td>
+      <td>${fmtDate(o.dob)}</td>
+      <td>${rdStr}</td>
+      <td>${statusBadge}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderStats(cadre, officers){
+  const active   = officers.filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const sanctioned = cadre?.sanctioned || 0;
+  const vacancy  = Math.max(0, sanctioned - active.length);
+  const now      = new Date();
+  const in1yr    = active.filter(o=>{ const rd=retDate(o.dob,o.retirement_age||60); return rd&&daysDiff(rd)>0&&daysDiff(rd)<365; }).length;
+  const in2yr    = active.filter(o=>{ const rd=retDate(o.dob,o.retirement_age||60); return rd&&daysDiff(rd)>0&&daysDiff(rd)<730; }).length;
+
+  document.getElementById('statTotal').textContent    = active.length;
+  document.getElementById('statVacancy').textContent  = vacancy;
+  document.getElementById('statVacancySub').textContent = `of ${sanctioned} sanctioned`;
+  document.getElementById('vacSanctioned').textContent = sanctioned;
+  document.getElementById('vacWorking').textContent   = active.length;
+  document.getElementById('vacVacancy').textContent   = vacancy;
+  document.getElementById('vacVacancy').className     = 'vval ' + (vacancy>0?'red':'green');
+  document.getElementById('vacRetiring1').textContent = in1yr;
+  document.getElementById('vacRetiring2').textContent = in2yr;
+}
+
+function populateFeederSelect(cadre){
+  const sel = document.getElementById('promoFeederSelect');
+  document.getElementById('promoResult').style.display = 'none';
+  sel.innerHTML = '<option value="">— Select feeder cadre officer —</option>';
+  if(!cadre?.feeder){ sel.innerHTML = '<option value="">No feeder cadre</option>'; return; }
+  const feederOfficers = (_officers[cadre.feeder]||[]).filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const feederCadre    = _cadres.find(c=>c.id===cadre.feeder);
+  if(!feederOfficers.length){ sel.innerHTML = `<option value="">No active officers in ${feederCadre?.name||'feeder'}</option>`; return; }
+  feederOfficers.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = `${o.sl_no}. ${o.name}`;
+    sel.appendChild(opt);
+  });
+}
+
+function estimatePromotion(){
+  const cadre    = _cadres.find(c=>c.id===_activeCadre);
+  const sel      = document.getElementById('promoFeederSelect');
+  const result   = document.getElementById('promoResult');
+  if(!sel.value){ result.style.display='none'; return; }
+
+  const feederOfficers = (_officers[cadre?.feeder]||[]).filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const selOfficer     = feederOfficers.find(o=>o.id===sel.value);
+  if(!selOfficer){ result.style.display='none'; return; }
+
+  const activeAbove = (_officers[_activeCadre]||[]).filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const sanctioned  = cadre?.sanctioned||0;
+  const vacancy     = Math.max(0, sanctioned - activeAbove.length);
+
+  // Sort active officers by retirement date
+  const sorted = activeAbove
+    .map(o => ({ ...o, rd: retDate(o.dob, o.retirement_age||60) }))
+    .filter(o => o.rd && daysDiff(o.rd) > 0)
+    .sort((a,b) => a.rd - b.rd);
+
+  // Officer's position in feeder cadre
+  const feederIdx = feederOfficers.findIndex(o=>o.id===sel.value);
+  // Need feederIdx + 1 vacancies to open
+  const targetVacCount = feederIdx + 1 - vacancy;
+
+  result.style.display = 'block';
+  if(vacancy > feederIdx){
+    document.getElementById('promoEstDate').textContent = 'Likely Already Due';
+    document.getElementById('promoEstSub').textContent  = `${vacancy} existing vacanc${vacancy===1?'y':'ies'} — ${selOfficer.name} may be due for promotion now`;
+  } else if(sorted.length >= targetVacCount && targetVacCount > 0){
+    const estDate = sorted[targetVacCount-1].rd;
+    document.getElementById('promoEstDate').textContent = fmtDate(estDate.toISOString().split('T')[0]);
+    document.getElementById('promoEstSub').textContent  = `Estimated promotion date for ${selOfficer.name} based on ${targetVacCount} retirement(s) above`;
+  } else {
+    document.getElementById('promoEstDate').textContent = 'Cannot Estimate';
+    document.getElementById('promoEstSub').textContent  = 'Insufficient data — not enough officers above with known retirement dates';
+  }
+}
+
+function filterTable(){
+  const cadre    = _cadres.find(c=>c.id===_activeCadre);
+  const officers = (_officers[_activeCadre]||[]).slice();
+  renderTable(cadre, officers);
+}
+
+function downloadCSV(){
+  const officers = (_officers[_activeCadre]||[]);
+  const cadre    = _cadres.find(c=>c.id===_activeCadre);
+  const headers  = ['sl_no','name','order_no','feeder_category','dob','retirement_age','status'];
+  const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
+  const csv      = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a        = document.createElement('a');
+  a.href         = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download     = `seniority_${cadre?.short||'list'}_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+}
+
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
