@@ -214,6 +214,7 @@ footer a{color:var(--gold);text-decoration:none;}
             <tr>
               <th style="width:48px;">Sl. No</th>
               <th>Name</th>
+              <th>PEN No.</th>
               <th>Order No.</th>
               <th>Feeder Category</th>
               <th>Date of Birth</th>
@@ -222,7 +223,7 @@ footer a{color:var(--gold);text-decoration:none;}
             </tr>
           </thead>
           <tbody id="seniorityTableBody">
-            <tr><td colspan="7" class="loader"><span class="spinner"></span> Loading…</td></tr>
+            <tr><td colspan="8" class="loader"><span class="spinner"></span> Loading…</td></tr>
           </tbody>
         </table>
       </div>
@@ -384,10 +385,10 @@ function selectCadre(cadreId){
 function renderTable(cadre, officers){
   document.getElementById('tableTitle').textContent = cadre?.name || 'Seniority List';
   const tbody = document.getElementById('seniorityTableBody');
-  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
+  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
   const search = (document.getElementById('searchInput').value||'').toLowerCase();
-  const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)) : officers;
-  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">No results found.</td></tr>`; return; }
+  const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)||(o.pen_no||'').toLowerCase().includes(search)) : officers;
+  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">No results found.</td></tr>`; return; }
 
   tbody.innerHTML = filtered.map(o => {
     const rd   = retDate(o.dob, o.retirement_age||60);
@@ -404,6 +405,7 @@ function renderTable(cadre, officers){
     return `<tr class="${rowClass}">
       <td class="sl">${o.sl_no||''}</td>
       <td class="name">${escH(o.name||'')}</td>
+      <td>${escH(o.pen_no||'')}</td>
       <td>${escH(o.order_no||'')}</td>
       <td>${escH(o.feeder_category||'')}</td>
       <td>${fmtDate(o.dob)}</td>
@@ -496,7 +498,7 @@ function filterTable(){
 function downloadCSV(){
   const officers = (_officers[_activeCadre]||[]);
   const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const headers  = ['sl_no','name','order_no','feeder_category','dob','retirement_age','status'];
+  const headers  = ['sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
   const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv      = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a        = document.createElement('a');
