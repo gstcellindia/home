@@ -321,6 +321,20 @@ function retDate(dob, retAge){
   return dt;
 }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
+// Computes the effective display status for an officer.
+// Manual overrides (expired/relieved) always win. Otherwise it's derived
+// from DOB + retirement age: retired / retiring-soon (<=6 months) / active.
+function computeStatus(o){
+  if(o.status==='expired') return {key:'expired', label:'Expired', badgeClass:'badge-retired'};
+  if(o.status==='relieved') return {key:'relieved', label:'Relieved', badgeClass:'badge-retired'};
+  const rd = retDate(o.dob, o.retirement_age||60);
+  if(rd){
+    const days = daysDiff(rd);
+    if(days<0) return {key:'retired', label:'Retired', badgeClass:'badge-retired'};
+    if(days<183) return {key:'soon', label:'Retiring Soon', badgeClass:'badge-soon'};
+  }
+  return {key:'active', label:'Active', badgeClass:'badge-active'};
+}
 
 document.addEventListener('snReady', async () => {
   const db  = window._snDb;
@@ -392,15 +406,10 @@ function renderTable(cadre, officers){
 
   tbody.innerHTML = filtered.map(o => {
     const rd   = retDate(o.dob, o.retirement_age||60);
-    const days = rd ? daysDiff(rd) : null;
-    const isRetired  = o.status === 'retired' || (rd && days < 0);
-    const isPromoted = o.status === 'promoted';
-    const isSoon     = !isRetired && rd && days > 0 && days < 365;
-    const rowClass   = isRetired ? 'retired' : isSoon ? 'retiring-soon' : '';
-    const statusBadge= isRetired  ? '<span class="badge badge-retired">Retired</span>'
-                     : isPromoted ? '<span class="badge badge-promoted">Promoted</span>'
-                     : isSoon     ? '<span class="badge badge-soon">Retiring Soon</span>'
-                     :              '<span class="badge badge-active">Active</span>';
+    const st   = computeStatus(o);
+    const isSoon = st.key==='soon';
+    const rowClass   = st.key==='retired'||st.key==='expired'||st.key==='relieved' ? 'retired' : isSoon ? 'retiring-soon' : '';
+    const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
     const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
     return `<tr class="${rowClass}">
       <td class="sl">${o.sl_no||''}</td>
@@ -416,7 +425,7 @@ function renderTable(cadre, officers){
 }
 
 function renderStats(cadre, officers){
-  const active   = officers.filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const active   = officers.filter(o=>['active','soon'].includes(computeStatus(o).key));
   const sanctioned = cadre?.sanctioned || 0;
   const vacancy  = Math.max(0, sanctioned - active.length);
   const now      = new Date();
@@ -439,7 +448,7 @@ function populateFeederSelect(cadre){
   document.getElementById('promoResult').style.display = 'none';
   sel.innerHTML = '<option value="">— Select feeder cadre officer —</option>';
   if(!cadre?.feeder){ sel.innerHTML = '<option value="">No feeder cadre</option>'; return; }
-  const feederOfficers = (_officers[cadre.feeder]||[]).filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const feederOfficers = (_officers[cadre.feeder]||[]).filter(o=>['active','soon'].includes(computeStatus(o).key));
   const feederCadre    = _cadres.find(c=>c.id===cadre.feeder);
   if(!feederOfficers.length){ sel.innerHTML = `<option value="">No active officers in ${feederCadre?.name||'feeder'}</option>`; return; }
   feederOfficers.forEach(o => {
@@ -456,11 +465,11 @@ function estimatePromotion(){
   const result   = document.getElementById('promoResult');
   if(!sel.value){ result.style.display='none'; return; }
 
-  const feederOfficers = (_officers[cadre?.feeder]||[]).filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const feederOfficers = (_officers[cadre?.feeder]||[]).filter(o=>['active','soon'].includes(computeStatus(o).key));
   const selOfficer     = feederOfficers.find(o=>o.id===sel.value);
   if(!selOfficer){ result.style.display='none'; return; }
 
-  const activeAbove = (_officers[_activeCadre]||[]).filter(o=>o.status!=='retired'&&o.status!=='promoted');
+  const activeAbove = (_officers[_activeCadre]||[]).filter(o=>['active','soon'].includes(computeStatus(o).key));
   const sanctioned  = cadre?.sanctioned||0;
   const vacancy     = Math.max(0, sanctioned - activeAbove.length);
 
