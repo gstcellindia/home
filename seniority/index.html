@@ -314,19 +314,34 @@ function fmtDate(d){
   if(isNaN(dt)) return d;
   return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
 }
+// Strictly validates a date string as YYYY-MM-DD (the only format this app stores/accepts).
+// Rejects malformed strings, out-of-range day/month, and non-existent calendar dates
+// (e.g. 2025-02-30) instead of silently letting JS's lenient Date parser guess.
+function isValidISODate(s){
+  if(!s || typeof s!=='string') return false;
+  s = s.trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return false;
+  const [, y, mo, d] = m.map(Number);
+  if(mo<1||mo>12||d<1||d>31) return false;
+  const dt = new Date(s+'T00:00:00');
+  return !isNaN(dt) && dt.getUTCFullYear()===y && dt.getUTCMonth()+1===mo && dt.getUTCDate()===d;
+}
 function retDate(dob, retAge){
-  if(!dob||!retAge) return null;
-  const dt = new Date(dob);
+  if(!dob||!retAge||!isValidISODate(dob)) return null;
+  const dt = new Date(dob+'T00:00:00');
   dt.setFullYear(dt.getFullYear() + parseInt(retAge));
   return dt;
 }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
 // Computes the effective display status for an officer.
-// Manual overrides (expired/relieved) always win. Otherwise it's derived
-// from DOB + retirement age: retired / retiring-soon (<=6 months) / active.
+// Manual overrides (expired/relieved) always win. An invalid/missing DOB is
+// surfaced as its own status rather than silently defaulting to Active.
+// Otherwise status is derived from DOB + retirement age: retired / retiring-soon (<=6 months) / active.
 function computeStatus(o){
   if(o.status==='expired') return {key:'expired', label:'Expired', badgeClass:'badge-retired'};
   if(o.status==='relieved') return {key:'relieved', label:'Relieved', badgeClass:'badge-retired'};
+  if(o.dob && !isValidISODate(o.dob)) return {key:'invalid_dob', label:'Invalid DOB', badgeClass:'badge-retired'};
   const rd = retDate(o.dob, o.retirement_age||60);
   if(rd){
     const days = daysDiff(rd);
