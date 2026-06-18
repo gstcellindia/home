@@ -407,16 +407,24 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
             <small>File auto-previews below when selected</small>
           </div>
         </div>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="uploadCSV()" style="font-size:14px;padding:10px 22px;">
-            <i class="fas fa-upload"></i> Upload &amp; Import to Firestore
-          </button>
-        </div>
         <div class="msg" id="csvMsg"></div>
         <div id="csvPreview" style="margin-top:16px;display:none;">
-          <div style="font-size:12px;font-weight:700;color:var(--navy2);padding:8px 0;">Preview (first 5 rows of your file):</div>
-          <div class="tbl-wrap" style="max-height:220px;border:1px solid var(--border);border-radius:8px;">
-            <table id="csvPreviewTable"><thead></thead><tbody></tbody></table>
+          <div style="font-size:12px;font-weight:700;color:var(--navy2);padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+            <span id="csvPreviewTitle">Preview</span>
+            <span>
+              <button class="btn btn-secondary btn-sm" onclick="clearCsvPreview()"><i class="fas fa-times"></i> Clear</button>
+              <button class="btn btn-primary btn-sm" onclick="uploadCSV()"><i class="fas fa-upload"></i> Import to Firestore</button>
+            </span>
+          </div>
+          <div class="tbl-wrap" style="max-height:420px;border:1px solid var(--border);border-radius:8px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sl.</th><th>Name</th><th>PEN No.</th><th>Order No.</th><th>Feeder Cat.</th><th>DOB</th><th>Ret. Age</th><th>Status</th><th>Row Check</th>
+                </tr>
+              </thead>
+              <tbody id="csvPreviewTable"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -992,6 +1000,8 @@ function triggerDownload(content, filename){
   a.download = filename; a.click();
 }
 
+let _csvRows = []; // validated rows ready for import: {sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status,_err}
+
 document.getElementById('csvFile').addEventListener('change', function(){
   const file = this.files[0]; if(!file)return;
   const reader = new FileReader();
@@ -999,66 +1009,94 @@ document.getElementById('csvFile').addEventListener('change', function(){
   reader.readAsText(file);
 });
 
-function previewCSV(text){
-  const rows   = parseCSV(text);
-  const prev   = document.getElementById('csvPreview');
-  const tbl    = document.getElementById('csvPreviewTable');
-  if(!rows.length){ prev.style.display='none'; return; }
-  const headers= rows[0];
-  const data   = rows.slice(1,6);
-  tbl.querySelector('thead').innerHTML = '<tr>'+headers.map(h=>`<th>${escH(h)}</th>`).join('')+'</tr>';
-  tbl.querySelector('tbody').innerHTML = data.map(r=>'<tr>'+r.map(c=>`<td>${escH(c)}</td>`).join('')+'</tr>').join('');
-  prev.style.display='block';
+// Simple, robust per-line tokenizer. Trimming happens at the point each field is
+// used (see previewCSV), not inside the tokenizer itself — keeps this resilient
+// to CRLF line endings, stray whitespace, and quoted commas.
+function csvRow(line){
+  const res=[]; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){ inQ=!inQ; }
+    else if(c===','&&!inQ){ res.push(cur); cur=''; }
+    else { cur+=c; }
+  }
+  res.push(cur);
+  return res;
 }
 
-function parseCSV(text){
-  return text.trim().split('\n').map(line=>{
-    const result=[]; let cur=''; let inQ=false;
-    for(let i=0;i<line.length;i++){
-      if(line[i]==='"'&&line[i+1]==='"'){cur+='"';i++;}
-      else if(line[i]==='"'){inQ=!inQ;}
-      else if(line[i]===','&&!inQ){result.push(cur.trim());cur='';}
-      else cur+=line[i];
-    }
-    result.push(cur.trim());
-    return result;
-  });
+function previewCSV(text){
+  const lines = text.split('\n').filter(l=>l.trim());
+  const prev  = document.getElementById('csvPreview');
+  const tbody = document.getElementById('csvPreviewTable');
+  if(lines.length<2){ prev.style.display='none'; showMsg('csvMsg','CSV has no data rows.','err'); return; }
+
+  const headers = csvRow(lines[0]).map(h=>h.toLowerCase().trim());
+  const idx = (field)=>headers.indexOf(field);
+
+  _csvRows = [];
+  let html = '';
+  for(let i=1;i<lines.length;i++){
+    const cols = csvRow(lines[i]);
+    const get = (field)=>{ const ix=idx(field); return ix>=0 ? (cols[ix]||'').trim() : ''; };
+
+    const sl_no          = get('sl_no');
+    const name           = get('name');
+    const pen_no         = get('pen_no');
+    const order_no       = get('order_no');
+    const feeder_category= get('feeder_category');
+    const dob            = get('dob');
+    const retirement_age = get('retirement_age') || '60';
+    const rawStatus      = get('status').toLowerCase();
+    const status          = (rawStatus==='expired'||rawStatus==='relieved') ? rawStatus : '';
+
+    let err='';
+    if(!name) err+='Missing name. ';
+    if(dob && !isValidISODate(dob)) err+='DOB must be YYYY-MM-DD. ';
+    if(retirement_age!=='56' && retirement_age!=='60') err+='Ret. Age must be 56 or 60. ';
+
+    _csvRows.push({ sl_no:parseInt(sl_no)||0, name, pen_no, order_no, feeder_category, dob, retirement_age, status, _err:err });
+
+    html += `<tr>
+      <td class="td-sl">${escH(sl_no)}</td>
+      <td class="td-name">${escH(name)}</td>
+      <td style="font-size:12px;">${escH(pen_no)}</td>
+      <td style="font-size:12px;">${escH(order_no)}</td>
+      <td style="font-size:12px;">${escH(feeder_category)}</td>
+      <td style="font-size:12px;">${escH(dob)}</td>
+      <td style="font-size:12px;">${escH(retirement_age)}</td>
+      <td style="font-size:12px;">${escH(status||'—')}</td>
+      <td style="font-size:12px;">${err?`<span style="color:var(--red);font-weight:700;">⚠ ${escH(err)}</span>`:'<span style="color:var(--green);font-weight:700;">✓ OK</span>'}</td>
+    </tr>`;
+  }
+
+  tbody.innerHTML = html;
+  const errCount = _csvRows.filter(r=>r._err).length;
+  document.getElementById('csvPreviewTitle').textContent =
+    `Preview — ${_csvRows.length} row(s)` + (errCount ? `, ${errCount} with errors` : ', all OK');
+  prev.style.display='block';
+  showMsg('csvMsg', errCount ? `⚠ Fix ${errCount} row(s) with errors before importing — they will not be uploaded.` : '✓ All rows look good. Ready to import.', errCount?'err':'ok');
+}
+
+function clearCsvPreview(){
+  _csvRows=[];
+  document.getElementById('csvPreview').style.display='none';
+  document.getElementById('csvFile').value='';
+  document.getElementById('csvMsg').style.display='none';
 }
 
 async function uploadCSV(){
   const cadreId   = document.getElementById('csvCadre').value;
   const insertPos = document.getElementById('csvInsertPos').value;
-  const file      = document.getElementById('csvFile').files[0];
   if(!cadreId){ showMsg('csvMsg','Please select a cadre.','err'); return; }
-  if(!file){ showMsg('csvMsg','Please select a CSV file.','err'); return; }
-  showMsg('csvMsg','<span class="spinner"></span> Processing…','ok');
+  if(!_csvRows.length){ showMsg('csvMsg','Please select and preview a CSV file first.','err'); return; }
 
-  const text = await file.text();
-  const rows = parseCSV(text);
-  if(rows.length<2){ showMsg('csvMsg','CSV has no data rows.','err'); return; }
-  const headers = rows[0].map(h=>h.toLowerCase().trim());
-  const data    = rows.slice(1).filter(r=>r.some(c=>c.trim()));
-
-  const required=['name'];
-  for(const h of required){ if(!headers.includes(h)){ showMsg('csvMsg',`Missing required column: ${h}`,'err'); return; } }
-
-  // Validate every row's DOB *before* touching Firestore (so a bad row can't trigger
-  // a destructive "Replace All" delete and then fail partway through the import).
-  const dobIdx = headers.indexOf('dob');
-  const nameIdx = headers.indexOf('name');
-  const badRows = [];
-  data.forEach((row,i)=>{
-    const dob = dobIdx>=0 ? (row[dobIdx]||'').trim() : '';
-    if(dob && !isValidISODate(dob)){
-      const nm = nameIdx>=0 ? (row[nameIdx]||'').trim() : '';
-      badRows.push(`Row ${i+2}${nm?' ('+nm+')':''}: "${dob}"`);
-    }
-  });
+  const badRows = _csvRows.filter(r=>r._err);
   if(badRows.length){
-    showMsg('csvMsg',`✗ Import stopped — invalid DOB format (must be YYYY-MM-DD) in: ${badRows.join('; ')}`,'err');
+    showMsg('csvMsg',`✗ Import stopped — ${badRows.length} row(s) still have errors. Fix them in your CSV and re-upload.`,'err');
     return;
   }
 
+  showMsg('csvMsg','<span class="spinner"></span> Processing…','ok');
   const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, serverTimestamp } = window._fs;
 
   try {
@@ -1075,28 +1113,26 @@ async function uploadCSV(){
     let startSl = insertPos==='start' ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
     if(insertPos==='start' && existing.length){
       // Shift existing up
-      for(const o of existing) await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+data.length});
+      for(const o of existing) await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+_csvRows.length});
     }
 
     let added=0;
-    for(let i=0;i<data.length;i++){
-      const row=data[i];
-      const get=(field)=>{ const idx=headers.indexOf(field); return idx>=0?(row[idx]||'').trim():''; };
-      const sl = parseInt(get('sl_no'))||startSl+i;
-      const rawStatus = get('status').toLowerCase();
-      const status = (rawStatus==='expired'||rawStatus==='relieved') ? rawStatus : '';
+    for(let i=0;i<_csvRows.length;i++){
+      const r = _csvRows[i];
+      const sl = r.sl_no || startSl+i;
       await addDoc(collection(window._db,'seniority_officers'),{
         cadre:cadreId, sl_no:sl,
-        name:get('name'), pen_no:get('pen_no'), order_no:get('order_no'),
-        feeder_category:get('feeder_category'),
-        dob:get('dob'), retirement_age:get('retirement_age')||'60',
-        status,
+        name:r.name, pen_no:r.pen_no, order_no:r.order_no,
+        feeder_category:r.feeder_category,
+        dob:r.dob, retirement_age:r.retirement_age,
+        status:r.status,
         createdAt:serverTimestamp()
       });
       added++;
     }
     showMsg('csvMsg',`✓ ${added} officers imported successfully.`,'ok');
     toast(`${added} officers imported.`);
+    clearCsvPreview();
     await loadOfficers();
   } catch(e){ showMsg('csvMsg','Error: '+e.message,'err'); }
 }
