@@ -159,6 +159,8 @@ footer a{color:var(--gold);text-decoration:none;}
   </div>
 </header>
 
+<div id="dataLoadError" style="display:none;margin:16px 32px 0;padding:12px 16px;background:#fee2e2;color:#b91c1c;border-radius:8px;font-size:13px;"></div>
+
 <main class="main">
   <div class="panel-row">
 
@@ -391,8 +393,17 @@ document.addEventListener('snReady', async () => {
       _officers[o.cadre].push(o);
     });
     Object.keys(_officers).forEach(k => _officers[k].sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+    console.log('[seniority] loaded officer records for', Object.keys(_officers).length, 'cadre(s).');
   } catch(e) {
-    console.error('Error loading officers:', e);
+    console.error('[seniority] Error loading officers:', e);
+    const isIndexError = /index/i.test(e.message||'');
+    const banner = document.getElementById('dataLoadError');
+    if(banner){
+      banner.style.display='block';
+      banner.innerHTML = isIndexError
+        ? `⚠ Firestore needs a composite index for this query (cadre + sl_no) that isn't ready yet. Check the browser console (F12) for a link Firestore provides to create it — this is a one-time setup step, and the list will appear once the index finishes building (usually a few minutes). Error: ${escH(e.message)}`
+        : `⚠ Could not load the seniority list from Firestore: ${escH(e.message)}`;
+    }
   }
 
   // Last updated
@@ -521,6 +532,10 @@ function filterTable(){
 
 function downloadCSV(){
   const officers = (_officers[_activeCadre]||[]);
+  if(!officers.length){
+    alert('No officers to download — the list is empty. Check the error banner near the top of the page.');
+    return;
+  }
   const cadre    = _cadres.find(c=>c.id===_activeCadre);
   const headers  = ['sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
   const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
