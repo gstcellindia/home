@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-errorvisible</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-dupecheck</div>
   </div>
 </nav>
 
@@ -271,10 +271,12 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <input type="text" id="officerSearch" placeholder="Search…" oninput="filterOfficersTable()" style="padding:6px 11px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;width:160px;">
           <button class="btn btn-success btn-sm" onclick="downloadTableCSV()"><i class="fas fa-download"></i> Download CSV</button>
           <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
         </div>
       </div>
       <div class="card-body" style="padding:0;">
         <div id="officersLoadError" class="msg err" style="display:none;margin:12px;"></div>
+        <div id="dupePenPanel" style="display:none;margin:12px;padding:14px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;"></div>
         <div class="tbl-wrap">
           <table>
             <thead>
@@ -698,7 +700,7 @@ function confirmLogout(){
     const got = isValidISODate(input);
     if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-errorvisible — date validator OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-dupecheck — date validator OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -812,6 +814,10 @@ async function saveOfficer(){
 
   if(!cadreId||!name){ showMsg('formMsg','Cadre and Name are required.','err'); return; }
   if(dob && !isValidISODate(dob)){ showMsg('formMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
+  if(penNo){
+    const dupe = _officers.find(o=>o.cadre===cadreId && (o.pen_no||'').trim().toLowerCase()===penNo.toLowerCase());
+    if(dupe){ showMsg('formMsg',`PEN No. ${escH(penNo)} already exists in this cadre (${escH(dupe.name||'')}). Use a different PEN No., or edit the existing record instead.`,'err'); return; }
+  }
 
   const { collection, addDoc, getDocs, query, orderBy, updateDoc, doc, serverTimestamp } = window._fs;
   showMsg('formMsg','Saving…','busy');
@@ -895,6 +901,93 @@ function renderOfficersTable(officers){
   }).join('');
 }
 
+// ── DUPLICATE PEN NO. CLEANUP ──
+// Scans the cadre currently selected in the table filter (or all cadres, if none
+// is selected) for officers sharing the same PEN No. within the same cadre. Blank
+// PEN No. values are never treated as duplicates of each other. For each group it
+// shows every record found so the admin can pick which one to KEEP and delete the
+// rest — rather than guessing which copy has the most accurate/complete data.
+function findDuplicatePens(){
+  const cadreFilter = document.getElementById('filterCadre').value;
+  const pool = cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice();
+
+  const groups = {}; // key: cadre|pen_no -> [officers]
+  pool.forEach(o=>{
+    const pen = (o.pen_no||'').trim();
+    if(!pen) return;
+    const key = o.cadre+'|'+pen.toLowerCase();
+    (groups[key]=groups[key]||[]).push(o);
+  });
+
+  const dupeGroups = Object.values(groups).filter(g=>g.length>1);
+  const panel = document.getElementById('dupePenPanel');
+
+  if(!dupeGroups.length){
+    panel.style.display='block';
+    panel.innerHTML = `<div style="color:#166534;font-weight:600;font-size:13px;"><i class="fas fa-check-circle"></i> No duplicate PEN numbers found${cadreFilter?' in this cadre':' across any cadre'}.</div>`;
+    return;
+  }
+
+  // Sort groups by cadre name, then render each group with a radio per record to
+  // choose which one to keep; the rest get deleted when "Delete Extras" is clicked.
+  let html = `<div style="font-weight:700;color:#9a3412;font-size:13px;margin-bottom:10px;"><i class="fas fa-exclamation-triangle"></i> ${dupeGroups.length} duplicate PEN No. group(s) found${cadreFilter?' in this cadre':''}. Pick which record to KEEP in each group, then delete the rest.</div>`;
+
+  dupeGroups.forEach((g,gi)=>{
+    const cadre = _cadres.find(c=>c.id===g[0].cadre);
+    html += `<div style="background:#fff;border:1px solid #fdba74;border-radius:7px;padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:12px;font-weight:700;color:var(--navy2);margin-bottom:6px;">PEN No. ${escH(g[0].pen_no)} — ${escH(cadre?.name||g[0].cadre)} (${g.length} copies)</div>`;
+    g.forEach((o,oi)=>{
+      html += `<label style="display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;cursor:pointer;">
+        <input type="radio" name="dupeKeep-${gi}" value="${o.id}" ${oi===0?'checked':''}>
+        <span>Sl. ${o.sl_no||'—'} — ${escH(o.name||'')} — Order No. ${escH(o.order_no||'—')} — DOB ${escH(o.dob||'—')}</span>
+      </label>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="deleteDuplicatePens(${dupeGroups.length})"><i class="fas fa-trash"></i> Delete Extras, Keep Selected</button>
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('dupePenPanel').style.display='none'">Close</button>
+  </div>
+  <div class="msg" id="dupePenMsg"></div>`;
+
+  panel.innerHTML = html;
+  panel.style.display='block';
+  panel.dataset.groups = JSON.stringify(dupeGroups.map(g=>g.map(o=>o.id)));
+}
+
+async function deleteDuplicatePens(groupCount){
+  const panel = document.getElementById('dupePenPanel');
+  const groups = JSON.parse(panel.dataset.groups||'[]');
+  const { doc, writeBatch } = window._fs;
+
+  const toDelete = [];
+  for(let gi=0;gi<groupCount;gi++){
+    const checked = panel.querySelector(`input[name="dupeKeep-${gi}"]:checked`);
+    const keepId = checked ? checked.value : groups[gi][0];
+    groups[gi].forEach(id=>{ if(id!==keepId) toDelete.push(id); });
+  }
+
+  if(!toDelete.length){ showMsg('dupePenMsg','Nothing to delete.','ok'); return; }
+  if(!confirm(`Delete ${toDelete.length} duplicate record(s)? This cannot be undone.`)) return;
+
+  showMsg('dupePenMsg','<span class="spinner"></span> Deleting…','busy');
+  try{
+    for(let i=0;i<toDelete.length;i+=400){
+      const batch = writeBatch(window._db);
+      toDelete.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+      await batch.commit();
+    }
+    showMsg('dupePenMsg',`✓ Deleted ${toDelete.length} duplicate record(s).`,'ok');
+    toast(`Deleted ${toDelete.length} duplicate(s).`);
+    panel.style.display='none';
+    await loadOfficers();
+  } catch(e){
+    console.error('[deleteDuplicatePens] FAILED:', e);
+    showMsg('dupePenMsg','Error: '+escH(e.message),'err');
+  }
+}
+
 // ── EDIT MODAL ──
 function openEditModal(id){
   const o = _officers.find(x=>x.id===id); if(!o)return;
@@ -928,8 +1021,14 @@ async function saveEditModal(){
   const id     = document.getElementById('mEditId').value;
   const name   = document.getElementById('mName').value.trim();
   const dob    = document.getElementById('mDob').value;
+  const penNo  = document.getElementById('mPenNo').value.trim();
+  const cadre  = document.getElementById('mCadre').value;
   if(!id||!name){ showMsg('modalMsg','Name is required.','err'); return; }
   if(dob && !isValidISODate(dob)){ showMsg('modalMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
+  if(penNo){
+    const dupe = _officers.find(o=>o.id!==id && o.cadre===cadre && (o.pen_no||'').trim().toLowerCase()===penNo.toLowerCase());
+    if(dupe){ showMsg('modalMsg',`PEN No. ${escH(penNo)} already exists in this cadre (${escH(dupe.name||'')}).`,'err'); return; }
+  }
   const { doc, updateDoc } = window._fs;
   showMsg('modalMsg','Saving…','busy');
   try{
@@ -1062,11 +1161,23 @@ function triggerDownload(content, filename){
 
 let _csvRows = []; // validated rows ready for import: {sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status,_err}
 
+let _lastCsvText = '';
 document.getElementById('csvFile').addEventListener('change', function(){
   const file = this.files[0]; if(!file)return;
   const reader = new FileReader();
-  reader.onload = e => previewCSV(e.target.result);
+  reader.onload = e => { _lastCsvText = e.target.result; previewCSV(_lastCsvText); };
   reader.readAsText(file);
+});
+document.getElementById('csvCadre').addEventListener('change', function(){
+  // Re-run the preview if a file is already loaded, since duplicate-PEN checking
+  // is scoped to whichever cadre is selected — changing the cadre after picking
+  // the file should re-validate against that cadre's existing officers.
+  if(_lastCsvText) previewCSV(_lastCsvText);
+});
+document.getElementById('csvInsertPos').addEventListener('change', function(){
+  // Replace-All mode skips the existing-data duplicate check (see previewCSV),
+  // so switching modes should re-validate too.
+  if(_lastCsvText) previewCSV(_lastCsvText);
 });
 
 // Simple, robust per-line tokenizer. Trimming happens at the point each field is
@@ -1092,9 +1203,20 @@ function previewCSV(text){
 
   const headers = csvRow(lines[0]).map(h=>h.toLowerCase().trim());
   const idx = (field)=>headers.indexOf(field);
+  const cadreId   = document.getElementById('csvCadre').value;
+  const insertPos = document.getElementById('csvInsertPos').value;
+
+  // Pen numbers already saved against this cadre in Firestore (blank pen_no values
+  // are ignored — they're not meaningful duplicates of each other). Skipped entirely
+  // in "Replace All" mode, since that existing data is about to be deleted anyway —
+  // checking against it would falsely flag rows as duplicating data that won't exist.
+  const existingPens = insertPos==='replace' ? new Set() : new Set(
+    _officers.filter(o=>o.cadre===cadreId && (o.pen_no||'').trim())
+             .map(o=>o.pen_no.trim().toLowerCase())
+  );
 
   _csvRows = [];
-  let html = '';
+  const rowsRaw = [];
   for(let i=1;i<lines.length;i++){
     const cols = csvRow(lines[i]);
     const get = (field)=>{ const ix=idx(field); return ix>=0 ? (cols[ix]||'').trim() : ''; };
@@ -1114,20 +1236,41 @@ function previewCSV(text){
     if(dob && !isValidISODate(dob)) err+='DOB must be YYYY-MM-DD. ';
     if(retirement_age!=='56' && retirement_age!=='60') err+='Ret. Age must be 56 or 60. ';
 
-    _csvRows.push({ sl_no:parseInt(sl_no)||0, name, pen_no, order_no, feeder_category, dob, retirement_age, status, _err:err });
-
-    html += `<tr>
-      <td class="td-sl">${escH(sl_no)}</td>
-      <td class="td-name">${escH(name)}</td>
-      <td style="font-size:12px;">${escH(pen_no)}</td>
-      <td style="font-size:12px;">${escH(order_no)}</td>
-      <td style="font-size:12px;">${escH(feeder_category)}</td>
-      <td style="font-size:12px;">${escH(dob)}</td>
-      <td style="font-size:12px;">${escH(retirement_age)}</td>
-      <td style="font-size:12px;">${escH(status||'—')}</td>
-      <td style="font-size:12px;">${err?`<span style="color:var(--red);font-weight:700;">⚠ ${escH(err)}</span>`:'<span style="color:var(--green);font-weight:700;">✓ OK</span>'}</td>
-    </tr>`;
+    rowsRaw.push({ sl_no:parseInt(sl_no)||0, name, pen_no, order_no, feeder_category, dob, retirement_age, status, _err:err });
   }
+
+  // Duplicate PEN No. checks, scoped to the selected cadre:
+  //  1. Two rows in THIS file sharing a pen_no.
+  //  2. A row's pen_no already exists among officers already saved in this cadre.
+  // Blank pen_no is never treated as a duplicate of another blank.
+  const seenInFile = {};
+  rowsRaw.forEach(r=>{
+    const key = (r.pen_no||'').trim().toLowerCase();
+    if(!key) return;
+    (seenInFile[key] = seenInFile[key]||[]).push(r);
+  });
+  rowsRaw.forEach(r=>{
+    const key = (r.pen_no||'').trim().toLowerCase();
+    if(!key) return;
+    if(seenInFile[key].length>1) r._err += `Duplicate PEN No. ${escH(r.pen_no)} appears ${seenInFile[key].length}x in this file. `;
+    else if(existingPens.has(key)) r._err += `PEN No. ${escH(r.pen_no)} already exists in this cadre. `;
+  });
+
+  _csvRows = rowsRaw;
+  let html = '';
+  _csvRows.forEach(r=>{
+    html += `<tr>
+      <td class="td-sl">${escH(r.sl_no||'')}</td>
+      <td class="td-name">${escH(r.name)}</td>
+      <td style="font-size:12px;">${escH(r.pen_no)}</td>
+      <td style="font-size:12px;">${escH(r.order_no)}</td>
+      <td style="font-size:12px;">${escH(r.feeder_category)}</td>
+      <td style="font-size:12px;">${escH(r.dob)}</td>
+      <td style="font-size:12px;">${escH(r.retirement_age)}</td>
+      <td style="font-size:12px;">${escH(r.status||'—')}</td>
+      <td style="font-size:12px;">${r._err?`<span style="color:var(--red);font-weight:700;">⚠ ${escH(r._err)}</span>`:'<span style="color:var(--green);font-weight:700;">✓ OK</span>'}</td>
+    </tr>`;
+  });
 
   tbody.innerHTML = html;
   const errCount = _csvRows.filter(r=>r._err).length;
