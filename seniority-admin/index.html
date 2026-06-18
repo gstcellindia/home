@@ -594,14 +594,29 @@ let _filteredOfficers = [];
 // ── HELPERS ──
 function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtDate(d){ if(!d)return '—'; const dt=new Date(d); return isNaN(dt)?d:dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
-function retDate(dob,age){ if(!dob||!age)return null; const dt=new Date(dob); dt.setFullYear(dt.getFullYear()+parseInt(age)); return dt; }
+// Strictly validates a date string as YYYY-MM-DD (the only format this app stores/accepts).
+// Rejects malformed strings, out-of-range day/month, and non-existent calendar dates
+// (e.g. 2025-02-30) instead of silently letting JS's lenient Date parser guess.
+function isValidISODate(s){
+  if(!s || typeof s!=='string') return false;
+  s = s.trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m) return false;
+  const [, y, mo, d] = m.map(Number);
+  if(mo<1||mo>12||d<1||d>31) return false;
+  const dt = new Date(s+'T00:00:00');
+  return !isNaN(dt) && dt.getUTCFullYear()===y && dt.getUTCMonth()+1===mo && dt.getUTCDate()===d;
+}
+function retDate(dob,age){ if(!dob||!age||!isValidISODate(dob))return null; const dt=new Date(dob+'T00:00:00'); dt.setFullYear(dt.getFullYear()+parseInt(age)); return dt; }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
 // Computes the effective display status for an officer.
-// Manual overrides (expired/relieved) always win. Otherwise it's derived
-// from DOB + retirement age: retired / retiring-soon (<=6 months) / active.
+// Manual overrides (expired/relieved) always win. An invalid/missing DOB is
+// surfaced as its own status rather than silently defaulting to Active.
+// Otherwise status is derived from DOB + retirement age: retired / retiring-soon (<=6 months) / active.
 function computeStatus(o){
   if(o.status==='expired') return {key:'expired', label:'Expired', badgeClass:'badge-retired'};
   if(o.status==='relieved') return {key:'relieved', label:'Relieved', badgeClass:'badge-retired'};
+  if(o.dob && !isValidISODate(o.dob)) return {key:'invalid_dob', label:'Invalid DOB', badgeClass:'badge-retired'};
   const rd = retDate(o.dob, o.retirement_age||60);
   if(rd){
     const days = daysDiff(rd);
@@ -728,6 +743,7 @@ async function saveOfficer(){
   const insertRef= document.getElementById('fInsertRef').value;
 
   if(!cadreId||!name){ showMsg('formMsg','Cadre and Name are required.','err'); return; }
+  if(dob && !isValidISODate(dob)){ showMsg('formMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
 
   const { collection, addDoc, getDocs, query, orderBy, updateDoc, doc, serverTimestamp } = window._fs;
   showMsg('formMsg','Saving…','ok');
@@ -843,7 +859,9 @@ function closeEditModal(){ document.getElementById('editModal').classList.remove
 async function saveEditModal(){
   const id     = document.getElementById('mEditId').value;
   const name   = document.getElementById('mName').value.trim();
+  const dob    = document.getElementById('mDob').value;
   if(!id||!name){ showMsg('modalMsg','Name is required.','err'); return; }
+  if(dob && !isValidISODate(dob)){ showMsg('modalMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
   const { doc, updateDoc } = window._fs;
   showMsg('modalMsg','Saving…','ok');
   try{
@@ -852,7 +870,7 @@ async function saveEditModal(){
       name, pen_no:document.getElementById('mPenNo').value.trim(),
       order_no:document.getElementById('mOrderNo').value.trim(),
       feeder_category:document.getElementById('mFeeder').value.trim(),
-      dob:document.getElementById('mDob').value,
+      dob,
       retirement_age:document.getElementById('mRetAge').value,
       status:document.getElementById('mStatus').value,
       cadre:document.getElementById('mCadre').value,
@@ -1023,6 +1041,23 @@ async function uploadCSV(){
 
   const required=['name'];
   for(const h of required){ if(!headers.includes(h)){ showMsg('csvMsg',`Missing required column: ${h}`,'err'); return; } }
+
+  // Validate every row's DOB *before* touching Firestore (so a bad row can't trigger
+  // a destructive "Replace All" delete and then fail partway through the import).
+  const dobIdx = headers.indexOf('dob');
+  const nameIdx = headers.indexOf('name');
+  const badRows = [];
+  data.forEach((row,i)=>{
+    const dob = dobIdx>=0 ? (row[dobIdx]||'').trim() : '';
+    if(dob && !isValidISODate(dob)){
+      const nm = nameIdx>=0 ? (row[nameIdx]||'').trim() : '';
+      badRows.push(`Row ${i+2}${nm?' ('+nm+')':''}: "${dob}"`);
+    }
+  });
+  if(badRows.length){
+    showMsg('csvMsg',`✗ Import stopped — invalid DOB format (must be YYYY-MM-DD) in: ${badRows.join('; ')}`,'err');
+    return;
+  }
 
   const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, serverTimestamp } = window._fs;
 
