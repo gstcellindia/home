@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-batchupload</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-errorvisible</div>
   </div>
 </nav>
 
@@ -274,6 +274,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
         </div>
       </div>
       <div class="card-body" style="padding:0;">
+        <div id="officersLoadError" class="msg err" style="display:none;margin:12px;"></div>
         <div class="tbl-wrap">
           <table>
             <thead>
@@ -697,7 +698,7 @@ function confirmLogout(){
     const got = isValidISODate(input);
     if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-batchupload — date validator OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-errorvisible — date validator OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -729,7 +730,21 @@ async function loadOfficers(){
     const snap = await getDocs(query(collection(window._db,'seniority_officers'),orderBy('cadre','asc'),orderBy('sl_no','asc')));
     _officers = [];
     snap.forEach(d=>_officers.push({id:d.id,...d.data()}));
-  } catch(e){ _officers=[]; }
+    console.log('[loadOfficers] loaded', _officers.length, 'officer record(s) from Firestore.');
+    const banner = document.getElementById('officersLoadError');
+    if(banner) banner.style.display='none';
+  } catch(e){
+    _officers=[];
+    console.error('[loadOfficers] FAILED to load officers:', e);
+    const isIndexError = /index/i.test(e.message||'');
+    const banner = document.getElementById('officersLoadError');
+    if(banner){
+      banner.style.display='block';
+      banner.innerHTML = isIndexError
+        ? `⚠ Firestore needs a composite index for this query (cadre + sl_no) and it isn't ready yet. Open the browser console (F12) for a link Firestore provides to create it automatically — this is a one-time setup step. Error: ${escH(e.message)}`
+        : `⚠ Could not load officers from Firestore: ${escH(e.message)}`;
+    }
+  }
   loadOfficersTable();
 }
 
@@ -751,6 +766,10 @@ function populateCadreSelects(){
 function downloadTableCSVFromCsvPage(){
   const cadreFilter = document.getElementById('dlCadreFilter').value;
   const officers    = cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice();
+  if(!officers.length){
+    toast('No officers to download — the list is empty. Check for a load error above the Officer Entry table.');
+    return;
+  }
   const headers     = ['sl_no','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
   const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -1212,6 +1231,10 @@ async function uploadCSV(){
 function downloadTableCSV(){
   const cadreFilter = document.getElementById('filterCadre').value;
   const officers    = cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice();
+  if(!officers.length){
+    toast('No officers to download — the list is empty. Check for a load error above the table.');
+    return;
+  }
   const headers     = ['sl_no','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
   const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
