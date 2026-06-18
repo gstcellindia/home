@@ -64,6 +64,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .msg{padding:8px 14px;border-radius:7px;font-size:12.5px;margin-top:10px;display:none;}
 .msg.ok{background:#dcfce7;color:#15803d;}
 .msg.err{background:#fee2e2;color:#b91c1c;}
+.msg.busy{background:#eff6ff;color:#1e40af;}
 
 /* ── TABLE ── */
 .tbl-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;}
@@ -140,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-csvfix3</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-batchupload</div>
   </div>
 </nav>
 
@@ -650,7 +651,16 @@ function computeStatus(o){
   }
   return {key:'active', label:'Active', badgeClass:'badge-active'};
 }
-function showMsg(id,msg,type){ const el=document.getElementById(id); el.textContent=msg; el.className='msg '+(type||'ok'); el.style.display='block'; setTimeout(()=>el.style.display='none',4000); }
+function showMsg(id,msg,type){
+  const el=document.getElementById(id);
+  el.innerHTML=msg; el.className='msg '+(type||'ok'); el.style.display='block';
+  // 'busy' messages (in-progress operations) are replaced explicitly by the calling
+  // code when the operation finishes, so they're never auto-hidden on a timer —
+  // doing so would let a long-running import look like it silently vanished.
+  if(type!=='busy'){
+    setTimeout(()=>{ if(el.className==='msg '+(type||'ok')) el.style.display='none'; },4000);
+  }
+}
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -687,7 +697,7 @@ function confirmLogout(){
     const got = isValidISODate(input);
     if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-csvfix3 — date validator OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-batchupload — date validator OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -785,7 +795,7 @@ async function saveOfficer(){
   if(dob && !isValidISODate(dob)){ showMsg('formMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
 
   const { collection, addDoc, getDocs, query, orderBy, updateDoc, doc, serverTimestamp } = window._fs;
-  showMsg('formMsg','Saving…','ok');
+  showMsg('formMsg','Saving…','busy');
 
   try {
     // Renumber existing officers if inserting at specific position
@@ -817,7 +827,7 @@ async function saveOfficer(){
     toast('Officer added: '+name);
     clearForm();
     await loadOfficers();
-  } catch(e){ showMsg('formMsg','Error: '+e.message,'err'); }
+  } catch(e){ showMsg('formMsg','Error: '+escH(e.message),'err'); }
 }
 
 function clearForm(){
@@ -902,7 +912,7 @@ async function saveEditModal(){
   if(!id||!name){ showMsg('modalMsg','Name is required.','err'); return; }
   if(dob && !isValidISODate(dob)){ showMsg('modalMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
   const { doc, updateDoc } = window._fs;
-  showMsg('modalMsg','Saving…','ok');
+  showMsg('modalMsg','Saving…','busy');
   try{
     await updateDoc(doc(window._db,'seniority_officers',id),{
       sl_no:parseInt(document.getElementById('mSlNo').value)||0,
@@ -918,7 +928,7 @@ async function saveEditModal(){
     toast('Officer updated.');
     closeEditModal();
     await loadOfficers();
-  } catch(e){ showMsg('modalMsg','Error: '+e.message,'err'); }
+  } catch(e){ showMsg('modalMsg','Error: '+escH(e.message),'err'); }
 }
 
 async function deleteOfficer(id, name){
@@ -988,7 +998,7 @@ async function submitPromotions(){
     moves.push({ id, newSl });
   }
 
-  showMsg('promoMsg','<span class="spinner"></span> Processing…','ok');
+  showMsg('promoMsg','<span class="spinner"></span> Processing…','busy');
   const { doc, updateDoc, serverTimestamp } = window._fs;
 
   try {
@@ -1009,7 +1019,7 @@ async function submitPromotions(){
     document.getElementById('promoDate').value='';
     await loadOfficers();
     loadPromotionCandidates();
-  } catch(e){ showMsg('promoMsg','Error: '+e.message,'err'); }
+  } catch(e){ showMsg('promoMsg','Error: '+escH(e.message),'err'); }
 }
 
 // ── CSV ──
@@ -1127,45 +1137,76 @@ async function uploadCSV(){
     return;
   }
 
-  showMsg('csvMsg','<span class="spinner"></span> Processing…','ok');
-  const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, serverTimestamp } = window._fs;
+  console.log('[uploadCSV] starting import of', _csvRows.length, 'rows into cadre', cadreId, 'mode:', insertPos);
+  showMsg('csvMsg','<span class="spinner"></span> Processing… (0/'+_csvRows.length+')','busy');
+  const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch, serverTimestamp } = window._fs;
 
   try {
     // If replace, delete existing
     if(insertPos==='replace'){
+      console.log('[uploadCSV] replace mode: fetching existing docs to delete…');
       const snap = await getDocs(collection(window._db,'seniority_officers'));
       const toDelete = [];
       snap.forEach(d=>{ if(d.data().cadre===cadreId) toDelete.push(d.id); });
-      for(const id of toDelete) await deleteDoc(doc(window._db,'seniority_officers',id));
+      console.log('[uploadCSV] deleting', toDelete.length, 'existing officer(s)…');
+      showMsg('csvMsg','<span class="spinner"></span> Removing existing officers ('+toDelete.length+')…','busy');
+      // Batch deletes too — much faster than one-by-one for large cadres.
+      for(let i=0;i<toDelete.length;i+=400){
+        const batch = writeBatch(window._db);
+        toDelete.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+        await batch.commit();
+      }
+      console.log('[uploadCSV] delete complete.');
     }
 
-    // Determine start sl_no
-    const existing = _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
-    let startSl = insertPos==='start' ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
+    // Determine start sl_no. In replace mode we just deleted everything in this
+    // cadre above, so there's nothing "existing" to number around — start at 1.
+    const existing = insertPos==='replace' ? [] : _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    let startSl = (insertPos==='start'||insertPos==='replace') ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
     if(insertPos==='start' && existing.length){
-      // Shift existing up
-      for(const o of existing) await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+_csvRows.length});
+      console.log('[uploadCSV] shifting', existing.length, 'existing officer(s) to make room at the start…');
+      showMsg('csvMsg','<span class="spinner"></span> Reordering existing officers…','busy');
+      for(let i=0;i<existing.length;i+=400){
+        const batch = writeBatch(window._db);
+        existing.slice(i,i+400).forEach(o=>batch.update(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+_csvRows.length}));
+        await batch.commit();
+      }
     }
 
+    // Write new officers in batches of 400 (Firestore's limit is 500 ops/batch).
+    // Batching turns 258 sequential round-trips into ~1 per 400 rows, which is both
+    // far faster and avoids the per-second write-rate throttling that a tight
+    // one-by-one await loop can trigger on larger imports.
     let added=0;
-    for(let i=0;i<_csvRows.length;i++){
-      const r = _csvRows[i];
-      const sl = r.sl_no || startSl+i;
-      await addDoc(collection(window._db,'seniority_officers'),{
-        cadre:cadreId, sl_no:sl,
-        name:r.name, pen_no:r.pen_no, order_no:r.order_no,
-        feeder_category:r.feeder_category,
-        dob:r.dob, retirement_age:r.retirement_age,
-        status:r.status,
-        createdAt:serverTimestamp()
+    for(let i=0;i<_csvRows.length;i+=400){
+      const chunk = _csvRows.slice(i,i+400);
+      const batch = writeBatch(window._db);
+      chunk.forEach((r,j)=>{
+        const sl = r.sl_no || startSl+i+j;
+        const ref = doc(collection(window._db,'seniority_officers'));
+        batch.set(ref,{
+          cadre:cadreId, sl_no:sl,
+          name:r.name, pen_no:r.pen_no, order_no:r.order_no,
+          feeder_category:r.feeder_category,
+          dob:r.dob, retirement_age:r.retirement_age,
+          status:r.status,
+          createdAt:serverTimestamp()
+        });
       });
-      added++;
+      await batch.commit();
+      added += chunk.length;
+      console.log('[uploadCSV] committed batch, total so far:', added, '/', _csvRows.length);
+      showMsg('csvMsg','<span class="spinner"></span> Processing… ('+added+'/'+_csvRows.length+')','busy');
     }
+    console.log('[uploadCSV] import complete:', added, 'officers added.');
     showMsg('csvMsg',`✓ ${added} officers imported successfully.`,'ok');
     toast(`${added} officers imported.`);
     clearCsvPreview();
     await loadOfficers();
-  } catch(e){ showMsg('csvMsg','Error: '+e.message,'err'); }
+  } catch(e){
+    console.error('[uploadCSV] FAILED:', e);
+    showMsg('csvMsg','Error: '+escH(e.message),'err');
+  }
 }
 
 function downloadTableCSV(){
@@ -1262,7 +1303,7 @@ async function saveCadre(){
   const order = parseInt(document.getElementById('cOrder').value)||0;
   if(!id||!name||!short){ showMsg('cadreMsg','ID, Name and Short Name are required.','err'); return; }
   const { doc, setDoc } = window._fs;
-  showMsg('cadreMsg','Saving…','ok');
+  showMsg('cadreMsg','Saving…','busy');
   try{
     await setDoc(doc(window._db,'seniority_cadres',id),{id,name,short,sanctioned:sanct,feeder:feeder||null,order});
     showMsg('cadreMsg','✓ Cadre saved.','ok');
@@ -1270,7 +1311,7 @@ async function saveCadre(){
     clearCadreForm();
     await loadCadres();
     populateCadreSelects();
-  } catch(e){ showMsg('cadreMsg','Error: '+e.message,'err'); }
+  } catch(e){ showMsg('cadreMsg','Error: '+escH(e.message),'err'); }
 }
 
 async function deleteCadre(id, name){
