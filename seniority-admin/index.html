@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-dupecheck</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-bulkdelorder</div>
   </div>
 </nav>
 
@@ -272,11 +272,13 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-success btn-sm" onclick="downloadTableCSV()"><i class="fas fa-download"></i> Download CSV</button>
           <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
+          <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByOrder()"><i class="fas fa-eraser"></i> Delete by Order No.</button>
         </div>
       </div>
       <div class="card-body" style="padding:0;">
         <div id="officersLoadError" class="msg err" style="display:none;margin:12px;"></div>
         <div id="dupePenPanel" style="display:none;margin:12px;padding:14px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;"></div>
+        <div id="bulkDeleteOrderPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
         <div class="tbl-wrap">
           <table>
             <thead>
@@ -700,7 +702,7 @@ function confirmLogout(){
     const got = isValidISODate(input);
     if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-dupecheck — date validator OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-bulkdelorder — date validator OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -985,6 +987,124 @@ async function deleteDuplicatePens(groupCount){
   } catch(e){
     console.error('[deleteDuplicatePens] FAILED:', e);
     showMsg('dupePenMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── BULK DELETE BY ORDER NO. ──
+// Lets the admin pick a cadre + an order_no value (officers appointed under the
+// same government order commonly share one), see every matching officer with
+// checkboxes, and delete the selected ones together. Useful for cleaning up an
+// entire batch that was uploaded by mistake or needs to be removed as a group.
+function openBulkDeleteByOrder(){
+  const panel = document.getElementById('bulkDeleteOrderPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#991b1b;font-size:13px;margin-bottom:10px;"><i class="fas fa-eraser"></i> Delete Officers by Order No.</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="bdoCadre" onchange="loadOrderNoOptions()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>Order No. *</label>
+        <select id="bdoOrderNo" onchange="previewBulkDeleteByOrder()"><option value="">— Select Cadre First —</option></select>
+      </div>
+    </div>
+    <div id="bdoResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bulkDeleteOrderPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="bdoMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function loadOrderNoOptions(){
+  const cadreId = document.getElementById('bdoCadre').value;
+  const sel = document.getElementById('bdoOrderNo');
+  document.getElementById('bdoResults').innerHTML = '';
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+
+  // Every distinct order_no in this cadre, with a count of how many officers share it
+  // — sharing one order_no is normal (many officers are appointed by the same order),
+  // so this is purely a way to find and select the right batch, not a "duplicate" signal.
+  const counts = {};
+  _officers.filter(o=>o.cadre===cadreId && (o.order_no||'').trim()).forEach(o=>{
+    const key = o.order_no.trim();
+    counts[key] = (counts[key]||0)+1;
+  });
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){
+    sel.innerHTML = '<option value="">No officers with an Order No. in this cadre</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Select Order No. —</option>' +
+    entries.map(([orderNo,count])=>`<option value="${escH(orderNo)}">${escH(orderNo)} (${count} officer${count>1?'s':''})</option>`).join('');
+}
+
+function previewBulkDeleteByOrder(){
+  const cadreId  = document.getElementById('bdoCadre').value;
+  const orderNo  = document.getElementById('bdoOrderNo').value;
+  const results  = document.getElementById('bdoResults');
+  if(!cadreId||!orderNo){ results.innerHTML=''; return; }
+
+  const matches = _officers.filter(o=>o.cadre===cadreId && (o.order_no||'').trim()===orderNo)
+                            .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  if(!matches.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No matching officers.</div>'; return; }
+
+  let html = `<div style="font-size:12px;font-weight:700;color:var(--navy2);padding:6px 0;display:flex;justify-content:space-between;align-items:center;">
+    <span>${matches.length} officer(s) under this Order No. — select which to delete:</span>
+    <span>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdoCheckboxes(true)">Select All</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdoCheckboxes(false)">Clear</button>
+    </span>
+  </div>
+  <div class="tbl-wrap" style="max-height:320px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+    <table>
+      <thead><tr><th style="width:36px;"></th><th>Sl.</th><th>Name</th><th>PEN No.</th><th>DOB</th></tr></thead>
+      <tbody>`;
+  matches.forEach(o=>{
+    html += `<tr>
+      <td><input type="checkbox" class="bdo-check" data-id="${o.id}" checked></td>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.dob||'')}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+  <div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="deleteBulkByOrder()"><i class="fas fa-trash"></i> Delete Selected</button>
+  </div>`;
+  results.innerHTML = html;
+}
+
+function toggleAllBdoCheckboxes(state){
+  document.querySelectorAll('.bdo-check').forEach(cb=>cb.checked=state);
+}
+
+async function deleteBulkByOrder(){
+  const checked = Array.from(document.querySelectorAll('.bdo-check')).filter(cb=>cb.checked).map(cb=>cb.dataset.id);
+  if(!checked.length){ showMsg('bdoMsg','Select at least one officer to delete.','err'); return; }
+  if(!confirm(`Delete ${checked.length} officer record(s)? This cannot be undone.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('bdoMsg','<span class="spinner"></span> Deleting…','busy');
+  try{
+    for(let i=0;i<checked.length;i+=400){
+      const batch = writeBatch(window._db);
+      checked.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+      await batch.commit();
+    }
+    showMsg('bdoMsg',`✓ Deleted ${checked.length} officer(s).`,'ok');
+    toast(`Deleted ${checked.length} officer(s).`);
+    document.getElementById('bdoResults').innerHTML='';
+    document.getElementById('bdoOrderNo').value='';
+    await loadOfficers();
+    loadOrderNoOptions(); // refresh counts now that some have been removed
+  } catch(e){
+    console.error('[deleteBulkByOrder] FAILED:', e);
+    showMsg('bdoMsg','Error: '+escH(e.message),'err');
   }
 }
 
