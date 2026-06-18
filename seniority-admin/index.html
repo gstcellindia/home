@@ -140,7 +140,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-csvfix2</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-csvfix3</div>
   </div>
 </nav>
 
@@ -606,15 +606,31 @@ function fmtDate(d){ if(!d)return '—'; const dt=new Date(d); return isNaN(dt)?
 // Strictly validates a date string as YYYY-MM-DD (the only format this app stores/accepts).
 // Rejects malformed strings, out-of-range day/month, and non-existent calendar dates
 // (e.g. 2025-02-30) instead of silently letting JS's lenient Date parser guess.
+// Validates a date string as strict YYYY-MM-DD. Deliberately avoids a regex literal
+// containing a hyphen: some copy/paste paths (rich-text editors, certain web-based
+// file editors) silently swap a plain hyphen "-" for a visually-identical en-dash
+// or similar character, which would make a regex literal like /^\d{4}-\d{2}-\d{2}$/
+// silently stop matching ANY real date while looking completely normal in code review.
+// Checking character codes directly (45 === the ASCII hyphen) sidesteps that risk.
 function isValidISODate(s){
   if(!s || typeof s!=='string') return false;
   s = s.trim();
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(!m) return false;
-  const [, y, mo, d] = m.map(Number);
+  if(s.length!==10) return false;
+  for(let i=0;i<10;i++){
+    const c = s.charCodeAt(i);
+    const isDigitPos = (i<4)||(i===5||i===6)||(i===8||i===9);
+    if(isDigitPos){
+      if(c<48||c>57) return false; // '0'-'9'
+    } else {
+      if(c!==45) return false; // ASCII hyphen-minus only, position 4 and 7
+    }
+  }
+  const y  = Number(s.slice(0,4));
+  const mo = Number(s.slice(5,7));
+  const d  = Number(s.slice(8,10));
   if(mo<1||mo>12||d<1||d>31) return false;
-  const dt = new Date(s+'T00:00:00');
-  return !isNaN(dt) && dt.getUTCFullYear()===y && dt.getUTCMonth()+1===mo && dt.getUTCDate()===d;
+  const dt = new Date(y, mo-1, d);
+  return dt.getFullYear()===y && dt.getMonth()===mo-1 && dt.getDate()===d;
 }
 function retDate(dob,age){ if(!dob||!age||!isValidISODate(dob))return null; const dt=new Date(dob+'T00:00:00'); dt.setFullYear(dt.getFullYear()+parseInt(age)); return dt; }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
@@ -661,16 +677,17 @@ function confirmLogout(){
 
 // ── INIT ──
 // Self-test: confirms isValidISODate behaves correctly on page load. If this ever
-// logs a FAIL, the browser is running a different/stale version of this file than
-// intended — check for caching or a missed deploy before assuming the data is bad.
+// logs a FAIL, the file actually running in this browser has been altered from
+// what was delivered (corrupted character, stale cache, or edited copy) — check
+// the source of the deployed file rather than assuming the CSV data is bad.
 (function selfTestDateValidator(){
   const cases = [['1980-05-24',true],['1980/05/24',false],['',false],['2024-02-30',false]];
   let allOk = true;
   cases.forEach(([input,expected])=>{
     const got = isValidISODate(input);
-    if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected); }
+    if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-csvfix2 — date validator OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-csvfix3 — date validator OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
