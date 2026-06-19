@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-slnofix</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-listlabels</div>
   </div>
 </nav>
 
@@ -195,6 +195,13 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
             <select id="fCadre" onchange="onCadreChange()">
               <option value="">— Select Cadre —</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label>List / Batch *</label>
+            <select id="fListLabel" onchange="onListLabelChange()">
+              <option value="">— Select Cadre First —</option>
+            </select>
+            <input type="text" id="fListLabelNew" placeholder="New list label, e.g. 2009 Batch" style="display:none;margin-top:6px;">
           </div>
           <div class="form-group">
             <label>Sl. No *</label>
@@ -273,7 +280,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
           <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByOrder()"><i class="fas fa-eraser"></i> Delete by Order No.</button>
-          <button class="btn btn-secondary btn-sm" onclick="openFixSlNoOverlap()"><i class="fas fa-sort-numeric-down"></i> Fix Sl. No. Overlap</button>
+          <button class="btn btn-secondary btn-sm" onclick="openFixSlNoOverlap()"><i class="fas fa-layer-group"></i> Assign List Labels</button>
         </div>
       </div>
       <div class="card-body" style="padding:0;">
@@ -411,6 +418,11 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
             </select>
           </div>
           <div class="form-group">
+            <label>List / Batch Label *</label>
+            <input type="text" id="csvListLabel" placeholder="e.g. 2009 Batch, or List dated 21.01.2015">
+            <small>If this cadre has more than one seniority list (different joining periods), each list keeps its own Sl. No. sequence and displays as its own block, in the order you upload them.</small>
+          </div>
+          <div class="form-group">
             <label>Select CSV File *</label>
             <input type="file" id="csvFile" accept=".csv" style="padding:6px;">
             <small>File auto-previews below when selected</small>
@@ -425,12 +437,11 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
               <button class="btn btn-primary btn-sm" onclick="uploadCSV()"><i class="fas fa-upload"></i> Import to Firestore</button>
             </span>
           </div>
-          <div style="font-size:11.5px;color:var(--muted);padding:0 0 6px;">"Sl. (file)" below is the row number from your CSV — it is only shown for reference. The actual Sl. No. assigned on import always continues from your existing list (or restarts at 1 for "Insert at Beginning" / "Replace All"), regardless of what the file says.</div>
           <div class="tbl-wrap" style="max-height:420px;border:1px solid var(--border);border-radius:8px;">
             <table>
               <thead>
                 <tr>
-                  <th>Sl. (file)</th><th>Name</th><th>PEN No.</th><th>Order No.</th><th>Feeder Cat.</th><th>DOB</th><th>Ret. Age</th><th>Status</th><th>Row Check</th>
+                  <th>Sl. No.</th><th>Name</th><th>PEN No.</th><th>Order No.</th><th>Feeder Cat.</th><th>DOB</th><th>Ret. Age</th><th>Status</th><th>Row Check</th>
                 </tr>
               </thead>
               <tbody id="csvPreviewTable"></tbody>
@@ -531,6 +542,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group"><label>Sl. No</label><input type="number" id="mSlNo"></div>
+        <div class="form-group"><label>List / Batch</label><input type="text" id="mListLabel" placeholder="e.g. 2009 Batch"></div>
         <div class="form-group"><label>Name *</label><input type="text" id="mName"></div>
         <div class="form-group"><label>PEN No.</label><input type="text" id="mPenNo"></div>
         <div class="form-group"><label>Order No.</label><input type="text" id="mOrderNo"></div>
@@ -731,7 +743,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-slnofix — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-listlabels — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -814,13 +826,38 @@ function onCadreChange(){
   const cadreId = document.getElementById('fCadre').value;
   const pos     = document.getElementById('fInsertPos').value;
   populateInsertRef(cadreId);
+  populateListLabelOptions(cadreId);
+}
+
+function populateListLabelOptions(cadreId){
+  const sel = document.getElementById('fListLabel');
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+  // Distinct list_label values already used in this cadre, in their existing
+  // display order, plus a "+ New List" option to start a fresh batch/list.
+  const labels = {};
+  _officers.filter(o=>o.cadre===cadreId && o.list_label).forEach(o=>{
+    if(!(o.list_label in labels)) labels[o.list_label] = o.list_order!==undefined?o.list_order:0;
+  });
+  const sorted = Object.entries(labels).sort((a,b)=>a[1]-b[1]);
+  sel.innerHTML = (sorted.length?sorted.map(([label])=>`<option value="${escH(label)}">${escH(label)}</option>`).join(''):'') +
+    '<option value="__new__">+ New List…</option>';
+  document.getElementById('fListLabelNew').style.display='none';
+  if(sorted.length) sel.value = sorted[0][0];
+}
+
+function onListLabelChange(){
+  const sel = document.getElementById('fListLabel');
+  document.getElementById('fListLabelNew').style.display = sel.value==='__new__' ? 'block' : 'none';
+  populateInsertRef(document.getElementById('fCadre').value);
 }
 
 function populateInsertRef(cadreId){
   const pos    = document.getElementById('fInsertPos').value;
   const refSel = document.getElementById('fInsertRef');
   refSel.style.display = (pos==='before'||pos==='after') ? 'inline-block' : 'none';
-  const officers = _officers.filter(o=>o.cadre===cadreId);
+  const listSel  = document.getElementById('fListLabel').value;
+  const listLabel= listSel==='__new__' ? '' : listSel;
+  const officers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
   refSel.innerHTML = '<option value="">— Select Reference Officer —</option>'+
     officers.map(o=>`<option value="${o.id}">${o.sl_no}. ${escH(o.name)}</option>`).join('');
 }
@@ -842,8 +879,11 @@ async function saveOfficer(){
   const status   = document.getElementById('fStatus').value;
   const insertPos= document.getElementById('fInsertPos').value;
   const insertRef= document.getElementById('fInsertRef').value;
+  const listSel  = document.getElementById('fListLabel').value;
+  const listLabel= listSel==='__new__' ? document.getElementById('fListLabelNew').value.trim() : listSel;
 
   if(!cadreId||!name){ showMsg('formMsg','Cadre and Name are required.','err'); return; }
+  if(!listLabel){ showMsg('formMsg','Please select or name the seniority List / Batch this officer belongs to.','err'); return; }
   if(dob && !isValidISODate(dob)){ showMsg('formMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
   if(penNo){
     const dupe = _officers.find(o=>o.cadre===cadreId && (o.pen_no||'').trim().toLowerCase()===penNo.toLowerCase());
@@ -854,28 +894,40 @@ async function saveOfficer(){
   showMsg('formMsg','Saving…','busy');
 
   try {
-    // Renumber existing officers if inserting at specific position
+    // Renumber existing officers if inserting at a specific position — scoped to
+    // officers in the SAME list_label only. Two separate seniority lists for one
+    // cadre legitimately reuse the same Sl. No. range, so a renumber in one list
+    // must never shift Sl. No. values belonging to a different list.
     let finalSlNo = slNo;
+    const listOfficers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
     if(insertPos==='start'||insertPos==='before'||insertPos==='after'){
-      const cadreOfficers = _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
       let insertAt = 1;
       if(insertPos==='start') insertAt=1;
-      else if(insertPos==='end') insertAt=(cadreOfficers[cadreOfficers.length-1]?.sl_no||0)+1;
+      else if(insertPos==='end') insertAt=(listOfficers[listOfficers.length-1]?.sl_no||0)+1;
       else {
-        const refO = cadreOfficers.find(o=>o.id===insertRef);
+        const refO = listOfficers.find(o=>o.id===insertRef);
         if(refO) insertAt = refO.sl_no + (insertPos==='after'?1:0);
       }
       finalSlNo = insertAt;
-      // Shift up officers at or after insertAt
-      for(const o of cadreOfficers){
+      // Shift up officers at or after insertAt, within this list only
+      for(const o of listOfficers){
         if((o.sl_no||0)>=insertAt){
           await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+1});
         }
       }
     }
 
+    // list_order: keep an existing label's order if it's already used in this
+    // cadre; otherwise this is a brand-new list, so it goes after all existing ones.
+    const existingLabels = {};
+    _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+      if(o.list_label && o.list_order!==undefined && !(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order;
+    });
+    const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
+
     await addDoc(collection(window._db,'seniority_officers'),{
-      cadre:cadreId, sl_no:finalSlNo, name, pen_no:penNo, order_no:orderNo,
+      cadre:cadreId, sl_no:finalSlNo, list_label:listLabel, list_order:listOrder,
+      name, pen_no:penNo, order_no:orderNo,
       feeder_category:feeder, dob, retirement_age:retAge, status,
       createdAt:serverTimestamp()
     });
@@ -887,11 +939,13 @@ async function saveOfficer(){
 }
 
 function clearForm(){
-  ['fCadre','fSlNo','fName','fPenNo','fOrderNo','fFeeder','fDob','fEditId'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  ['fCadre','fSlNo','fName','fPenNo','fOrderNo','fFeeder','fDob','fEditId','fListLabelNew'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
   document.getElementById('fRetAge').value='60';
   document.getElementById('fStatus').value='';
   document.getElementById('fInsertPos').value='end';
   document.getElementById('fInsertRef').style.display='none';
+  document.getElementById('fListLabel').innerHTML='<option value="">— Select Cadre First —</option>';
+  document.getElementById('fListLabelNew').style.display='none';
   document.getElementById('formTitle').textContent='➕ Add Officer';
 }
 
@@ -909,7 +963,9 @@ function filterOfficersTable(){
 function renderOfficersTable(officers){
   const tbody = document.getElementById('officersTableBody');
   if(!officers.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="10">No officers found.</td></tr>'; return; }
-  tbody.innerHTML = officers.map(o=>{
+
+  const cadreFilter = document.getElementById('filterCadre').value;
+  const renderRow = (o)=>{
     const cadre = _cadres.find(c=>c.id===o.cadre);
     const rd    = retDate(o.dob,o.retirement_age||60);
     const st    = computeStatus(o);
@@ -929,7 +985,35 @@ function renderOfficersTable(officers){
         <button class="btn btn-danger btn-sm" onclick="deleteOfficer('${o.id}','${escH(o.name||'')}')"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
-  }).join('');
+  };
+
+  // When viewing a single cadre, group rows by list_label (multiple separate
+  // seniority lists, e.g. different joining batches, each keep their own Sl. No.
+  // sequence) and show a divider between them, in upload order (list_order).
+  // When viewing "All Cadres" this grouping is skipped — cadre is already the
+  // primary grouping signal there, and stacking both would be cluttered.
+  if(cadreFilter){
+    const groups = {};
+    officers.forEach(o=>{
+      const key = o.list_label || '';
+      if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), rows:[] };
+      groups[key].rows.push(o);
+    });
+    const groupList = Object.values(groups).sort((a,b)=>a.order-b.order);
+    groupList.forEach(g=>g.rows.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+
+    if(groupList.length>1){
+      let html = '';
+      groupList.forEach(g=>{
+        html += `<tr><td colspan="10" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 12px;">${escH(g.label||'Unlabeled List')} (${g.rows.length})</td></tr>`;
+        g.rows.forEach(o=>html+=renderRow(o));
+      });
+      tbody.innerHTML = html;
+      return;
+    }
+  }
+
+  tbody.innerHTML = officers.map(renderRow).join('');
 }
 
 // ── DUPLICATE PEN NO. CLEANUP ──
@@ -1137,23 +1221,23 @@ async function deleteBulkByOrder(){
   }
 }
 
-// ── FIX SL. NO. OVERLAP (one-time repair) ──
-// For when a CSV was appended whose own Sl. No. column started over from 1,
-// producing two officers with Sl. No. 1, two with Sl. No. 2, etc. There's no way
-// to know after the fact which Sl. No. value was "supposed" to be correct, but
-// createdAt is reliable: officers written in an earlier upload session always have
-// an earlier createdAt than officers written in a later one. This tool renumbers a
-// cadre 1, 2, 3… in createdAt order — preserving each batch's *internal* relative
-// order, and putting earlier batches before later ones — fixing the overlap.
-// NOTE: this is a destructive renumbering. If you've since manually inserted an
-// officer at a specific position in this cadre, review the result afterward.
+// ── ASSIGN LIST LABELS TO EXISTING DATA (one-time repair) ──
+// Officers uploaded before the List/Batch feature existed have no list_label, so
+// they all show under one "Unlabeled List" group — which is exactly the
+// interleaving problem this whole feature was built to solve. This tool detects
+// separate upload sessions within a cadre by looking for real GAPS in createdAt
+// (officers from the same CSV import land within seconds of each other; two
+// different uploads are typically minutes, hours, or days apart), then lets the
+// admin name each detected batch. It only ever WRITES list_label/list_order —
+// it never touches sl_no, since that is the real seniority number from the
+// original spreadsheet and must stay exactly as uploaded.
 function openFixSlNoOverlap(){
   const panel = document.getElementById('fixSlNoPanel');
   const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
   panel.innerHTML = `
-    <div style="font-weight:700;color:#1e40af;font-size:13px;margin-bottom:8px;"><i class="fas fa-sort-numeric-down"></i> Fix Sl. No. Overlap</div>
+    <div style="font-weight:700;color:#1e40af;font-size:13px;margin-bottom:8px;"><i class="fas fa-layer-group"></i> Assign List / Batch Labels to Existing Officers</div>
     <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
-      Use this if a cadre has officers sharing the same Sl. No. — usually because a CSV was appended whose own numbering restarted from 1. This renumbers the whole cadre 1, 2, 3… by upload date (oldest first), keeping each batch's internal order intact. <strong>This changes Sl. No. for every officer in the cadre and cannot be undone</strong> — review the preview before confirming.
+      Use this for officers uploaded before the List/Batch feature existed. It groups officers in a cadre by upload session (a real time-gap between uploads) and lets you name each one — e.g. "2009 Batch", "2010 Batch" — so they display as separate blocks with their original Sl. No. intact, instead of one interleaved list.
     </p>
     <div class="form-grid">
       <div class="form-group">
@@ -1170,70 +1254,97 @@ function openFixSlNoOverlap(){
   panel.style.display='block';
 }
 
+let _detectedBatches = [];
+
 function previewFixSlNoOverlap(){
   const cadreId = document.getElementById('fixSlNoCadre').value;
   const results = document.getElementById('fixSlNoResults');
   if(!cadreId){ results.innerHTML=''; return; }
 
-  const officers = _officers.filter(o=>o.cadre===cadreId);
-  // Detect whether there's actually an overlap, so this isn't run needlessly.
-  const counts = {};
-  officers.forEach(o=>{ counts[o.sl_no||0] = (counts[o.sl_no||0]||0)+1; });
-  const overlapCount = Object.values(counts).filter(c=>c>1).length;
+  const officers = _officers.filter(o=>o.cadre===cadreId && !o.list_label);
+  if(!officers.length){
+    results.innerHTML = `<div style="color:#166534;font-weight:600;font-size:12px;"><i class="fas fa-check-circle"></i> Every officer in this cadre already has a List / Batch label — nothing to assign.</div>`;
+    _detectedBatches=[];
+    return;
+  }
 
   const sorted = officers.slice().sort((a,b)=>{
     const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
     const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-    if(at!==bt) return at-bt;
-    return (a.sl_no||0)-(b.sl_no||0);
+    return at-bt;
   });
 
-  if(!overlapCount){
-    results.innerHTML = `<div style="color:#166534;font-weight:600;font-size:12px;"><i class="fas fa-check-circle"></i> No overlapping Sl. No. values found in this cadre — nothing to fix.</div>`;
-    return;
-  }
-
-  let html = `<div style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:8px;"><i class="fas fa-exclamation-triangle"></i> ${overlapCount} Sl. No. value(s) are shared by more than one officer. Preview of the new numbering (by upload date):</div>
-  <div class="tbl-wrap" style="max-height:320px;border:1px solid var(--border);border-radius:8px;background:#fff;">
-    <table>
-      <thead><tr><th>Current Sl.</th><th>New Sl.</th><th>Name</th><th>PEN No.</th><th>Order No.</th></tr></thead>
-      <tbody>`;
-  sorted.forEach((o,i)=>{
-    const changed = (o.sl_no||0)!==(i+1);
-    html += `<tr${changed?' style="background:#fffbeb;"':''}>
-      <td class="td-sl">${o.sl_no||''}</td>
-      <td class="td-sl" style="font-weight:700;">${i+1}</td>
-      <td class="td-name">${escH(o.name||'')}</td>
-      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
-      <td style="font-size:12px;">${escH(o.order_no||'')}</td>
-    </tr>`;
+  // Split into batches wherever there's a gap of more than 10 minutes between
+  // consecutive officers' createdAt — a reasonable threshold for "this was a
+  // different upload session", since even a large CSV import completes in
+  // seconds with the batched-write approach this admin page uses.
+  const GAP_MS = 10*60*1000;
+  const batches = [];
+  let current = [];
+  let lastTime = null;
+  sorted.forEach(o=>{
+    const t = o.createdAt?.toMillis ? o.createdAt.toMillis() : 0;
+    if(lastTime!==null && (t-lastTime)>GAP_MS && current.length){
+      batches.push(current);
+      current=[];
+    }
+    current.push(o);
+    lastTime = t;
   });
-  html += `</tbody></table></div>
-  <div class="btn-row" style="margin-top:10px;">
-    <button class="btn btn-danger btn-sm" onclick="applyFixSlNoOverlap()"><i class="fas fa-check"></i> Apply Renumbering</button>
+  if(current.length) batches.push(current);
+
+  _detectedBatches = batches;
+  let html = `<div style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:8px;"><i class="fas fa-exclamation-triangle"></i> Detected ${batches.length} separate upload session(s) with no label. Name each one, then apply:</div>`;
+  batches.forEach((b,i)=>{
+    const firstTime = b[0].createdAt?.toDate ? b[0].createdAt.toDate().toLocaleString('en-IN') : 'unknown time';
+    html += `<div style="background:#fff;border:1px solid #93c5fd;border-radius:7px;padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Batch ${i+1} — ${b.length} officer(s), uploaded around ${escH(firstTime)}. Sl. No. range: ${b[0].sl_no||'?'}–${b[b.length-1].sl_no||'?'} (sample).</div>
+      <input type="text" class="batch-label-input" data-batch="${i}" placeholder="e.g. 2009 Batch" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;">
+    </div>`;
+  });
+  html += `<div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="applyFixSlNoOverlap()"><i class="fas fa-check"></i> Apply Labels</button>
   </div>`;
   results.innerHTML = html;
-  panel_sorted_cache = sorted; // stash for apply step
 }
-let panel_sorted_cache = [];
 
 async function applyFixSlNoOverlap(){
-  if(!panel_sorted_cache.length){ showMsg('fixSlNoMsg','Nothing to apply.','err'); return; }
-  if(!confirm(`Renumber ${panel_sorted_cache.length} officer(s) in this cadre? This changes Sl. No. for the whole cadre and cannot be undone.`)) return;
+  if(!_detectedBatches.length){ showMsg('fixSlNoMsg','Nothing to apply.','err'); return; }
+  const cadreId = document.getElementById('fixSlNoCadre').value;
+
+  // Existing labels already used in this cadre (if any), so newly-named batches
+  // get list_order values that come after them, preserving any labels already set.
+  const existingLabels = {};
+  _officers.filter(o=>o.cadre===cadreId && o.list_label).forEach(o=>{
+    if(!(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order!==undefined?o.list_order:0;
+  });
+  let nextOrder = Object.keys(existingLabels).length ? Math.max(...Object.values(existingLabels))+1 : 0;
+
+  const labelInputs = Array.from(document.querySelectorAll('.batch-label-input'));
+  const assignments = []; // {officerId, label, order}
+  for(const input of labelInputs){
+    const label = input.value.trim();
+    if(!label){ showMsg('fixSlNoMsg','Please name every detected batch before applying.','err'); return; }
+    const batchIdx = parseInt(input.dataset.batch);
+    const order = label in existingLabels ? existingLabels[label] : nextOrder++;
+    _detectedBatches[batchIdx].forEach(o=>assignments.push({id:o.id, label, order}));
+  }
+
+  if(!confirm(`Assign labels to ${assignments.length} officer(s)? Sl. No. values will NOT change — only the list label is being set.`)) return;
 
   const { doc, writeBatch } = window._fs;
-  showMsg('fixSlNoMsg','<span class="spinner"></span> Renumbering…','busy');
+  showMsg('fixSlNoMsg','<span class="spinner"></span> Applying labels…','busy');
   try{
-    for(let i=0;i<panel_sorted_cache.length;i+=400){
-      const chunk = panel_sorted_cache.slice(i,i+400);
+    for(let i=0;i<assignments.length;i+=400){
+      const chunk = assignments.slice(i,i+400);
       const batch = writeBatch(window._db);
-      chunk.forEach((o,j)=>batch.update(doc(window._db,'seniority_officers',o.id),{sl_no:i+j+1}));
+      chunk.forEach(a=>batch.update(doc(window._db,'seniority_officers',a.id),{list_label:a.label, list_order:a.order}));
       await batch.commit();
     }
-    showMsg('fixSlNoMsg',`✓ Renumbered ${panel_sorted_cache.length} officer(s).`,'ok');
-    toast('Sl. No. renumbered.');
+    showMsg('fixSlNoMsg',`✓ Labeled ${assignments.length} officer(s).`,'ok');
+    toast('List labels assigned.');
     document.getElementById('fixSlNoResults').innerHTML='';
-    panel_sorted_cache=[];
+    _detectedBatches=[];
     await loadOfficers();
   } catch(e){
     console.error('[applyFixSlNoOverlap] FAILED:', e);
@@ -1246,6 +1357,7 @@ function openEditModal(id){
   const o = _officers.find(x=>x.id===id); if(!o)return;
   document.getElementById('mEditId').value  = id;
   document.getElementById('mSlNo').value    = o.sl_no||'';
+  document.getElementById('mListLabel').value = o.list_label||'';
   document.getElementById('mName').value    = o.name||'';
   document.getElementById('mPenNo').value   = o.pen_no||'';
   document.getElementById('mOrderNo').value = o.order_no||'';
@@ -1276,17 +1388,29 @@ async function saveEditModal(){
   const dob    = document.getElementById('mDob').value;
   const penNo  = document.getElementById('mPenNo').value.trim();
   const cadre  = document.getElementById('mCadre').value;
+  const listLabel = document.getElementById('mListLabel').value.trim();
   if(!id||!name){ showMsg('modalMsg','Name is required.','err'); return; }
+  if(!listLabel){ showMsg('modalMsg','List / Batch is required — it keeps multiple seniority lists for this cadre separate.','err'); return; }
   if(dob && !isValidISODate(dob)){ showMsg('modalMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
   if(penNo){
     const dupe = _officers.find(o=>o.id!==id && o.cadre===cadre && (o.pen_no||'').trim().toLowerCase()===penNo.toLowerCase());
     if(dupe){ showMsg('modalMsg',`PEN No. ${escH(penNo)} already exists in this cadre (${escH(dupe.name||'')}).`,'err'); return; }
   }
+  // If this label already exists in this cadre, keep its existing list_order so the
+  // officer joins that block in the right position; otherwise this is effectively
+  // a brand-new list, so it goes after all existing ones in this cadre.
+  const existingLabels = {};
+  _officers.filter(o=>o.cadre===cadre && o.id!==id).forEach(o=>{
+    if(o.list_label && o.list_order!==undefined && !(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order;
+  });
+  const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
+
   const { doc, updateDoc } = window._fs;
   showMsg('modalMsg','Saving…','busy');
   try{
     await updateDoc(doc(window._db,'seniority_officers',id),{
       sl_no:parseInt(document.getElementById('mSlNo').value)||0,
+      list_label:listLabel, list_order:listOrder,
       name, pen_no:document.getElementById('mPenNo').value.trim(),
       order_no:document.getElementById('mOrderNo').value.trim(),
       feeder_category:document.getElementById('mFeeder').value.trim(),
@@ -1541,9 +1665,11 @@ function clearCsvPreview(){
 }
 
 async function uploadCSV(){
-  const cadreId   = document.getElementById('csvCadre').value;
-  const insertPos = document.getElementById('csvInsertPos').value;
+  const cadreId    = document.getElementById('csvCadre').value;
+  const insertPos  = document.getElementById('csvInsertPos').value;
+  const listLabel  = document.getElementById('csvListLabel').value.trim();
   if(!cadreId){ showMsg('csvMsg','Please select a cadre.','err'); return; }
+  if(!listLabel){ showMsg('csvMsg','Please enter a List / Batch Label (e.g. "2009 Batch") — this keeps multiple seniority lists for the same cadre separate and displayed in the right order.','err'); return; }
   if(!_csvRows.length){ showMsg('csvMsg','Please select and preview a CSV file first.','err'); return; }
 
   const badRows = _csvRows.filter(r=>r._err);
@@ -1552,35 +1678,34 @@ async function uploadCSV(){
     return;
   }
 
-  console.log('[uploadCSV] starting import of', _csvRows.length, 'rows into cadre', cadreId, 'mode:', insertPos);
+  console.log('[uploadCSV] starting import of', _csvRows.length, 'rows into cadre', cadreId, 'list:', listLabel, 'mode:', insertPos);
   showMsg('csvMsg','<span class="spinner"></span> Processing… (0/'+_csvRows.length+')','busy');
   const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch, serverTimestamp } = window._fs;
 
   try {
-    // If replace, delete existing
+    // Each list/batch within a cadre keeps its own independent Sl. No. sequence —
+    // list_order determines which block displays first, second, etc. "Replace All"
+    // and "Insert at Beginning" only ever apply within rows sharing the SAME label;
+    // they never touch or renumber a different list's officers, since two separate
+    // joining-batches legitimately reuse the same Sl. No. values.
+    const sameList = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel);
+
     if(insertPos==='replace'){
-      console.log('[uploadCSV] replace mode: fetching existing docs to delete…');
-      const snap = await getDocs(collection(window._db,'seniority_officers'));
-      const toDelete = [];
-      snap.forEach(d=>{ if(d.data().cadre===cadreId) toDelete.push(d.id); });
-      console.log('[uploadCSV] deleting', toDelete.length, 'existing officer(s)…');
-      showMsg('csvMsg','<span class="spinner"></span> Removing existing officers ('+toDelete.length+')…','busy');
-      // Batch deletes too — much faster than one-by-one for large cadres.
-      for(let i=0;i<toDelete.length;i+=400){
+      console.log('[uploadCSV] replace mode: deleting', sameList.length, 'existing officer(s) in this list…');
+      showMsg('csvMsg','<span class="spinner"></span> Removing existing officers in this list ('+sameList.length+')…','busy');
+      for(let i=0;i<sameList.length;i+=400){
         const batch = writeBatch(window._db);
-        toDelete.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+        sameList.slice(i,i+400).forEach(o=>batch.delete(doc(window._db,'seniority_officers',o.id)));
         await batch.commit();
       }
       console.log('[uploadCSV] delete complete.');
     }
 
-    // Determine start sl_no. In replace mode we just deleted everything in this
-    // cadre above, so there's nothing "existing" to number around — start at 1.
-    const existing = insertPos==='replace' ? [] : _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    const existing = insertPos==='replace' ? [] : sameList.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
     let startSl = (insertPos==='start'||insertPos==='replace') ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
     if(insertPos==='start' && existing.length){
-      console.log('[uploadCSV] shifting', existing.length, 'existing officer(s) to make room at the start…');
-      showMsg('csvMsg','<span class="spinner"></span> Reordering existing officers…','busy');
+      console.log('[uploadCSV] shifting', existing.length, 'existing officer(s) in this list to make room at the start…');
+      showMsg('csvMsg','<span class="spinner"></span> Reordering existing officers in this list…','busy');
       for(let i=0;i<existing.length;i+=400){
         const batch = writeBatch(window._db);
         existing.slice(i,i+400).forEach(o=>batch.update(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+_csvRows.length}));
@@ -1588,26 +1713,34 @@ async function uploadCSV(){
       }
     }
 
+    // list_order controls block display position among the cadre's lists. A label
+    // already used in this cadre keeps its existing order; a brand-new label gets
+    // the next order number, so newly uploaded lists appear after existing ones.
+    const existingLabels = {};
+    _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+      if(o.list_label && o.list_order!==undefined && !(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order;
+    });
+    const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
+
     // Write new officers in batches of 400 (Firestore's limit is 500 ops/batch).
     // Batching turns 258 sequential round-trips into ~1 per 400 rows, which is both
     // far faster and avoids the per-second write-rate throttling that a tight
     // one-by-one await loop can trigger on larger imports.
     //
-    // IMPORTANT: Sl. No. is always assigned fresh from startSl/i/j here, NEVER taken
-    // from the CSV file's own sl_no column. The CSV's sl_no reflects the numbering
-    // of whatever source spreadsheet it came from — if you're appending a second
-    // list to an existing one, that source file's own "1, 2, 3…" has nothing to do
-    // with where those officers should land in your already-existing list. Using it
-    // directly is exactly what caused two officers to both end up as Sl. No. 1.
+    // IMPORTANT: Sl. No. is always taken EXACTLY as given in the CSV's sl_no column.
+    // It is the officer's actual seniority rank within this list, not a row counter
+    // — it must never be reassigned or renumbered automatically. If a file doesn't
+    // specify sl_no for a row, only THEN does it fall back to the auto-continuing
+    // sequence (startSl), purely so the row has some number rather than failing.
     let added=0;
     for(let i=0;i<_csvRows.length;i+=400){
       const chunk = _csvRows.slice(i,i+400);
       const batch = writeBatch(window._db);
       chunk.forEach((r,j)=>{
-        const sl = startSl+i+j;
+        const sl = r.sl_no || startSl+i+j;
         const ref = doc(collection(window._db,'seniority_officers'));
         batch.set(ref,{
-          cadre:cadreId, sl_no:sl,
+          cadre:cadreId, sl_no:sl, list_label:listLabel, list_order:listOrder,
           name:r.name, pen_no:r.pen_no, order_no:r.order_no,
           feeder_category:r.feeder_category,
           dob:r.dob, retirement_age:r.retirement_age,
