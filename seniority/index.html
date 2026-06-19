@@ -417,7 +417,16 @@ document.addEventListener('snReady', async () => {
       if(!_officers[o.cadre]) _officers[o.cadre] = [];
       _officers[o.cadre].push(o);
     });
-    Object.keys(_officers).forEach(k => _officers[k].sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+    // Base sort: group by list_order first (so each separate seniority list within
+    // a cadre stays together, in upload order), then by Sl. No. within that list.
+    // renderTable() re-groups by list_label for display regardless, but keeping
+    // this consistent avoids surprises for any other code reading _officers directly.
+    Object.keys(_officers).forEach(k => _officers[k].sort((a,b)=>{
+      const aOrder = a.list_order!==undefined ? a.list_order : -1;
+      const bOrder = b.list_order!==undefined ? b.list_order : -1;
+      if(aOrder!==bOrder) return aOrder-bOrder;
+      return (a.sl_no||0)-(b.sl_no||0);
+    }));
     console.log('[seniority] loaded officer records for', Object.keys(_officers).length, 'cadre(s).');
   } catch(e) {
     console.error('[seniority] Error loading officers:', e);
@@ -455,24 +464,46 @@ function renderTable(cadre, officers){
   const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)||(o.pen_no||'').toLowerCase().includes(search)) : officers;
   if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">No results found.</td></tr>`; return; }
 
-  tbody.innerHTML = filtered.map(o => {
-    const rd   = retDate(o.dob, o.retirement_age||60);
-    const st   = computeStatus(o);
-    const isSoon = st.key==='soon';
-    const rowClass   = st.key==='retired'||st.key==='expired'||st.key==='relieved' ? 'retired' : isSoon ? 'retiring-soon' : '';
-    const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
-    const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
-    return `<tr class="${rowClass}">
-      <td class="sl">${o.sl_no||''}</td>
-      <td class="name">${escH(o.name||'')}</td>
-      <td>${escH(o.pen_no||'')}</td>
-      <td>${escH(o.order_no||'')}</td>
-      <td>${escH(o.feeder_category||'')}</td>
-      <td>${fmtDate(o.dob)}</td>
-      <td>${rdStr}</td>
-      <td>${statusBadge}</td>
-    </tr>`;
-  }).join('');
+  // Group by list_label so a cadre with multiple separate seniority lists (e.g.
+  // different joining batches) shows each list as its own block, in upload order
+  // (list_order), with Sl. No. sorted only WITHIN each block — never merged into
+  // one interleaved ranking across lists. Officers with no list_label (data from
+  // before this feature existed) form their own unlabeled group, shown first.
+  const groups = {};
+  filtered.forEach(o=>{
+    const key = o.list_label || '';
+    if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), officers:[] };
+    groups[key].officers.push(o);
+  });
+  const groupList = Object.values(groups).sort((a,b)=>a.order-b.order);
+  groupList.forEach(g=>g.officers.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+
+  let rowsHtml = '';
+  const showLabels = groupList.length>1; // only show a divider header when there's more than one list
+  groupList.forEach(g=>{
+    if(showLabels){
+      rowsHtml += `<tr class="list-divider"><td colspan="8" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 16px;">${escH(g.label||'Unlabeled List')}</td></tr>`;
+    }
+    g.officers.forEach(o=>{
+      const rd   = retDate(o.dob, o.retirement_age||60);
+      const st   = computeStatus(o);
+      const isSoon = st.key==='soon';
+      const rowClass   = st.key==='retired'||st.key==='expired'||st.key==='relieved' ? 'retired' : isSoon ? 'retiring-soon' : '';
+      const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
+      const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
+      rowsHtml += `<tr class="${rowClass}">
+        <td class="sl">${o.sl_no||''}</td>
+        <td class="name">${escH(o.name||'')}</td>
+        <td>${escH(o.pen_no||'')}</td>
+        <td>${escH(o.order_no||'')}</td>
+        <td>${escH(o.feeder_category||'')}</td>
+        <td>${fmtDate(o.dob)}</td>
+        <td>${rdStr}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = rowsHtml;
 }
 
 function renderStats(cadre, officers){
@@ -562,7 +593,7 @@ function downloadCSV(){
     return;
   }
   const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const headers  = ['sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
+  const headers  = ['list_label','sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
   const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv      = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a        = document.createElement('a');
