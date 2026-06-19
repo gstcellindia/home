@@ -319,21 +319,46 @@ function fmtDate(d){
 // Strictly validates a date string as YYYY-MM-DD (the only format this app stores/accepts).
 // Rejects malformed strings, out-of-range day/month, and non-existent calendar dates
 // (e.g. 2025-02-30) instead of silently letting JS's lenient Date parser guess.
+// Validates a date string as strict YYYY-MM-DD. Deliberately avoids a regex literal
+// containing a hyphen: some copy/paste paths (rich-text editors, certain web-based
+// file editors) silently swap a plain hyphen "-" for a visually-identical en-dash
+// or similar character, which would make a regex literal like /^\d{4}-\d{2}-\d{2}$/
+// silently stop matching ANY real date while looking completely normal in code review.
+// Checking character codes directly (45 === the ASCII hyphen) sidesteps that risk.
 function isValidISODate(s){
   if(!s || typeof s!=='string') return false;
   s = s.trim();
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(!m) return false;
-  const [, y, mo, d] = m.map(Number);
+  if(s.length!==10) return false;
+  for(let i=0;i<10;i++){
+    const c = s.charCodeAt(i);
+    const isDigitPos = (i<4)||(i===5||i===6)||(i===8||i===9);
+    if(isDigitPos){
+      if(c<48||c>57) return false; // '0'-'9'
+    } else {
+      if(c!==45) return false; // ASCII hyphen-minus only, position 4 and 7
+    }
+  }
+  const y  = Number(s.slice(0,4));
+  const mo = Number(s.slice(5,7));
+  const d  = Number(s.slice(8,10));
   if(mo<1||mo>12||d<1||d>31) return false;
-  const dt = new Date(s+'T00:00:00');
-  return !isNaN(dt) && dt.getUTCFullYear()===y && dt.getUTCMonth()+1===mo && dt.getUTCDate()===d;
+  const dt = new Date(y, mo-1, d);
+  return dt.getFullYear()===y && dt.getMonth()===mo-1 && dt.getDate()===d;
 }
+// Computes the statutory retirement date under Kerala Service Rules, Rule 60(a):
+// retirement takes effect on the last day of the month in which the officer
+// reaches retirement age — EXCEPT if their birthday falls on the 1st of a month,
+// in which case retirement is the last day of the PREVIOUS month instead.
+// (Worked examples from KSR: DOB 1-Jul + age 60 -> retires 30-Jun same year;
+//  DOB 4-Jul-1962 + age 56 -> retires 31-Jul-2018, i.e. last day of birth month.)
 function retDate(dob, retAge){
   if(!dob||!retAge||!isValidISODate(dob)) return null;
-  const dt = new Date(dob+'T00:00:00');
-  dt.setFullYear(dt.getFullYear() + parseInt(retAge));
-  return dt;
+  const [y,m,d] = dob.split('-').map(Number);
+  const birthdayAtAge = new Date(y+parseInt(retAge), m-1, d);
+  if(d===1){
+    return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth(), 0); // last day of previous month
+  }
+  return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth()+1, 0); // last day of birthday's month
 }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
 // Computes the effective display status for an officer.
