@@ -361,6 +361,13 @@ function retDate(dob, retAge){
   return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth()+1, 0); // last day of birthday's month
 }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
+// Pulls the first 4-digit year out of a list/batch label, e.g. "2015-16" -> 2015,
+// "2017-2020" -> 2017, "List dated 21.01.2015" -> 2015. Returns null if no year-like
+// number is found, so callers can fall back to a different sort key in that case.
+function extractYear(label){
+  const m = String(label||'').match(/\d{4}/);
+  return m ? parseInt(m[0]) : null;
+}
 // Computes the effective display status for an officer.
 // Manual overrides (expired/relieved) always win. An invalid/missing DOB is
 // surfaced as its own status rather than silently defaulting to Active.
@@ -465,17 +472,27 @@ function renderTable(cadre, officers){
   if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">No results found.</td></tr>`; return; }
 
   // Group by list_label so a cadre with multiple separate seniority lists (e.g.
-  // different joining batches) shows each list as its own block, in upload order
-  // (list_order), with Sl. No. sorted only WITHIN each block — never merged into
-  // one interleaved ranking across lists. Officers with no list_label (data from
-  // before this feature existed) form their own unlabeled group, shown first.
+  // different joining batches) shows each list as its own block, with Sl. No.
+  // sorted only WITHIN each block — never merged into one interleaved ranking
+  // across lists. Officers with no list_label (data from before this feature
+  // existed) form their own unlabeled group, shown first.
+  //
+  // Blocks are ordered by the YEAR found in the label (e.g. "2015-16" -> 2015),
+  // earliest first, since that's what these labels represent — NOT by upload
+  // order (list_order), which has no relation to which batch is chronologically
+  // earlier. list_order is only used as a fallback when a label has no year in it.
   const groups = {};
   filtered.forEach(o=>{
     const key = o.list_label || '';
-    if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), officers:[] };
+    if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), year:extractYear(o.list_label), officers:[] };
     groups[key].officers.push(o);
   });
-  const groupList = Object.values(groups).sort((a,b)=>a.order-b.order);
+  const groupList = Object.values(groups).sort((a,b)=>{
+    if(a.year!==null && b.year!==null) return a.year-b.year;
+    if(a.year!==null) return -1; // a labeled-with-year group sorts before an unparsed one
+    if(b.year!==null) return 1;
+    return a.order-b.order;
+  });
   groupList.forEach(g=>g.officers.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
 
   let rowsHtml = '';
