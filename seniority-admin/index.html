@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-restoreslno</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-yearorder-diag</div>
   </div>
 </nav>
 
@@ -671,6 +671,13 @@ function retDate(dob,age){
   return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth()+1, 0); // last day of birthday's month
 }
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
+// Pulls the first 4-digit year out of a list/batch label, e.g. "2015-16" -> 2015,
+// "2017-2020" -> 2017, "List dated 21.01.2015" -> 2015. Returns null if no year-like
+// number is found, so callers can fall back to a different sort key in that case.
+function extractYear(label){
+  const m = String(label||'').match(/\d{4}/);
+  return m ? parseInt(m[0]) : null;
+}
 // Computes the effective display status for an officer.
 // Manual overrides (expired/relieved) always win. An invalid/missing DOB is
 // surfaced as its own status rather than silently defaulting to Active.
@@ -745,7 +752,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-restoreslno — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-yearorder-diag — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -991,18 +998,25 @@ function renderOfficersTable(officers){
 
   // When viewing a single cadre, group rows by list_label (multiple separate
   // seniority lists, e.g. different joining batches, each keep their own Sl. No.
-  // sequence) and show a divider between them, in upload order (list_order).
+  // sequence) and show a divider between them, ordered by year if the label
+  // contains one (earlier years first), falling back to upload order otherwise.
   // When viewing "All Cadres" this grouping is skipped — cadre is already the
   // primary grouping signal there, and stacking both would be cluttered.
   if(cadreFilter){
     const groups = {};
     officers.forEach(o=>{
       const key = o.list_label || '';
-      if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), rows:[] };
+      if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), year:extractYear(o.list_label), rows:[] };
       groups[key].rows.push(o);
     });
-    const groupList = Object.values(groups).sort((a,b)=>a.order-b.order);
+    const groupList = Object.values(groups).sort((a,b)=>{
+      if(a.year!==null && b.year!==null) return a.year-b.year;
+      if(a.year!==null) return -1;
+      if(b.year!==null) return 1;
+      return a.order-b.order;
+    });
     groupList.forEach(g=>g.rows.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+    console.log('[renderOfficersTable] cadreFilter=', JSON.stringify(cadreFilter), 'officers passed in=', officers.length, 'distinct list_label groups=', groupList.length, groupList.map(g=>({label:g.label, year:g.year, count:g.rows.length})));
 
     if(groupList.length>1){
       let html = '';
