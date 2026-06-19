@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-yearorder-diag</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-newlistfix</div>
   </div>
 </nav>
 
@@ -752,7 +752,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-yearorder-diag — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-newlistfix — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -850,8 +850,13 @@ function populateListLabelOptions(cadreId){
   const sorted = Object.entries(labels).sort((a,b)=>a[1]-b[1]);
   sel.innerHTML = (sorted.length?sorted.map(([label])=>`<option value="${escH(label)}">${escH(label)}</option>`).join(''):'') +
     '<option value="__new__">+ New List…</option>';
-  document.getElementById('fListLabelNew').style.display='none';
   if(sorted.length) sel.value = sorted[0][0];
+  // Selecting an option in code (sel.value=...) does NOT fire the select's onchange
+  // event, so the very first time a cadre has no existing labels yet, the browser
+  // defaults to the only option ("__new__") without ever calling onListLabelChange()
+  // — silently leaving the New List text box hidden even though "+ New List…" is
+  // what's shown. Calling it explicitly here covers every case, not just user clicks.
+  onListLabelChange();
 }
 
 function onListLabelChange(){
