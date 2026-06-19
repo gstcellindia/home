@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-listlabels</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-restoreslno</div>
   </div>
 </nav>
 
@@ -281,6 +281,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
           <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByOrder()"><i class="fas fa-eraser"></i> Delete by Order No.</button>
           <button class="btn btn-secondary btn-sm" onclick="openFixSlNoOverlap()"><i class="fas fa-layer-group"></i> Assign List Labels</button>
+          <button class="btn btn-secondary btn-sm" onclick="openRestoreSlNo()"><i class="fas fa-undo"></i> Restore Sl. No. from CSV</button>
         </div>
       </div>
       <div class="card-body" style="padding:0;">
@@ -288,6 +289,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
         <div id="dupePenPanel" style="display:none;margin:12px;padding:14px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;"></div>
         <div id="bulkDeleteOrderPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
         <div id="fixSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;"></div>
+        <div id="restoreSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;"></div>
         <div class="tbl-wrap">
           <table>
             <thead>
@@ -743,7 +745,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-listlabels — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-restoreslno — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -1349,6 +1351,168 @@ async function applyFixSlNoOverlap(){
   } catch(e){
     console.error('[applyFixSlNoOverlap] FAILED:', e);
     showMsg('fixSlNoMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── RESTORE SL. NO. FROM CSV (one-time repair) ──
+// For undoing the earlier "Fix Sl. No. Overlap" tool's renumbering, which
+// overwrote every officer's Sl. No. with a fresh 1,2,3… sequence instead of
+// leaving the original seniority number alone. Since the original numbers no
+// longer exist anywhere in Firestore, the only way back is re-reading them from
+// the original CSV file and writing ONLY the sl_no field back onto the matching
+// officer — name, PEN No., DOB etc. are left untouched.
+//
+// Matching is by NAME (case/whitespace-insensitive), since not every officer
+// has a PEN No. This is inherently riskier than matching by a unique ID — two
+// officers can share a name, or a small typo could exist between the CSV and
+// what's stored — so every row is shown in a preview with its match status
+// before anything is written, and ambiguous/unmatched rows are never silently
+// guessed at; they're skipped and reported so they can be fixed by hand.
+function normalizeName(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+function openRestoreSlNo(){
+  const panel = document.getElementById('restoreSlNoPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#166534;font-size:13px;margin-bottom:8px;"><i class="fas fa-undo"></i> Restore Sl. No. from Original CSV</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+      Upload the ORIGINAL CSV file you used (with the correct Sl. No. column) for a cadre/list whose numbering was changed. Officers are matched by name. <strong>Only the Sl. No. field is changed</strong> — everything else stays as it is in the database. Review every match below before applying; nothing is written until you confirm.
+    </p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="restoreCadre" onchange="onRestoreCadreChange()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>List / Batch *</label>
+        <select id="restoreListLabel"><option value="">— Select Cadre First —</option></select>
+      </div>
+      <div class="form-group">
+        <label>Original CSV File *</label>
+        <input type="file" id="restoreCsvFile" accept=".csv" style="padding:6px;" onchange="previewRestoreSlNo()">
+      </div>
+    </div>
+    <div id="restoreResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('restoreSlNoPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="restoreMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function onRestoreCadreChange(){
+  const cadreId = document.getElementById('restoreCadre').value;
+  const sel = document.getElementById('restoreListLabel');
+  document.getElementById('restoreResults').innerHTML='';
+  if(!cadreId){ sel.innerHTML='<option value="">— Select Cadre First —</option>'; return; }
+  const labels = {};
+  _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+    const key = o.list_label||'(no label)';
+    labels[key] = (labels[key]||0)+1;
+  });
+  const entries = Object.entries(labels);
+  sel.innerHTML = '<option value="">— Select List —</option>' +
+    entries.map(([label,count])=>`<option value="${escH(label)}">${escH(label)} (${count} officers)</option>`).join('');
+}
+
+let _restoreMatches = []; // {csvName, csvSlNo, matchedOfficer, status}
+
+function previewRestoreSlNo(){
+  const file = document.getElementById('restoreCsvFile').files[0];
+  const results = document.getElementById('restoreResults');
+  const cadreId = document.getElementById('restoreCadre').value;
+  const listLabel = document.getElementById('restoreListLabel').value;
+  if(!file){ return; }
+  if(!cadreId||!listLabel){ showMsg('restoreMsg','Please select a Cadre and List first.','err'); return; }
+
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    const text = e.target.result;
+    const lines = text.split('\n').filter(l=>l.trim());
+    if(lines.length<2){ showMsg('restoreMsg','CSV has no data rows.','err'); return; }
+    const headers = csvRow(lines[0]).map(h=>h.toLowerCase().trim());
+    const nameIdx = headers.indexOf('name');
+    const slIdx = headers.indexOf('sl_no');
+    if(nameIdx<0||slIdx<0){ showMsg('restoreMsg','CSV must have "name" and "sl_no" columns.','err'); return; }
+
+    const pool = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'(no label)')===listLabel);
+    const byName = {};
+    pool.forEach(o=>{
+      const key = normalizeName(o.name);
+      (byName[key]=byName[key]||[]).push(o);
+    });
+
+    _restoreMatches = [];
+    for(let i=1;i<lines.length;i++){
+      const cols = csvRow(lines[i]);
+      const csvName = (cols[nameIdx]||'').trim();
+      const csvSlNo = parseInt((cols[slIdx]||'').trim())||0;
+      if(!csvName) continue;
+      const key = normalizeName(csvName);
+      const matches = byName[key]||[];
+      let status, matchedOfficer=null;
+      if(matches.length===1){ status='ok'; matchedOfficer=matches[0]; }
+      else if(matches.length===0){ status='nomatch'; }
+      else { status='ambiguous'; }
+      _restoreMatches.push({csvName, csvSlNo, matchedOfficer, status});
+    }
+
+    const okCount = _restoreMatches.filter(m=>m.status==='ok').length;
+    const noMatchCount = _restoreMatches.filter(m=>m.status==='nomatch').length;
+    const ambiguousCount = _restoreMatches.filter(m=>m.status==='ambiguous').length;
+
+    let html = `<div style="font-size:12px;font-weight:700;margin-bottom:8px;">
+      <span style="color:#166534;">${okCount} matched</span>${noMatchCount?` &nbsp;|&nbsp; <span style="color:#b91c1c;">${noMatchCount} no match</span>`:''}${ambiguousCount?` &nbsp;|&nbsp; <span style="color:#9a3412;">${ambiguousCount} ambiguous (same name, multiple officers)</span>`:''}
+    </div>
+    <div class="tbl-wrap" style="max-height:380px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+      <table>
+        <thead><tr><th>Name (CSV)</th><th>Sl. No. (CSV)</th><th>Current Sl. No.</th><th>Status</th></tr></thead>
+        <tbody>`;
+    _restoreMatches.forEach(m=>{
+      const statusHtml = m.status==='ok'
+        ? `<span style="color:#166534;font-weight:600;">✓ Will update</span>`
+        : m.status==='nomatch'
+        ? `<span style="color:#b91c1c;font-weight:600;">⚠ No matching officer — skipped</span>`
+        : `<span style="color:#9a3412;font-weight:600;">⚠ ${byName[normalizeName(m.csvName)].length} officers share this name — skipped, fix manually</span>`;
+      html += `<tr>
+        <td class="td-name">${escH(m.csvName)}</td>
+        <td class="td-sl">${m.csvSlNo||''}</td>
+        <td class="td-sl">${m.matchedOfficer?(m.matchedOfficer.sl_no||''):'—'}</td>
+        <td style="font-size:12px;">${statusHtml}</td>
+      </tr>`;
+    });
+    html += `</tbody></table></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-success btn-sm" onclick="applyRestoreSlNo()" ${okCount?'':'disabled'}><i class="fas fa-check"></i> Restore Sl. No. for ${okCount} Matched Officer(s)</button>
+    </div>`;
+    results.innerHTML = html;
+  };
+  reader.readAsText(file);
+}
+
+async function applyRestoreSlNo(){
+  const toUpdate = _restoreMatches.filter(m=>m.status==='ok');
+  if(!toUpdate.length){ showMsg('restoreMsg','Nothing to restore.','err'); return; }
+  if(!confirm(`Restore Sl. No. for ${toUpdate.length} officer(s) from this CSV? Only the Sl. No. field will change.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('restoreMsg','<span class="spinner"></span> Restoring…','busy');
+  try{
+    for(let i=0;i<toUpdate.length;i+=400){
+      const chunk = toUpdate.slice(i,i+400);
+      const batch = writeBatch(window._db);
+      chunk.forEach(m=>batch.update(doc(window._db,'seniority_officers',m.matchedOfficer.id),{sl_no:m.csvSlNo}));
+      await batch.commit();
+    }
+    showMsg('restoreMsg',`✓ Restored Sl. No. for ${toUpdate.length} officer(s).`,'ok');
+    toast('Sl. No. restored from CSV.');
+    document.getElementById('restoreResults').innerHTML='';
+    _restoreMatches=[];
+    await loadOfficers();
+  } catch(e){
+    console.error('[applyRestoreSlNo] FAILED:', e);
+    showMsg('restoreMsg','Error: '+escH(e.message),'err');
   }
 }
 
