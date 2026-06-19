@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-18-bulkdelorder</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-slnofix</div>
   </div>
 </nav>
 
@@ -273,12 +273,14 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
           <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByOrder()"><i class="fas fa-eraser"></i> Delete by Order No.</button>
+          <button class="btn btn-secondary btn-sm" onclick="openFixSlNoOverlap()"><i class="fas fa-sort-numeric-down"></i> Fix Sl. No. Overlap</button>
         </div>
       </div>
       <div class="card-body" style="padding:0;">
         <div id="officersLoadError" class="msg err" style="display:none;margin:12px;"></div>
         <div id="dupePenPanel" style="display:none;margin:12px;padding:14px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;"></div>
         <div id="bulkDeleteOrderPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
+        <div id="fixSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;"></div>
         <div class="tbl-wrap">
           <table>
             <thead>
@@ -423,11 +425,12 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
               <button class="btn btn-primary btn-sm" onclick="uploadCSV()"><i class="fas fa-upload"></i> Import to Firestore</button>
             </span>
           </div>
+          <div style="font-size:11.5px;color:var(--muted);padding:0 0 6px;">"Sl. (file)" below is the row number from your CSV — it is only shown for reference. The actual Sl. No. assigned on import always continues from your existing list (or restarts at 1 for "Insert at Beginning" / "Replace All"), regardless of what the file says.</div>
           <div class="tbl-wrap" style="max-height:420px;border:1px solid var(--border);border-radius:8px;">
             <table>
               <thead>
                 <tr>
-                  <th>Sl.</th><th>Name</th><th>PEN No.</th><th>Order No.</th><th>Feeder Cat.</th><th>DOB</th><th>Ret. Age</th><th>Status</th><th>Row Check</th>
+                  <th>Sl. (file)</th><th>Name</th><th>PEN No.</th><th>Order No.</th><th>Feeder Cat.</th><th>DOB</th><th>Ret. Age</th><th>Status</th><th>Row Check</th>
                 </tr>
               </thead>
               <tbody id="csvPreviewTable"></tbody>
@@ -638,7 +641,21 @@ function isValidISODate(s){
   const dt = new Date(y, mo-1, d);
   return dt.getFullYear()===y && dt.getMonth()===mo-1 && dt.getDate()===d;
 }
-function retDate(dob,age){ if(!dob||!age||!isValidISODate(dob))return null; const dt=new Date(dob+'T00:00:00'); dt.setFullYear(dt.getFullYear()+parseInt(age)); return dt; }
+// Computes the statutory retirement date under Kerala Service Rules, Rule 60(a):
+// retirement takes effect on the last day of the month in which the officer
+// reaches retirement age — EXCEPT if their birthday falls on the 1st of a month,
+// in which case retirement is the last day of the PREVIOUS month instead.
+// (Worked examples from KSR: DOB 1-Jul + age 60 -> retires 30-Jun same year;
+//  DOB 4-Jul-1962 + age 56 -> retires 31-Jul-2018, i.e. last day of birth month.)
+function retDate(dob,age){
+  if(!dob||!age||!isValidISODate(dob))return null;
+  const [y,m,d] = dob.split('-').map(Number);
+  const birthdayAtAge = new Date(y+parseInt(age), m-1, d);
+  if(d===1){
+    return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth(), 0); // last day of previous month
+  }
+  return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth()+1, 0); // last day of birthday's month
+}
 function daysDiff(dt){ return (dt - new Date()) / 86400000; }
 // Computes the effective display status for an officer.
 // Manual overrides (expired/relieved) always win. An invalid/missing DOB is
@@ -691,10 +708,10 @@ function confirmLogout(){
 }
 
 // ── INIT ──
-// Self-test: confirms isValidISODate behaves correctly on page load. If this ever
-// logs a FAIL, the file actually running in this browser has been altered from
-// what was delivered (corrupted character, stale cache, or edited copy) — check
-// the source of the deployed file rather than assuming the CSV data is bad.
+// Self-test: confirms isValidISODate and retDate behave correctly on page load.
+// If this ever logs a FAIL, the file actually running in this browser has been
+// altered from what was delivered (corrupted character, stale cache, or edited
+// copy) — check the source of the deployed file rather than assuming the data is bad.
 (function selfTestDateValidator(){
   const cases = [['1980-05-24',true],['1980/05/24',false],['',false],['2024-02-30',false]];
   let allOk = true;
@@ -702,7 +719,19 @@ function confirmLogout(){
     const got = isValidISODate(input);
     if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-18-bulkdelorder — date validator OK.');
+  // KSR Rule 60(a): retirement = last day of birthday's month, UNLESS birthday is
+  // the 1st of the month, in which case it's the last day of the PREVIOUS month.
+  const retCases = [
+    ['1977-01-22',56,'2033-01-31'],
+    ['1962-07-01',60,'2022-06-30'],
+    ['1975-01-01',56,'2030-12-31'],
+  ];
+  retCases.forEach(([dob,age,expectedISO])=>{
+    const rd = retDate(dob,age);
+    const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
+    if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
+  });
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-slnofix — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -1108,6 +1137,110 @@ async function deleteBulkByOrder(){
   }
 }
 
+// ── FIX SL. NO. OVERLAP (one-time repair) ──
+// For when a CSV was appended whose own Sl. No. column started over from 1,
+// producing two officers with Sl. No. 1, two with Sl. No. 2, etc. There's no way
+// to know after the fact which Sl. No. value was "supposed" to be correct, but
+// createdAt is reliable: officers written in an earlier upload session always have
+// an earlier createdAt than officers written in a later one. This tool renumbers a
+// cadre 1, 2, 3… in createdAt order — preserving each batch's *internal* relative
+// order, and putting earlier batches before later ones — fixing the overlap.
+// NOTE: this is a destructive renumbering. If you've since manually inserted an
+// officer at a specific position in this cadre, review the result afterward.
+function openFixSlNoOverlap(){
+  const panel = document.getElementById('fixSlNoPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#1e40af;font-size:13px;margin-bottom:8px;"><i class="fas fa-sort-numeric-down"></i> Fix Sl. No. Overlap</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+      Use this if a cadre has officers sharing the same Sl. No. — usually because a CSV was appended whose own numbering restarted from 1. This renumbers the whole cadre 1, 2, 3… by upload date (oldest first), keeping each batch's internal order intact. <strong>This changes Sl. No. for every officer in the cadre and cannot be undone</strong> — review the preview before confirming.
+    </p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="fixSlNoCadre" onchange="previewFixSlNoOverlap()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+    </div>
+    <div id="fixSlNoResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('fixSlNoPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="fixSlNoMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function previewFixSlNoOverlap(){
+  const cadreId = document.getElementById('fixSlNoCadre').value;
+  const results = document.getElementById('fixSlNoResults');
+  if(!cadreId){ results.innerHTML=''; return; }
+
+  const officers = _officers.filter(o=>o.cadre===cadreId);
+  // Detect whether there's actually an overlap, so this isn't run needlessly.
+  const counts = {};
+  officers.forEach(o=>{ counts[o.sl_no||0] = (counts[o.sl_no||0]||0)+1; });
+  const overlapCount = Object.values(counts).filter(c=>c>1).length;
+
+  const sorted = officers.slice().sort((a,b)=>{
+    const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    if(at!==bt) return at-bt;
+    return (a.sl_no||0)-(b.sl_no||0);
+  });
+
+  if(!overlapCount){
+    results.innerHTML = `<div style="color:#166534;font-weight:600;font-size:12px;"><i class="fas fa-check-circle"></i> No overlapping Sl. No. values found in this cadre — nothing to fix.</div>`;
+    return;
+  }
+
+  let html = `<div style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:8px;"><i class="fas fa-exclamation-triangle"></i> ${overlapCount} Sl. No. value(s) are shared by more than one officer. Preview of the new numbering (by upload date):</div>
+  <div class="tbl-wrap" style="max-height:320px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+    <table>
+      <thead><tr><th>Current Sl.</th><th>New Sl.</th><th>Name</th><th>PEN No.</th><th>Order No.</th></tr></thead>
+      <tbody>`;
+  sorted.forEach((o,i)=>{
+    const changed = (o.sl_no||0)!==(i+1);
+    html += `<tr${changed?' style="background:#fffbeb;"':''}>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-sl" style="font-weight:700;">${i+1}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.order_no||'')}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+  <div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="applyFixSlNoOverlap()"><i class="fas fa-check"></i> Apply Renumbering</button>
+  </div>`;
+  results.innerHTML = html;
+  panel_sorted_cache = sorted; // stash for apply step
+}
+let panel_sorted_cache = [];
+
+async function applyFixSlNoOverlap(){
+  if(!panel_sorted_cache.length){ showMsg('fixSlNoMsg','Nothing to apply.','err'); return; }
+  if(!confirm(`Renumber ${panel_sorted_cache.length} officer(s) in this cadre? This changes Sl. No. for the whole cadre and cannot be undone.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('fixSlNoMsg','<span class="spinner"></span> Renumbering…','busy');
+  try{
+    for(let i=0;i<panel_sorted_cache.length;i+=400){
+      const chunk = panel_sorted_cache.slice(i,i+400);
+      const batch = writeBatch(window._db);
+      chunk.forEach((o,j)=>batch.update(doc(window._db,'seniority_officers',o.id),{sl_no:i+j+1}));
+      await batch.commit();
+    }
+    showMsg('fixSlNoMsg',`✓ Renumbered ${panel_sorted_cache.length} officer(s).`,'ok');
+    toast('Sl. No. renumbered.');
+    document.getElementById('fixSlNoResults').innerHTML='';
+    panel_sorted_cache=[];
+    await loadOfficers();
+  } catch(e){
+    console.error('[applyFixSlNoOverlap] FAILED:', e);
+    showMsg('fixSlNoMsg','Error: '+escH(e.message),'err');
+  }
+}
+
 // ── EDIT MODAL ──
 function openEditModal(id){
   const o = _officers.find(x=>x.id===id); if(!o)return;
@@ -1459,12 +1592,19 @@ async function uploadCSV(){
     // Batching turns 258 sequential round-trips into ~1 per 400 rows, which is both
     // far faster and avoids the per-second write-rate throttling that a tight
     // one-by-one await loop can trigger on larger imports.
+    //
+    // IMPORTANT: Sl. No. is always assigned fresh from startSl/i/j here, NEVER taken
+    // from the CSV file's own sl_no column. The CSV's sl_no reflects the numbering
+    // of whatever source spreadsheet it came from — if you're appending a second
+    // list to an existing one, that source file's own "1, 2, 3…" has nothing to do
+    // with where those officers should land in your already-existing list. Using it
+    // directly is exactly what caused two officers to both end up as Sl. No. 1.
     let added=0;
     for(let i=0;i<_csvRows.length;i+=400){
       const chunk = _csvRows.slice(i,i+400);
       const batch = writeBatch(window._db);
       chunk.forEach((r,j)=>{
-        const sl = r.sl_no || startSl+i+j;
+        const sl = startSl+i+j;
         const ref = doc(collection(window._db,'seniority_officers'));
         batch.set(ref,{
           cadre:cadreId, sl_no:sl,
