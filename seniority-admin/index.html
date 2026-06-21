@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-vacancyqueue</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-qualification</div>
   </div>
 </nav>
 
@@ -240,6 +240,13 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
               <option value="">Auto (Active / Retiring Soon / Retired)</option>
               <option value="expired">Expired</option>
               <option value="relieved">Relieved</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Qualified for Promotion</label>
+            <select id="fQualified">
+              <option value="yes">Yes</option>
+              <option value="no">No — skip in promotion queue until qualified</option>
             </select>
           </div>
         </div>
@@ -558,6 +565,9 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
         <div class="form-group"><label>Status Override</label>
           <select id="mStatus"><option value="">Auto (Active / Retiring Soon / Retired)</option><option value="expired">Expired</option><option value="relieved">Relieved</option></select>
         </div>
+        <div class="form-group"><label>Qualified for Promotion</label>
+          <select id="mQualified"><option value="yes">Yes</option><option value="no">No — skip in promotion queue until qualified</option></select>
+        </div>
         <div class="form-group"><label>Cadre</label><select id="mCadre"></select></div>
       </div>
       <div id="mPromotionHistory" style="display:none;margin-top:10px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;font-size:12px;color:#1e40af;"></div>
@@ -754,7 +764,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-vacancyqueue — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-qualification — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -893,6 +903,7 @@ async function saveOfficer(){
   const dob      = document.getElementById('fDob').value;
   const retAge   = document.getElementById('fRetAge').value;
   const status   = document.getElementById('fStatus').value;
+  const qualified= document.getElementById('fQualified').value!=='no';
   const insertPos= document.getElementById('fInsertPos').value;
   const insertRef= document.getElementById('fInsertRef').value;
   const listSel  = document.getElementById('fListLabel').value;
@@ -945,6 +956,7 @@ async function saveOfficer(){
       cadre:cadreId, sl_no:finalSlNo, list_label:listLabel, list_order:listOrder,
       name, pen_no:penNo, order_no:orderNo,
       feeder_category:feeder, dob, retirement_age:retAge, status,
+      qualified_for_promotion:qualified,
       createdAt:serverTimestamp()
     });
     showMsg('formMsg','✓ Officer saved.','ok');
@@ -958,6 +970,7 @@ function clearForm(){
   ['fCadre','fSlNo','fName','fPenNo','fOrderNo','fFeeder','fDob','fEditId','fListLabelNew'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
   document.getElementById('fRetAge').value='60';
   document.getElementById('fStatus').value='';
+  document.getElementById('fQualified').value='yes';
   document.getElementById('fInsertPos').value='end';
   document.getElementById('fInsertRef').style.display='none';
   document.getElementById('fListLabel').innerHTML='<option value="">— Select Cadre First —</option>';
@@ -1550,6 +1563,7 @@ function openEditModal(id){
   document.getElementById('mDob').value     = o.dob||'';
   document.getElementById('mRetAge').value  = o.retirement_age||'60';
   document.getElementById('mStatus').value  = (o.status==='expired'||o.status==='relieved') ? o.status : '';
+  document.getElementById('mQualified').value = (o.qualified_for_promotion===false) ? 'no' : 'yes';
   // Populate mCadre
   const mCadre = document.getElementById('mCadre');
   mCadre.innerHTML = _cadres.map(c=>`<option value="${c.id}"${c.id===o.cadre?' selected':''}>${escH(c.name)}</option>`).join('');
@@ -1602,6 +1616,7 @@ async function saveEditModal(){
       dob,
       retirement_age:document.getElementById('mRetAge').value,
       status:document.getElementById('mStatus').value,
+      qualified_for_promotion:document.getElementById('mQualified').value!=='no',
       cadre:document.getElementById('mCadre').value,
     });
     showMsg('modalMsg','✓ Saved.','ok');
@@ -1675,6 +1690,19 @@ function computePromotionQueue(feederCadreId, targetCadreId){
 
   let vacancyIdx = 0;
   feederOfficers.forEach(o=>{
+    // An officer explicitly marked NOT qualified is skipped entirely — they are
+    // passed over in the queue without even attempting to match them to a
+    // vacancy, and crucially the vacancy is NOT consumed on their behalf: it
+    // passes straight through to the next senior officer, exactly as if this
+    // officer weren't in the queue at all. This is different from a date-based
+    // skip (retiring before their turn) in one important way: qualification can
+    // change later, so this status is re-checked fresh every time the queue is
+    // computed, rather than being permanently decided once.
+    if(o.qualified_for_promotion===false){
+      result.set(o.id, { eligibleDate: null, retiredBeforeTurn: false, notQualified: true });
+      return;
+    }
+
     const myRetDate = retDate(o.dob, o.retirement_age||60);
     // Walk forward through the timeline until we find a vacancy this officer can
     // actually still be in service for; any vacancy skipped along the way stays
@@ -1744,6 +1772,7 @@ function loadPromotionCandidates(){
         // No vacancy will ever reach them, or their earliest possible vacancy date
         // is still later than the promotion date being entered -> not eligible yet.
         if(!q || q.eligibleDate===undefined) return true; // queue data unavailable, fall back to date-only check
+        if(q.notQualified) return false; // explicitly marked not qualified — skipped regardless of vacancy/date
         if(q.retiredBeforeTurn) return false; // they would retire before any vacancy reaches them
         if(q.eligibleDate && q.eligibleDate>asOfDate) return false; // their turn hasn't come yet as on this date
       }
@@ -1760,10 +1789,11 @@ function loadPromotionCandidates(){
     const excluded = stillInService.filter(o=>!candidates.includes(o));
     if(excluded.length){
       excludedNote = `<div style="margin-bottom:10px;padding:8px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:6px;font-size:11.5px;color:#92400e;">
-        Not yet eligible as on this date (waiting for a vacancy, or would retire before their turn):
+        Not yet eligible as on this date (waiting for a vacancy, not qualified, or would retire before their turn):
         ${excluded.map(o=>{
           const q = queue.get(o.id);
-          const reason = q?.retiredBeforeTurn ? 'retires before any vacancy reaches them'
+          const reason = q?.notQualified ? 'not qualified for promotion — mark them Qualified to include'
+            : q?.retiredBeforeTurn ? 'retires before any vacancy reaches them'
             : q?.eligibleDate ? `vacancy reaches them on ${fmtDate(q.eligibleDate.toISOString().split('T')[0])}`
             : 'no vacancy available';
           return `${escH(o.name||'')} (Sl. ${o.sl_no||'—'} — ${reason})`;
