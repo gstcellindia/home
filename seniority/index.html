@@ -420,7 +420,20 @@ function assignSeniorityNumbers(){
     });
     let counter = 1;
     groupList.forEach(g=>{
-      g.officers.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      // Within each batch: officers who have always belonged here (no
+      // promotion_date) keep their normal Batch No. order and sit at the top.
+      // Officers who were PROMOTED INTO this cadre (have a promotion_date, set
+      // by the admin's Promotions tool) always sit below all of them as one
+      // block, ordered chronologically among themselves by promotion_date —
+      // an earlier promotion places that officer higher within this block, a
+      // later promotion places them lower.
+      const original = g.officers.filter(o=>!o.promotion_date).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      const promotedIn = g.officers.filter(o=>o.promotion_date).sort((a,b)=>{
+        const ad = new Date(a.promotion_date), bd = new Date(b.promotion_date);
+        if(isNaN(ad)||isNaN(bd)) return (a.sl_no||0)-(b.sl_no||0);
+        return ad-bd;
+      });
+      g.officers = [...original, ...promotedIn];
       g.officers.forEach(o=>{ o.seniority_no = counter++; });
     });
   });
@@ -545,7 +558,7 @@ function renderTable(cadre, officers){
     if(b.year!==null) return 1;
     return a.order-b.order;
   });
-  groupList.forEach(g=>g.officers.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0)));
+  groupList.forEach(g=>g.officers.sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0)));
 
   let rowsHtml = '';
   const showLabels = groupList.length>1; // only show a divider header when there's more than one list
