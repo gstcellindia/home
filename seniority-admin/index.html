@@ -135,13 +135,14 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-section">Officers</div>
   <div class="nav-item active" data-page="officers" onclick="showPage('officers')"><i class="fas fa-users"></i> Officer Entry</div>
   <div class="nav-item" data-page="promotions" onclick="showPage('promotions')"><i class="fas fa-arrow-up"></i> Promotions</div>
+  <div class="nav-item" data-page="estimator" onclick="showPage('estimator')"><i class="fas fa-chart-line"></i> Promotion Estimator</div>
   <div class="nav-item" data-page="csv" onclick="showPage('csv')"><i class="fas fa-file-csv"></i> CSV Upload</div>
   <div class="sidebar-section">Configuration</div>
   <div class="nav-item" data-page="cadres" onclick="showPage('cadres')"><i class="fas fa-layer-group"></i> Manage Cadres</div>
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-delbylabel</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-multilevelpromo</div>
   </div>
 </nav>
 
@@ -386,6 +387,33 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-primary" onclick="submitPromotions()"><i class="fas fa-arrow-up"></i> Promote Selected Officers</button>
         </div>
         <div class="msg" id="promoMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: PROMOTION ESTIMATOR ══ -->
+  <div class="page" id="page-estimator">
+    <div class="card">
+      <div class="card-header"><h2>📈 Promotion Estimator</h2></div>
+      <div class="card-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">
+          Pick an officer to see their projected promotion path through every cadre above their current one — ASTO → DSTO → STO → DC → DCHG, and so on — not just the next rung. Each estimate accounts for the officers ahead of them in the queue, vacancies opening over time, and the fact that an officer further up might themselves be promoted out early (not just retire), freeing their seat sooner.
+        </p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cadre *</label>
+            <select id="estCadre" onchange="loadEstimatorOfficers()">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Officer *</label>
+            <select id="estOfficer" onchange="runPromotionEstimate()">
+              <option value="">— Select Cadre First —</option>
+            </select>
+          </div>
+        </div>
+        <div id="estimatorResults" style="margin-top:16px;"></div>
       </div>
     </div>
   </div>
@@ -724,7 +752,7 @@ function showPage(id){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelector(`[data-page="${id}"]`).classList.add('active');
-  const titles={officers:'Officer Entry',promotions:'Promotions',csv:'CSV Upload / Download',cadres:'Manage Cadres'};
+  const titles={officers:'Officer Entry',promotions:'Promotions',estimator:'Promotion Estimator',csv:'CSV Upload / Download',cadres:'Manage Cadres'};
   document.getElementById('pageTitle').textContent = titles[id]||id;
 }
 
@@ -766,7 +794,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-delbylabel — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-multilevelpromo — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -817,7 +845,7 @@ async function loadOfficers(){
 }
 
 function populateCadreSelects(){
-  const selects = ['fCadre','filterCadre','csvCadre','mCadre','dlCadreFilter','promoFromCadre','promoToCadre'];
+  const selects = ['fCadre','filterCadre','csvCadre','mCadre','dlCadreFilter','promoFromCadre','promoToCadre','estCadre'];
   selects.forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     const isFilter=(id==='filterCadre'||id==='dlCadreFilter');
@@ -1752,80 +1780,85 @@ async function deleteOfficer(id, name){
   catch(e){ toast('Error: '+e.message); }
 }
 
-// ── PROMOTIONS ──
-// Simulates the promotion queue for a feeder cadre being promoted into a target
-// (higher) cadre, returning each feeder officer's REAL earliest-eligible promotion
-// date — not just "today" or "their own retirement date" — but the date by which
-// enough vacancies have genuinely opened up in the target cadre to reach their
-// position in the feeder-cadre seniority queue (Sl. No. order).
-//
-// How it works:
-//  1. The target cadre's vacancy timeline starts with however many posts are
-//     ALREADY vacant right now (sanctioned strength minus current working count)
-//     — these are available immediately, with no associated date.
-//  2. Every additional vacancy beyond that comes from a CURRENT officer in the
-//     target cadre eventually retiring — each such retirement date creates one
-//     more vacancy from that date onward. These are sorted chronologically.
-//  3. Walking the feeder cadre in Sl. No. order (most senior first), each officer
-//     is assigned the next available vacancy in the timeline, IF they would still
-//     be in service by that vacancy's date. If an officer would already have
-//     retired by the time it's their turn, they are skipped — they are simply
-//     never eligible — and that vacancy passes to the NEXT senior officer in the
-//     queue instead of being wasted.
-// Returns a Map of officerId -> { eligibleDate: Date|null, retiredBeforeTurn: bool }
-// eligibleDate is null only if there are more feeder officers than vacancies will
-// ever exist for (extremely unlikely in practice, but handled safely).
-function computePromotionQueue(feederCadreId, targetCadreId){
+
+// Returns the date an officer actually LEAVES their current cadre — whichever
+// comes first: their own retirement, or being promoted into the next cadre up.
+// This is what makes the multi-level estimator possible: a cadre's vacancy
+// timeline depends on when ITS officers leave, and an officer might leave early
+// via promotion rather than waiting all the way to retirement. Memoized per
+// officerId within one top-level call via the shared `cache` map, since the same
+// officer's departure date can be asked for repeatedly while walking multiple
+// chains. `depth` guards against a misconfigured cadre hierarchy that loops back
+// on itself (e.g. cadre A's feeder is cadre B, and B's feeder is A).
+const MAX_PROMOTION_CHAIN_DEPTH = 12;
+function getDepartureDate(officer, cache, depth, officersSource){
+  officersSource = officersSource || _officers;
+  if(cache.has(officer.id)) return cache.get(officer.id);
+  const myRetDate = retDate(officer.dob, officer.retirement_age||60);
+  if(depth>=MAX_PROMOTION_CHAIN_DEPTH){ cache.set(officer.id, myRetDate); return myRetDate; }
+
+  const nextCadre = _cadres.find(c=>c.feeder===officer.cadre);
+  if(!nextCadre){ cache.set(officer.id, myRetDate); return myRetDate; } // top of the hierarchy — retirement is the only way out
+
+  const queue = computePromotionQueueInternal(officer.cadre, nextCadre.id, cache, depth+1, officersSource);
+  const q = queue.get(officer.id);
+
+  let departureDate;
+  if(!q || q.retiredBeforeTurn || q.notQualified){
+    // Promotion never happens for this officer (no vacancy ever reaches them, or
+    // they're not qualified) — retirement is their only real departure date.
+    departureDate = myRetDate;
+  } else if(q.eligibleDate===null){
+    // "Immediate" vacancy — they could be promoted right away. Use today as the
+    // departure date (it can't be later than their retirement, since anyone still
+    // in service today retires in the future by definition).
+    departureDate = new Date();
+  } else {
+    // A specific future vacancy date — but never later than their own retirement,
+    // since they can't be promoted out of a cadre after they've already retired
+    // from it (in that case retirement, not promotion, is what actually happens).
+    departureDate = (myRetDate && q.eligibleDate>myRetDate) ? myRetDate : q.eligibleDate;
+  }
+
+  cache.set(officer.id, departureDate);
+  return departureDate;
+}
+
+// The real engine behind computePromotionQueue, made recursive: building cadre
+// X's vacancy timeline requires knowing when X's current officers leave, which
+// can be earlier than their retirement if THEY get promoted out first — which in
+// turn depends on the cadre above X, and so on up the hierarchy. `cache` is a
+// shared Map of officerId -> departureDate, reused across the whole recursive
+// call tree so the same officer's departure date is computed once, not repeatedly.
+// `officersSource` defaults to the real, live _officers array; the multi-level
+// estimator (computeFullPromotionPath) passes in a snapshot array containing
+// hypothetical cloned officers instead, without ever touching real app state.
+function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, depth, officersSource){
+  officersSource = officersSource || _officers;
   const result = new Map();
   const targetCadre = _cadres.find(c=>c.id===targetCadreId);
-  if(!targetCadre) return result;
+  if(!targetCadre || depth>MAX_PROMOTION_CHAIN_DEPTH) return result;
 
-  // Every officer CURRENTLY recorded against the target cadre holds one of its
-  // sanctioned posts, and that post becomes vacant on THEIR retirement date —
-  // whether that date is in the past or future relative to today doesn't matter
-  // here; what matters is where it falls relative to the vacancy timeline being
-  // built. (Using today's computeStatus() to decide who "counts" would be wrong:
-  // an officer who retired years ago but is still recorded in this cadre because
-  // no promotion was ever entered for them still represents a real vacancy that
-  // opened on their actual retirement date.)
-  const officersInTarget = _officers.filter(o=>o.cadre===targetCadreId && o.status!=='expired' && o.status!=='relieved');
-  const retirementDates = officersInTarget
-    .map(o=>retDate(o.dob, o.retirement_age||60))
+  const officersInTarget = officersSource.filter(o=>o.cadre===targetCadreId && o.status!=='expired' && o.status!=='relieved');
+  const departureDates = officersInTarget
+    .map(o=>getDepartureDate(o, cache, depth, officersSource))
     .filter(d=>d)
     .sort((a,b)=>a-b);
 
-  // Posts with no officer currently recorded against them at all are vacant
-  // immediately, with no associated date.
   const immediateVacancies = Math.max(0, (targetCadre.sanctioned||0) - officersInTarget.length);
+  const timeline = [...Array(immediateVacancies).fill(null), ...departureDates];
 
-  // Build the full ordered timeline: immediate slots first, then every recorded
-  // officer's retirement date in chronological order (each one opens one more
-  // vacancy, whenever it falls — past or future).
-  const timeline = [...Array(immediateVacancies).fill(null), ...retirementDates];
-
-  const feederOfficers = _officers
+  const feederOfficers = officersSource
     .filter(o=>o.cadre===feederCadreId)
     .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
 
   let vacancyIdx = 0;
   feederOfficers.forEach(o=>{
-    // An officer explicitly marked NOT qualified is skipped entirely — they are
-    // passed over in the queue without even attempting to match them to a
-    // vacancy, and crucially the vacancy is NOT consumed on their behalf: it
-    // passes straight through to the next senior officer, exactly as if this
-    // officer weren't in the queue at all. This is different from a date-based
-    // skip (retiring before their turn) in one important way: qualification can
-    // change later, so this status is re-checked fresh every time the queue is
-    // computed, rather than being permanently decided once.
     if(o.qualified_for_promotion===false){
       result.set(o.id, { eligibleDate: null, retiredBeforeTurn: false, notQualified: true });
       return;
     }
-
     const myRetDate = retDate(o.dob, o.retirement_age||60);
-    // Walk forward through the timeline until we find a vacancy this officer can
-    // actually still be in service for; any vacancy skipped along the way stays
-    // available for the next, more junior officer rather than being consumed.
     let assigned = false;
     while(vacancyIdx < timeline.length){
       const vacDate = timeline[vacancyIdx];
@@ -1836,11 +1869,7 @@ function computePromotionQueue(feederCadreId, targetCadreId){
         assigned = true;
         break;
       } else {
-        vacancyIdx++; // this vacancy is wasted on nobody — it simply opens "in the past" relative to this officer; move on
-        // NOTE: we do not assign it to this officer and we do not retry the same
-        // officer against the next vacancy either — once an officer is shown to
-        // already be ineligible for the earliest remaining vacancy, every later
-        // vacancy is even later, so they remain ineligible. They are skipped below.
+        vacancyIdx++;
         break;
       }
     }
@@ -1850,6 +1879,135 @@ function computePromotionQueue(feederCadreId, targetCadreId){
   });
 
   return result;
+}
+
+// ── PROMOTIONS ──
+// Public entry point — kept for the existing single-hop Promotion Entry page,
+// which only ever needs one cadre's queue and doesn't care about the cascade.
+// Internally this now ALSO accounts for officers in the target cadre leaving
+// early via their own promotion further up, not just retirement — so even this
+// single-hop view is more accurate than before when the cadre above the target
+// cadre has its own active promotion activity.
+function computePromotionQueue(feederCadreId, targetCadreId){
+  return computePromotionQueueInternal(feederCadreId, targetCadreId, new Map(), 0);
+}
+
+// Builds the FULL multi-level promotion estimate for one specific officer: their
+// eligible date into each cadre above their current one, all the way up the
+// hierarchy, accounting for cascading promotions at every level (an officer
+// above them leaving early via THEIR OWN promotion, not just retirement).
+//
+// Past the first rung, the officer doesn't actually exist in the next cadre's
+// data yet — they haven't been promoted there. To estimate further (DSTO->STO
+// after estimating ASTO->DSTO, for example), this injects a HYPOTHETICAL clone
+// of the officer into that next cadre's officer list for the purposes of the
+// simulation only (never written to Firestore), assigned a Sl. No. placing them
+// as the most junior member of that cadre — i.e. after everyone genuinely
+// already recorded there. This is a simplifying assumption: it does not account
+// for other officers from the SAME feeder cadre who might also be promoted into
+// this rung ahead of real seniority order from a different list/batch; it's a
+// single-officer projection, not a full simulation of every concurrent promotion.
+//
+// Returns an ordered array of { cadre, eligibleDate, retiredBeforeTurn, notQualified }
+// — one entry per rung — stopping at the top of the hierarchy or once a rung is
+// unreachable (officer would retire/never qualify before that rung's turn).
+function computeFullPromotionPath(officer){
+  const path = [];
+  const cache = new Map();
+  // Work on a hypothetical, in-memory-only copy of _officers we can safely
+  // mutate (inserting the hypothetical clone) without touching real app state.
+  const officersSnapshot = _officers.slice();
+  let hypotheticalOfficer = officer;
+  let depth = 0;
+
+  while(depth<MAX_PROMOTION_CHAIN_DEPTH){
+    const currentCadreId = hypotheticalOfficer.cadre;
+    const nextCadre = _cadres.find(c=>c.feeder===currentCadreId);
+    if(!nextCadre) break; // reached the top of the hierarchy
+
+    const queue = computePromotionQueueInternal(currentCadreId, nextCadre.id, cache, depth+1, officersSnapshot);
+    const q = queue.get(hypotheticalOfficer.id);
+    if(!q){ break; } // shouldn't normally happen — they should always appear in their own cadre's feeder list
+
+    path.push({ cadre: nextCadre, eligibleDate: q.eligibleDate, retiredBeforeTurn: !!q.retiredBeforeTurn, notQualified: !!q.notQualified });
+    if(q.retiredBeforeTurn || q.notQualified) break; // chain stops here — they never reach this rung, so no point estimating further
+
+    // Inject a hypothetical clone of this officer into the next cadre, as the
+    // most junior member there (after everyone genuinely already recorded),
+    // so the NEXT loop iteration can estimate their path one rung further.
+    const existingInNext = officersSnapshot.filter(o=>o.cadre===nextCadre.id);
+    const juniorMostSlNo = Math.max(0, ...existingInNext.map(o=>o.sl_no||0)) + 1;
+    const clone = { ...hypotheticalOfficer, cadre: nextCadre.id, sl_no: juniorMostSlNo };
+    officersSnapshot.push(clone);
+    hypotheticalOfficer = clone;
+    depth++;
+  }
+  return path;
+}
+
+// ── PROMOTION ESTIMATOR (multi-level) ──
+function loadEstimatorOfficers(){
+  const cadreId = document.getElementById('estCadre').value;
+  const sel = document.getElementById('estOfficer');
+  document.getElementById('estimatorResults').innerHTML = '';
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+  const officers = _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  if(!officers.length){ sel.innerHTML = '<option value="">No officers in this cadre</option>'; return; }
+  sel.innerHTML = '<option value="">— Select Officer —</option>' +
+    officers.map(o=>`<option value="${o.id}">${o.sl_no||'—'}. ${escH(o.name||'')}</option>`).join('');
+}
+
+function runPromotionEstimate(){
+  const officerId = document.getElementById('estOfficer').value;
+  const results = document.getElementById('estimatorResults');
+  if(!officerId){ results.innerHTML=''; return; }
+  const officer = _officers.find(o=>o.id===officerId);
+  if(!officer){ results.innerHTML='<div style="color:var(--muted);font-size:12px;">Officer not found.</div>'; return; }
+
+  const currentCadre = _cadres.find(c=>c.id===officer.cadre);
+  const path = computeFullPromotionPath(officer);
+
+  let html = `<div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:12px;">
+    ${escH(officer.name||'')} — currently Sl. ${officer.sl_no||'—'} in ${escH(currentCadre?.name||officer.cadre)}
+  </div>`;
+
+  if(!path.length){
+    html += `<div style="color:var(--muted);font-size:12.5px;padding:10px 0;">There is no cadre above ${escH(currentCadre?.name||'this one')} configured (it has no cadre listing it as a feeder) — nothing further to estimate.</div>`;
+    results.innerHTML = html;
+    return;
+  }
+
+  html += `<div style="display:flex;flex-direction:column;gap:0;">`;
+  // Starting point of the chain
+  html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f1f5f9;border-radius:8px;font-size:12.5px;">
+    <i class="fas fa-circle" style="color:var(--navy2);font-size:8px;"></i>
+    <span style="font-weight:700;">${escH(currentCadre?.name||officer.cadre)}</span>
+    <span style="color:var(--muted);">— current position</span>
+  </div>`;
+
+  path.forEach((p,i)=>{
+    const blocked = p.retiredBeforeTurn || p.notQualified;
+    const dateLabel = blocked ? null
+      : p.eligibleDate ? fmtDate(p.eligibleDate.toISOString().split('T')[0])
+      : 'Immediately (vacancy already available)';
+    html += `<div style="display:flex;align-items:center;gap:10px;padding:4px 0 4px 18px;">
+      <i class="fas fa-long-arrow-alt-down" style="color:var(--muted);"></i>
+    </div>`;
+    html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:12.5px;background:${blocked?'#fef2f2':'#eff6ff'};border:1px solid ${blocked?'#fecaca':'#bfdbfe'};">
+      <i class="fas fa-circle" style="color:${blocked?'#b91c1c':'#1e40af'};font-size:8px;"></i>
+      <span style="font-weight:700;">${escH(p.cadre.name||p.cadre.id)}</span>
+      ${blocked
+        ? `<span style="color:#b91c1c;font-weight:600;">— ${p.notQualified ? 'not qualified for promotion' : 'would retire before a vacancy reaches them — never promoted to this cadre'}</span>`
+        : `<span style="color:#1e40af;font-weight:600;">— estimated eligible: ${dateLabel}</span>`}
+    </div>`;
+  });
+  html += `</div>`;
+
+  html += `<p style="font-size:11px;color:var(--muted);margin-top:14px;">
+    Estimates beyond the first rung assume this officer joins each next cadre as its most junior member among those already recorded there, and that seniority order from their original cadre carries forward. They don't account for OTHER officers who might also be promoted into the same rungs ahead of real-time competing promotions — this is a single-officer projection, not a full simulation of every concurrent promotion across the department.
+  </p>`;
+
+  results.innerHTML = html;
 }
 
 function loadPromotionCandidates(){
