@@ -141,7 +141,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-qualification</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-delbylabel</div>
   </div>
 </nav>
 
@@ -287,6 +287,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
           <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByOrder()"><i class="fas fa-eraser"></i> Delete by Order No.</button>
+          <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByLabel()"><i class="fas fa-eraser"></i> Delete by List Label</button>
           <button class="btn btn-secondary btn-sm" onclick="openFixSlNoOverlap()"><i class="fas fa-layer-group"></i> Assign List Labels</button>
           <button class="btn btn-secondary btn-sm" onclick="openRestoreSlNo()"><i class="fas fa-undo"></i> Restore Sl. No. from CSV</button>
         </div>
@@ -295,6 +296,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
         <div id="officersLoadError" class="msg err" style="display:none;margin:12px;"></div>
         <div id="dupePenPanel" style="display:none;margin:12px;padding:14px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;"></div>
         <div id="bulkDeleteOrderPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
+        <div id="bulkDeleteLabelPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
         <div id="fixSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;"></div>
         <div id="restoreSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;"></div>
         <div class="tbl-wrap">
@@ -764,7 +766,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-qualification — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-delbylabel — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -1254,6 +1256,123 @@ async function deleteBulkByOrder(){
   } catch(e){
     console.error('[deleteBulkByOrder] FAILED:', e);
     showMsg('bdoMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── BULK DELETE BY LIST LABEL ──
+// Same pattern as "Delete by Order No." above, but grouped by list_label instead
+// — useful for removing an entire seniority list/batch (e.g. a mistaken upload)
+// in one go, with a per-officer checklist to review before confirming.
+function openBulkDeleteByLabel(){
+  const panel = document.getElementById('bulkDeleteLabelPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#991b1b;font-size:13px;margin-bottom:10px;"><i class="fas fa-eraser"></i> Delete Officers by List Label</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="bdlCadre" onchange="loadListLabelDeleteOptions()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>List / Batch *</label>
+        <select id="bdlLabel" onchange="previewBulkDeleteByLabel()"><option value="">— Select Cadre First —</option></select>
+      </div>
+    </div>
+    <div id="bdlResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bulkDeleteLabelPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="bdlMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function loadListLabelDeleteOptions(){
+  const cadreId = document.getElementById('bdlCadre').value;
+  const sel = document.getElementById('bdlLabel');
+  document.getElementById('bdlResults').innerHTML = '';
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+
+  // Every distinct list_label in this cadre, with a count of how many officers
+  // belong to it. Officers with no label at all are grouped under "(no label)" so
+  // they can still be selected and cleaned up, e.g. leftover pre-feature data.
+  const counts = {};
+  _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+    const key = o.list_label || '(no label)';
+    counts[key] = (counts[key]||0)+1;
+  });
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){
+    sel.innerHTML = '<option value="">No officers in this cadre</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Select List / Batch —</option>' +
+    entries.map(([label,count])=>`<option value="${escH(label)}">${escH(label)} (${count} officer${count>1?'s':''})</option>`).join('');
+}
+
+function previewBulkDeleteByLabel(){
+  const cadreId = document.getElementById('bdlCadre').value;
+  const label   = document.getElementById('bdlLabel').value;
+  const results = document.getElementById('bdlResults');
+  if(!cadreId||!label){ results.innerHTML=''; return; }
+
+  const matches = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'(no label)')===label)
+                            .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  if(!matches.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No matching officers.</div>'; return; }
+
+  let html = `<div style="font-size:12px;font-weight:700;color:var(--navy2);padding:6px 0;display:flex;justify-content:space-between;align-items:center;">
+    <span>${matches.length} officer(s) in this list — select which to delete:</span>
+    <span>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdlCheckboxes(true)">Select All</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdlCheckboxes(false)">Clear</button>
+    </span>
+  </div>
+  <div class="tbl-wrap" style="max-height:320px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+    <table>
+      <thead><tr><th style="width:36px;"></th><th>Sl.</th><th>Name</th><th>PEN No.</th><th>DOB</th></tr></thead>
+      <tbody>`;
+  matches.forEach(o=>{
+    html += `<tr>
+      <td><input type="checkbox" class="bdl-check" data-id="${o.id}" checked></td>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.dob||'')}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+  <div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="deleteBulkByLabel()"><i class="fas fa-trash"></i> Delete Selected</button>
+  </div>`;
+  results.innerHTML = html;
+}
+
+function toggleAllBdlCheckboxes(state){
+  document.querySelectorAll('.bdl-check').forEach(cb=>cb.checked=state);
+}
+
+async function deleteBulkByLabel(){
+  const checked = Array.from(document.querySelectorAll('.bdl-check')).filter(cb=>cb.checked).map(cb=>cb.dataset.id);
+  if(!checked.length){ showMsg('bdlMsg','Select at least one officer to delete.','err'); return; }
+  if(!confirm(`Delete ${checked.length} officer record(s)? This cannot be undone.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('bdlMsg','<span class="spinner"></span> Deleting…','busy');
+  try{
+    for(let i=0;i<checked.length;i+=400){
+      const batch = writeBatch(window._db);
+      checked.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+      await batch.commit();
+    }
+    showMsg('bdlMsg',`✓ Deleted ${checked.length} officer(s).`,'ok');
+    toast(`Deleted ${checked.length} officer(s).`);
+    document.getElementById('bdlResults').innerHTML='';
+    document.getElementById('bdlLabel').value='';
+    await loadOfficers();
+    loadListLabelDeleteOptions(); // refresh counts now that some have been removed
+  } catch(e){
+    console.error('[deleteBulkByLabel] FAILED:', e);
+    showMsg('bdlMsg','Error: '+escH(e.message),'err');
   }
 }
 
