@@ -209,7 +209,7 @@ footer a{color:var(--gold);text-decoration:none;}
           <thead>
             <tr>
               <th style="width:55px;" title="Overall seniority rank across the whole cadre">Seniority No.</th>
-              <th style="width:48px;" title="This officer's rank within their own batch/list only">Batch No.</th>
+              <th id="batchNoHeader" style="width:48px;" title="This officer's rank within their own batch/list only">Batch No.</th>
               <th>Name</th>
               <th>PEN No.</th>
               <th>Order No.</th>
@@ -267,6 +267,10 @@ footer a{color:var(--gold);text-decoration:none;}
       gate.style.display = 'none';
       if(logoutBtn) logoutBtn.style.display='inline-flex';
       if(userInfo)  userInfo.textContent = user.email;
+      // updateBatchNoVisibility lives in a later script block; guard against
+      // it not being defined yet in case this module's execution is ever
+      // reordered relative to that script by the browser.
+      if(typeof updateBatchNoVisibility === 'function') updateBatchNoVisibility();
       document.dispatchEvent(new Event('snReady'));
     } else {
       gate.style.display = 'flex';
@@ -370,6 +374,22 @@ function extractYear(label){
 // higher cadre under a different document, most often because they had no PEN
 // No. to match automatically across separately-uploaded seniority/promotion lists.
 function isMerged(o){ return !!o.merged_into; }
+
+// Batch No. (the raw per-batch sl_no, see assignSeniorityNumbers above) is
+// internal bookkeeping that's only meaningful to whoever manages the officer
+// data — it's hidden from the general signed-in user base and shown only to
+// the single hardcoded admin account, matching the same admin email used
+// throughout this system's Firestore rules and the admin tool.
+const HARDCODED_ADMIN_EMAIL = 'gstcell.com@gmail.com';
+function isHardcodedAdmin(){
+  return !!(window._snUser && window._snUser.email === HARDCODED_ADMIN_EMAIL);
+}
+function updateBatchNoVisibility(){
+  const show = isHardcodedAdmin();
+  const header = document.getElementById('batchNoHeader');
+  if(header) header.style.display = show ? '' : 'none';
+  document.querySelectorAll('.batch-no-cell').forEach(td=>{ td.style.display = show ? '' : 'none'; });
+}
 
 // Sl. No. (sl_no, stored field — shown as "Batch No." in the table) is each
 // officer's rank WITHIN their own batch/list only. When a cadre has more than
@@ -497,6 +517,7 @@ function selectCadre(cadreId){
 function renderTable(cadre, officers){
   document.getElementById('tableTitle').textContent = cadre?.name || 'Seniority List';
   const tbody = document.getElementById('seniorityTableBody');
+  updateBatchNoVisibility(); // covers the header even when the table body below is empty
   if(!officers.length){ tbody.innerHTML = `<tr><td colspan="9" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
   const search = (document.getElementById('searchInput').value||'').toLowerCase();
   const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)||(o.pen_no||'').toLowerCase().includes(search)) : officers;
@@ -541,7 +562,7 @@ function renderTable(cadre, officers){
       const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
       rowsHtml += `<tr class="${rowClass}">
         <td class="sl" style="font-weight:700;">${o.seniority_no||''}</td>
-        <td class="sl">${o.sl_no||''}</td>
+        <td class="sl batch-no-cell">${o.sl_no||''}</td>
         <td class="name">${escH(o.name||'')}</td>
         <td>${escH(o.pen_no||'')}</td>
         <td>${escH(o.order_no||'')}</td>
@@ -553,6 +574,7 @@ function renderTable(cadre, officers){
     });
   });
   tbody.innerHTML = rowsHtml;
+  updateBatchNoVisibility();
 }
 
 function renderStats(cadre, officers){
