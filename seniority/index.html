@@ -208,7 +208,8 @@ footer a{color:var(--gold);text-decoration:none;}
         <table class="seniority-table">
           <thead>
             <tr>
-              <th style="width:48px;">Sl. No</th>
+              <th style="width:55px;" title="Overall seniority rank across the whole cadre">Seniority No.</th>
+              <th style="width:48px;" title="This officer's rank within their own batch/list only">Batch No.</th>
               <th>Name</th>
               <th>PEN No.</th>
               <th>Order No.</th>
@@ -219,7 +220,7 @@ footer a{color:var(--gold);text-decoration:none;}
             </tr>
           </thead>
           <tbody id="seniorityTableBody">
-            <tr><td colspan="8" class="loader"><span class="spinner"></span> Loading…</td></tr>
+            <tr><td colspan="9" class="loader"><span class="spinner"></span> Loading…</td></tr>
           </tbody>
         </table>
       </div>
@@ -362,6 +363,48 @@ function extractYear(label){
   const m = String(label||'').match(/\d{4}/);
   return m ? parseInt(m[0]) : null;
 }
+// True if this officer record has been manually merged into another (higher
+// cadre) record by the admin. A merged record is kept in Firestore exactly
+// as-is, but is excluded from the seniority list, seniority numbering, and
+// promotion estimator — it represents someone who has already moved on to a
+// higher cadre under a different document, most often because they had no PEN
+// No. to match automatically across separately-uploaded seniority/promotion lists.
+function isMerged(o){ return !!o.merged_into; }
+
+// Sl. No. (sl_no, stored field — shown as "Batch No." in the table) is each
+// officer's rank WITHIN their own batch/list only. When a cadre has more than
+// one batch, batch numbering legitimately restarts from 1 each time, so sl_no
+// alone is NOT a valid cadre-wide seniority order.
+//
+// This computes the REAL overall seniority number for every officer: batches
+// within a cadre are walked chronologically (by the year parsed from their
+// list_label; ties/unparseable labels fall back to list_order), and within
+// each batch officers are walked by sl_no (Batch No.) ascending — numbered
+// continuously 1, 2, 3… across the whole cadre. Stored as `seniority_no`
+// directly on each officer object in memory only — never written back to
+// Firestore, since it's cheap to recompute and would go stale instantly.
+function assignSeniorityNumbers(){
+  Object.keys(_officers).forEach(cadreId=>{
+    const inCadre = _officers[cadreId].filter(o=>!isMerged(o));
+    const groups = {};
+    inCadre.forEach(o=>{
+      const key = o.list_label || '';
+      if(!groups[key]) groups[key] = { year: extractYear(o.list_label), order: (o.list_order!==undefined?o.list_order:-1), officers: [] };
+      groups[key].officers.push(o);
+    });
+    const groupList = Object.values(groups).sort((a,b)=>{
+      if(a.year!==null && b.year!==null) return a.year-b.year;
+      if(a.year!==null) return -1;
+      if(b.year!==null) return 1;
+      return a.order-b.order;
+    });
+    let counter = 1;
+    groupList.forEach(g=>{
+      g.officers.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      g.officers.forEach(o=>{ o.seniority_no = counter++; });
+    });
+  });
+}
 // Computes the effective display status for an officer.
 // Manual overrides (expired/relieved) always win. An invalid/missing DOB is
 // surfaced as its own status rather than silently defaulting to Active.
@@ -418,16 +461,7 @@ document.addEventListener('snReady', async () => {
       if(!_officers[o.cadre]) _officers[o.cadre] = [];
       _officers[o.cadre].push(o);
     });
-    // Base sort: group by list_order first (so each separate seniority list within
-    // a cadre stays together, in upload order), then by Sl. No. within that list.
-    // renderTable() re-groups by list_label for display regardless, but keeping
-    // this consistent avoids surprises for any other code reading _officers directly.
-    Object.keys(_officers).forEach(k => _officers[k].sort((a,b)=>{
-      const aOrder = a.list_order!==undefined ? a.list_order : -1;
-      const bOrder = b.list_order!==undefined ? b.list_order : -1;
-      if(aOrder!==bOrder) return aOrder-bOrder;
-      return (a.sl_no||0)-(b.sl_no||0);
-    }));
+    assignSeniorityNumbers();
     console.log('[seniority] loaded officer records for', Object.keys(_officers).length, 'cadre(s).');
   } catch(e) {
     console.error('[seniority] Error loading officers:', e);
@@ -451,7 +485,10 @@ function selectCadre(cadreId){
   _activeCadre = cadreId;
   document.querySelectorAll('.cadre-tab').forEach(t => t.classList.toggle('active', t.dataset.cadre === cadreId));
   const cadre   = _cadres.find(c=>c.id===cadreId);
-  const officers = (_officers[cadreId]||[]).slice();
+  // Merged-away records are excluded here, at the source, so the table, stats,
+  // CSV export, and promotion estimator dropdown all stay consistent without
+  // each needing their own filter.
+  const officers = (_officers[cadreId]||[]).filter(o=>!isMerged(o));
   renderTable(cadre, officers);
   renderStats(cadre, officers);
   populatePromoOfficerSelect(cadreId);
@@ -460,10 +497,10 @@ function selectCadre(cadreId){
 function renderTable(cadre, officers){
   document.getElementById('tableTitle').textContent = cadre?.name || 'Seniority List';
   const tbody = document.getElementById('seniorityTableBody');
-  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
+  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="9" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
   const search = (document.getElementById('searchInput').value||'').toLowerCase();
   const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)||(o.pen_no||'').toLowerCase().includes(search)) : officers;
-  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">No results found.</td></tr>`; return; }
+  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="9" class="empty-msg">No results found.</td></tr>`; return; }
 
   // Group by list_label so a cadre with multiple separate seniority lists (e.g.
   // different joining batches) shows each list as its own block, with Sl. No.
@@ -493,7 +530,7 @@ function renderTable(cadre, officers){
   const showLabels = groupList.length>1; // only show a divider header when there's more than one list
   groupList.forEach(g=>{
     if(showLabels){
-      rowsHtml += `<tr class="list-divider"><td colspan="8" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 16px;">${escH(g.label||'Unlabeled List')}</td></tr>`;
+      rowsHtml += `<tr class="list-divider"><td colspan="9" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 16px;">${escH(g.label||'Unlabeled List')}</td></tr>`;
     }
     g.officers.forEach(o=>{
       const rd   = retDate(o.dob, o.retirement_age||60);
@@ -503,6 +540,7 @@ function renderTable(cadre, officers){
       const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
       const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
       rowsHtml += `<tr class="${rowClass}">
+        <td class="sl" style="font-weight:700;">${o.seniority_no||''}</td>
         <td class="sl">${o.sl_no||''}</td>
         <td class="name">${escH(o.name||'')}</td>
         <td>${escH(o.pen_no||'')}</td>
@@ -550,7 +588,7 @@ function renderStats(cadre, officers){
 const MAX_PROMOTION_CHAIN_DEPTH = 12;
 
 function flattenOfficers(){
-  return Object.values(_officers).flat();
+  return Object.values(_officers).flat().filter(o=>!isMerged(o));
 }
 
 function getDepartureDate(officer, cache, depth, officersSource){
@@ -591,9 +629,16 @@ function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, dept
   const immediateVacancies = Math.max(0, (targetCadre.sanctioned||0) - officersInTarget.length);
   const timeline = [...Array(immediateVacancies).fill(null), ...departureDates];
 
+  // Feeder officers are queued by their REAL overall seniority (seniority_no),
+  // not their raw sl_no (Batch No.) — sl_no only ranks an officer within their
+  // own batch, and multiple batches in one cadre legitimately reuse the same
+  // numbers, so using it directly would queue officers in the wrong order
+  // whenever a cadre has more than one list/batch. Falls back to sl_no only if
+  // seniority_no was never computed (e.g. a hypothetical clone injected by this
+  // same estimator one rung further up, which inherits sl_no from its source).
   const feederOfficers = officersSource
     .filter(o=>o.cadre===feederCadreId)
-    .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    .sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
 
   let vacancyIdx = 0;
   feederOfficers.forEach(o=>{
@@ -662,10 +707,14 @@ function computeFullPromotionPath(officer){
 function populatePromoOfficerSelect(cadreId){
   const sel = document.getElementById('promoOfficerSelect');
   document.getElementById('promoEstimatorResult').innerHTML = '';
-  const officers = (_officers[cadreId]||[]).slice().sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  // Ordered by seniority_no — batch 1's officers first (in their own Batch No.
+  // order), then batch 2's officers, and so on, chronologically by batch —
+  // NOT a flat sort by the raw sl_no/Batch No., which would interleave batches
+  // whenever more than one shares the same numbering.
+  const officers = (_officers[cadreId]||[]).filter(o=>!isMerged(o)).sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
   if(!officers.length){ sel.innerHTML = '<option value="">No officers in this cadre</option>'; return; }
   sel.innerHTML = '<option value="">— Select officer in this cadre —</option>' +
-    officers.map(o=>`<option value="${o.id}">${o.sl_no||'—'}. ${escH(o.name||'')}</option>`).join('');
+    officers.map(o=>`<option value="${o.id}">${o.seniority_no||o.sl_no||'—'}. ${escH(o.name||'')}</option>`).join('');
 }
 
 function runPromotionEstimate(){
@@ -679,7 +728,7 @@ function runPromotionEstimate(){
   const path = computeFullPromotionPath(officer);
 
   let html = `<div style="font-size:12.5px;font-weight:700;color:var(--navy2);margin:12px 0 10px;">
-    ${escH(officer.name||'')} — Sl. ${officer.sl_no||'—'} in ${escH(currentCadre?.name||'')}
+    ${escH(officer.name||'')} — Seniority No. ${officer.seniority_no||officer.sl_no||'—'} in ${escH(currentCadre?.name||'')}
   </div>`;
 
   if(!path.length){
@@ -727,13 +776,13 @@ function filterTable(){
 }
 
 function downloadCSV(){
-  const officers = (_officers[_activeCadre]||[]);
+  const officers = (_officers[_activeCadre]||[]).filter(o=>!isMerged(o));
   if(!officers.length){
     alert('No officers to download — the list is empty. Check the error banner near the top of the page.');
     return;
   }
   const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const headers  = ['list_label','sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
+  const headers  = ['seniority_no','list_label','sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
   const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv      = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a        = document.createElement('a');
