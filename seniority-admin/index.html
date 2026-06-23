@@ -135,14 +135,13 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-section">Officers</div>
   <div class="nav-item active" data-page="officers" onclick="showPage('officers')"><i class="fas fa-users"></i> Officer Entry</div>
   <div class="nav-item" data-page="promotions" onclick="showPage('promotions')"><i class="fas fa-arrow-up"></i> Promotions</div>
-  <div class="nav-item" data-page="estimator" onclick="showPage('estimator')"><i class="fas fa-chart-line"></i> Promotion Estimator</div>
   <div class="nav-item" data-page="csv" onclick="showPage('csv')"><i class="fas fa-file-csv"></i> CSV Upload</div>
   <div class="sidebar-section">Configuration</div>
   <div class="nav-item" data-page="cadres" onclick="showPage('cadres')"><i class="fas fa-layer-group"></i> Manage Cadres</div>
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-multilevelpromo</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-estremoved</div>
   </div>
 </nav>
 
@@ -387,33 +386,6 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           <button class="btn btn-primary" onclick="submitPromotions()"><i class="fas fa-arrow-up"></i> Promote Selected Officers</button>
         </div>
         <div class="msg" id="promoMsg"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ PAGE: PROMOTION ESTIMATOR ══ -->
-  <div class="page" id="page-estimator">
-    <div class="card">
-      <div class="card-header"><h2>📈 Promotion Estimator</h2></div>
-      <div class="card-body">
-        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">
-          Pick an officer to see their projected promotion path through every cadre above their current one — ASTO → DSTO → STO → DC → DCHG, and so on — not just the next rung. Each estimate accounts for the officers ahead of them in the queue, vacancies opening over time, and the fact that an officer further up might themselves be promoted out early (not just retire), freeing their seat sooner.
-        </p>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Cadre *</label>
-            <select id="estCadre" onchange="loadEstimatorOfficers()">
-              <option value="">— Select Cadre —</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Officer *</label>
-            <select id="estOfficer" onchange="runPromotionEstimate()">
-              <option value="">— Select Cadre First —</option>
-            </select>
-          </div>
-        </div>
-        <div id="estimatorResults" style="margin-top:16px;"></div>
       </div>
     </div>
   </div>
@@ -752,7 +724,7 @@ function showPage(id){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelector(`[data-page="${id}"]`).classList.add('active');
-  const titles={officers:'Officer Entry',promotions:'Promotions',estimator:'Promotion Estimator',csv:'CSV Upload / Download',cadres:'Manage Cadres'};
+  const titles={officers:'Officer Entry',promotions:'Promotions',csv:'CSV Upload / Download',cadres:'Manage Cadres'};
   document.getElementById('pageTitle').textContent = titles[id]||id;
 }
 
@@ -794,7 +766,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-multilevelpromo — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-estremoved — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -845,7 +817,7 @@ async function loadOfficers(){
 }
 
 function populateCadreSelects(){
-  const selects = ['fCadre','filterCadre','csvCadre','mCadre','dlCadreFilter','promoFromCadre','promoToCadre','estCadre'];
+  const selects = ['fCadre','filterCadre','csvCadre','mCadre','dlCadreFilter','promoFromCadre','promoToCadre'];
   selects.forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     const isFilter=(id==='filterCadre'||id==='dlCadreFilter');
@@ -1830,9 +1802,10 @@ function getDepartureDate(officer, cache, depth, officersSource){
 // turn depends on the cadre above X, and so on up the hierarchy. `cache` is a
 // shared Map of officerId -> departureDate, reused across the whole recursive
 // call tree so the same officer's departure date is computed once, not repeatedly.
-// `officersSource` defaults to the real, live _officers array; the multi-level
-// estimator (computeFullPromotionPath) passes in a snapshot array containing
-// hypothetical cloned officers instead, without ever touching real app state.
+// `officersSource` defaults to the real, live _officers array. The public
+// seniority.html page's multi-level Promotion Estimator uses a copy of this
+// same logic with a hypothetical, in-memory officers snapshot instead — kept
+// here only for the single-hop case this admin page's Promotion Entry needs.
 function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, depth, officersSource){
   officersSource = officersSource || _officers;
   const result = new Map();
@@ -1890,124 +1863,6 @@ function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, dept
 // cadre has its own active promotion activity.
 function computePromotionQueue(feederCadreId, targetCadreId){
   return computePromotionQueueInternal(feederCadreId, targetCadreId, new Map(), 0);
-}
-
-// Builds the FULL multi-level promotion estimate for one specific officer: their
-// eligible date into each cadre above their current one, all the way up the
-// hierarchy, accounting for cascading promotions at every level (an officer
-// above them leaving early via THEIR OWN promotion, not just retirement).
-//
-// Past the first rung, the officer doesn't actually exist in the next cadre's
-// data yet — they haven't been promoted there. To estimate further (DSTO->STO
-// after estimating ASTO->DSTO, for example), this injects a HYPOTHETICAL clone
-// of the officer into that next cadre's officer list for the purposes of the
-// simulation only (never written to Firestore), assigned a Sl. No. placing them
-// as the most junior member of that cadre — i.e. after everyone genuinely
-// already recorded there. This is a simplifying assumption: it does not account
-// for other officers from the SAME feeder cadre who might also be promoted into
-// this rung ahead of real seniority order from a different list/batch; it's a
-// single-officer projection, not a full simulation of every concurrent promotion.
-//
-// Returns an ordered array of { cadre, eligibleDate, retiredBeforeTurn, notQualified }
-// — one entry per rung — stopping at the top of the hierarchy or once a rung is
-// unreachable (officer would retire/never qualify before that rung's turn).
-function computeFullPromotionPath(officer){
-  const path = [];
-  const cache = new Map();
-  // Work on a hypothetical, in-memory-only copy of _officers we can safely
-  // mutate (inserting the hypothetical clone) without touching real app state.
-  const officersSnapshot = _officers.slice();
-  let hypotheticalOfficer = officer;
-  let depth = 0;
-
-  while(depth<MAX_PROMOTION_CHAIN_DEPTH){
-    const currentCadreId = hypotheticalOfficer.cadre;
-    const nextCadre = _cadres.find(c=>c.feeder===currentCadreId);
-    if(!nextCadre) break; // reached the top of the hierarchy
-
-    const queue = computePromotionQueueInternal(currentCadreId, nextCadre.id, cache, depth+1, officersSnapshot);
-    const q = queue.get(hypotheticalOfficer.id);
-    if(!q){ break; } // shouldn't normally happen — they should always appear in their own cadre's feeder list
-
-    path.push({ cadre: nextCadre, eligibleDate: q.eligibleDate, retiredBeforeTurn: !!q.retiredBeforeTurn, notQualified: !!q.notQualified });
-    if(q.retiredBeforeTurn || q.notQualified) break; // chain stops here — they never reach this rung, so no point estimating further
-
-    // Inject a hypothetical clone of this officer into the next cadre, as the
-    // most junior member there (after everyone genuinely already recorded),
-    // so the NEXT loop iteration can estimate their path one rung further.
-    const existingInNext = officersSnapshot.filter(o=>o.cadre===nextCadre.id);
-    const juniorMostSlNo = Math.max(0, ...existingInNext.map(o=>o.sl_no||0)) + 1;
-    const clone = { ...hypotheticalOfficer, cadre: nextCadre.id, sl_no: juniorMostSlNo };
-    officersSnapshot.push(clone);
-    hypotheticalOfficer = clone;
-    depth++;
-  }
-  return path;
-}
-
-// ── PROMOTION ESTIMATOR (multi-level) ──
-function loadEstimatorOfficers(){
-  const cadreId = document.getElementById('estCadre').value;
-  const sel = document.getElementById('estOfficer');
-  document.getElementById('estimatorResults').innerHTML = '';
-  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
-  const officers = _officers.filter(o=>o.cadre===cadreId).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
-  if(!officers.length){ sel.innerHTML = '<option value="">No officers in this cadre</option>'; return; }
-  sel.innerHTML = '<option value="">— Select Officer —</option>' +
-    officers.map(o=>`<option value="${o.id}">${o.sl_no||'—'}. ${escH(o.name||'')}</option>`).join('');
-}
-
-function runPromotionEstimate(){
-  const officerId = document.getElementById('estOfficer').value;
-  const results = document.getElementById('estimatorResults');
-  if(!officerId){ results.innerHTML=''; return; }
-  const officer = _officers.find(o=>o.id===officerId);
-  if(!officer){ results.innerHTML='<div style="color:var(--muted);font-size:12px;">Officer not found.</div>'; return; }
-
-  const currentCadre = _cadres.find(c=>c.id===officer.cadre);
-  const path = computeFullPromotionPath(officer);
-
-  let html = `<div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:12px;">
-    ${escH(officer.name||'')} — currently Sl. ${officer.sl_no||'—'} in ${escH(currentCadre?.name||officer.cadre)}
-  </div>`;
-
-  if(!path.length){
-    html += `<div style="color:var(--muted);font-size:12.5px;padding:10px 0;">There is no cadre above ${escH(currentCadre?.name||'this one')} configured (it has no cadre listing it as a feeder) — nothing further to estimate.</div>`;
-    results.innerHTML = html;
-    return;
-  }
-
-  html += `<div style="display:flex;flex-direction:column;gap:0;">`;
-  // Starting point of the chain
-  html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f1f5f9;border-radius:8px;font-size:12.5px;">
-    <i class="fas fa-circle" style="color:var(--navy2);font-size:8px;"></i>
-    <span style="font-weight:700;">${escH(currentCadre?.name||officer.cadre)}</span>
-    <span style="color:var(--muted);">— current position</span>
-  </div>`;
-
-  path.forEach((p,i)=>{
-    const blocked = p.retiredBeforeTurn || p.notQualified;
-    const dateLabel = blocked ? null
-      : p.eligibleDate ? fmtDate(p.eligibleDate.toISOString().split('T')[0])
-      : 'Immediately (vacancy already available)';
-    html += `<div style="display:flex;align-items:center;gap:10px;padding:4px 0 4px 18px;">
-      <i class="fas fa-long-arrow-alt-down" style="color:var(--muted);"></i>
-    </div>`;
-    html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:12.5px;background:${blocked?'#fef2f2':'#eff6ff'};border:1px solid ${blocked?'#fecaca':'#bfdbfe'};">
-      <i class="fas fa-circle" style="color:${blocked?'#b91c1c':'#1e40af'};font-size:8px;"></i>
-      <span style="font-weight:700;">${escH(p.cadre.name||p.cadre.id)}</span>
-      ${blocked
-        ? `<span style="color:#b91c1c;font-weight:600;">— ${p.notQualified ? 'not qualified for promotion' : 'would retire before a vacancy reaches them — never promoted to this cadre'}</span>`
-        : `<span style="color:#1e40af;font-weight:600;">— estimated eligible: ${dateLabel}</span>`}
-    </div>`;
-  });
-  html += `</div>`;
-
-  html += `<p style="font-size:11px;color:var(--muted);margin-top:14px;">
-    Estimates beyond the first rung assume this officer joins each next cadre as its most junior member among those already recorded there, and that seniority order from their original cadre carries forward. They don't account for OTHER officers who might also be promoted into the same rungs ahead of real-time competing promotions — this is a single-officer projection, not a full simulation of every concurrent promotion across the department.
-  </p>`;
-
-  results.innerHTML = html;
 }
 
 function loadPromotionCandidates(){
