@@ -522,6 +522,11 @@ function selectCadre(cadreId){
   // CSV export, and promotion estimator dropdown all stay consistent without
   // each needing their own filter.
   const officers = (_officers[cadreId]||[]).filter(o=>!isMerged(o));
+  // Clear any search term left over from a previously-viewed cadre tab — a
+  // search that matched officers in the old cadre but matches nobody in the
+  // new one would otherwise make the new tab look empty for no visible reason.
+  const searchBox = document.getElementById('searchInput');
+  if(searchBox) searchBox.value = '';
   renderTable(cadre, officers);
   renderStats(cadre, officers);
   populatePromoOfficerSelect(cadreId);
@@ -530,11 +535,18 @@ function selectCadre(cadreId){
 function renderTable(cadre, officers){
   document.getElementById('tableTitle').textContent = cadre?.name || 'Seniority List';
   const tbody = document.getElementById('seniorityTableBody');
-  updateBatchNoVisibility(); // covers the header even when the table body below is empty
-  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="9" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
+  // Decided once, up front, and used consistently for the header, every empty-
+  // state message's colspan, and every data row below — never toggled after
+  // the fact on already-rendered DOM, which is what previously let some rows
+  // end up with the Batch No. column and others without it.
+  const showBatchNo = isHardcodedAdmin();
+  const colCountFull = showBatchNo ? 9 : 8;
+  const header = document.getElementById('batchNoHeader');
+  if(header) header.style.display = showBatchNo ? '' : 'none';
+  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="${colCountFull}" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
   const search = (document.getElementById('searchInput').value||'').toLowerCase();
   const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)||(o.pen_no||'').toLowerCase().includes(search)) : officers;
-  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="9" class="empty-msg">No results found.</td></tr>`; return; }
+  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="${colCountFull}" class="empty-msg">No results found.</td></tr>`; return; }
 
   // Group by list_label so a cadre with multiple separate seniority lists (e.g.
   // different joining batches) shows each list as its own block, with Sl. No.
@@ -562,9 +574,17 @@ function renderTable(cadre, officers){
 
   let rowsHtml = '';
   const showLabels = groupList.length>1; // only show a divider header when there's more than one list
+  // Batch No. is internal bookkeeping shown only to the hardcoded admin. This
+  // is decided ONCE before building any row HTML and baked directly into the
+  // generated markup for every row — there is no longer a separate step that
+  // tries to hide/show the column on already-rendered DOM elements. That
+  // previous approach could leave some rows with the column present and
+  // others without, depending on exactly when it ran relative to the table
+  // being rebuilt, which is what produced columns looking shifted on
+  // alternating rows.
   groupList.forEach(g=>{
     if(showLabels){
-      rowsHtml += `<tr class="list-divider"><td colspan="9" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 16px;">${escH(g.label||'Unlabeled List')}</td></tr>`;
+      rowsHtml += `<tr class="list-divider"><td colspan="${colCountFull}" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 16px;">${escH(g.label||'Unlabeled List')}</td></tr>`;
     }
     g.officers.forEach(o=>{
       const rd   = retDate(o.dob, o.retirement_age||60);
@@ -575,7 +595,7 @@ function renderTable(cadre, officers){
       const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
       rowsHtml += `<tr class="${rowClass}">
         <td class="sl" style="font-weight:700;">${o.seniority_no||''}</td>
-        <td class="sl batch-no-cell">${o.sl_no||''}</td>
+        ${showBatchNo ? `<td class="sl">${o.sl_no||''}</td>` : ''}
         <td class="name">${escH(o.name||'')}</td>
         <td>${escH(o.pen_no||'')}</td>
         <td>${escH(o.order_no||'')}</td>
@@ -587,7 +607,6 @@ function renderTable(cadre, officers){
     });
   });
   tbody.innerHTML = rowsHtml;
-  updateBatchNoVisibility();
 }
 
 function renderStats(cadre, officers){
@@ -806,7 +825,7 @@ function runPromotionEstimate(){
 
 function filterTable(){
   const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const officers = (_officers[_activeCadre]||[]).slice();
+  const officers = (_officers[_activeCadre]||[]).filter(o=>!isMerged(o));
   renderTable(cadre, officers);
 }
 
