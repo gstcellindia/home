@@ -572,7 +572,7 @@
           <colgroup>
             <col style="width:9%"><col style="width:5%"><col style="width:5%">
             <col style="width:9%"><col style="width:6%"><col style="width:9%"><col style="width:9%">
-            <col style="width:6%"><col style="width:9%"><col style="width:10%"><col style="width:6%"><col style="width:8%"><col style="width:3%">
+            <col style="width:6%"><col style="width:9%"><col style="width:8%"><col style="width:6%"><col style="width:8%"><col style="width:6%">
           </colgroup>
           <thead>
             <tr id="dbFormHeader">
@@ -599,7 +599,6 @@
           <button class="btn-add-record" onclick="dbResetForm()" style="background:#dd6b20;">🔄 Reset</button>
           <button class="btn-add-record" onclick="dbSubmitForm()">💾 Save Record</button>
         </div>
-        <button class="btn-add-record" onclick="dbAddRow()">➕ Add Row</button>
       </div>
       <div id="dbMsg" style="padding:8px 14px;border-radius:8px;font-size:0.88rem;margin-top:8px;display:none;"></div>
     </div>
@@ -1739,9 +1738,20 @@ function dbCreateRow() {
   mkInput('number', 'db-exp',       0);
   mkInput('number', 'db-bank',      0);
 
-  // Delete button — rightmost column
+  // Add (+) and Delete (✕) buttons — rightmost column
   const delTd = document.createElement('td');
-  delTd.style.cssText = dbCellStyle + 'width:28px;text-align:center;';
+  delTd.style.cssText = dbCellStyle + 'width:48px;text-align:center;white-space:nowrap;';
+
+  const addBtn = document.createElement('button');
+  addBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#16a34a;color:white;font-size:13px;font-weight:bold;cursor:pointer;border:none;margin-right:3px;';
+  addBtn.className = 'db-row-add';
+  addBtn.title = 'Insert row below';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    const newRow = dbCreateRow();
+    row.parentNode.insertBefore(newRow, row.nextSibling);
+  });
+
   const delBtn = document.createElement('button');
   delBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#e53e3e;color:white;font-size:12px;font-weight:bold;cursor:pointer;border:none;';
   delBtn.className = 'db-row-del';
@@ -1754,6 +1764,8 @@ function dbCreateRow() {
       row.querySelectorAll('.db-combo-val').forEach(h => { h.value = ''; h.parentElement._setValue(''); });
     }
   });
+
+  delTd.appendChild(addBtn);
   delTd.appendChild(delBtn);
   row.appendChild(delTd);
 
@@ -1925,11 +1937,27 @@ function dbHighlightText(text,term){
   return text.split(new RegExp(`(${esc})`,'gi')).map((p,i)=>i%2===1?`<mark style="background:#fef08a;border-radius:2px;padding:0 1px;">${dbEscHtml(p)}</mark>`:dbEscHtml(p)).join('');
 }
 
+function dbComputeCumulativeMap() {
+  // Cumulative running Cash/Bank balance per row, in chronological (date-ascending) order,
+  // starting from the saved Opening Balances. dbAllPreviewRows is already ordered by date asc.
+  const obCash = parseFloat(document.getElementById('dbObCash').value) || 0;
+  const obBank = parseFloat(document.getElementById('dbObBank').value) || 0;
+  let runCash = obCash, runBank = obBank;
+  const map = {};
+  dbAllPreviewRows.forEach(r => {
+    runCash += (r.op || 0) + (r.lab || 0) + (r.otherCash || 0) - (r.bank || 0);
+    runBank += (r.income || 0) - (r.exp || 0) + (r.bank || 0);
+    map[r.id] = { cash: runCash, bank: runBank };
+  });
+  return map;
+}
+
 function dbRenderPreviewTable(page) {
   const table=document.getElementById('dbPreviewTable');
   table.innerHTML='';
   const cols=['Date','OP','LAB','Other Cash Head','Other Cash','Income Head (Bank)','Description','Other Income','Expenditure Head','Desc. (Cheque/Name)','Expenditure','Cash to Bank'];
   const keys=['date','op','lab','otherHead','otherCash','select1','desc1','income','select2','desc2','exp','bank'];
+  const cumMap = dbComputeCumulativeMap();
 
   // Build En→Ml maps for preview display
   const isMl = dbCurrentLang === 'ml';
@@ -1939,11 +1967,14 @@ function dbRenderPreviewTable(page) {
     dbSelect1En.forEach((e,i)    => { if(dbSelect1Ml[i])   previewMap[e] = dbSelect1Ml[i];   });
     dbSelect2En.forEach((e,i)    => { if(dbSelect2Ml[i])   previewMap[e] = dbSelect2Ml[i];   });
   }
-  // Header — Act. column at end
+  // Header — Cash / Bank (cumulative, red) columns, then Act. column at end
   const thead=document.createElement('thead');
   const hRow=document.createElement('tr');
   const thS='background:#1a56db;color:white;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:0.75rem;';
+  const thRedS='background:#a73d3d;color:white;padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.15);font-size:0.75rem;';
   cols.forEach(h=>{ const th=document.createElement('th'); th.textContent=h; th.style.cssText=thS; hRow.appendChild(th); });
+  const cashTh=document.createElement('th'); cashTh.textContent='Cash'; cashTh.style.cssText=thRedS; hRow.appendChild(cashTh);
+  const bankTh=document.createElement('th'); bankTh.textContent='Bank'; bankTh.style.cssText=thRedS; hRow.appendChild(bankTh);
   const actTh=document.createElement('th'); actTh.textContent='Act.'; actTh.style.cssText=thS; hRow.appendChild(actTh);
   thead.appendChild(hRow); table.appendChild(thead);
   const tbody=document.createElement('tbody');
@@ -1962,6 +1993,16 @@ function dbRenderPreviewTable(page) {
       else td.textContent=val;
       tr.appendChild(td);
     });
+    // Cumulative Cash / Bank columns — shown in red
+    const cum = cumMap[row.id] || { cash: 0, bank: 0 };
+    const cashTd=document.createElement('td');
+    cashTd.style.cssText='border:1px solid #d1d5db;padding:4px;font-size:0.78rem;text-align:right;color:#a73d3d;font-weight:700;vertical-align:top;';
+    cashTd.textContent=dbFmt(cum.cash);
+    tr.appendChild(cashTd);
+    const bankTd=document.createElement('td');
+    bankTd.style.cssText='border:1px solid #d1d5db;padding:4px;font-size:0.78rem;text-align:right;color:#a73d3d;font-weight:700;vertical-align:top;';
+    bankTd.textContent=dbFmt(cum.bank);
+    tr.appendChild(bankTd);
     // Action buttons — rightmost
     const actTd=document.createElement('td'); actTd.style.cssText='padding:2px;border:1px solid #d1d5db;text-align:center;white-space:nowrap;vertical-align:middle;';
     const editBtn=document.createElement('button');
@@ -1976,7 +2017,7 @@ function dbRenderPreviewTable(page) {
   });
   if(!dbFilteredPreviewRows.length){
     const emptyRow=document.createElement('tr'); const emptyTd=document.createElement('td');
-    emptyTd.colSpan=13; emptyTd.textContent='No records found.';
+    emptyTd.colSpan=15; emptyTd.textContent='No records found.';
     emptyTd.style.cssText='text-align:center;padding:20px;color:#6b7280;font-style:italic;border:1px solid #d1d5db;';
     emptyRow.appendChild(emptyTd); tbody.appendChild(emptyRow);
   }
