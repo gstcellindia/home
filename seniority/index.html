@@ -3,241 +3,599 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seniority List — Kerala GST Department</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap">
+<title>Seniority Admin — Kerala GST</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
-:root {
-  --navy:   #0f2044;
-  --navy2:  #1a3a6b;
-  --gold:   #c9a84c;
-  --gold2:  #e8c96a;
-  --cream:  #f8f5ef;
-  --white:  #ffffff;
-  --border: #d8d0c0;
-  --text:   #1a1a2e;
-  --muted:  #6b7080;
-  --red:    #b91c1c;
-  --green:  #15803d;
-  --accent: #1a56db;
+:root{
+  --navy:#0f2044;--navy2:#1a3a6b;--gold:#c9a84c;
+  --accent:#1a56db;--green:#16a34a;--red:#dc2626;--orange:#ea580c;
+  --bg:#f4f6fb;--white:#fff;--border:#dde3f0;--text:#1a1a2e;--muted:#6b7080;
+  --sidebar-w:240px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--text);font-size:14px;line-height:1.6;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;display:flex;min-height:100vh;}
 
-/* ── HEADER ── */
-.site-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:0;}
-.header-top{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid rgba(255,255,255,.1);}
-.header-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.02em;}
-.header-logo span{color:#fff;font-weight:300;}
-.header-nav a{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;margin-left:20px;transition:color .2s;}
-.header-nav a:hover{color:var(--gold);}
-.header-banner{padding:28px 32px 24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.header-banner h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1.2;}
-.header-banner h1 span{color:var(--gold);}
-.header-banner p{color:rgba(255,255,255,.65);font-size:13px;margin-top:6px;}
-.header-meta{text-align:right;font-size:12px;color:rgba(255,255,255,.5);}
-.header-meta strong{color:var(--gold2);font-size:14px;display:block;}
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:var(--navy);color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:20px 18px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-logo .title{font-size:15px;font-weight:700;color:var(--gold);}
+.sidebar-logo .sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+.sidebar-section{padding:16px 12px 6px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:rgba(255,255,255,.65);cursor:pointer;border-radius:6px;margin:1px 6px;font-size:13px;transition:all .18s;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.nav-item.active{background:var(--accent);color:#fff;}
+.nav-item i{width:16px;text-align:center;font-size:13px;}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid rgba(255,255,255,.08);}
+.sidebar-footer a{color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:6px;}
+.sidebar-footer a:hover{color:#fff;}
 
-/* ── CADRE TABS ── */
-.cadre-tabs{background:var(--navy);padding:0 32px;display:flex;gap:0;overflow-x:auto;border-top:1px solid rgba(255,255,255,.08);}
-.cadre-tab{padding:12px 18px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s;letter-spacing:.03em;}
-.cadre-tab:hover{color:#fff;}
-.cadre-tab.active{color:var(--gold);border-bottom-color:var(--gold);font-weight:600;}
+/* ── MAIN ── */
+.main-area{margin-left:var(--sidebar-w);flex:1;padding:0;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;}
+.topbar h1{font-size:18px;font-weight:700;color:var(--navy2);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn{padding:7px 16px;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s;font-family:'Inter',sans-serif;}
+.btn:hover{opacity:.85;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-success{background:var(--green);color:#fff;}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-warning{background:var(--orange);color:#fff;}
+.btn-secondary{background:#e8edf5;color:var(--navy2);}
+.btn-sm{padding:4px 10px;font-size:11.5px;border-radius:5px;}
 
-/* ── MAIN LAYOUT ── */
-.main{max-width:1300px;margin:0 auto;padding:24px 24px;}
-.panel-row{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start;}
-@media(max-width:900px){.panel-row{grid-template-columns:1fr;}.cadre-tabs{padding:0 16px;}.header-top,.header-banner{padding:16px;}.main{padding:16px;}}
+.page{display:none;padding:24px 28px;flex:1;}
+.page.active{display:block;}
 
-/* ── STAT CARDS ── */
-.stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.stat-card{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-.stat-card .value{font-size:26px;font-weight:700;font-family:'Playfair Display',serif;color:var(--navy2);}
-.stat-card .value.red{color:var(--red);}
-.stat-card .value.green{color:var(--green);}
-.stat-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:12px;border:1px solid var(--border);margin-bottom:20px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-header h2{font-size:14px;font-weight:700;color:var(--navy2);}
+.card-body{padding:20px;}
 
-/* ── VACANCY PANEL ── */
-.vacancy-panel{background:#fff;border-radius:12px;border:1px solid var(--border);padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.vacancy-panel h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy2);border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:14px;}
-.vac-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dotted var(--border);font-size:13px;}
-.vac-row:last-child{border-bottom:none;}
-.vac-row .vname{color:var(--muted);}
-.vac-row .vval{font-weight:600;color:var(--navy2);}
-.vac-row .vval.red{color:var(--red);}
-.vac-row .vval.green{color:var(--green);}
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.form-grid .full{grid-column:1/-1;}
+.form-group label{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;background:#fff;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+.form-group small{color:var(--muted);font-size:11px;margin-top:3px;display:block;}
+.btn-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.msg{padding:8px 14px;border-radius:7px;font-size:12.5px;margin-top:10px;display:none;}
+.msg.ok{background:#dcfce7;color:#15803d;}
+.msg.err{background:#fee2e2;color:#b91c1c;}
+.msg.busy{background:#eff6ff;color:#1e40af;}
 
-/* ── PROMOTION ESTIMATOR ── */
-.promo-panel{background:#fff;border-radius:12px;border:1px solid var(--border);padding:18px;margin-top:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.promo-panel h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy2);border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:14px;}
-.promo-select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;margin-bottom:10px;background:#fff;}
-
-/* ── SENIORITY TABLE ── */
-.table-card{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.table-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
-.table-toolbar h2{font-size:15px;font-weight:700;color:var(--navy2);}
-.table-toolbar-right{display:flex;align-items:center;gap:8px;}
-.search-box{padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;width:200px;outline:none;font-family:'Inter',sans-serif;}
-.search-box:focus{border-color:var(--accent);}
-.btn-dl{padding:6px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--navy2);color:#fff;display:inline-flex;align-items:center;gap:5px;transition:opacity .2s;}
-.btn-dl:hover{opacity:.85;}
-.seniority-table{width:100%;border-collapse:collapse;}
-.seniority-table thead th{background:var(--navy);color:#fff;padding:10px 14px;text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;position:sticky;top:0;z-index:2;}
-.seniority-table tbody tr{border-bottom:1px solid #f0ece4;transition:background .15s;}
-.seniority-table tbody tr:hover{background:#f8f6f0;}
-.seniority-table tbody tr.retiring-soon{background:#fff8e1;}
-.seniority-table tbody tr.retired{opacity:.55;}
-.seniority-table td{padding:9px 14px;font-size:13px;vertical-align:middle;}
-.seniority-table td.sl{font-weight:700;color:var(--muted);text-align:center;width:48px;}
-.seniority-table td.name{font-weight:600;color:var(--navy2);}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
-.badge-active{background:#dcfce7;color:#15803d;}
-.badge-retired{background:#fee2e2;color:#b91c1c;}
-.badge-promoted{background:#dbeafe;color:#1e40af;}
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;position:sticky;top:0;z-index:2;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:hover{background:#f0f4fb;}
+.merge-pick-row:hover{background:#fdf4ff !important;outline:2px solid #f0abfc;outline-offset:-2px;}
+tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
+.td-name{font-weight:600;color:var(--navy2);}
+.td-sl{text-align:center;font-weight:700;color:var(--muted);width:50px;}
+.badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:600;}
+.badge-active{background:#dcfce7;color:#166534;}
+.badge-retired{background:#fee2e2;color:#991b1b;}
 .badge-soon{background:#fef9c3;color:#854d0e;}
-.ret-date{font-size:11.5px;color:var(--muted);}
-.ret-date.soon{color:#b45309;font-weight:600;}
-.table-wrap{overflow-x:auto;max-height:520px;overflow-y:auto;}
-.empty-msg{text-align:center;padding:48px;color:var(--muted);font-size:14px;}
-.loader{text-align:center;padding:40px;color:var(--muted);}
-.spinner{display:inline-block;width:20px;height:20px;border:3px solid #ddd;border-top-color:var(--navy2);border-radius:50%;animation:spin .7s linear infinite;}
+.badge-promoted{background:#dbeafe;color:#1e40af;}
+.empty-row td{text-align:center;padding:36px;color:var(--muted);}
+.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid #ddd;border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── FOOTER ── */
-footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:18px;font-size:12px;margin-top:32px;}
-footer a{color:var(--gold);text-decoration:none;}
+/* ── INSERT POSITION ── */
+.insert-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f8f9ff;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;}
+.insert-wrap label{font-size:12px;font-weight:600;color:var(--navy2);}
+.insert-wrap select{padding:5px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;font-family:'Inter',sans-serif;}
+
+/* ── CSV AREA ── */
+.csv-info{background:#f0f4fb;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--navy2);margin-bottom:12px;line-height:1.8;}
+.csv-info code{background:var(--white);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;font-family:monospace;}
+
+/* ── CADRE MANAGER ── */
+.cadre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.cadre-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:16px;}
+.cadre-card .cadre-name{font-weight:700;font-size:14px;color:var(--navy2);margin-bottom:8px;}
+.cadre-card .cadre-meta{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.cadre-card .cadre-actions{display:flex;gap:6px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.toast.show{opacity:1;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:5000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:14px;width:92%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.28);}
+.modal-header{background:var(--navy);color:#fff;padding:14px 20px;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:15px;font-weight:700;}
+.modal-close{background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;line-height:1;}
+.modal-close:hover{color:#fff;}
+.modal-body{padding:20px;}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s;}
+  .sidebar.open{transform:none;}
+  .main-area{margin-left:0;}
+  .form-grid{grid-template-columns:1fr;}
+  .page{padding:16px;}
+  .topbar{padding:12px 16px;}
+}
 </style>
 </head>
 <body>
 
-<!-- Login Gate -->
-<div id="loginGate" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0f2044,#1a3a6b);z-index:9999;align-items:center;justify-content:center;">
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="title">Seniority Admin</div>
+    <div class="sub">Kerala State GST Dept.</div>
+  </div>
+  <div class="sidebar-section">Officers</div>
+  <div class="nav-item active" data-page="officers" onclick="showPage('officers')"><i class="fas fa-users"></i> Officer Entry</div>
+  <div class="nav-item" data-page="promotions" onclick="showPage('promotions')"><i class="fas fa-arrow-up"></i> Promotions</div>
+  <div class="nav-item" data-page="csv" onclick="showPage('csv')"><i class="fas fa-file-csv"></i> CSV Upload</div>
+  <div class="sidebar-section">Configuration</div>
+  <div class="nav-item" data-page="cadres" onclick="showPage('cadres')"><i class="fas fa-layer-group"></i> Manage Cadres</div>
+  <div class="sidebar-footer">
+    <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+    <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-mergeclickpick</div>
+  </div>
+</nav>
+
+<!-- Login Modal -->
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:linear-gradient(135deg,#0f2044,#1a3a6b);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.4);">
     <div style="text-align:center;margin-bottom:24px;">
       <div style="font-size:32px;margin-bottom:8px;">📋</div>
-      <h2 style="font-size:20px;font-weight:700;color:#0f2044;">Seniority List</h2>
+      <h2 style="font-size:20px;font-weight:700;color:#0f2044;">Seniority Admin</h2>
       <p style="font-size:13px;color:#6b7080;margin-top:4px;">Kerala State GST Department</p>
-      <p style="font-size:12px;color:#6b7080;margin-top:6px;">Please sign in with your GSTCell account to access the seniority list.</p>
     </div>
     <div style="margin-bottom:14px;">
-      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Email</label>
-      <input type="email" id="gateEmail" placeholder="your@email.com" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')gateLogin()">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;">Email</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Password</label>
-      <input type="password" id="gatePwd" placeholder="••••••••" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')gateLogin()">
+      <label style="display:block;font-size:11.5px;font-weight:600;color:#6b7080;margin-bottom:5px;text-transform:uppercase;">Password</label>
+      <input type="password" id="loginPwd" placeholder="••••••••" style="width:100%;padding:10px 13px;border:1.5px solid #dde3f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button onclick="gateLogin()" style="width:100%;padding:12px;background:#1a56db;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Sign In</button>
-    <div id="gateError" style="color:#dc2626;font-size:12.5px;text-align:center;margin-top:10px;min-height:18px;"></div>
+    <button onclick="doLogin()" style="width:100%;padding:12px;background:#1a56db;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Sign In</button>
+    <div id="loginError" style="color:#dc2626;font-size:12.5px;text-align:center;margin-top:10px;min-height:18px;"></div>
+    <p style="text-align:center;margin-top:14px;font-size:12px;color:#6b7080;">Use your GSTCell account credentials</p>
   </div>
 </div>
-  <div class="header-top">
-    <div class="header-logo">Kerala <span>GST</span></div>
-    <nav class="header-nav">
-      <span id="snUserInfo" style="color:rgba(255,255,255,.5);font-size:12px;"></span>
-      <a href="seniority-admin.html">Admin</a>
-      <button id="snLogoutBtn" onclick="snLogout()" style="display:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:5px;padding:5px 12px;font-size:12px;cursor:pointer;margin-left:10px;">Sign Out</button>
-    </nav>
-  </div>
-  <div class="header-banner">
-    <div>
-      <h1>Seniority <span>List</span></h1>
-      <p>Kerala State Goods &amp; Services Tax Department — Officer Seniority Register</p>
-    </div>
-    <div class="header-meta">
-      <strong id="lastUpdated">—</strong>
-      Last Updated
+
+<!-- MAIN -->
+<div class="main-area">
+  <div class="topbar">
+    <h1 id="pageTitle">Officer Entry</h1>
+    <div class="topbar-right">
+      <span id="authStatus" style="font-size:12px;color:var(--muted)"></span>
+      <button class="btn btn-secondary" onclick="confirmLogout()" id="logoutBtn" style="display:none"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
   </div>
-  <div class="cadre-tabs" id="cadreTabs">
-    <div class="loader"><span class="spinner"></span></div>
+
+  <!-- ══ PAGE: OFFICERS ══ -->
+  <div class="page active" id="page-officers">
+
+    <!-- Add / Edit Form -->
+    <div class="card">
+      <div class="card-header">
+        <h2 id="formTitle">➕ Add Officer</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="clearForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cadre *</label>
+            <select id="fCadre" onchange="onCadreChange()">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>List / Batch *</label>
+            <select id="fListLabel" onchange="onListLabelChange()">
+              <option value="">— Select Cadre First —</option>
+            </select>
+            <input type="text" id="fListLabelNew" placeholder="New list label, e.g. 2009 Batch" style="display:none;margin-top:6px;">
+          </div>
+          <div class="form-group">
+            <label>Batch No. *</label>
+            <input type="number" id="fSlNo" placeholder="e.g. 1" min="1">
+          </div>
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="fName" placeholder="Full name of officer">
+          </div>
+          <div class="form-group">
+            <label>PEN No.</label>
+            <input type="text" id="fPenNo" placeholder="e.g. 123456">
+          </div>
+          <div class="form-group">
+            <label>Order No.</label>
+            <input type="text" id="fOrderNo" placeholder="e.g. GO(Ms) 123/2024">
+          </div>
+          <div class="form-group">
+            <label>Feeder Category</label>
+            <input type="text" id="fFeeder" placeholder="e.g. Deputy Commissioner">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="fDob">
+          </div>
+          <div class="form-group">
+            <label>Retirement Age</label>
+            <select id="fRetAge">
+              <option value="60">60 years</option>
+              <option value="56">56 years</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status Override</label>
+            <select id="fStatus">
+              <option value="">Auto (Active / Retiring Soon / Retired)</option>
+              <option value="expired">Expired</option>
+              <option value="relieved">Relieved</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Qualified for Promotion</label>
+            <select id="fQualified">
+              <option value="yes">Yes</option>
+              <option value="no">No — skip in promotion queue until qualified</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Insert Position -->
+        <div class="insert-wrap" style="margin-top:14px;">
+          <label>Insert Position:</label>
+          <select id="fInsertPos">
+            <option value="end">At End (append)</option>
+            <option value="start">At Beginning</option>
+            <option value="before">Before Officer ↓</option>
+            <option value="after">After Officer ↓</option>
+          </select>
+          <select id="fInsertRef" style="display:none;min-width:200px;">
+            <option value="">— Select Reference Officer —</option>
+          </select>
+        </div>
+
+        <input type="hidden" id="fEditId">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveOfficer()"><i class="fas fa-save"></i> Save Officer</button>
+          <button class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div class="msg" id="formMsg"></div>
+      </div>
+    </div>
+
+    <!-- Officers Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📋 Officers List</h2>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="filterCadre" onchange="loadOfficersTable()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;">
+            <option value="">All Cadres</option>
+          </select>
+          <input type="text" id="officerSearch" placeholder="Search…" oninput="filterOfficersTable()" style="padding:6px 11px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;width:160px;">
+          <button class="btn btn-success btn-sm" onclick="downloadTableCSV()"><i class="fas fa-download"></i> Download CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="showPage('csv')"><i class="fas fa-upload"></i> Upload CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="findDuplicatePens()"><i class="fas fa-clone"></i> Find Duplicate PEN Nos</button>
+          <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByOrder()"><i class="fas fa-eraser"></i> Delete by Order No.</button>
+          <button class="btn btn-secondary btn-sm" onclick="openBulkDeleteByLabel()"><i class="fas fa-eraser"></i> Delete by List Label</button>
+          <button class="btn btn-secondary btn-sm" onclick="openFixSlNoOverlap()"><i class="fas fa-layer-group"></i> Assign List Labels</button>
+          <button class="btn btn-secondary btn-sm" onclick="openRestoreSlNo()"><i class="fas fa-undo"></i> Restore Sl. No. from CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="openMergeOfficers()"><i class="fas fa-code-branch"></i> Merge Officers</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <div id="officersLoadError" class="msg err" style="display:none;margin:12px;"></div>
+        <div id="dupePenPanel" style="display:none;margin:12px;padding:14px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;"></div>
+        <div id="bulkDeleteOrderPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
+        <div id="bulkDeleteLabelPanel" style="display:none;margin:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;"></div>
+        <div id="fixSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;"></div>
+        <div id="restoreSlNoPanel" style="display:none;margin:12px;padding:14px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;"></div>
+        <div id="mergeOfficersPanel" style="display:none;margin:12px;padding:14px 16px;background:#fdf4ff;border:1px solid #f0abfc;border-radius:8px;"></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:55px" title="Overall seniority rank across the whole cadre, computed from chronological batch order">Seniority No.</th>
+                <th style="width:50px" title="This officer's rank within their own batch/list only">Batch No.</th>
+                <th>Name</th>
+                <th>PEN No.</th>
+                <th>Cadre</th>
+                <th>Order No.</th>
+                <th>Feeder Category</th>
+                <th>DOB</th>
+                <th>Ret. Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="officersTableBody">
+              <tr class="empty-row"><td colspan="11"><span class="spinner"></span> Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
-</header>
 
-<div id="dataLoadError" style="display:none;margin:16px 32px 0;padding:12px 16px;background:#fee2e2;color:#b91c1c;border-radius:8px;font-size:13px;"></div>
-
-<main class="main">
-  <div class="panel-row">
-
-    <!-- LEFT: Stats + Vacancy + Promoton Estimator -->
-    <div>
-      <div class="stat-cards">
-        <div class="stat-card">
-          <div class="label">Total Officers</div>
-          <div class="value" id="statTotal">—</div>
-          <div class="sub">in this cadre</div>
+  <!-- ══ PAGE: PROMOTIONS ══ -->
+  <div class="page" id="page-promotions">
+    <div class="card">
+      <div class="card-header"><h2>⬆️ Promotion Entry</h2></div>
+      <div class="card-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">
+          Select the officers being promoted from their current cadre, choose the cadre they're moving into, then set each officer's new seniority position (Sl. No.) in that cadre. Promoted officers are moved out of their old cadre's list and into the new one — vacancy counts and downloads update automatically.
+        </p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>From Cadre *</label>
+            <select id="promoFromCadre" onchange="loadPromotionCandidates()">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>To Cadre *</label>
+            <select id="promoToCadre" onchange="loadPromotionCandidates()">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Promotion Order No.</label>
+            <input type="text" id="promoOrderNo" placeholder="e.g. GO(Ms) 88/2026/Taxes">
+          </div>
+          <div class="form-group">
+            <label>Promotion Date</label>
+            <input type="date" id="promoDate" onchange="loadPromotionCandidates()">
+            <small>Eligibility below is judged as on this date — entering a past date lets you record a promotion retrospectively, including for officers who have since retired but were still in service on this date.</small>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="label">Vacancy</div>
-          <div class="value red" id="statVacancy">—</div>
-          <div class="sub" id="statVacancySub">of sanctioned strength</div>
+
+        <div id="promoCandidatesWrap" style="margin-top:16px;display:none;">
+          <div id="promoExcludedNote"></div>
+          <div style="font-size:12px;font-weight:700;color:var(--navy2);padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+            <span>Select officers to promote, and set their new Sl. No. in the target cadre:</span>
+            <span>
+              <button class="btn btn-secondary btn-sm" onclick="toggleAllPromoCandidates(true)">Select All</button>
+              <button class="btn btn-secondary btn-sm" onclick="toggleAllPromoCandidates(false)">Clear</button>
+            </span>
+          </div>
+          <div class="tbl-wrap" style="max-height:360px;border:1px solid var(--border);border-radius:8px;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:36px;"></th>
+                  <th title="Overall seniority rank across the cadre">Seniority No.</th>
+                  <th title="Rank within this officer's own batch only">Batch No.</th>
+                  <th>Name</th>
+                  <th>PEN No.</th>
+                  <th>Order No.</th>
+                  <th style="width:120px;">New Sl. No. (in target cadre)</th>
+                </tr>
+              </thead>
+              <tbody id="promoCandidatesBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn btn-primary" onclick="submitPromotions()"><i class="fas fa-arrow-up"></i> Promote Selected Officers</button>
+        </div>
+        <div class="msg" id="promoMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: CSV ══ -->
+  <div class="page" id="page-csv">
+
+    <!-- Step 1: Download -->
+    <div class="card">
+      <div class="card-header"><h2>Step 1 — Download Template</h2></div>
+      <div class="card-body">
+        <div class="csv-info">
+          <strong>CSV columns:</strong>
+          <code>sl_no</code> (Batch No. — rank WITHIN this list/batch only, not overall seniority), <code>name</code>, <code>pen_no</code>, <code>order_no</code>, <code>feeder_category</code>,
+          <code>dob</code> (YYYY-MM-DD), <code>retirement_age</code> (56 or 60), <code>status</code> (leave blank for Auto, or use <code>expired</code> / <code>relieved</code>)<br>
+          Status is normally calculated automatically from DOB and retirement age (Active / Retiring Soon / Retired). Only set this column to <code>expired</code> or <code>relieved</code> when that override applies.<br>
+          <strong>Note:</strong> if a cadre has more than one list/batch, the overall <strong>Seniority No.</strong> shown in the officers table is calculated automatically — by chronological batch order, then by Batch No. within each batch — you don't set it directly.<br>
+          Download the template → fill in officer details in Excel/Sheets → save as CSV → upload below.
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="downloadTemplate()"><i class="fas fa-file-csv"></i> Blank Template</button>
+          <button class="btn btn-secondary" onclick="downloadFilledTemplate()"><i class="fas fa-file-csv"></i> Sample Template</button>
         </div>
       </div>
+    </div>
 
-      <div class="vacancy-panel">
-        <h3>📊 Cadre Strength</h3>
-        <div class="vac-row"><span class="vname">Sanctioned Strength</span><span class="vval" id="vacSanctioned">—</span></div>
-        <div class="vac-row"><span class="vname">Working Strength</span><span class="vval" id="vacWorking">—</span></div>
-        <div class="vac-row"><span class="vname">Vacancy</span><span class="vval red" id="vacVacancy">—</span></div>
-        <div class="vac-row"><span class="vname">Retiring within 1 year</span><span class="vval" id="vacRetiring1">—</span></div>
-        <div class="vac-row"><span class="vname">Retiring within 2 years</span><span class="vval" id="vacRetiring2">—</span></div>
+    <!-- Step 2: Upload -->
+    <div class="card">
+      <div class="card-header" style="background:#f0f7ff;"><h2>Step 2 — Upload Filled CSV</h2></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Target Cadre *</label>
+            <select id="csvCadre">
+              <option value="">— Select Cadre —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Insert Position</label>
+            <select id="csvInsertPos">
+              <option value="end">Append at End</option>
+              <option value="start">Insert at Beginning</option>
+              <option value="replace">Replace All (clears existing first)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>List / Batch Label *</label>
+            <input type="text" id="csvListLabel" placeholder="e.g. 2009 Batch, or List dated 21.01.2015">
+            <small>If this cadre has more than one seniority list (different joining periods), each list keeps its own Sl. No. sequence and displays as its own block, in the order you upload them.</small>
+          </div>
+          <div class="form-group">
+            <label>Select CSV File *</label>
+            <input type="file" id="csvFile" accept=".csv" style="padding:6px;">
+            <small>File auto-previews below when selected</small>
+          </div>
+        </div>
+        <div class="msg" id="csvMsg"></div>
+        <div id="csvPreview" style="margin-top:16px;display:none;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy2);padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+            <span id="csvPreviewTitle">Preview</span>
+            <span>
+              <button class="btn btn-secondary btn-sm" onclick="clearCsvPreview()"><i class="fas fa-times"></i> Clear</button>
+              <button class="btn btn-primary btn-sm" onclick="uploadCSV()"><i class="fas fa-upload"></i> Import to Firestore</button>
+            </span>
+          </div>
+          <div class="tbl-wrap" style="max-height:420px;border:1px solid var(--border);border-radius:8px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Batch No.</th><th>Name</th><th>PEN No.</th><th>Order No.</th><th>Feeder Cat.</th><th>DOB</th><th>Ret. Age</th><th>Status</th><th>Row Check</th>
+                </tr>
+              </thead>
+              <tbody id="csvPreviewTable"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="promo-panel">
-        <h3>🔼 Promotion Estimator</h3>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Select an officer to see their projected promotion path through every cadre above their current one — not just the next rung. Accounts for officers ahead of them in the queue, vacancies opening over time, and officers above them being promoted out early themselves.</p>
-        <select class="promo-select" id="promoOfficerSelect" onchange="runPromotionEstimate()">
-          <option value="">— Select officer in this cadre —</option>
+    <!-- Download existing -->
+    <div class="card">
+      <div class="card-header"><h2>Step 3 — Download Existing Data</h2></div>
+      <div class="card-body" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <select id="dlCadreFilter" style="padding:7px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;">
+          <option value="">All Cadres</option>
         </select>
-        <div id="promoEstimatorResult"></div>
-      </div>
-    </div>
-
-    <!-- RIGHT: Table -->
-    <div class="table-card">
-      <div class="table-toolbar">
-        <h2 id="tableTitle">Seniority List</h2>
-        <div class="table-toolbar-right">
-          <input type="text" class="search-box" placeholder="🔍 Search officer…" id="searchInput" oninput="filterTable()">
-          <button class="btn-dl" onclick="downloadCSV()"><i class="fas fa-download"></i> CSV</button>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table class="seniority-table">
-          <thead>
-            <tr>
-              <th style="width:55px;" title="Overall seniority rank across the whole cadre">Seniority No.</th>
-              <th id="batchNoHeader" style="width:48px;" title="This officer's rank within their own batch/list only">Batch No.</th>
-              <th>Name</th>
-              <th>PEN No.</th>
-              <th>Order No.</th>
-              <th>Feeder Category</th>
-              <th>Date of Birth</th>
-              <th>Retirement Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="seniorityTableBody">
-            <tr><td colspan="9" class="loader"><span class="spinner"></span> Loading…</td></tr>
-          </tbody>
-        </table>
+        <button class="btn btn-success" onclick="downloadTableCSVFromCsvPage()">
+          <i class="fas fa-download"></i> Download Current Officers as CSV
+        </button>
       </div>
     </div>
 
   </div>
-</main>
 
-<footer>
-  © 2026 Kerala State GST Department &nbsp;|&nbsp;
-  <a href="seniority-admin.html">Admin Panel</a>
-</footer>
+  <!-- ══ PAGE: CADRES ══ -->
+  <div class="page" id="page-cadres">
+    <div class="card">
+      <div class="card-header"><h2>⚡ Quick Strength Update</h2></div>
+      <div class="card-body">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">Update sanctioned strength for each cadre without editing the full form.</p>
+        <div id="strengthGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+          <div style="color:var(--muted);text-align:center;padding:20px;"><span class="spinner"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>➕ Add / Edit Cadre</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cadre ID * <small>(lowercase, no spaces)</small></label>
+            <input type="text" id="cId" placeholder="e.g. jc" oninput="this.value=this.value.toLowerCase().replace(/\s/g,'')">
+          </div>
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="cName" placeholder="e.g. Joint Commissioner">
+          </div>
+          <div class="form-group">
+            <label>Short Name *</label>
+            <input type="text" id="cShort" placeholder="e.g. JC">
+          </div>
+          <div class="form-group">
+            <label>Sanctioned Strength</label>
+            <input type="number" id="cSanctioned" placeholder="e.g. 10" min="1">
+          </div>
+          <div class="form-group">
+            <label>Feeder Cadre ID</label>
+            <select id="cFeeder">
+              <option value="">— None (bottom cadre) —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Display Order</label>
+            <input type="number" id="cOrder" placeholder="0 = top" min="0">
+          </div>
+        </div>
+        <input type="hidden" id="cEditId">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveCadre()"><i class="fas fa-save"></i> Save Cadre</button>
+          <button class="btn btn-secondary" onclick="clearCadreForm()"><i class="fas fa-times"></i> Clear</button>
+        </div>
+        <div class="msg" id="cadreMsg"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2>📋 All Cadres</h2></div>
+      <div class="card-body">
+        <div class="cadre-grid" id="cadreGrid">
+          <div style="color:var(--muted);padding:20px;text-align:center"><span class="spinner"></span> Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-area -->
+
+<!-- Edit Officer Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>✏️ Edit Officer</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Batch No.</label><input type="number" id="mSlNo"></div>
+        <div class="form-group"><label>List / Batch</label><input type="text" id="mListLabel" placeholder="e.g. 2009 Batch"></div>
+        <div class="form-group"><label>Name *</label><input type="text" id="mName"></div>
+        <div class="form-group"><label>PEN No.</label><input type="text" id="mPenNo"></div>
+        <div class="form-group"><label>Order No.</label><input type="text" id="mOrderNo"></div>
+        <div class="form-group"><label>Feeder Category</label><input type="text" id="mFeeder"></div>
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="mDob"></div>
+        <div class="form-group"><label>Retirement Age</label>
+          <select id="mRetAge"><option value="60">60</option><option value="56">56</option></select>
+        </div>
+        <div class="form-group"><label>Status Override</label>
+          <select id="mStatus"><option value="">Auto (Active / Retiring Soon / Retired)</option><option value="expired">Expired</option><option value="relieved">Relieved</option></select>
+        </div>
+        <div class="form-group"><label>Qualified for Promotion</label>
+          <select id="mQualified"><option value="yes">Yes</option><option value="no">No — skip in promotion queue until qualified</option></select>
+        </div>
+        <div class="form-group"><label>Cadre</label><select id="mCadre"></select></div>
+      </div>
+      <div id="mPromotionHistory" style="display:none;margin-top:10px;padding:10px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;font-size:12px;color:#1e40af;"></div>
+      <div id="mMergeStatus" style="display:none;margin-top:10px;padding:10px 12px;background:#fdf4ff;border:1px solid #f0abfc;border-radius:7px;font-size:12px;color:#86198f;"></div>
+      <input type="hidden" id="mEditId">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveEditModal()"><i class="fas fa-save"></i> Save</button>
+        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      </div>
+      <div class="msg" id="modalMsg"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, query, orderBy, onSnapshot, doc, getDoc }
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, orderBy, serverTimestamp, writeBatch, deleteField }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -253,68 +611,45 @@ footer a{color:var(--gold);text-decoration:none;}
   const app  = initializeApp(firebaseConfig);
   const db   = getFirestore(app);
   const auth = getAuth(app);
-  window._snDb  = db;
-  window._snFs  = { collection, getDocs, query, orderBy, onSnapshot, doc, getDoc };
-  window._snAuth = auth;
-  window._snAuthFn = { signInWithEmailAndPassword, signOut };
+
+  window._db   = db;
+  window._auth = auth;
+  window._fs   = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, orderBy, serverTimestamp, writeBatch, deleteField };
+  window._authFn = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
 
   onAuthStateChanged(auth, user => {
-    window._snUser = user;
-    const gate = document.getElementById('loginGate');
-    const logoutBtn = document.getElementById('snLogoutBtn');
-    const userInfo  = document.getElementById('snUserInfo');
+    window._currentUser = user;
     if(user){
-      gate.style.display = 'none';
-      if(logoutBtn) logoutBtn.style.display='inline-flex';
-      if(userInfo)  userInfo.textContent = user.email;
-      // updateBatchNoVisibility lives in a later script block; guard against
-      // it not being defined yet in case this module's execution is ever
-      // reordered relative to that script by the browser.
-      if(typeof updateBatchNoVisibility === 'function') updateBatchNoVisibility();
-      document.dispatchEvent(new Event('snReady'));
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('authStatus').textContent = user.email;
+      document.getElementById('logoutBtn').style.display = 'flex';
+      document.dispatchEvent(new Event('adminReady'));
     } else {
-      gate.style.display = 'flex';
+      document.getElementById('loginScreen').style.display = 'flex';
     }
   });
 </script>
 
 <script>
-function gateLogin(){
-  const email = document.getElementById('gateEmail').value.trim();
-  const pwd   = document.getElementById('gatePwd').value;
-  const errEl = document.getElementById('gateError');
-  errEl.textContent='';
-  if(!email||!pwd){ errEl.textContent='Please enter email and password.'; return; }
-  window._snAuthFn.signInWithEmailAndPassword(window._snAuth, email, pwd)
-    .catch(e=>{ errEl.textContent=e.message.replace('Firebase:','').replace(/\(.*\)/,'').trim(); });
-}
-function snLogout(){
-  window._snAuthFn.signOut(window._snAuth).then(()=>{
-    document.getElementById('loginGate').style.display='flex';
-    document.getElementById('snLogoutBtn').style.display='none';
-    document.getElementById('snUserInfo').textContent='';
-  });
-}
-
 const DEFAULT_CADRES = [
-  { id:'jc',   name:'Joint Commissioner',                    short:'JC',   sanctioned:10, feeder:'dchg' },
-  { id:'dchg', name:'Deputy Commissioner (Higher Grade)',    short:'DCHG', sanctioned:20, feeder:'dc'   },
-  { id:'dc',   name:'Deputy Commissioner',                   short:'DC',   sanctioned:40, feeder:'ac'   },
-  { id:'ac',   name:'Assistant Commissioner',                short:'AC',   sanctioned:80, feeder:'sto'  },
-  { id:'sto',  name:'State Tax Officer',                     short:'STO',  sanctioned:200,feeder:'dsto' },
-  { id:'dsto', name:'Deputy State Tax Officer',              short:'DSTO', sanctioned:400,feeder:null   },
+  { id:'jc',   name:'Joint Commissioner',                  short:'JC',   sanctioned:10,  feeder:'dchg', order:0 },
+  { id:'dchg', name:'Deputy Commissioner (Higher Grade)', short:'DCHG', sanctioned:20,  feeder:'dc',   order:1 },
+  { id:'dc',   name:'Deputy Commissioner',                short:'DC',   sanctioned:40,  feeder:'ac',   order:2 },
+  { id:'ac',   name:'Assistant Commissioner',             short:'AC',   sanctioned:80,  feeder:'sto',  order:3 },
+  { id:'sto',  name:'State Tax Officer',                  short:'STO',  sanctioned:200, feeder:'dsto', order:4 },
+  { id:'dsto', name:'Deputy State Tax Officer',           short:'DSTO', sanctioned:400, feeder:null,   order:5 },
 ];
 
 let _cadres   = [];
-let _officers = {}; // cadreId → []
-let _activeCadre = null;
+let _officers = []; // flat list
+let _filteredOfficers = [];
+// Tracks which slot ('lower'/'higher'/null) the Merge Officers tool is currently
+// waiting to fill via a table-row click. See startMergePick() / pickOfficerForMerge().
+let _mergePickMode = null;
 
-function fmtDate(d){
-  if(!d) return '—';
-  const dt = new Date(d);
-  if(isNaN(dt)) return d;
-  return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-}
+// ── HELPERS ──
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(d){ if(!d)return '—'; const dt=new Date(d); return isNaN(dt)?d:dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
 // Strictly validates a date string as YYYY-MM-DD (the only format this app stores/accepts).
 // Rejects malformed strings, out-of-range day/month, and non-existent calendar dates
 // (e.g. 2025-02-30) instead of silently letting JS's lenient Date parser guess.
@@ -350,10 +685,10 @@ function isValidISODate(s){
 // in which case retirement is the last day of the PREVIOUS month instead.
 // (Worked examples from KSR: DOB 1-Jul + age 60 -> retires 30-Jun same year;
 //  DOB 4-Jul-1962 + age 56 -> retires 31-Jul-2018, i.e. last day of birth month.)
-function retDate(dob, retAge){
-  if(!dob||!retAge||!isValidISODate(dob)) return null;
+function retDate(dob,age){
+  if(!dob||!age||!isValidISODate(dob))return null;
   const [y,m,d] = dob.split('-').map(Number);
-  const birthdayAtAge = new Date(y+parseInt(retAge), m-1, d);
+  const birthdayAtAge = new Date(y+parseInt(age), m-1, d);
   if(d===1){
     return new Date(birthdayAtAge.getFullYear(), birthdayAtAge.getMonth(), 0); // last day of previous month
   }
@@ -366,77 +701,6 @@ function daysDiff(dt){ return (dt - new Date()) / 86400000; }
 function extractYear(label){
   const m = String(label||'').match(/\d{4}/);
   return m ? parseInt(m[0]) : null;
-}
-// True if this officer record has been manually merged into another (higher
-// cadre) record by the admin. A merged record is kept in Firestore exactly
-// as-is, but is excluded from the seniority list, seniority numbering, and
-// promotion estimator — it represents someone who has already moved on to a
-// higher cadre under a different document, most often because they had no PEN
-// No. to match automatically across separately-uploaded seniority/promotion lists.
-function isMerged(o){ return !!o.merged_into; }
-
-// Batch No. (the raw per-batch sl_no, see assignSeniorityNumbers above) is
-// internal bookkeeping that's only meaningful to whoever manages the officer
-// data — it's hidden from the general signed-in user base and shown only to
-// the single hardcoded admin account, matching the same admin email used
-// throughout this system's Firestore rules and the admin tool.
-const HARDCODED_ADMIN_EMAIL = 'gstcell.com@gmail.com';
-function isHardcodedAdmin(){
-  return !!(window._snUser && window._snUser.email === HARDCODED_ADMIN_EMAIL);
-}
-function updateBatchNoVisibility(){
-  const show = isHardcodedAdmin();
-  const header = document.getElementById('batchNoHeader');
-  if(header) header.style.display = show ? '' : 'none';
-  document.querySelectorAll('.batch-no-cell').forEach(td=>{ td.style.display = show ? '' : 'none'; });
-}
-
-// Sl. No. (sl_no, stored field — shown as "Batch No." in the table) is each
-// officer's rank WITHIN their own batch/list only. When a cadre has more than
-// one batch, batch numbering legitimately restarts from 1 each time, so sl_no
-// alone is NOT a valid cadre-wide seniority order.
-//
-// This computes the REAL overall seniority number for every officer: batches
-// within a cadre are walked chronologically (by the year parsed from their
-// list_label; ties/unparseable labels fall back to list_order), and within
-// each batch officers are walked by sl_no (Batch No.) ascending — numbered
-// continuously 1, 2, 3… across the whole cadre. Stored as `seniority_no`
-// directly on each officer object in memory only — never written back to
-// Firestore, since it's cheap to recompute and would go stale instantly.
-function assignSeniorityNumbers(){
-  Object.keys(_officers).forEach(cadreId=>{
-    const inCadre = _officers[cadreId].filter(o=>!isMerged(o));
-    const groups = {};
-    inCadre.forEach(o=>{
-      const key = o.list_label || '';
-      if(!groups[key]) groups[key] = { year: extractYear(o.list_label), order: (o.list_order!==undefined?o.list_order:-1), officers: [] };
-      groups[key].officers.push(o);
-    });
-    const groupList = Object.values(groups).sort((a,b)=>{
-      if(a.year!==null && b.year!==null) return a.year-b.year;
-      if(a.year!==null) return -1;
-      if(b.year!==null) return 1;
-      return a.order-b.order;
-    });
-    let counter = 1;
-    groupList.forEach(g=>{
-      // Within each batch: officers who have always belonged here (no
-      // promotion_date) keep their normal Batch No. order and sit at the top.
-      // Officers who were PROMOTED INTO this cadre (have a promotion_date, set
-      // by the admin's Promotions tool) always sit below all of them as one
-      // block, ordered chronologically among themselves by promotion_date —
-      // an earlier promotion places that officer higher within this block, a
-      // later promotion places them lower.
-      const original = g.officers.filter(o=>!o.promotion_date).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
-      const promotedIn = g.officers.filter(o=>o.promotion_date).sort((a,b)=>{
-        const ad = new Date(a.promotion_date), bd = new Date(b.promotion_date);
-        if(isNaN(ad)||isNaN(bd)) return (a.sl_no||0)-(b.sl_no||0);
-        return ad-bd;
-      });
-      g.officers = [...original, ...promotedIn];
-      g.officers.forEach(o=>{ o.seniority_no = counter++; });
-    });
-  });
 }
 // Computes the effective display status for an officer.
 // Manual overrides (expired/relieved) always win. An invalid/missing DOB is
@@ -454,214 +718,1387 @@ function computeStatus(o){
   }
   return {key:'active', label:'Active', badgeClass:'badge-active'};
 }
-
-document.addEventListener('snReady', async () => {
-  const db  = window._snDb;
-  const { collection, getDocs, query, orderBy } = window._snFs;
-
-  // Load cadres
-  try {
-    const snap = await getDocs(collection(db, 'seniority_cadres'));
-    if (!snap.empty) {
-      _cadres = [];
-      snap.forEach(d => _cadres.push({ id: d.id, ...d.data() }));
-      _cadres.sort((a,b) => (a.order||0)-(b.order||0));
-    } else {
-      _cadres = DEFAULT_CADRES;
-    }
-  } catch(e) {
-    _cadres = DEFAULT_CADRES;
+function showMsg(id,msg,type){
+  const el=document.getElementById(id);
+  el.innerHTML=msg; el.className='msg '+(type||'ok'); el.style.display='block';
+  // 'busy' messages (in-progress operations) are replaced explicitly by the calling
+  // code when the operation finishes, so they're never auto-hidden on a timer —
+  // doing so would let a long-running import look like it silently vanished.
+  if(type!=='busy'){
+    setTimeout(()=>{ if(el.className==='msg '+(type||'ok')) el.style.display='none'; },4000);
   }
+}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector(`[data-page="${id}"]`).classList.add('active');
+  const titles={officers:'Officer Entry',promotions:'Promotions',csv:'CSV Upload / Download',cadres:'Manage Cadres'};
+  document.getElementById('pageTitle').textContent = titles[id]||id;
+}
 
-  // Build tabs
-  const tabsEl = document.getElementById('cadreTabs');
-  tabsEl.innerHTML = '';
-  _cadres.forEach((c,i) => {
-    const tab = document.createElement('div');
-    tab.className = 'cadre-tab' + (i===0?' active':'');
-    tab.textContent = c.short || c.name;
-    tab.title = c.name;
-    tab.onclick = () => selectCadre(c.id);
-    tab.dataset.cadre = c.id;
-    tabsEl.appendChild(tab);
+// ── LOGIN ──
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPwd').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if(!email||!pwd){ errEl.textContent='Please enter email and password.'; return; }
+  window._authFn.signInWithEmailAndPassword(window._auth, email, pwd)
+    .catch(e=>{ errEl.textContent = e.message.replace('Firebase:','').replace(/\(.*\)/,'').trim(); });
+}
+function confirmLogout(){
+  if(confirm('Logout?')) window._authFn.signOut(window._auth).then(()=>location.reload());
+}
+
+// ── INIT ──
+// Self-test: confirms isValidISODate and retDate behave correctly on page load.
+// If this ever logs a FAIL, the file actually running in this browser has been
+// altered from what was delivered (corrupted character, stale cache, or edited
+// copy) — check the source of the deployed file rather than assuming the data is bad.
+(function selfTestDateValidator(){
+  const cases = [['1980-05-24',true],['1980/05/24',false],['',false],['2024-02-30',false]];
+  let allOk = true;
+  cases.forEach(([input,expected])=>{
+    const got = isValidISODate(input);
+    if(got!==expected){ allOk=false; console.error('[seniority-admin self-test] isValidISODate FAILED for', JSON.stringify(input), '-> got', got, 'expected', expected, '— the deployed file does not match the source. Re-copy seniority-admin.html exactly (do not edit via a rich-text/web tool) and redeploy.'); }
   });
+  // KSR Rule 60(a): retirement = last day of birthday's month, UNLESS birthday is
+  // the 1st of the month, in which case it's the last day of the PREVIOUS month.
+  const retCases = [
+    ['1977-01-22',56,'2033-01-31'],
+    ['1962-07-01',60,'2022-06-30'],
+    ['1975-01-01',56,'2030-12-31'],
+  ];
+  retCases.forEach(([dob,age,expectedISO])=>{
+    const rd = retDate(dob,age);
+    const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
+    if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
+  });
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-mergeclickpick — date validator + KSR retirement rule OK.');
+})();
 
-  // Load all officers
+document.addEventListener('adminReady', async () => {
+  await loadCadres();
+  await loadOfficers();
+  populateCadreSelects();
+});
+
+async function loadCadres(){
+  const { collection, getDocs } = window._fs;
   try {
-    const snap = await getDocs(query(collection(db,'seniority_officers'), orderBy('cadre','asc'), orderBy('sl_no','asc')));
-    snap.forEach(d => {
-      const o = { id: d.id, ...d.data() };
-      if(!_officers[o.cadre]) _officers[o.cadre] = [];
-      _officers[o.cadre].push(o);
-    });
+    const snap = await getDocs(collection(window._db,'seniority_cadres'));
+    if(!snap.empty){ _cadres=[]; snap.forEach(d=>_cadres.push({id:d.id,...d.data()})); _cadres.sort((a,b)=>(a.order||0)-(b.order||0)); }
+    else { _cadres = DEFAULT_CADRES; await seedDefaultCadres(); }
+  } catch(e){ _cadres=DEFAULT_CADRES; }
+  renderCadreGrid();
+}
+
+async function seedDefaultCadres(){
+  const { doc, setDoc } = window._fs;
+  for(const c of DEFAULT_CADRES){
+    try{ await setDoc(doc(window._db,'seniority_cadres',c.id),c); }catch(e){}
+  }
+}
+
+async function loadOfficers(){
+  const { collection, getDocs, query, orderBy } = window._fs;
+  try {
+    const snap = await getDocs(query(collection(window._db,'seniority_officers'),orderBy('cadre','asc'),orderBy('sl_no','asc')));
+    _officers = [];
+    snap.forEach(d=>_officers.push({id:d.id,...d.data()}));
     assignSeniorityNumbers();
-    console.log('[seniority] loaded officer records for', Object.keys(_officers).length, 'cadre(s).');
-  } catch(e) {
-    console.error('[seniority] Error loading officers:', e);
+    console.log('[loadOfficers] loaded', _officers.length, 'officer record(s) from Firestore.');
+    const banner = document.getElementById('officersLoadError');
+    if(banner) banner.style.display='none';
+  } catch(e){
+    _officers=[];
+    console.error('[loadOfficers] FAILED to load officers:', e);
     const isIndexError = /index/i.test(e.message||'');
-    const banner = document.getElementById('dataLoadError');
+    const banner = document.getElementById('officersLoadError');
     if(banner){
       banner.style.display='block';
       banner.innerHTML = isIndexError
-        ? `⚠ Firestore needs a composite index for this query (cadre + sl_no) that isn't ready yet. Check the browser console (F12) for a link Firestore provides to create it — this is a one-time setup step, and the list will appear once the index finishes building (usually a few minutes). Error: ${escH(e.message)}`
-        : `⚠ Could not load the seniority list from Firestore: ${escH(e.message)}`;
+        ? `⚠ Firestore needs a composite index for this query (cadre + sl_no) and it isn't ready yet. Open the browser console (F12) for a link Firestore provides to create it automatically — this is a one-time setup step. Error: ${escH(e.message)}`
+        : `⚠ Could not load officers from Firestore: ${escH(e.message)}`;
+    }
+  }
+  loadOfficersTable();
+}
+
+// Sl. No. (sl_no, stored field — labeled "Batch No." in the UI) is each
+// officer's rank WITHIN their own batch/list only. When a cadre has more than
+// one batch, batch numbering legitimately restarts from 1 each time, so sl_no
+// alone is NOT a valid department-wide seniority order across the whole cadre.
+//
+// This computes the REAL overall seniority number for every officer: batches
+// within a cadre are walked chronologically (by the year parsed from their
+// list_label, same logic as the display grouping; ties/unparseable labels fall
+// back to list_order), and within each batch officers are walked by sl_no
+// (Batch No.) ascending — numbered continuously 1, 2, 3… across the whole
+// cadre. The result is stored as `seniority_no` directly on each officer object
+// in the in-memory _officers array (NOT written back to Firestore — it's
+// derived data, cheap to recompute, and would go stale the instant any officer
+// is added/edited/relabeled if it were persisted instead).
+// True if this officer record has been manually merged into another (higher
+// cadre) record by the admin — see openMergeOfficer(). A merged record is kept
+// in Firestore exactly as-is (nothing is deleted), but is excluded from every
+// normal list, seniority numbering, and promotion calculation until unmerged,
+// since it represents a person who has already moved on to the higher cadre
+// under a different document (most often because they had no PEN No. to match
+// automatically across separately-uploaded seniority and promotion lists).
+function isMerged(o){ return !!o.merged_into; }
+
+function assignSeniorityNumbers(){
+  const cadreIds = [...new Set(_officers.map(o=>o.cadre))];
+  cadreIds.forEach(cadreId=>{
+    const inCadre = _officers.filter(o=>o.cadre===cadreId && !isMerged(o));
+    const groups = {};
+    inCadre.forEach(o=>{
+      const key = o.list_label || '';
+      if(!groups[key]) groups[key] = { year: extractYear(o.list_label), order: (o.list_order!==undefined?o.list_order:-1), officers: [] };
+      groups[key].officers.push(o);
+    });
+    const groupList = Object.values(groups).sort((a,b)=>{
+      if(a.year!==null && b.year!==null) return a.year-b.year;
+      if(a.year!==null) return -1;
+      if(b.year!==null) return 1;
+      return a.order-b.order;
+    });
+    let counter = 1;
+    groupList.forEach(g=>{
+      // Within each batch: officers who have always belonged here (no
+      // promotion_date) keep their normal Batch No. order and sit at the top.
+      // Officers who were PROMOTED INTO this cadre (have a promotion_date, set
+      // by the Promotions tool) always sit below all of them as one block,
+      // ordered chronologically among themselves by promotion_date — an
+      // earlier promotion places that officer higher within this block, a
+      // later promotion places them lower. This matches how seniority actually
+      // works: someone promoted in later joins below everyone already serving,
+      // and among those promoted in, the earlier promotion outranks the later one.
+      const original = g.officers.filter(o=>!o.promotion_date).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      const promotedIn = g.officers.filter(o=>o.promotion_date).sort((a,b)=>{
+        const ad = new Date(a.promotion_date), bd = new Date(b.promotion_date);
+        if(isNaN(ad)||isNaN(bd)) return (a.sl_no||0)-(b.sl_no||0); // malformed date — fall back rather than corrupt the order
+        return ad-bd;
+      });
+      g.officers = [...original, ...promotedIn];
+      g.officers.forEach(o=>{ o.seniority_no = counter++; });
+    });
+  });
+}
+
+function populateCadreSelects(){
+  const selects = ['fCadre','filterCadre','csvCadre','mCadre','dlCadreFilter','promoFromCadre','promoToCadre'];
+  selects.forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    const isFilter=(id==='filterCadre'||id==='dlCadreFilter');
+    el.innerHTML=(isFilter?'<option value="">All Cadres</option>':'<option value="">— Select Cadre —</option>')+
+      _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  });
+  const cFeeder = document.getElementById('cFeeder');
+  if(cFeeder){
+    cFeeder.innerHTML='<option value="">— None (bottom cadre) —</option>'+
+      _cadres.map(c=>`<option value="${c.id}">${escH(c.name)}</option>`).join('');
+  }
+}
+
+function downloadTableCSVFromCsvPage(){
+  const cadreFilter = document.getElementById('dlCadreFilter').value;
+  const officers    = (cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice()).filter(o=>!isMerged(o));
+  if(!officers.length){
+    toast('No officers to download — the list is empty. Check for a load error above the Officer Entry table.');
+    return;
+  }
+  const headers     = ['seniority_no','sl_no','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
+  const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
+  const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  triggerDownload(csv,`seniority_${cadreFilter||'all'}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+
+// ── OFFICER FORM ──
+function onCadreChange(){
+  const cadreId = document.getElementById('fCadre').value;
+  const pos     = document.getElementById('fInsertPos').value;
+  populateInsertRef(cadreId);
+  populateListLabelOptions(cadreId);
+}
+
+function populateListLabelOptions(cadreId){
+  const sel = document.getElementById('fListLabel');
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+  // Distinct list_label values already used in this cadre, in their existing
+  // display order, plus a "+ New List" option to start a fresh batch/list.
+  const labels = {};
+  _officers.filter(o=>o.cadre===cadreId && o.list_label).forEach(o=>{
+    if(!(o.list_label in labels)) labels[o.list_label] = o.list_order!==undefined?o.list_order:0;
+  });
+  const sorted = Object.entries(labels).sort((a,b)=>a[1]-b[1]);
+  sel.innerHTML = (sorted.length?sorted.map(([label])=>`<option value="${escH(label)}">${escH(label)}</option>`).join(''):'') +
+    '<option value="__new__">+ New List…</option>';
+  if(sorted.length) sel.value = sorted[0][0];
+  // Selecting an option in code (sel.value=...) does NOT fire the select's onchange
+  // event, so the very first time a cadre has no existing labels yet, the browser
+  // defaults to the only option ("__new__") without ever calling onListLabelChange()
+  // — silently leaving the New List text box hidden even though "+ New List…" is
+  // what's shown. Calling it explicitly here covers every case, not just user clicks.
+  onListLabelChange();
+}
+
+function onListLabelChange(){
+  const sel = document.getElementById('fListLabel');
+  document.getElementById('fListLabelNew').style.display = sel.value==='__new__' ? 'block' : 'none';
+  populateInsertRef(document.getElementById('fCadre').value);
+}
+
+function populateInsertRef(cadreId){
+  const pos    = document.getElementById('fInsertPos').value;
+  const refSel = document.getElementById('fInsertRef');
+  refSel.style.display = (pos==='before'||pos==='after') ? 'inline-block' : 'none';
+  const listSel  = document.getElementById('fListLabel').value;
+  const listLabel= listSel==='__new__' ? '' : listSel;
+  const officers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  refSel.innerHTML = '<option value="">— Select Reference Officer —</option>'+
+    officers.map(o=>`<option value="${o.id}">${o.sl_no}. ${escH(o.name)}</option>`).join('');
+}
+
+document.getElementById('fInsertPos').addEventListener('change',function(){
+  const cadreId = document.getElementById('fCadre').value;
+  populateInsertRef(cadreId);
+});
+
+async function saveOfficer(){
+  const cadreId  = document.getElementById('fCadre').value;
+  const name     = document.getElementById('fName').value.trim();
+  const penNo    = document.getElementById('fPenNo').value.trim();
+  const slNo     = parseInt(document.getElementById('fSlNo').value)||0;
+  const orderNo  = document.getElementById('fOrderNo').value.trim();
+  const feeder   = document.getElementById('fFeeder').value.trim();
+  const dob      = document.getElementById('fDob').value;
+  const retAge   = document.getElementById('fRetAge').value;
+  const status   = document.getElementById('fStatus').value;
+  const qualified= document.getElementById('fQualified').value!=='no';
+  const insertPos= document.getElementById('fInsertPos').value;
+  const insertRef= document.getElementById('fInsertRef').value;
+  const listSel  = document.getElementById('fListLabel').value;
+  const listLabel= listSel==='__new__' ? document.getElementById('fListLabelNew').value.trim() : listSel;
+
+  if(!cadreId||!name){ showMsg('formMsg','Cadre and Name are required.','err'); return; }
+  if(!listLabel){ showMsg('formMsg','Please select or name the seniority List / Batch this officer belongs to.','err'); return; }
+  if(dob && !isValidISODate(dob)){ showMsg('formMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
+  if(penNo){
+    const dupe = _officers.find(o=>o.cadre===cadreId && (o.pen_no||'').trim().toLowerCase()===penNo.toLowerCase());
+    if(dupe){ showMsg('formMsg',`PEN No. ${escH(penNo)} already exists in this cadre (${escH(dupe.name||'')}). Use a different PEN No., or edit the existing record instead.`,'err'); return; }
+  }
+
+  const { collection, addDoc, getDocs, query, orderBy, updateDoc, doc, serverTimestamp } = window._fs;
+  showMsg('formMsg','Saving…','busy');
+
+  try {
+    // Renumber existing officers if inserting at a specific position — scoped to
+    // officers in the SAME list_label only. Two separate seniority lists for one
+    // cadre legitimately reuse the same Sl. No. range, so a renumber in one list
+    // must never shift Sl. No. values belonging to a different list.
+    let finalSlNo = slNo;
+    const listOfficers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    if(insertPos==='start'||insertPos==='before'||insertPos==='after'){
+      let insertAt = 1;
+      if(insertPos==='start') insertAt=1;
+      else if(insertPos==='end') insertAt=(listOfficers[listOfficers.length-1]?.sl_no||0)+1;
+      else {
+        const refO = listOfficers.find(o=>o.id===insertRef);
+        if(refO) insertAt = refO.sl_no + (insertPos==='after'?1:0);
+      }
+      finalSlNo = insertAt;
+      // Shift up officers at or after insertAt, within this list only
+      for(const o of listOfficers){
+        if((o.sl_no||0)>=insertAt){
+          await updateDoc(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+1});
+        }
+      }
+    }
+
+    // list_order: keep an existing label's order if it's already used in this
+    // cadre; otherwise this is a brand-new list, so it goes after all existing ones.
+    const existingLabels = {};
+    _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+      if(o.list_label && o.list_order!==undefined && !(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order;
+    });
+    const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
+
+    await addDoc(collection(window._db,'seniority_officers'),{
+      cadre:cadreId, sl_no:finalSlNo, list_label:listLabel, list_order:listOrder,
+      name, pen_no:penNo, order_no:orderNo,
+      feeder_category:feeder, dob, retirement_age:retAge, status,
+      qualified_for_promotion:qualified,
+      createdAt:serverTimestamp()
+    });
+    showMsg('formMsg','✓ Officer saved.','ok');
+    toast('Officer added: '+name);
+    clearForm();
+    await loadOfficers();
+  } catch(e){ showMsg('formMsg','Error: '+escH(e.message),'err'); }
+}
+
+function clearForm(){
+  ['fCadre','fSlNo','fName','fPenNo','fOrderNo','fFeeder','fDob','fEditId','fListLabelNew'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  document.getElementById('fRetAge').value='60';
+  document.getElementById('fStatus').value='';
+  document.getElementById('fQualified').value='yes';
+  document.getElementById('fInsertPos').value='end';
+  document.getElementById('fInsertRef').style.display='none';
+  document.getElementById('fListLabel').innerHTML='<option value="">— Select Cadre First —</option>';
+  document.getElementById('fListLabelNew').style.display='none';
+  document.getElementById('formTitle').textContent='➕ Add Officer';
+}
+
+// ── OFFICERS TABLE ──
+function loadOfficersTable(){
+  const cadreFilter = document.getElementById('filterCadre').value;
+  // Merged-away records are hidden from the normal table by default — they're
+  // still in Firestore and reachable via the Merge Officers tool, but showing
+  // them here alongside live officers would duplicate the person on screen.
+  const pool = _officers.filter(o=>!isMerged(o));
+  _filteredOfficers = cadreFilter ? pool.filter(o=>o.cadre===cadreFilter) : pool;
+  renderOfficersTable(_filteredOfficers);
+}
+function filterOfficersTable(){
+  const q = (document.getElementById('officerSearch').value||'').toLowerCase();
+  const filtered = q ? _filteredOfficers.filter(o=>(o.name||'').toLowerCase().includes(q)||(o.order_no||'').toLowerCase().includes(q)||(o.pen_no||'').toLowerCase().includes(q)) : _filteredOfficers;
+  renderOfficersTable(filtered);
+}
+function renderOfficersTable(officers){
+  const tbody = document.getElementById('officersTableBody');
+  if(!officers.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="11">No officers found.</td></tr>'; return; }
+
+  const cadreFilter = document.getElementById('filterCadre').value;
+  const renderRow = (o)=>{
+    const cadre = _cadres.find(c=>c.id===o.cadre);
+    const rd    = retDate(o.dob,o.retirement_age||60);
+    const st    = computeStatus(o);
+    const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
+    // While a merge pick is in progress (see startMergePick), every row gets a
+    // highlighted, clickable affordance so the admin can select the right
+    // officer directly from the table instead of hunting through a dropdown.
+    const pickAttr = _mergePickMode ? ` onclick="pickOfficerForMerge('${o.id}')" style="cursor:pointer;" title="Click to set as the ${_mergePickMode==='lower'?'stale (lower cadre)':'real (higher cadre)'} record"` : '';
+    const pickRowClass = _mergePickMode ? ' class="merge-pick-row"' : '';
+    return `<tr${pickRowClass}${pickAttr}>
+      <td class="td-sl" style="font-weight:700;">${o.seniority_no||''}</td>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+      <td style="font-size:12px;">${escH(cadre?.short||o.cadre||'')}</td>
+      <td style="font-size:12px;">${escH(o.order_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.feeder_category||'')}</td>
+      <td style="font-size:12px;">${fmtDate(o.dob)}</td>
+      <td style="font-size:12px;">${rd?fmtDate(rd.toISOString().split('T')[0]):'—'}</td>
+      <td>${statusBadge}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openEditModal('${o.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteOfficer('${o.id}','${escH(o.name||'')}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  };
+
+  // When viewing a single cadre, group rows by list_label (multiple separate
+  // seniority lists, e.g. different joining batches, each keep their own Sl. No.
+  // sequence) and show a divider between them, ordered by year if the label
+  // contains one (earlier years first), falling back to upload order otherwise.
+  // When viewing "All Cadres" this grouping is skipped — cadre is already the
+  // primary grouping signal there, and stacking both would be cluttered.
+  if(cadreFilter){
+    const groups = {};
+    officers.forEach(o=>{
+      const key = o.list_label || '';
+      if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), year:extractYear(o.list_label), rows:[] };
+      groups[key].rows.push(o);
+    });
+    const groupList = Object.values(groups).sort((a,b)=>{
+      if(a.year!==null && b.year!==null) return a.year-b.year;
+      if(a.year!==null) return -1;
+      if(b.year!==null) return 1;
+      return a.order-b.order;
+    });
+    groupList.forEach(g=>g.rows.sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0)));
+    console.log('[renderOfficersTable] cadreFilter=', JSON.stringify(cadreFilter), 'officers passed in=', officers.length, 'distinct list_label groups=', groupList.length, groupList.map(g=>({label:g.label, year:g.year, count:g.rows.length})));
+
+    if(groupList.length>1){
+      let html = '';
+      groupList.forEach(g=>{
+        html += `<tr><td colspan="11" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 12px;">${escH(g.label||'Unlabeled List')} (${g.rows.length})</td></tr>`;
+        g.rows.forEach(o=>html+=renderRow(o));
+      });
+      tbody.innerHTML = html;
+      return;
     }
   }
 
-  // Last updated
-  document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-
-  if(_cadres.length) selectCadre(_cadres[0].id);
-});
-
-function selectCadre(cadreId){
-  _activeCadre = cadreId;
-  document.querySelectorAll('.cadre-tab').forEach(t => t.classList.toggle('active', t.dataset.cadre === cadreId));
-  const cadre   = _cadres.find(c=>c.id===cadreId);
-  // Merged-away records are excluded here, at the source, so the table, stats,
-  // CSV export, and promotion estimator dropdown all stay consistent without
-  // each needing their own filter.
-  const officers = (_officers[cadreId]||[]).filter(o=>!isMerged(o));
-  // Clear any search term left over from a previously-viewed cadre tab — a
-  // search that matched officers in the old cadre but matches nobody in the
-  // new one would otherwise make the new tab look empty for no visible reason.
-  const searchBox = document.getElementById('searchInput');
-  if(searchBox) searchBox.value = '';
-  renderTable(cadre, officers);
-  renderStats(cadre, officers);
-  populatePromoOfficerSelect(cadreId);
+  tbody.innerHTML = officers.slice().sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0)).map(renderRow).join('');
 }
 
-function renderTable(cadre, officers){
-  document.getElementById('tableTitle').textContent = cadre?.name || 'Seniority List';
-  const tbody = document.getElementById('seniorityTableBody');
-  // Decided once, up front, and used consistently for the header, every empty-
-  // state message's colspan, and every data row below — never toggled after
-  // the fact on already-rendered DOM, which is what previously let some rows
-  // end up with the Batch No. column and others without it.
-  const showBatchNo = isHardcodedAdmin();
-  const colCountFull = showBatchNo ? 9 : 8;
-  const header = document.getElementById('batchNoHeader');
-  if(header) header.style.display = showBatchNo ? '' : 'none';
-  if(!officers.length){ tbody.innerHTML = `<tr><td colspan="${colCountFull}" class="empty-msg">No officers in this cadre yet.</td></tr>`; return; }
-  const search = (document.getElementById('searchInput').value||'').toLowerCase();
-  const filtered = search ? officers.filter(o=>(o.name||'').toLowerCase().includes(search)||(o.order_no||'').toLowerCase().includes(search)||(o.pen_no||'').toLowerCase().includes(search)) : officers;
-  if(!filtered.length){ tbody.innerHTML = `<tr><td colspan="${colCountFull}" class="empty-msg">No results found.</td></tr>`; return; }
+// ── DUPLICATE PEN NO. CLEANUP ──
+// Scans the cadre currently selected in the table filter (or all cadres, if none
+// is selected) for officers sharing the same PEN No. within the same cadre. Blank
+// PEN No. values are never treated as duplicates of each other. For each group it
+// shows every record found so the admin can pick which one to KEEP and delete the
+// rest — rather than guessing which copy has the most accurate/complete data.
+function findDuplicatePens(){
+  const cadreFilter = document.getElementById('filterCadre').value;
+  const pool = (cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice()).filter(o=>!isMerged(o));
 
-  // Group by list_label so a cadre with multiple separate seniority lists (e.g.
-  // different joining batches) shows each list as its own block, with Sl. No.
-  // sorted only WITHIN each block — never merged into one interleaved ranking
-  // across lists. Officers with no list_label (data from before this feature
-  // existed) form their own unlabeled group, shown first.
-  //
-  // Blocks are ordered by the YEAR found in the label (e.g. "2015-16" -> 2015),
-  // earliest first, since that's what these labels represent — NOT by upload
-  // order (list_order), which has no relation to which batch is chronologically
-  // earlier. list_order is only used as a fallback when a label has no year in it.
-  const groups = {};
-  filtered.forEach(o=>{
-    const key = o.list_label || '';
-    if(!groups[key]) groups[key] = { label:o.list_label||'', order:(o.list_order!==undefined?o.list_order:-1), year:extractYear(o.list_label), officers:[] };
-    groups[key].officers.push(o);
+  const groups = {}; // key: cadre|pen_no -> [officers]
+  pool.forEach(o=>{
+    const pen = (o.pen_no||'').trim();
+    if(!pen) return;
+    const key = o.cadre+'|'+pen.toLowerCase();
+    (groups[key]=groups[key]||[]).push(o);
   });
-  const groupList = Object.values(groups).sort((a,b)=>{
-    if(a.year!==null && b.year!==null) return a.year-b.year;
-    if(a.year!==null) return -1; // a labeled-with-year group sorts before an unparsed one
-    if(b.year!==null) return 1;
-    return a.order-b.order;
-  });
-  groupList.forEach(g=>g.officers.sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0)));
 
-  let rowsHtml = '';
-  const showLabels = groupList.length>1; // only show a divider header when there's more than one list
-  // Batch No. is internal bookkeeping shown only to the hardcoded admin. This
-  // is decided ONCE before building any row HTML and baked directly into the
-  // generated markup for every row — there is no longer a separate step that
-  // tries to hide/show the column on already-rendered DOM elements. That
-  // previous approach could leave some rows with the column present and
-  // others without, depending on exactly when it ran relative to the table
-  // being rebuilt, which is what produced columns looking shifted on
-  // alternating rows.
-  groupList.forEach(g=>{
-    if(showLabels){
-      rowsHtml += `<tr class="list-divider"><td colspan="${colCountFull}" style="background:#f1f5f9;font-weight:700;font-size:12px;color:var(--navy2);padding:8px 16px;">${escH(g.label||'Unlabeled List')}</td></tr>`;
+  const dupeGroups = Object.values(groups).filter(g=>g.length>1);
+  const panel = document.getElementById('dupePenPanel');
+
+  if(!dupeGroups.length){
+    panel.style.display='block';
+    panel.innerHTML = `<div style="color:#166534;font-weight:600;font-size:13px;"><i class="fas fa-check-circle"></i> No duplicate PEN numbers found${cadreFilter?' in this cadre':' across any cadre'}.</div>`;
+    return;
+  }
+
+  // Sort groups by cadre name, then render each group with a radio per record to
+  // choose which one to keep; the rest get deleted when "Delete Extras" is clicked.
+  let html = `<div style="font-weight:700;color:#9a3412;font-size:13px;margin-bottom:10px;"><i class="fas fa-exclamation-triangle"></i> ${dupeGroups.length} duplicate PEN No. group(s) found${cadreFilter?' in this cadre':''}. Pick which record to KEEP in each group, then delete the rest.</div>`;
+
+  dupeGroups.forEach((g,gi)=>{
+    const cadre = _cadres.find(c=>c.id===g[0].cadre);
+    html += `<div style="background:#fff;border:1px solid #fdba74;border-radius:7px;padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:12px;font-weight:700;color:var(--navy2);margin-bottom:6px;">PEN No. ${escH(g[0].pen_no)} — ${escH(cadre?.name||g[0].cadre)} (${g.length} copies)</div>`;
+    g.forEach((o,oi)=>{
+      html += `<label style="display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;cursor:pointer;">
+        <input type="radio" name="dupeKeep-${gi}" value="${o.id}" ${oi===0?'checked':''}>
+        <span>Sl. ${o.sl_no||'—'} — ${escH(o.name||'')} — Order No. ${escH(o.order_no||'—')} — DOB ${escH(o.dob||'—')}</span>
+      </label>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="deleteDuplicatePens(${dupeGroups.length})"><i class="fas fa-trash"></i> Delete Extras, Keep Selected</button>
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('dupePenPanel').style.display='none'">Close</button>
+  </div>
+  <div class="msg" id="dupePenMsg"></div>`;
+
+  panel.innerHTML = html;
+  panel.style.display='block';
+  panel.dataset.groups = JSON.stringify(dupeGroups.map(g=>g.map(o=>o.id)));
+}
+
+async function deleteDuplicatePens(groupCount){
+  const panel = document.getElementById('dupePenPanel');
+  const groups = JSON.parse(panel.dataset.groups||'[]');
+  const { doc, writeBatch } = window._fs;
+
+  const toDelete = [];
+  for(let gi=0;gi<groupCount;gi++){
+    const checked = panel.querySelector(`input[name="dupeKeep-${gi}"]:checked`);
+    const keepId = checked ? checked.value : groups[gi][0];
+    groups[gi].forEach(id=>{ if(id!==keepId) toDelete.push(id); });
+  }
+
+  if(!toDelete.length){ showMsg('dupePenMsg','Nothing to delete.','ok'); return; }
+  if(!confirm(`Delete ${toDelete.length} duplicate record(s)? This cannot be undone.`)) return;
+
+  showMsg('dupePenMsg','<span class="spinner"></span> Deleting…','busy');
+  try{
+    for(let i=0;i<toDelete.length;i+=400){
+      const batch = writeBatch(window._db);
+      toDelete.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+      await batch.commit();
     }
-    g.officers.forEach(o=>{
-      const rd   = retDate(o.dob, o.retirement_age||60);
-      const st   = computeStatus(o);
-      const isSoon = st.key==='soon';
-      const rowClass   = st.key==='retired'||st.key==='expired'||st.key==='relieved' ? 'retired' : isSoon ? 'retiring-soon' : '';
-      const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
-      const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
-      rowsHtml += `<tr class="${rowClass}">
-        <td class="sl" style="font-weight:700;">${o.seniority_no||''}</td>
-        ${showBatchNo ? `<td class="sl">${o.sl_no||''}</td>` : ''}
-        <td class="name">${escH(o.name||'')}</td>
-        <td>${escH(o.pen_no||'')}</td>
-        <td>${escH(o.order_no||'')}</td>
-        <td>${escH(o.feeder_category||'')}</td>
-        <td>${fmtDate(o.dob)}</td>
-        <td>${rdStr}</td>
-        <td>${statusBadge}</td>
+    showMsg('dupePenMsg',`✓ Deleted ${toDelete.length} duplicate record(s).`,'ok');
+    toast(`Deleted ${toDelete.length} duplicate(s).`);
+    panel.style.display='none';
+    await loadOfficers();
+  } catch(e){
+    console.error('[deleteDuplicatePens] FAILED:', e);
+    showMsg('dupePenMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── BULK DELETE BY ORDER NO. ──
+// Lets the admin pick a cadre + an order_no value (officers appointed under the
+// same government order commonly share one), see every matching officer with
+// checkboxes, and delete the selected ones together. Useful for cleaning up an
+// entire batch that was uploaded by mistake or needs to be removed as a group.
+function openBulkDeleteByOrder(){
+  const panel = document.getElementById('bulkDeleteOrderPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#991b1b;font-size:13px;margin-bottom:10px;"><i class="fas fa-eraser"></i> Delete Officers by Order No.</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="bdoCadre" onchange="loadOrderNoOptions()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>Order No. *</label>
+        <select id="bdoOrderNo" onchange="previewBulkDeleteByOrder()"><option value="">— Select Cadre First —</option></select>
+      </div>
+    </div>
+    <div id="bdoResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bulkDeleteOrderPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="bdoMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function loadOrderNoOptions(){
+  const cadreId = document.getElementById('bdoCadre').value;
+  const sel = document.getElementById('bdoOrderNo');
+  document.getElementById('bdoResults').innerHTML = '';
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+
+  // Every distinct order_no in this cadre, with a count of how many officers share it
+  // — sharing one order_no is normal (many officers are appointed by the same order),
+  // so this is purely a way to find and select the right batch, not a "duplicate" signal.
+  const counts = {};
+  _officers.filter(o=>o.cadre===cadreId && (o.order_no||'').trim()).forEach(o=>{
+    const key = o.order_no.trim();
+    counts[key] = (counts[key]||0)+1;
+  });
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){
+    sel.innerHTML = '<option value="">No officers with an Order No. in this cadre</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Select Order No. —</option>' +
+    entries.map(([orderNo,count])=>`<option value="${escH(orderNo)}">${escH(orderNo)} (${count} officer${count>1?'s':''})</option>`).join('');
+}
+
+function previewBulkDeleteByOrder(){
+  const cadreId  = document.getElementById('bdoCadre').value;
+  const orderNo  = document.getElementById('bdoOrderNo').value;
+  const results  = document.getElementById('bdoResults');
+  if(!cadreId||!orderNo){ results.innerHTML=''; return; }
+
+  const matches = _officers.filter(o=>o.cadre===cadreId && (o.order_no||'').trim()===orderNo)
+                            .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  if(!matches.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No matching officers.</div>'; return; }
+
+  let html = `<div style="font-size:12px;font-weight:700;color:var(--navy2);padding:6px 0;display:flex;justify-content:space-between;align-items:center;">
+    <span>${matches.length} officer(s) under this Order No. — select which to delete:</span>
+    <span>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdoCheckboxes(true)">Select All</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdoCheckboxes(false)">Clear</button>
+    </span>
+  </div>
+  <div class="tbl-wrap" style="max-height:320px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+    <table>
+      <thead><tr><th style="width:36px;"></th><th>Sl.</th><th>Name</th><th>PEN No.</th><th>DOB</th></tr></thead>
+      <tbody>`;
+  matches.forEach(o=>{
+    html += `<tr>
+      <td><input type="checkbox" class="bdo-check" data-id="${o.id}" checked></td>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.dob||'')}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+  <div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="deleteBulkByOrder()"><i class="fas fa-trash"></i> Delete Selected</button>
+  </div>`;
+  results.innerHTML = html;
+}
+
+function toggleAllBdoCheckboxes(state){
+  document.querySelectorAll('.bdo-check').forEach(cb=>cb.checked=state);
+}
+
+async function deleteBulkByOrder(){
+  const checked = Array.from(document.querySelectorAll('.bdo-check')).filter(cb=>cb.checked).map(cb=>cb.dataset.id);
+  if(!checked.length){ showMsg('bdoMsg','Select at least one officer to delete.','err'); return; }
+  if(!confirm(`Delete ${checked.length} officer record(s)? This cannot be undone.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('bdoMsg','<span class="spinner"></span> Deleting…','busy');
+  try{
+    for(let i=0;i<checked.length;i+=400){
+      const batch = writeBatch(window._db);
+      checked.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+      await batch.commit();
+    }
+    showMsg('bdoMsg',`✓ Deleted ${checked.length} officer(s).`,'ok');
+    toast(`Deleted ${checked.length} officer(s).`);
+    document.getElementById('bdoResults').innerHTML='';
+    document.getElementById('bdoOrderNo').value='';
+    await loadOfficers();
+    loadOrderNoOptions(); // refresh counts now that some have been removed
+  } catch(e){
+    console.error('[deleteBulkByOrder] FAILED:', e);
+    showMsg('bdoMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── BULK DELETE BY LIST LABEL ──
+// Same pattern as "Delete by Order No." above, but grouped by list_label instead
+// — useful for removing an entire seniority list/batch (e.g. a mistaken upload)
+// in one go, with a per-officer checklist to review before confirming.
+function openBulkDeleteByLabel(){
+  const panel = document.getElementById('bulkDeleteLabelPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#991b1b;font-size:13px;margin-bottom:10px;"><i class="fas fa-eraser"></i> Delete Officers by List Label</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="bdlCadre" onchange="loadListLabelDeleteOptions()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>List / Batch *</label>
+        <select id="bdlLabel" onchange="previewBulkDeleteByLabel()"><option value="">— Select Cadre First —</option></select>
+      </div>
+    </div>
+    <div id="bdlResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('bulkDeleteLabelPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="bdlMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function loadListLabelDeleteOptions(){
+  const cadreId = document.getElementById('bdlCadre').value;
+  const sel = document.getElementById('bdlLabel');
+  document.getElementById('bdlResults').innerHTML = '';
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+
+  // Every distinct list_label in this cadre, with a count of how many officers
+  // belong to it. Officers with no label at all are grouped under "(no label)" so
+  // they can still be selected and cleaned up, e.g. leftover pre-feature data.
+  const counts = {};
+  _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+    const key = o.list_label || '(no label)';
+    counts[key] = (counts[key]||0)+1;
+  });
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){
+    sel.innerHTML = '<option value="">No officers in this cadre</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Select List / Batch —</option>' +
+    entries.map(([label,count])=>`<option value="${escH(label)}">${escH(label)} (${count} officer${count>1?'s':''})</option>`).join('');
+}
+
+function previewBulkDeleteByLabel(){
+  const cadreId = document.getElementById('bdlCadre').value;
+  const label   = document.getElementById('bdlLabel').value;
+  const results = document.getElementById('bdlResults');
+  if(!cadreId||!label){ results.innerHTML=''; return; }
+
+  const matches = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'(no label)')===label)
+                            .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  if(!matches.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No matching officers.</div>'; return; }
+
+  let html = `<div style="font-size:12px;font-weight:700;color:var(--navy2);padding:6px 0;display:flex;justify-content:space-between;align-items:center;">
+    <span>${matches.length} officer(s) in this list — select which to delete:</span>
+    <span>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdlCheckboxes(true)">Select All</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleAllBdlCheckboxes(false)">Clear</button>
+    </span>
+  </div>
+  <div class="tbl-wrap" style="max-height:320px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+    <table>
+      <thead><tr><th style="width:36px;"></th><th>Sl.</th><th>Name</th><th>PEN No.</th><th>DOB</th></tr></thead>
+      <tbody>`;
+  matches.forEach(o=>{
+    html += `<tr>
+      <td><input type="checkbox" class="bdl-check" data-id="${o.id}" checked></td>
+      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-name">${escH(o.name||'')}</td>
+      <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+      <td style="font-size:12px;">${escH(o.dob||'')}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>
+  <div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="deleteBulkByLabel()"><i class="fas fa-trash"></i> Delete Selected</button>
+  </div>`;
+  results.innerHTML = html;
+}
+
+function toggleAllBdlCheckboxes(state){
+  document.querySelectorAll('.bdl-check').forEach(cb=>cb.checked=state);
+}
+
+async function deleteBulkByLabel(){
+  const checked = Array.from(document.querySelectorAll('.bdl-check')).filter(cb=>cb.checked).map(cb=>cb.dataset.id);
+  if(!checked.length){ showMsg('bdlMsg','Select at least one officer to delete.','err'); return; }
+  if(!confirm(`Delete ${checked.length} officer record(s)? This cannot be undone.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('bdlMsg','<span class="spinner"></span> Deleting…','busy');
+  try{
+    for(let i=0;i<checked.length;i+=400){
+      const batch = writeBatch(window._db);
+      checked.slice(i,i+400).forEach(id=>batch.delete(doc(window._db,'seniority_officers',id)));
+      await batch.commit();
+    }
+    showMsg('bdlMsg',`✓ Deleted ${checked.length} officer(s).`,'ok');
+    toast(`Deleted ${checked.length} officer(s).`);
+    document.getElementById('bdlResults').innerHTML='';
+    document.getElementById('bdlLabel').value='';
+    await loadOfficers();
+    loadListLabelDeleteOptions(); // refresh counts now that some have been removed
+  } catch(e){
+    console.error('[deleteBulkByLabel] FAILED:', e);
+    showMsg('bdlMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── ASSIGN LIST LABELS TO EXISTING DATA (one-time repair) ──
+// Officers uploaded before the List/Batch feature existed have no list_label, so
+// they all show under one "Unlabeled List" group — which is exactly the
+// interleaving problem this whole feature was built to solve. This tool detects
+// separate upload sessions within a cadre by looking for real GAPS in createdAt
+// (officers from the same CSV import land within seconds of each other; two
+// different uploads are typically minutes, hours, or days apart), then lets the
+// admin name each detected batch. It only ever WRITES list_label/list_order —
+// it never touches sl_no, since that is the real seniority number from the
+// original spreadsheet and must stay exactly as uploaded.
+function openFixSlNoOverlap(){
+  const panel = document.getElementById('fixSlNoPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#1e40af;font-size:13px;margin-bottom:8px;"><i class="fas fa-layer-group"></i> Assign List / Batch Labels to Existing Officers</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+      Use this for officers uploaded before the List/Batch feature existed. It groups officers in a cadre by upload session (a real time-gap between uploads) and lets you name each one — e.g. "2009 Batch", "2010 Batch" — so they display as separate blocks with their original Sl. No. intact, instead of one interleaved list.
+    </p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="fixSlNoCadre" onchange="previewFixSlNoOverlap()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+    </div>
+    <div id="fixSlNoResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('fixSlNoPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="fixSlNoMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+let _detectedBatches = [];
+
+function previewFixSlNoOverlap(){
+  const cadreId = document.getElementById('fixSlNoCadre').value;
+  const results = document.getElementById('fixSlNoResults');
+  if(!cadreId){ results.innerHTML=''; return; }
+
+  const officers = _officers.filter(o=>o.cadre===cadreId && !o.list_label);
+  if(!officers.length){
+    results.innerHTML = `<div style="color:#166534;font-weight:600;font-size:12px;"><i class="fas fa-check-circle"></i> Every officer in this cadre already has a List / Batch label — nothing to assign.</div>`;
+    _detectedBatches=[];
+    return;
+  }
+
+  const sorted = officers.slice().sort((a,b)=>{
+    const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return at-bt;
+  });
+
+  // Split into batches wherever there's a gap of more than 10 minutes between
+  // consecutive officers' createdAt — a reasonable threshold for "this was a
+  // different upload session", since even a large CSV import completes in
+  // seconds with the batched-write approach this admin page uses.
+  const GAP_MS = 10*60*1000;
+  const batches = [];
+  let current = [];
+  let lastTime = null;
+  sorted.forEach(o=>{
+    const t = o.createdAt?.toMillis ? o.createdAt.toMillis() : 0;
+    if(lastTime!==null && (t-lastTime)>GAP_MS && current.length){
+      batches.push(current);
+      current=[];
+    }
+    current.push(o);
+    lastTime = t;
+  });
+  if(current.length) batches.push(current);
+
+  _detectedBatches = batches;
+  let html = `<div style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:8px;"><i class="fas fa-exclamation-triangle"></i> Detected ${batches.length} separate upload session(s) with no label. Name each one, then apply:</div>`;
+  batches.forEach((b,i)=>{
+    const firstTime = b[0].createdAt?.toDate ? b[0].createdAt.toDate().toLocaleString('en-IN') : 'unknown time';
+    html += `<div style="background:#fff;border:1px solid #93c5fd;border-radius:7px;padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Batch ${i+1} — ${b.length} officer(s), uploaded around ${escH(firstTime)}. Sl. No. range: ${b[0].sl_no||'?'}–${b[b.length-1].sl_no||'?'} (sample).</div>
+      <input type="text" class="batch-label-input" data-batch="${i}" placeholder="e.g. 2009 Batch" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;">
+    </div>`;
+  });
+  html += `<div class="btn-row" style="margin-top:10px;">
+    <button class="btn btn-danger btn-sm" onclick="applyFixSlNoOverlap()"><i class="fas fa-check"></i> Apply Labels</button>
+  </div>`;
+  results.innerHTML = html;
+}
+
+async function applyFixSlNoOverlap(){
+  if(!_detectedBatches.length){ showMsg('fixSlNoMsg','Nothing to apply.','err'); return; }
+  const cadreId = document.getElementById('fixSlNoCadre').value;
+
+  // Existing labels already used in this cadre (if any), so newly-named batches
+  // get list_order values that come after them, preserving any labels already set.
+  const existingLabels = {};
+  _officers.filter(o=>o.cadre===cadreId && o.list_label).forEach(o=>{
+    if(!(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order!==undefined?o.list_order:0;
+  });
+  let nextOrder = Object.keys(existingLabels).length ? Math.max(...Object.values(existingLabels))+1 : 0;
+
+  const labelInputs = Array.from(document.querySelectorAll('.batch-label-input'));
+  const assignments = []; // {officerId, label, order}
+  for(const input of labelInputs){
+    const label = input.value.trim();
+    if(!label){ showMsg('fixSlNoMsg','Please name every detected batch before applying.','err'); return; }
+    const batchIdx = parseInt(input.dataset.batch);
+    const order = label in existingLabels ? existingLabels[label] : nextOrder++;
+    _detectedBatches[batchIdx].forEach(o=>assignments.push({id:o.id, label, order}));
+  }
+
+  if(!confirm(`Assign labels to ${assignments.length} officer(s)? Sl. No. values will NOT change — only the list label is being set.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('fixSlNoMsg','<span class="spinner"></span> Applying labels…','busy');
+  try{
+    for(let i=0;i<assignments.length;i+=400){
+      const chunk = assignments.slice(i,i+400);
+      const batch = writeBatch(window._db);
+      chunk.forEach(a=>batch.update(doc(window._db,'seniority_officers',a.id),{list_label:a.label, list_order:a.order}));
+      await batch.commit();
+    }
+    showMsg('fixSlNoMsg',`✓ Labeled ${assignments.length} officer(s).`,'ok');
+    toast('List labels assigned.');
+    document.getElementById('fixSlNoResults').innerHTML='';
+    _detectedBatches=[];
+    await loadOfficers();
+  } catch(e){
+    console.error('[applyFixSlNoOverlap] FAILED:', e);
+    showMsg('fixSlNoMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── RESTORE SL. NO. FROM CSV (one-time repair) ──
+// For undoing the earlier "Fix Sl. No. Overlap" tool's renumbering, which
+// overwrote every officer's Sl. No. with a fresh 1,2,3… sequence instead of
+// leaving the original seniority number alone. Since the original numbers no
+// longer exist anywhere in Firestore, the only way back is re-reading them from
+// the original CSV file and writing ONLY the sl_no field back onto the matching
+// officer — name, PEN No., DOB etc. are left untouched.
+//
+// Matching is by NAME (case/whitespace-insensitive), since not every officer
+// has a PEN No. This is inherently riskier than matching by a unique ID — two
+// officers can share a name, or a small typo could exist between the CSV and
+// what's stored — so every row is shown in a preview with its match status
+// before anything is written, and ambiguous/unmatched rows are never silently
+// guessed at; they're skipped and reported so they can be fixed by hand.
+function normalizeName(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+function openRestoreSlNo(){
+  const panel = document.getElementById('restoreSlNoPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#166534;font-size:13px;margin-bottom:8px;"><i class="fas fa-undo"></i> Restore Sl. No. from Original CSV</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+      Upload the ORIGINAL CSV file you used (with the correct Sl. No. column) for a cadre/list whose numbering was changed. Officers are matched by name. <strong>Only the Sl. No. field is changed</strong> — everything else stays as it is in the database. Review every match below before applying; nothing is written until you confirm.
+    </p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Cadre *</label>
+        <select id="restoreCadre" onchange="onRestoreCadreChange()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>List / Batch *</label>
+        <select id="restoreListLabel"><option value="">— Select Cadre First —</option></select>
+      </div>
+      <div class="form-group">
+        <label>Original CSV File *</label>
+        <input type="file" id="restoreCsvFile" accept=".csv" style="padding:6px;" onchange="previewRestoreSlNo()">
+      </div>
+    </div>
+    <div id="restoreResults" style="margin-top:10px;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('restoreSlNoPanel').style.display='none'">Close</button>
+    </div>
+    <div class="msg" id="restoreMsg"></div>
+  `;
+  panel.style.display='block';
+}
+
+function onRestoreCadreChange(){
+  const cadreId = document.getElementById('restoreCadre').value;
+  const sel = document.getElementById('restoreListLabel');
+  document.getElementById('restoreResults').innerHTML='';
+  if(!cadreId){ sel.innerHTML='<option value="">— Select Cadre First —</option>'; return; }
+  const labels = {};
+  _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+    const key = o.list_label||'(no label)';
+    labels[key] = (labels[key]||0)+1;
+  });
+  const entries = Object.entries(labels);
+  sel.innerHTML = '<option value="">— Select List —</option>' +
+    entries.map(([label,count])=>`<option value="${escH(label)}">${escH(label)} (${count} officers)</option>`).join('');
+}
+
+let _restoreMatches = []; // {csvName, csvSlNo, matchedOfficer, status}
+
+function previewRestoreSlNo(){
+  const file = document.getElementById('restoreCsvFile').files[0];
+  const results = document.getElementById('restoreResults');
+  const cadreId = document.getElementById('restoreCadre').value;
+  const listLabel = document.getElementById('restoreListLabel').value;
+  if(!file){ return; }
+  if(!cadreId||!listLabel){ showMsg('restoreMsg','Please select a Cadre and List first.','err'); return; }
+
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    const text = e.target.result;
+    const lines = text.split('\n').filter(l=>l.trim());
+    if(lines.length<2){ showMsg('restoreMsg','CSV has no data rows.','err'); return; }
+    const headers = csvRow(lines[0]).map(h=>h.toLowerCase().trim());
+    const nameIdx = headers.indexOf('name');
+    const slIdx = headers.indexOf('sl_no');
+    if(nameIdx<0||slIdx<0){ showMsg('restoreMsg','CSV must have "name" and "sl_no" columns.','err'); return; }
+
+    const pool = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'(no label)')===listLabel);
+    const byName = {};
+    pool.forEach(o=>{
+      const key = normalizeName(o.name);
+      (byName[key]=byName[key]||[]).push(o);
+    });
+
+    _restoreMatches = [];
+    for(let i=1;i<lines.length;i++){
+      const cols = csvRow(lines[i]);
+      const csvName = (cols[nameIdx]||'').trim();
+      const csvSlNo = parseInt((cols[slIdx]||'').trim())||0;
+      if(!csvName) continue;
+      const key = normalizeName(csvName);
+      const matches = byName[key]||[];
+      let status, matchedOfficer=null;
+      if(matches.length===1){ status='ok'; matchedOfficer=matches[0]; }
+      else if(matches.length===0){ status='nomatch'; }
+      else { status='ambiguous'; }
+      _restoreMatches.push({csvName, csvSlNo, matchedOfficer, status});
+    }
+
+    const okCount = _restoreMatches.filter(m=>m.status==='ok').length;
+    const noMatchCount = _restoreMatches.filter(m=>m.status==='nomatch').length;
+    const ambiguousCount = _restoreMatches.filter(m=>m.status==='ambiguous').length;
+
+    let html = `<div style="font-size:12px;font-weight:700;margin-bottom:8px;">
+      <span style="color:#166534;">${okCount} matched</span>${noMatchCount?` &nbsp;|&nbsp; <span style="color:#b91c1c;">${noMatchCount} no match</span>`:''}${ambiguousCount?` &nbsp;|&nbsp; <span style="color:#9a3412;">${ambiguousCount} ambiguous (same name, multiple officers)</span>`:''}
+    </div>
+    <div class="tbl-wrap" style="max-height:380px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+      <table>
+        <thead><tr><th>Name (CSV)</th><th>Sl. No. (CSV)</th><th>Current Sl. No.</th><th>Status</th></tr></thead>
+        <tbody>`;
+    _restoreMatches.forEach(m=>{
+      const statusHtml = m.status==='ok'
+        ? `<span style="color:#166534;font-weight:600;">✓ Will update</span>`
+        : m.status==='nomatch'
+        ? `<span style="color:#b91c1c;font-weight:600;">⚠ No matching officer — skipped</span>`
+        : `<span style="color:#9a3412;font-weight:600;">⚠ ${byName[normalizeName(m.csvName)].length} officers share this name — skipped, fix manually</span>`;
+      html += `<tr>
+        <td class="td-name">${escH(m.csvName)}</td>
+        <td class="td-sl">${m.csvSlNo||''}</td>
+        <td class="td-sl">${m.matchedOfficer?(m.matchedOfficer.sl_no||''):'—'}</td>
+        <td style="font-size:12px;">${statusHtml}</td>
       </tr>`;
     });
+    html += `</tbody></table></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-success btn-sm" onclick="applyRestoreSlNo()" ${okCount?'':'disabled'}><i class="fas fa-check"></i> Restore Sl. No. for ${okCount} Matched Officer(s)</button>
+    </div>`;
+    results.innerHTML = html;
+  };
+  reader.readAsText(file);
+}
+
+async function applyRestoreSlNo(){
+  const toUpdate = _restoreMatches.filter(m=>m.status==='ok');
+  if(!toUpdate.length){ showMsg('restoreMsg','Nothing to restore.','err'); return; }
+  if(!confirm(`Restore Sl. No. for ${toUpdate.length} officer(s) from this CSV? Only the Sl. No. field will change.`)) return;
+
+  const { doc, writeBatch } = window._fs;
+  showMsg('restoreMsg','<span class="spinner"></span> Restoring…','busy');
+  try{
+    for(let i=0;i<toUpdate.length;i+=400){
+      const chunk = toUpdate.slice(i,i+400);
+      const batch = writeBatch(window._db);
+      chunk.forEach(m=>batch.update(doc(window._db,'seniority_officers',m.matchedOfficer.id),{sl_no:m.csvSlNo}));
+      await batch.commit();
+    }
+    showMsg('restoreMsg',`✓ Restored Sl. No. for ${toUpdate.length} officer(s).`,'ok');
+    toast('Sl. No. restored from CSV.');
+    document.getElementById('restoreResults').innerHTML='';
+    _restoreMatches=[];
+    await loadOfficers();
+  } catch(e){
+    console.error('[applyRestoreSlNo] FAILED:', e);
+    showMsg('restoreMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+// ── MERGE OFFICERS ──
+// For an officer who has already been promoted but, because they have no PEN
+// No. to match across separately-uploaded seniority and promotion lists, ended
+// up existing as TWO separate records: a stale one still sitting in the lower
+// cadre's list, and the real, current one in the higher cadre. This lets the
+// admin manually confirm "these are the same person" and link them — the
+// lower-cadre record is NOT deleted (nothing here is destructive), it's simply
+// marked with merged_into pointing at the higher-cadre record's ID, and from
+// then on excluded from every normal list, seniority numbering, and promotion
+// calculation (see isMerged() and its call sites) until explicitly unmerged.
+function openMergeOfficers(){
+  const panel = document.getElementById('mergeOfficersPanel');
+  const cadreOptions = _cadres.map(c=>`<option value="${escH(c.id)}">${escH(c.name)} (${escH(c.short)})</option>`).join('');
+  panel.innerHTML = `
+    <div style="font-weight:700;color:#86198f;font-size:13px;margin-bottom:8px;"><i class="fas fa-code-branch"></i> Merge Officers (duplicate across cadres)</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+      Use this when the same officer exists as two records — usually because they were already promoted but have no PEN No., so the old seniority-list record in their PREVIOUS (lower) cadre never got linked to their real record in their CURRENT (higher) cadre. Pick both records below — either from the dropdown, or by clicking "Pick" then clicking the right row in the officer table below. The lower-cadre record will be hidden from all lists going forward, but never deleted — you can undo this anytime from that officer's Edit screen.
+    </p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Lower Cadre (where the stale record is) *</label>
+        <select id="mergeLowerCadre" onchange="loadMergeLowerOfficers()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>Stale Officer Record *</label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="mergeLowerOfficer" style="flex:1;" onchange="onMergeDropdownPick('lower')"><option value="">— Select Cadre First —</option></select>
+          <button type="button" class="btn btn-secondary btn-sm" id="pickLowerBtn" onclick="startMergePick('lower')" title="Click a row in the table below instead"><i class="fas fa-hand-pointer"></i> Pick</button>
+        </div>
+        <div id="mergeLowerPicked" style="font-size:11.5px;color:#86198f;margin-top:4px;"></div>
+      </div>
+      <div class="form-group">
+        <label>Higher Cadre (where they actually are now) *</label>
+        <select id="mergeHigherCadre" onchange="loadMergeHigherOfficers()"><option value="">— Select Cadre —</option>${cadreOptions}</select>
+      </div>
+      <div class="form-group">
+        <label>Real / Current Officer Record *</label>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="mergeHigherOfficer" style="flex:1;" onchange="onMergeDropdownPick('higher')"><option value="">— Select Cadre First —</option></select>
+          <button type="button" class="btn btn-secondary btn-sm" id="pickHigherBtn" onclick="startMergePick('higher')" title="Click a row in the table below instead"><i class="fas fa-hand-pointer"></i> Pick</button>
+        </div>
+        <div id="mergeHigherPicked" style="font-size:11.5px;color:#86198f;margin-top:4px;"></div>
+      </div>
+    </div>
+    <div id="mergePickHint" style="display:none;margin-top:8px;padding:8px 12px;background:#fdf4ff;border:1px solid #f0abfc;border-radius:6px;font-size:12px;color:#86198f;font-weight:600;"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-primary btn-sm" onclick="confirmMergeOfficers()"><i class="fas fa-link"></i> Merge</button>
+      <button class="btn btn-secondary btn-sm" onclick="showCurrentlyMerged()"><i class="fas fa-list"></i> View Currently Merged</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeMergeOfficers()">Close</button>
+    </div>
+    <div id="mergedListResults" style="margin-top:10px;"></div>
+    <div class="msg" id="mergeMsg"></div>
+  `;
+  panel.style.display='block';
+  _mergePickMode = null;
+}
+
+function closeMergeOfficers(){
+  document.getElementById('mergeOfficersPanel').style.display='none';
+  _mergePickMode = null;
+  updateMergePickHint();
+  loadOfficersTable(); // re-render to drop the "click to pick" affordance from rows
+}
+
+// Lets the admin pick an officer for the merge tool by clicking directly in
+// the officer table below, instead of hunting through a dropdown — especially
+// useful when names are common or the right cadre's officer list is long.
+// _mergePickMode is 'lower', 'higher', or null (not currently picking).
+// (declared near the top of the script, alongside _officers/_cadres)
+
+function startMergePick(slot){
+  _mergePickMode = slot;
+  updateMergePickHint();
+  loadOfficersTable(); // re-render so rows show the "click to pick" affordance
+}
+
+function updateMergePickHint(){
+  const hint = document.getElementById('mergePickHint');
+  if(!hint) return;
+  if(_mergePickMode){
+    hint.style.display='block';
+    hint.innerHTML = `<i class="fas fa-mouse-pointer"></i> Click any row in the officer table below to set it as the ${_mergePickMode==='lower'?'<strong>stale (lower cadre)</strong>':'<strong>real / current (higher cadre)</strong>'} record. <button class="btn btn-secondary btn-sm" style="margin-left:8px;" onclick="cancelMergePick()">Cancel</button>`;
+  } else {
+    hint.style.display='none';
+  }
+}
+
+function cancelMergePick(){
+  _mergePickMode = null;
+  updateMergePickHint();
+  loadOfficersTable();
+}
+
+// Called when a row is clicked while a merge pick is active (see renderRow).
+function pickOfficerForMerge(officerId){
+  if(!_mergePickMode) return;
+  const o = _officers.find(x=>x.id===officerId);
+  if(!o) return;
+  if(_mergePickMode==='lower'){
+    document.getElementById('mergeLowerCadre').value = o.cadre;
+    loadMergeLowerOfficers();
+    document.getElementById('mergeLowerOfficer').value = o.id;
+    document.getElementById('mergeLowerPicked').textContent = `Picked: ${o.name||'(unnamed)'} — Seniority No. ${o.seniority_no||o.sl_no||'—'}`;
+  } else {
+    document.getElementById('mergeHigherCadre').value = o.cadre;
+    loadMergeHigherOfficers();
+    document.getElementById('mergeHigherOfficer').value = o.id;
+    document.getElementById('mergeHigherPicked').textContent = `Picked: ${o.name||'(unnamed)'} — Seniority No. ${o.seniority_no||o.sl_no||'—'}`;
+  }
+  _mergePickMode = null;
+  updateMergePickHint();
+  loadOfficersTable();
+}
+
+// Keeps the "Picked: ..." confirmation text in sync if the admin instead
+// changes a dropdown manually after already picking via the table once.
+function onMergeDropdownPick(slot){
+  const sel = document.getElementById(slot==='lower'?'mergeLowerOfficer':'mergeHigherOfficer');
+  const noteEl = document.getElementById(slot==='lower'?'mergeLowerPicked':'mergeHigherPicked');
+  if(!sel.value){ noteEl.textContent=''; return; }
+  const o = _officers.find(x=>x.id===sel.value);
+  noteEl.textContent = o ? `Picked: ${o.name||'(unnamed)'} — Seniority No. ${o.seniority_no||o.sl_no||'—'}` : '';
+}
+
+function showCurrentlyMerged(){
+  const results = document.getElementById('mergedListResults');
+  const merged = _officers.filter(o=>isMerged(o));
+  if(!merged.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No officers are currently merged.</div>'; return; }
+  let html = `<div class="tbl-wrap" style="max-height:280px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+    <table><thead><tr><th>Stale Record (lower cadre)</th><th>Merged Into</th><th>Merged On</th><th></th></tr></thead><tbody>`;
+  merged.forEach(o=>{
+    const cadre = _cadres.find(c=>c.id===o.cadre);
+    const mergedDate = o.merged_at?.toDate ? fmtDate(o.merged_at.toDate().toISOString().split('T')[0]) : '—';
+    html += `<tr>
+      <td style="font-size:12px;">${escH(o.name||'')} (${escH(cadre?.short||o.cadre||'')})</td>
+      <td style="font-size:12px;">${escH(o.merged_into_name||'—')}</td>
+      <td style="font-size:12px;">${mergedDate}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="unmergeOfficer('${o.id}')"><i class="fas fa-unlink"></i> Unmerge</button></td>
+    </tr>`;
   });
-  tbody.innerHTML = rowsHtml;
+  html += `</tbody></table></div>`;
+  results.innerHTML = html;
 }
 
-function renderStats(cadre, officers){
-  const active   = officers.filter(o=>['active','soon'].includes(computeStatus(o).key));
-  const sanctioned = cadre?.sanctioned || 0;
-  const vacancy  = Math.max(0, sanctioned - active.length);
-  const now      = new Date();
-  const in1yr    = active.filter(o=>{ const rd=retDate(o.dob,o.retirement_age||60); return rd&&daysDiff(rd)>0&&daysDiff(rd)<365; }).length;
-  const in2yr    = active.filter(o=>{ const rd=retDate(o.dob,o.retirement_age||60); return rd&&daysDiff(rd)>0&&daysDiff(rd)<730; }).length;
-
-  document.getElementById('statTotal').textContent    = active.length;
-  document.getElementById('statVacancy').textContent  = vacancy;
-  document.getElementById('statVacancySub').textContent = `of ${sanctioned} sanctioned`;
-  document.getElementById('vacSanctioned').textContent = sanctioned;
-  document.getElementById('vacWorking').textContent   = active.length;
-  document.getElementById('vacVacancy').textContent   = vacancy;
-  document.getElementById('vacVacancy').className     = 'vval ' + (vacancy>0?'red':'green');
-  document.getElementById('vacRetiring1').textContent = in1yr;
-  document.getElementById('vacRetiring2').textContent = in2yr;
+function loadMergeLowerOfficers(){
+  const cadreId = document.getElementById('mergeLowerCadre').value;
+  const sel = document.getElementById('mergeLowerOfficer');
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+  const officers = _officers.filter(o=>o.cadre===cadreId && !isMerged(o)).sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
+  if(!officers.length){ sel.innerHTML = '<option value="">No officers in this cadre</option>'; return; }
+  sel.innerHTML = '<option value="">— Select Officer —</option>' +
+    officers.map(o=>`<option value="${o.id}">${o.seniority_no||o.sl_no||'—'}. ${escH(o.name||'')}${o.pen_no?' (PEN '+escH(o.pen_no)+')':''}</option>`).join('');
 }
 
-// ── PROMOTION ESTIMATOR (multi-level, cascade-aware) ──
-// Ported from the admin tool's engine. Estimates an officer's promotion path
-// through EVERY cadre above their current one, not just the next rung —
-// accounting for the queue of officers ahead of them, vacancies opening over
-// time, the "qualified for promotion" flag, and — importantly — that an
-// officer further up the hierarchy might leave their own cadre early by being
-// promoted out themselves, not just by retiring, which frees their seat sooner.
-//
-// _officers on this page is keyed by cadre id (_officers[cadreId] = [...]), so
-// these functions flatten it into a plain array locally where the original
-// engine (written against a flat array) expects one.
+function loadMergeHigherOfficers(){
+  const cadreId = document.getElementById('mergeHigherCadre').value;
+  const sel = document.getElementById('mergeHigherOfficer');
+  if(!cadreId){ sel.innerHTML = '<option value="">— Select Cadre First —</option>'; return; }
+  const officers = _officers.filter(o=>o.cadre===cadreId && !isMerged(o)).sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
+  if(!officers.length){ sel.innerHTML = '<option value="">No officers in this cadre</option>'; return; }
+  sel.innerHTML = '<option value="">— Select Officer —</option>' +
+    officers.map(o=>`<option value="${o.id}">${o.seniority_no||o.sl_no||'—'}. ${escH(o.name||'')}${o.pen_no?' (PEN '+escH(o.pen_no)+')':''}</option>`).join('');
+}
+
+async function confirmMergeOfficers(){
+  const lowerId = document.getElementById('mergeLowerOfficer').value;
+  const higherId = document.getElementById('mergeHigherOfficer').value;
+  if(!lowerId||!higherId){ showMsg('mergeMsg','Select both the stale (lower cadre) and real (higher cadre) officer records.','err'); return; }
+  if(lowerId===higherId){ showMsg('mergeMsg','These can\'t be the same record.','err'); return; }
+
+  const lowerO = _officers.find(o=>o.id===lowerId);
+  const higherO = _officers.find(o=>o.id===higherId);
+  if(!confirm(`Merge "${lowerO?.name||'this record'}" (lower cadre) into "${higherO?.name||'this record'}" (higher cadre)?\n\nThe lower-cadre record will be hidden from all lists and calculations, but kept in the database and can be unmerged later from its Edit screen.`)) return;
+
+  const { doc, updateDoc, serverTimestamp } = window._fs;
+  showMsg('mergeMsg','<span class="spinner"></span> Merging…','busy');
+  try{
+    await updateDoc(doc(window._db,'seniority_officers',lowerId),{
+      merged_into: higherId,
+      merged_into_name: higherO?.name||'',
+      merged_at: serverTimestamp()
+    });
+    showMsg('mergeMsg','✓ Merged.','ok');
+    toast(`Merged ${lowerO?.name||'officer'} into ${higherO?.name||'their current record'}.`);
+    await loadOfficers();
+    closeMergeOfficers();
+  } catch(e){
+    console.error('[confirmMergeOfficers] FAILED:', e);
+    showMsg('mergeMsg','Error: '+escH(e.message),'err');
+  }
+}
+
+async function unmergeOfficer(id){
+  const o = _officers.find(x=>x.id===id);
+  if(!o || !isMerged(o)) return;
+  if(!confirm(`Unmerge "${o.name||'this officer'}"? They will reappear in their lower cadre's list and be included in seniority/promotion calculations again.`)) return;
+  const { doc, updateDoc, deleteField } = window._fs;
+  try{
+    await updateDoc(doc(window._db,'seniority_officers',id),{
+      merged_into: deleteField(),
+      merged_into_name: deleteField(),
+      merged_at: deleteField()
+    });
+    toast(`Unmerged ${o.name||'officer'}.`);
+    const editModal = document.getElementById('editModal');
+    if(editModal && editModal.classList.contains('open')) closeEditModal();
+    await loadOfficers();
+    const mergedListEl = document.getElementById('mergedListResults');
+    if(mergedListEl && mergedListEl.innerHTML.trim()) showCurrentlyMerged();
+  } catch(e){
+    console.error('[unmergeOfficer] FAILED:', e);
+    toast('Error unmerging: '+e.message);
+  }
+}
+
+// ── EDIT MODAL ──
+function openEditModal(id){
+  const o = _officers.find(x=>x.id===id); if(!o)return;
+  document.getElementById('mEditId').value  = id;
+  document.getElementById('mSlNo').value    = o.sl_no||'';
+  document.getElementById('mListLabel').value = o.list_label||'';
+  document.getElementById('mName').value    = o.name||'';
+  document.getElementById('mPenNo').value   = o.pen_no||'';
+  document.getElementById('mOrderNo').value = o.order_no||'';
+  document.getElementById('mFeeder').value  = o.feeder_category||'';
+  document.getElementById('mDob').value     = o.dob||'';
+  document.getElementById('mRetAge').value  = o.retirement_age||'60';
+  document.getElementById('mStatus').value  = (o.status==='expired'||o.status==='relieved') ? o.status : '';
+  document.getElementById('mQualified').value = (o.qualified_for_promotion===false) ? 'no' : 'yes';
+  // Populate mCadre
+  const mCadre = document.getElementById('mCadre');
+  mCadre.innerHTML = _cadres.map(c=>`<option value="${c.id}"${c.id===o.cadre?' selected':''}>${escH(c.name)}</option>`).join('');
+  // Promotion history note
+  const histEl = document.getElementById('mPromotionHistory');
+  if(o.promotion_order_no || o.promotion_date){
+    histEl.style.display='block';
+    histEl.innerHTML = `<i class="fas fa-arrow-up"></i> Promoted to this cadre${o.promotion_date?' on '+fmtDate(o.promotion_date):''}${o.promotion_order_no?' vide Order No. '+escH(o.promotion_order_no):''}.`;
+  } else {
+    histEl.style.display='none';
+    histEl.innerHTML='';
+  }
+  // Merge status note — shown only for a record that's been merged into
+  // another (higher-cadre) record, with a button to undo it right here.
+  const mergeEl = document.getElementById('mMergeStatus');
+  if(isMerged(o)){
+    mergeEl.style.display='block';
+    const mergedDate = o.merged_at?.toDate ? fmtDate(o.merged_at.toDate().toISOString().split('T')[0]) : '';
+    mergeEl.innerHTML = `<i class="fas fa-code-branch"></i> This record was merged into <strong>${escH(o.merged_into_name||'another officer')}</strong>${mergedDate?' on '+mergedDate:''} and is hidden from all lists and promotion calculations.
+      <button class="btn btn-secondary btn-sm" style="margin-top:6px;" onclick="unmergeOfficer('${o.id}')"><i class="fas fa-unlink"></i> Unmerge</button>`;
+  } else {
+    mergeEl.style.display='none';
+    mergeEl.innerHTML='';
+  }
+  document.getElementById('modalMsg').style.display='none';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal(){ document.getElementById('editModal').classList.remove('open'); }
+
+async function saveEditModal(){
+  const id     = document.getElementById('mEditId').value;
+  const name   = document.getElementById('mName').value.trim();
+  const dob    = document.getElementById('mDob').value;
+  const penNo  = document.getElementById('mPenNo').value.trim();
+  const cadre  = document.getElementById('mCadre').value;
+  const listLabel = document.getElementById('mListLabel').value.trim();
+  if(!id||!name){ showMsg('modalMsg','Name is required.','err'); return; }
+  if(!listLabel){ showMsg('modalMsg','List / Batch is required — it keeps multiple seniority lists for this cadre separate.','err'); return; }
+  if(dob && !isValidISODate(dob)){ showMsg('modalMsg','Invalid Date of Birth. Use a valid calendar date.','err'); return; }
+  if(penNo){
+    const dupe = _officers.find(o=>o.id!==id && o.cadre===cadre && (o.pen_no||'').trim().toLowerCase()===penNo.toLowerCase());
+    if(dupe){ showMsg('modalMsg',`PEN No. ${escH(penNo)} already exists in this cadre (${escH(dupe.name||'')}).`,'err'); return; }
+  }
+  // If this label already exists in this cadre, keep its existing list_order so the
+  // officer joins that block in the right position; otherwise this is effectively
+  // a brand-new list, so it goes after all existing ones in this cadre.
+  const existingLabels = {};
+  _officers.filter(o=>o.cadre===cadre && o.id!==id).forEach(o=>{
+    if(o.list_label && o.list_order!==undefined && !(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order;
+  });
+  const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
+
+  const { doc, updateDoc } = window._fs;
+  showMsg('modalMsg','Saving…','busy');
+  try{
+    await updateDoc(doc(window._db,'seniority_officers',id),{
+      sl_no:parseInt(document.getElementById('mSlNo').value)||0,
+      list_label:listLabel, list_order:listOrder,
+      name, pen_no:document.getElementById('mPenNo').value.trim(),
+      order_no:document.getElementById('mOrderNo').value.trim(),
+      feeder_category:document.getElementById('mFeeder').value.trim(),
+      dob,
+      retirement_age:document.getElementById('mRetAge').value,
+      status:document.getElementById('mStatus').value,
+      qualified_for_promotion:document.getElementById('mQualified').value!=='no',
+      cadre:document.getElementById('mCadre').value,
+    });
+    showMsg('modalMsg','✓ Saved.','ok');
+    toast('Officer updated.');
+    closeEditModal();
+    await loadOfficers();
+  } catch(e){ showMsg('modalMsg','Error: '+escH(e.message),'err'); }
+}
+
+async function deleteOfficer(id, name){
+  if(!confirm(`Delete officer "${name}"?`)) return;
+  const { doc, deleteDoc } = window._fs;
+  try{ await deleteDoc(doc(window._db,'seniority_officers',id)); toast('Deleted: '+name); await loadOfficers(); }
+  catch(e){ toast('Error: '+e.message); }
+}
+
+
+// Returns the date an officer actually LEAVES their current cadre — whichever
+// comes first: their own retirement, or being promoted into the next cadre up.
+// This is what makes the multi-level estimator possible: a cadre's vacancy
+// timeline depends on when ITS officers leave, and an officer might leave early
+// via promotion rather than waiting all the way to retirement. Memoized per
+// officerId within one top-level call via the shared `cache` map, since the same
+// officer's departure date can be asked for repeatedly while walking multiple
+// chains. `depth` guards against a misconfigured cadre hierarchy that loops back
+// on itself (e.g. cadre A's feeder is cadre B, and B's feeder is A).
 const MAX_PROMOTION_CHAIN_DEPTH = 12;
-
-function flattenOfficers(){
-  return Object.values(_officers).flat().filter(o=>!isMerged(o));
-}
-
 function getDepartureDate(officer, cache, depth, officersSource){
+  officersSource = officersSource || _officers;
   if(cache.has(officer.id)) return cache.get(officer.id);
   const myRetDate = retDate(officer.dob, officer.retirement_age||60);
   if(depth>=MAX_PROMOTION_CHAIN_DEPTH){ cache.set(officer.id, myRetDate); return myRetDate; }
 
   const nextCadre = _cadres.find(c=>c.feeder===officer.cadre);
-  if(!nextCadre){ cache.set(officer.id, myRetDate); return myRetDate; }
+  if(!nextCadre){ cache.set(officer.id, myRetDate); return myRetDate; } // top of the hierarchy — retirement is the only way out
 
   const queue = computePromotionQueueInternal(officer.cadre, nextCadre.id, cache, depth+1, officersSource);
   const q = queue.get(officer.id);
 
   let departureDate;
   if(!q || q.retiredBeforeTurn || q.notQualified){
+    // Promotion never happens for this officer (no vacancy ever reaches them, or
+    // they're not qualified) — retirement is their only real departure date.
     departureDate = myRetDate;
   } else if(q.eligibleDate===null){
+    // "Immediate" vacancy — they could be promoted right away. Use today as the
+    // departure date (it can't be later than their retirement, since anyone still
+    // in service today retires in the future by definition).
     departureDate = new Date();
   } else {
+    // A specific future vacancy date — but never later than their own retirement,
+    // since they can't be promoted out of a cadre after they've already retired
+    // from it (in that case retirement, not promotion, is what actually happens).
     departureDate = (myRetDate && q.eligibleDate>myRetDate) ? myRetDate : q.eligibleDate;
   }
 
@@ -669,12 +2106,23 @@ function getDepartureDate(officer, cache, depth, officersSource){
   return departureDate;
 }
 
+// The real engine behind computePromotionQueue, made recursive: building cadre
+// X's vacancy timeline requires knowing when X's current officers leave, which
+// can be earlier than their retirement if THEY get promoted out first — which in
+// turn depends on the cadre above X, and so on up the hierarchy. `cache` is a
+// shared Map of officerId -> departureDate, reused across the whole recursive
+// call tree so the same officer's departure date is computed once, not repeatedly.
+// `officersSource` defaults to the real, live _officers array. The public
+// seniority.html page's multi-level Promotion Estimator uses a copy of this
+// same logic with a hypothetical, in-memory officers snapshot instead — kept
+// here only for the single-hop case this admin page's Promotion Entry needs.
 function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, depth, officersSource){
+  officersSource = officersSource || _officers;
   const result = new Map();
   const targetCadre = _cadres.find(c=>c.id===targetCadreId);
   if(!targetCadre || depth>MAX_PROMOTION_CHAIN_DEPTH) return result;
 
-  const officersInTarget = officersSource.filter(o=>o.cadre===targetCadreId && o.status!=='expired' && o.status!=='relieved');
+  const officersInTarget = officersSource.filter(o=>o.cadre===targetCadreId && o.status!=='expired' && o.status!=='relieved' && !isMerged(o));
   const departureDates = officersInTarget
     .map(o=>getDepartureDate(o, cache, depth, officersSource))
     .filter(d=>d)
@@ -686,12 +2134,14 @@ function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, dept
   // Feeder officers are queued by their REAL overall seniority (seniority_no),
   // not their raw sl_no (Batch No.) — sl_no only ranks an officer within their
   // own batch, and multiple batches in one cadre legitimately reuse the same
-  // numbers, so using it directly would queue officers in the wrong order
+  // numbers, so using it directly here would queue officers in the wrong order
   // whenever a cadre has more than one list/batch. Falls back to sl_no only if
-  // seniority_no was never computed (e.g. a hypothetical clone injected by this
-  // same estimator one rung further up, which inherits sl_no from its source).
+  // seniority_no was never computed (e.g. a hypothetical clone injected by the
+  // multi-level estimator, which inherits sl_no positioning from its source).
+  // Merged-away feeder officers are excluded too — they've already moved on to
+  // the higher cadre under a different document and shouldn't queue twice.
   const feederOfficers = officersSource
-    .filter(o=>o.cadre===feederCadreId)
+    .filter(o=>o.cadre===feederCadreId && !isMerged(o))
     .sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
 
   let vacancyIdx = 0;
@@ -723,129 +2173,530 @@ function computePromotionQueueInternal(feederCadreId, targetCadreId, cache, dept
   return result;
 }
 
-// Builds the full multi-level promotion estimate for one officer: their
-// eligible date into each cadre above their current one. Past the first rung,
-// the officer doesn't exist in the next cadre's data yet, so a hypothetical
-// clone is injected as the most junior member of that cadre to continue the
-// chain — this projection doesn't account for every other concurrent
-// promotion across the department, only this one officer's path.
-function computeFullPromotionPath(officer){
-  const path = [];
-  const cache = new Map();
-  const officersSnapshot = flattenOfficers();
-  let hypotheticalOfficer = officer;
-  let depth = 0;
+// ── PROMOTIONS ──
+// Public entry point — kept for the existing single-hop Promotion Entry page,
+// which only ever needs one cadre's queue and doesn't care about the cascade.
+// Internally this now ALSO accounts for officers in the target cadre leaving
+// early via their own promotion further up, not just retirement — so even this
+// single-hop view is more accurate than before when the cadre above the target
+// cadre has its own active promotion activity.
+function computePromotionQueue(feederCadreId, targetCadreId){
+  return computePromotionQueueInternal(feederCadreId, targetCadreId, new Map(), 0);
+}
 
-  while(depth<MAX_PROMOTION_CHAIN_DEPTH){
-    const currentCadreId = hypotheticalOfficer.cadre;
-    const nextCadre = _cadres.find(c=>c.feeder===currentCadreId);
-    if(!nextCadre) break;
+function loadPromotionCandidates(){
+  const fromId = document.getElementById('promoFromCadre').value;
+  const wrap   = document.getElementById('promoCandidatesWrap');
+  const body   = document.getElementById('promoCandidatesBody');
+  if(!fromId){ wrap.style.display='none'; body.innerHTML=''; return; }
 
-    const queue = computePromotionQueueInternal(currentCadreId, nextCadre.id, cache, depth+1, officersSnapshot);
-    const q = queue.get(hypotheticalOfficer.id);
-    if(!q){ break; }
+  const fromCadre = _cadres.find(c=>c.id===fromId);
+  // Default the "To Cadre" select to whichever cadre lists this one as its feeder (the natural next step up).
+  const toCadre = _cadres.find(c=>c.feeder===fromId);
+  const toSel = document.getElementById('promoToCadre');
+  if(toCadre) toSel.value = toCadre.id;
 
-    path.push({ cadre: nextCadre, eligibleDate: q.eligibleDate, retiredBeforeTurn: !!q.retiredBeforeTurn, notQualified: !!q.notQualified });
-    if(q.retiredBeforeTurn || q.notQualified) break;
+  const toId = document.getElementById('promoToCadre').value;
 
-    const existingInNext = officersSnapshot.filter(o=>o.cadre===nextCadre.id);
-    const juniorMostSlNo = Math.max(0, ...existingInNext.map(o=>o.sl_no||0)) + 1;
-    const clone = { ...hypotheticalOfficer, cadre: nextCadre.id, sl_no: juniorMostSlNo };
-    officersSnapshot.push(clone);
-    hypotheticalOfficer = clone;
-    depth++;
+  // Promotion eligibility is judged AS ON THE PROMOTION DATE, not as on today —
+  // this lets a promotion be entered retrospectively for an officer who has since
+  // retired, as long as they were still in service on the actual promotion date.
+  // If a promotion date hasn't been entered yet, default to today (the normal,
+  // non-retrospective case): an officer already retired today is correctly hidden.
+  const promoDateStr = document.getElementById('promoDate').value;
+  const asOfDate = promoDateStr ? new Date(promoDateStr+'T00:00:00') : new Date();
+
+  // Vacancy-aware eligibility: a feeder officer's REAL earliest promotion date
+  // depends on their position in the seniority queue and when vacancies actually
+  // open up in the target cadre — not just whether they're personally still in
+  // service. See computePromotionQueue() for the full explanation.
+  const queue = toId ? computePromotionQueue(fromId, toId) : new Map();
+
+  const candidates = _officers
+    .filter(o=>{
+      if(o.cadre!==fromId) return false;
+      if(o.status==='expired'||o.status==='relieved') return false; // manual overrides always exclude, regardless of date
+      const rd = retDate(o.dob, o.retirement_age||60);
+      if(rd && rd<asOfDate) return false; // already retired AS ON the promotion date
+      if(toId){
+        const q = queue.get(o.id);
+        // No vacancy will ever reach them, or their earliest possible vacancy date
+        // is still later than the promotion date being entered -> not eligible yet.
+        if(!q || q.eligibleDate===undefined) return true; // queue data unavailable, fall back to date-only check
+        if(q.notQualified) return false; // explicitly marked not qualified — skipped regardless of vacancy/date
+        if(q.retiredBeforeTurn) return false; // they would retire before any vacancy reaches them
+        if(q.eligibleDate && q.eligibleDate>asOfDate) return false; // their turn hasn't come yet as on this date
+      }
+      return true;
+    })
+    .sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
+
+  // List anyone excluded purely by the vacancy queue (not by retirement/status),
+  // so it's clear WHY a feeder officer isn't showing up, rather than them just
+  // silently being absent from the list with no explanation.
+  let excludedNote = '';
+  if(toId){
+    const stillInService = _officers.filter(o=>o.cadre===fromId && o.status!=='expired' && o.status!=='relieved' && !(retDate(o.dob,o.retirement_age||60) && retDate(o.dob,o.retirement_age||60)<asOfDate));
+    const excluded = stillInService.filter(o=>!candidates.includes(o));
+    if(excluded.length){
+      excludedNote = `<div style="margin-bottom:10px;padding:8px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:6px;font-size:11.5px;color:#92400e;">
+        Not yet eligible as on this date (waiting for a vacancy, not qualified, or would retire before their turn):
+        ${excluded.map(o=>{
+          const q = queue.get(o.id);
+          const reason = q?.notQualified ? 'not qualified for promotion — mark them Qualified to include'
+            : q?.retiredBeforeTurn ? 'retires before any vacancy reaches them'
+            : q?.eligibleDate ? `vacancy reaches them on ${fmtDate(q.eligibleDate.toISOString().split('T')[0])}`
+            : 'no vacancy available';
+          return `${escH(o.name||'')} (Seniority No. ${o.seniority_no||o.sl_no||'—'} — ${reason})`;
+        }).join('; ')}
+      </div>`;
+    }
   }
-  return path;
-}
 
-function populatePromoOfficerSelect(cadreId){
-  const sel = document.getElementById('promoOfficerSelect');
-  document.getElementById('promoEstimatorResult').innerHTML = '';
-  // Ordered by seniority_no — batch 1's officers first (in their own Batch No.
-  // order), then batch 2's officers, and so on, chronologically by batch —
-  // NOT a flat sort by the raw sl_no/Batch No., which would interleave batches
-  // whenever more than one shares the same numbering.
-  const officers = (_officers[cadreId]||[]).filter(o=>!isMerged(o)).sort((a,b)=>(a.seniority_no??a.sl_no??0)-(b.seniority_no??b.sl_no??0));
-  if(!officers.length){ sel.innerHTML = '<option value="">No officers in this cadre</option>'; return; }
-  sel.innerHTML = '<option value="">— Select officer in this cadre —</option>' +
-    officers.map(o=>`<option value="${o.id}">${o.seniority_no||o.sl_no||'—'}. ${escH(o.name||'')}</option>`).join('');
-}
-
-function runPromotionEstimate(){
-  const officerId = document.getElementById('promoOfficerSelect').value;
-  const results = document.getElementById('promoEstimatorResult');
-  if(!officerId){ results.innerHTML=''; return; }
-  const officer = (_officers[_activeCadre]||[]).find(o=>o.id===officerId);
-  if(!officer){ results.innerHTML=''; return; }
-
-  const currentCadre = _cadres.find(c=>c.id===officer.cadre);
-  const path = computeFullPromotionPath(officer);
-
-  let html = `<div style="font-size:12.5px;font-weight:700;color:var(--navy2);margin:12px 0 10px;">
-    ${escH(officer.name||'')} — Seniority No. ${officer.seniority_no||officer.sl_no||'—'} in ${escH(currentCadre?.name||'')}
-  </div>`;
-
-  if(!path.length){
-    html += `<div style="color:var(--muted);font-size:12px;">No cadre above ${escH(currentCadre?.name||'this one')} is configured — nothing further to estimate.</div>`;
-    results.innerHTML = html;
+  if(!candidates.length){
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">No eligible officers in this cadre'+(promoDateStr?' as on the selected Promotion Date':'')+'.</td></tr>';
+    wrap.style.display='block';
+    document.getElementById('promoExcludedNote').innerHTML = excludedNote;
     return;
   }
 
-  html += `<div style="display:flex;flex-direction:column;gap:0;">`;
-  html += `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f1f5f9;border-radius:7px;font-size:12px;">
-    <i class="fas fa-circle" style="color:var(--navy2);font-size:7px;"></i>
-    <span style="font-weight:700;">${escH(currentCadre?.name||'')}</span>
-    <span style="color:var(--muted);">— current position</span>
-  </div>`;
+  body.innerHTML = candidates.map(o=>{
+    const rd = retDate(o.dob, o.retirement_age||60);
+    const alreadyRetiredToday = rd && rd<new Date();
+    const q = queue.get(o.id);
+    const vacancyNote = (toId && q && q.eligibleDate) ? ` <span style="font-size:11px;color:#1e40af;font-weight:600;">(vacancy reaches them on ${fmtDate(q.eligibleDate.toISOString().split('T')[0])})</span>` : '';
+    return `<tr${alreadyRetiredToday?' style="background:#fffbeb;"':''}>
+    <td><input type="checkbox" class="promo-check" data-id="${o.id}"></td>
+    <td class="td-sl" style="font-weight:700;">${o.seniority_no||''}</td>
+    <td class="td-sl">${o.sl_no||''}</td>
+    <td class="td-name">${escH(o.name||'')}${alreadyRetiredToday?' <span style="font-size:11px;color:#b45309;font-weight:600;">(since retired — eligible as on the entered date)</span>':''}${vacancyNote}</td>
+    <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
+    <td style="font-size:12px;">${escH(o.order_no||'')}</td>
+    <td><input type="number" class="promo-new-sl" data-id="${o.id}" min="1" style="width:90px;padding:5px 7px;border:1.5px solid var(--border);border-radius:6px;"></td>
+  </tr>`;
+  }).join('');
+  document.getElementById('promoExcludedNote').innerHTML = excludedNote;
+  wrap.style.display='block';
+}
 
-  path.forEach(p=>{
-    const blocked = p.retiredBeforeTurn || p.notQualified;
-    const dateLabel = blocked ? null
-      : p.eligibleDate ? fmtDate(p.eligibleDate.toISOString().split('T')[0])
-      : 'Immediately (vacancy already available)';
-    html += `<div style="display:flex;align-items:center;gap:8px;padding:3px 0 3px 16px;">
-      <i class="fas fa-long-arrow-alt-down" style="color:var(--muted);font-size:11px;"></i>
-    </div>`;
-    html += `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:7px;font-size:12px;background:${blocked?'#fef2f2':'#eff6ff'};border:1px solid ${blocked?'#fecaca':'#bfdbfe'};">
-      <i class="fas fa-circle" style="color:${blocked?'#b91c1c':'#1e40af'};font-size:7px;"></i>
-      <span style="font-weight:700;">${escH(p.cadre.name||'')}</span>
-      ${blocked
-        ? `<span style="color:#b91c1c;font-weight:600;">— ${p.notQualified ? 'not qualified for promotion' : 'would retire before a vacancy reaches them'}</span>`
-        : `<span style="color:#1e40af;font-weight:600;">— ${dateLabel}</span>`}
-    </div>`;
+function toggleAllPromoCandidates(state){
+  document.querySelectorAll('.promo-check').forEach(cb=>cb.checked=state);
+}
+
+async function submitPromotions(){
+  const fromId   = document.getElementById('promoFromCadre').value;
+  const toId     = document.getElementById('promoToCadre').value;
+  const orderNo  = document.getElementById('promoOrderNo').value.trim();
+  const promoDate= document.getElementById('promoDate').value;
+
+  if(!fromId||!toId){ showMsg('promoMsg','Please select both From Cadre and To Cadre.','err'); return; }
+  if(fromId===toId){ showMsg('promoMsg','From Cadre and To Cadre cannot be the same.','err'); return; }
+
+  const checked = Array.from(document.querySelectorAll('.promo-check')).filter(cb=>cb.checked);
+  if(!checked.length){ showMsg('promoMsg','Select at least one officer to promote.','err'); return; }
+
+  // Validate every selected officer has a new Sl. No, and collect them.
+  const moves = [];
+  for(const cb of checked){
+    const id = cb.dataset.id;
+    const slInput = document.querySelector(`.promo-new-sl[data-id="${id}"]`);
+    const newSl = parseInt(slInput.value);
+    if(!newSl){ showMsg('promoMsg','Please set a new Sl. No. for every selected officer.','err'); return; }
+    moves.push({ id, newSl });
+  }
+
+  showMsg('promoMsg','<span class="spinner"></span> Processing…','busy');
+  const { doc, updateDoc, serverTimestamp } = window._fs;
+
+  try {
+    for(const m of moves){
+      const o = _officers.find(x=>x.id===m.id);
+      await updateDoc(doc(window._db,'seniority_officers',m.id),{
+        cadre: toId,
+        sl_no: m.newSl,
+        promotion_order_no: orderNo,
+        promotion_date: promoDate,
+        promoted_from_cadre: fromId,
+        promotedAt: serverTimestamp()
+      });
+    }
+    showMsg('promoMsg',`✓ ${moves.length} officer(s) promoted successfully.`,'ok');
+    toast(`${moves.length} officer(s) promoted.`);
+    document.getElementById('promoOrderNo').value='';
+    document.getElementById('promoDate').value='';
+    await loadOfficers();
+    loadPromotionCandidates();
+  } catch(e){ showMsg('promoMsg','Error: '+escH(e.message),'err'); }
+}
+
+// ── CSV ──
+function downloadTemplate(){
+  const csv = 'sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status\n';
+  triggerDownload(csv,'seniority_template.csv');
+}
+function downloadFilledTemplate(){
+  const csv = `sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status
+1,Sample Officer A,100123,GO(P) 12/2020/Taxes,Deputy Commissioner,1970-05-15,60,
+2,Sample Officer B,100456,GO(P) 34/2021/Taxes,Deputy Commissioner,1968-11-22,60,
+3,Sample Officer C,100789,GO(P) 56/2019/Taxes,Deputy Commissioner,1966-03-08,56,relieved
+`;
+  triggerDownload(csv,'seniority_sample.csv');
+}
+function triggerDownload(content, filename){
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(content);
+  a.download = filename; a.click();
+}
+
+let _csvRows = []; // validated rows ready for import: {sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status,_err}
+
+let _lastCsvText = '';
+document.getElementById('csvFile').addEventListener('change', function(){
+  const file = this.files[0]; if(!file)return;
+  const reader = new FileReader();
+  reader.onload = e => { _lastCsvText = e.target.result; previewCSV(_lastCsvText); };
+  reader.readAsText(file);
+});
+document.getElementById('csvCadre').addEventListener('change', function(){
+  // Re-run the preview if a file is already loaded, since duplicate-PEN checking
+  // is scoped to whichever cadre is selected — changing the cadre after picking
+  // the file should re-validate against that cadre's existing officers.
+  if(_lastCsvText) previewCSV(_lastCsvText);
+});
+document.getElementById('csvInsertPos').addEventListener('change', function(){
+  // Replace-All mode skips the existing-data duplicate check (see previewCSV),
+  // so switching modes should re-validate too.
+  if(_lastCsvText) previewCSV(_lastCsvText);
+});
+
+// Simple, robust per-line tokenizer. Trimming happens at the point each field is
+// used (see previewCSV), not inside the tokenizer itself — keeps this resilient
+// to CRLF line endings, stray whitespace, and quoted commas.
+function csvRow(line){
+  const res=[]; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){ inQ=!inQ; }
+    else if(c===','&&!inQ){ res.push(cur); cur=''; }
+    else { cur+=c; }
+  }
+  res.push(cur);
+  return res;
+}
+
+function previewCSV(text){
+  const lines = text.split('\n').filter(l=>l.trim());
+  const prev  = document.getElementById('csvPreview');
+  const tbody = document.getElementById('csvPreviewTable');
+  if(lines.length<2){ prev.style.display='none'; showMsg('csvMsg','CSV has no data rows.','err'); return; }
+
+  const headers = csvRow(lines[0]).map(h=>h.toLowerCase().trim());
+  const idx = (field)=>headers.indexOf(field);
+  const cadreId   = document.getElementById('csvCadre').value;
+  const insertPos = document.getElementById('csvInsertPos').value;
+
+  // Pen numbers already saved against this cadre in Firestore (blank pen_no values
+  // are ignored — they're not meaningful duplicates of each other). Skipped entirely
+  // in "Replace All" mode, since that existing data is about to be deleted anyway —
+  // checking against it would falsely flag rows as duplicating data that won't exist.
+  const existingPens = insertPos==='replace' ? new Set() : new Set(
+    _officers.filter(o=>o.cadre===cadreId && (o.pen_no||'').trim())
+             .map(o=>o.pen_no.trim().toLowerCase())
+  );
+
+  _csvRows = [];
+  const rowsRaw = [];
+  for(let i=1;i<lines.length;i++){
+    const cols = csvRow(lines[i]);
+    const get = (field)=>{ const ix=idx(field); return ix>=0 ? (cols[ix]||'').trim() : ''; };
+
+    const sl_no          = get('sl_no');
+    const name           = get('name');
+    const pen_no         = get('pen_no');
+    const order_no       = get('order_no');
+    const feeder_category= get('feeder_category');
+    const dob            = get('dob');
+    const retirement_age = get('retirement_age') || '60';
+    const rawStatus      = get('status').toLowerCase();
+    const status          = (rawStatus==='expired'||rawStatus==='relieved') ? rawStatus : '';
+
+    let err='';
+    if(!name) err+='Missing name. ';
+    if(dob && !isValidISODate(dob)) err+='DOB must be YYYY-MM-DD. ';
+    if(retirement_age!=='56' && retirement_age!=='60') err+='Ret. Age must be 56 or 60. ';
+
+    rowsRaw.push({ sl_no:parseInt(sl_no)||0, name, pen_no, order_no, feeder_category, dob, retirement_age, status, _err:err });
+  }
+
+  // Duplicate PEN No. checks, scoped to the selected cadre:
+  //  1. Two rows in THIS file sharing a pen_no.
+  //  2. A row's pen_no already exists among officers already saved in this cadre.
+  // Blank pen_no is never treated as a duplicate of another blank.
+  const seenInFile = {};
+  rowsRaw.forEach(r=>{
+    const key = (r.pen_no||'').trim().toLowerCase();
+    if(!key) return;
+    (seenInFile[key] = seenInFile[key]||[]).push(r);
   });
-  html += `</div>`;
+  rowsRaw.forEach(r=>{
+    const key = (r.pen_no||'').trim().toLowerCase();
+    if(!key) return;
+    if(seenInFile[key].length>1) r._err += `Duplicate PEN No. ${escH(r.pen_no)} appears ${seenInFile[key].length}x in this file. `;
+    else if(existingPens.has(key)) r._err += `PEN No. ${escH(r.pen_no)} already exists in this cadre. `;
+  });
 
-  html += `<p style="font-size:10.5px;color:var(--muted);margin-top:10px;">
-    Estimates beyond the first rung assume this officer joins each next cadre as its most junior member, carrying their relative seniority forward. This is a single-officer projection — it doesn't model every other officer's concurrent promotion across the department.
-  </p>`;
+  _csvRows = rowsRaw;
+  let html = '';
+  _csvRows.forEach(r=>{
+    html += `<tr>
+      <td class="td-sl">${escH(r.sl_no||'')}</td>
+      <td class="td-name">${escH(r.name)}</td>
+      <td style="font-size:12px;">${escH(r.pen_no)}</td>
+      <td style="font-size:12px;">${escH(r.order_no)}</td>
+      <td style="font-size:12px;">${escH(r.feeder_category)}</td>
+      <td style="font-size:12px;">${escH(r.dob)}</td>
+      <td style="font-size:12px;">${escH(r.retirement_age)}</td>
+      <td style="font-size:12px;">${escH(r.status||'—')}</td>
+      <td style="font-size:12px;">${r._err?`<span style="color:var(--red);font-weight:700;">⚠ ${escH(r._err)}</span>`:'<span style="color:var(--green);font-weight:700;">✓ OK</span>'}</td>
+    </tr>`;
+  });
 
-  results.innerHTML = html;
+  tbody.innerHTML = html;
+  const errCount = _csvRows.filter(r=>r._err).length;
+  document.getElementById('csvPreviewTitle').textContent =
+    `Preview — ${_csvRows.length} row(s)` + (errCount ? `, ${errCount} with errors` : ', all OK');
+  prev.style.display='block';
+  showMsg('csvMsg', errCount ? `⚠ Fix ${errCount} row(s) with errors before importing — they will not be uploaded.` : '✓ All rows look good. Ready to import.', errCount?'err':'ok');
 }
 
-function filterTable(){
-  const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const officers = (_officers[_activeCadre]||[]).filter(o=>!isMerged(o));
-  renderTable(cadre, officers);
+function clearCsvPreview(){
+  _csvRows=[];
+  document.getElementById('csvPreview').style.display='none';
+  document.getElementById('csvFile').value='';
+  document.getElementById('csvMsg').style.display='none';
 }
 
-function downloadCSV(){
-  const officers = (_officers[_activeCadre]||[]).filter(o=>!isMerged(o));
-  if(!officers.length){
-    alert('No officers to download — the list is empty. Check the error banner near the top of the page.');
+async function uploadCSV(){
+  const cadreId    = document.getElementById('csvCadre').value;
+  const insertPos  = document.getElementById('csvInsertPos').value;
+  const listLabel  = document.getElementById('csvListLabel').value.trim();
+  if(!cadreId){ showMsg('csvMsg','Please select a cadre.','err'); return; }
+  if(!listLabel){ showMsg('csvMsg','Please enter a List / Batch Label (e.g. "2009 Batch") — this keeps multiple seniority lists for the same cadre separate and displayed in the right order.','err'); return; }
+  if(!_csvRows.length){ showMsg('csvMsg','Please select and preview a CSV file first.','err'); return; }
+
+  const badRows = _csvRows.filter(r=>r._err);
+  if(badRows.length){
+    showMsg('csvMsg',`✗ Import stopped — ${badRows.length} row(s) still have errors. Fix them in your CSV and re-upload.`,'err');
     return;
   }
-  const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const headers  = ['seniority_no','list_label','sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
-  const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
-  const csv      = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a        = document.createElement('a');
-  a.href         = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download     = `seniority_${cadre?.short||'list'}_${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
+
+  console.log('[uploadCSV] starting import of', _csvRows.length, 'rows into cadre', cadreId, 'list:', listLabel, 'mode:', insertPos);
+  showMsg('csvMsg','<span class="spinner"></span> Processing… (0/'+_csvRows.length+')','busy');
+  const { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, writeBatch, serverTimestamp } = window._fs;
+
+  try {
+    // Each list/batch within a cadre keeps its own independent Sl. No. sequence —
+    // list_order determines which block displays first, second, etc. "Replace All"
+    // and "Insert at Beginning" only ever apply within rows sharing the SAME label;
+    // they never touch or renumber a different list's officers, since two separate
+    // joining-batches legitimately reuse the same Sl. No. values.
+    const sameList = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel);
+
+    if(insertPos==='replace'){
+      console.log('[uploadCSV] replace mode: deleting', sameList.length, 'existing officer(s) in this list…');
+      showMsg('csvMsg','<span class="spinner"></span> Removing existing officers in this list ('+sameList.length+')…','busy');
+      for(let i=0;i<sameList.length;i+=400){
+        const batch = writeBatch(window._db);
+        sameList.slice(i,i+400).forEach(o=>batch.delete(doc(window._db,'seniority_officers',o.id)));
+        await batch.commit();
+      }
+      console.log('[uploadCSV] delete complete.');
+    }
+
+    const existing = insertPos==='replace' ? [] : sameList.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    let startSl = (insertPos==='start'||insertPos==='replace') ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
+    if(insertPos==='start' && existing.length){
+      console.log('[uploadCSV] shifting', existing.length, 'existing officer(s) in this list to make room at the start…');
+      showMsg('csvMsg','<span class="spinner"></span> Reordering existing officers in this list…','busy');
+      for(let i=0;i<existing.length;i+=400){
+        const batch = writeBatch(window._db);
+        existing.slice(i,i+400).forEach(o=>batch.update(doc(window._db,'seniority_officers',o.id),{sl_no:o.sl_no+_csvRows.length}));
+        await batch.commit();
+      }
+    }
+
+    // list_order controls block display position among the cadre's lists. A label
+    // already used in this cadre keeps its existing order; a brand-new label gets
+    // the next order number, so newly uploaded lists appear after existing ones.
+    const existingLabels = {};
+    _officers.filter(o=>o.cadre===cadreId).forEach(o=>{
+      if(o.list_label && o.list_order!==undefined && !(o.list_label in existingLabels)) existingLabels[o.list_label]=o.list_order;
+    });
+    const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
+
+    // Write new officers in batches of 400 (Firestore's limit is 500 ops/batch).
+    // Batching turns 258 sequential round-trips into ~1 per 400 rows, which is both
+    // far faster and avoids the per-second write-rate throttling that a tight
+    // one-by-one await loop can trigger on larger imports.
+    //
+    // IMPORTANT: Sl. No. is always taken EXACTLY as given in the CSV's sl_no column.
+    // It is the officer's actual seniority rank within this list, not a row counter
+    // — it must never be reassigned or renumbered automatically. If a file doesn't
+    // specify sl_no for a row, only THEN does it fall back to the auto-continuing
+    // sequence (startSl), purely so the row has some number rather than failing.
+    let added=0;
+    for(let i=0;i<_csvRows.length;i+=400){
+      const chunk = _csvRows.slice(i,i+400);
+      const batch = writeBatch(window._db);
+      chunk.forEach((r,j)=>{
+        const sl = r.sl_no || startSl+i+j;
+        const ref = doc(collection(window._db,'seniority_officers'));
+        batch.set(ref,{
+          cadre:cadreId, sl_no:sl, list_label:listLabel, list_order:listOrder,
+          name:r.name, pen_no:r.pen_no, order_no:r.order_no,
+          feeder_category:r.feeder_category,
+          dob:r.dob, retirement_age:r.retirement_age,
+          status:r.status,
+          createdAt:serverTimestamp()
+        });
+      });
+      await batch.commit();
+      added += chunk.length;
+      console.log('[uploadCSV] committed batch, total so far:', added, '/', _csvRows.length);
+      showMsg('csvMsg','<span class="spinner"></span> Processing… ('+added+'/'+_csvRows.length+')','busy');
+    }
+    console.log('[uploadCSV] import complete:', added, 'officers added.');
+    showMsg('csvMsg',`✓ ${added} officers imported successfully.`,'ok');
+    toast(`${added} officers imported.`);
+    clearCsvPreview();
+    await loadOfficers();
+  } catch(e){
+    console.error('[uploadCSV] FAILED:', e);
+    showMsg('csvMsg','Error: '+escH(e.message),'err');
+  }
 }
 
-function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function downloadTableCSV(){
+  const cadreFilter = document.getElementById('filterCadre').value;
+  const officers    = (cadreFilter ? _officers.filter(o=>o.cadre===cadreFilter) : _officers.slice()).filter(o=>!isMerged(o));
+  if(!officers.length){
+    toast('No officers to download — the list is empty. Check for a load error above the table.');
+    return;
+  }
+  const headers     = ['seniority_no','sl_no','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
+  const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
+  const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  triggerDownload(csv,`seniority_${cadreFilter||'all'}_${new Date().toISOString().split('T')[0]}.csv`);
+}
+
+// ── CADRES ──
+function renderCadreGrid(){
+  const grid = document.getElementById('cadreGrid');
+  if(!_cadres.length){ grid.innerHTML='<div style="color:var(--muted);padding:20px;">No cadres yet.</div>'; return; }
+  grid.innerHTML = _cadres.map(c=>{
+    const feederCadre = _cadres.find(x=>x.id===c.feeder);
+    const count = _officers.filter(o=>o.cadre===c.id&&!isMerged(o)&&['active','soon'].includes(computeStatus(o).key)).length;
+    const vacancy = Math.max(0,(c.sanctioned||0)-count);
+    return `<div class="cadre-card">
+      <div class="cadre-name">${escH(c.name)}</div>
+      <div class="cadre-meta">
+        <b>${escH(c.short)}</b> &nbsp;|&nbsp; Sanctioned: <b>${c.sanctioned||'—'}</b><br>
+        Working: <b>${count}</b> &nbsp;|&nbsp; Vacancy: <b style="color:${vacancy>0?'var(--red)':'var(--green)'}">${vacancy}</b><br>
+        Feeder: ${feederCadre?escH(feederCadre.name):'—'} &nbsp;|&nbsp; Order: ${c.order||0}
+      </div>
+      <div class="cadre-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editCadre('${c.id}')"><i class="fas fa-edit"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCadre('${c.id}','${escH(c.name)}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+  renderStrengthGrid();
+}
+
+function renderStrengthGrid(){
+  const grid = document.getElementById('strengthGrid');
+  if(!grid) return;
+  grid.innerHTML = _cadres.map(c => {
+    const count = _officers.filter(o=>o.cadre===c.id&&!isMerged(o)&&['active','soon'].includes(computeStatus(o).key)).length;
+    const vacancy = Math.max(0,(c.sanctioned||0)-count);
+    return `<div style="background:#f8f9ff;border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;">
+      <div style="font-weight:700;font-size:13.5px;color:var(--navy2);margin-bottom:10px;">${escH(c.name)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;white-space:nowrap;">Sanctioned:</label>
+        <input type="number" id="str_${c.id}" value="${c.sanctioned||0}" min="0"
+          style="width:80px;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;"
+          onkeydown="if(event.key==='Enter')saveStrength('${c.id}')">
+        <button class="btn btn-primary btn-sm" onclick="saveStrength('${c.id}')">Save</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);">
+        Working: <b>${count}</b> &nbsp;|&nbsp; Vacancy: <b style="color:${vacancy>0?'var(--red)':'var(--green)'}">${vacancy}</b>
+      </div>
+      <div id="strMsg_${c.id}" style="font-size:11.5px;margin-top:4px;min-height:16px;"></div>
+    </div>`;
+  }).join('');
+}
+
+async function saveStrength(cadreId){
+  const val = parseInt(document.getElementById(`str_${cadreId}`).value)||0;
+  const msgEl = document.getElementById(`strMsg_${cadreId}`);
+  const { doc, setDoc } = window._fs;
+  const cadre = _cadres.find(c=>c.id===cadreId);
+  if(!cadre) return;
+  try {
+    await setDoc(doc(window._db,'seniority_cadres',cadreId), {...cadre, sanctioned:val});
+    cadre.sanctioned = val;
+    msgEl.style.color='var(--green)'; msgEl.textContent='✓ Saved';
+    setTimeout(()=>msgEl.textContent='',2000);
+    renderCadreGrid();
+  } catch(e){ msgEl.style.color='var(--red)'; msgEl.textContent='Error: '+e.message; }
+}
+
+function editCadre(id){
+  const c = _cadres.find(x=>x.id===id); if(!c)return;
+  document.getElementById('cId').value        = c.id;
+  document.getElementById('cName').value      = c.name;
+  document.getElementById('cShort').value     = c.short;
+  document.getElementById('cSanctioned').value= c.sanctioned||'';
+  document.getElementById('cOrder').value     = c.order||0;
+  document.getElementById('cEditId').value    = id;
+  const sel = document.getElementById('cFeeder');
+  sel.innerHTML='<option value="">— None —</option>'+_cadres.filter(x=>x.id!==id).map(x=>`<option value="${x.id}"${x.id===c.feeder?' selected':''}>${escH(x.name)}</option>`).join('');
+  sel.value = c.feeder||'';
+  showPage('cadres');
+}
+
+async function saveCadre(){
+  const id    = document.getElementById('cId').value.trim();
+  const name  = document.getElementById('cName').value.trim();
+  const short = document.getElementById('cShort').value.trim();
+  const sanct = parseInt(document.getElementById('cSanctioned').value)||0;
+  const feeder= document.getElementById('cFeeder').value;
+  const order = parseInt(document.getElementById('cOrder').value)||0;
+  if(!id||!name||!short){ showMsg('cadreMsg','ID, Name and Short Name are required.','err'); return; }
+  const { doc, setDoc } = window._fs;
+  showMsg('cadreMsg','Saving…','busy');
+  try{
+    await setDoc(doc(window._db,'seniority_cadres',id),{id,name,short,sanctioned:sanct,feeder:feeder||null,order});
+    showMsg('cadreMsg','✓ Cadre saved.','ok');
+    toast('Cadre saved: '+name);
+    clearCadreForm();
+    await loadCadres();
+    populateCadreSelects();
+  } catch(e){ showMsg('cadreMsg','Error: '+escH(e.message),'err'); }
+}
+
+async function deleteCadre(id, name){
+  const count = _officers.filter(o=>o.cadre===id).length;
+  if(!confirm(`Delete cadre "${name}"?${count>0?` Warning: ${count} officer(s) will become orphaned.`:''}`)) return;
+  const { doc, deleteDoc } = window._fs;
+  try{ await deleteDoc(doc(window._db,'seniority_cadres',id)); toast('Cadre deleted.'); await loadCadres(); populateCadreSelects(); }
+  catch(e){ toast('Error: '+e.message); }
+}
+
+function clearCadreForm(){
+  ['cId','cName','cShort','cSanctioned','cOrder','cEditId'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  const sel=document.getElementById('cFeeder'); if(sel)sel.value='';
+}
 </script>
 </body>
 </html>
