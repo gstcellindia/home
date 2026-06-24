@@ -72,6 +72,7 @@ table{width:100%;border-collapse:collapse;}
 thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;position:sticky;top:0;z-index:2;}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
 tbody tr:hover{background:#f0f4fb;}
+.merge-pick-row:hover{background:#fdf4ff !important;outline:2px solid #f0abfc;outline-offset:-2px;}
 tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
 .td-name{font-weight:600;color:var(--navy2);}
 .td-sl{text-align:center;font-weight:700;color:var(--muted);width:50px;}
@@ -141,7 +142,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-promodateorder</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-mergeclickpick</div>
   </div>
 </nav>
 
@@ -642,6 +643,9 @@ const DEFAULT_CADRES = [
 let _cadres   = [];
 let _officers = []; // flat list
 let _filteredOfficers = [];
+// Tracks which slot ('lower'/'higher'/null) the Merge Officers tool is currently
+// waiting to fill via a table-row click. See startMergePick() / pickOfficerForMerge().
+let _mergePickMode = null;
 
 // ── HELPERS ──
 function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -772,7 +776,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-promodateorder — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-mergeclickpick — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -1074,7 +1078,12 @@ function renderOfficersTable(officers){
     const rd    = retDate(o.dob,o.retirement_age||60);
     const st    = computeStatus(o);
     const statusBadge = `<span class="badge ${st.badgeClass}">${st.label}</span>`;
-    return `<tr>
+    // While a merge pick is in progress (see startMergePick), every row gets a
+    // highlighted, clickable affordance so the admin can select the right
+    // officer directly from the table instead of hunting through a dropdown.
+    const pickAttr = _mergePickMode ? ` onclick="pickOfficerForMerge('${o.id}')" style="cursor:pointer;" title="Click to set as the ${_mergePickMode==='lower'?'stale (lower cadre)':'real (higher cadre)'} record"` : '';
+    const pickRowClass = _mergePickMode ? ' class="merge-pick-row"' : '';
+    return `<tr${pickRowClass}${pickAttr}>
       <td class="td-sl" style="font-weight:700;">${o.seniority_no||''}</td>
       <td class="td-sl">${o.sl_no||''}</td>
       <td class="td-name">${escH(o.name||'')}</td>
@@ -1086,8 +1095,8 @@ function renderOfficersTable(officers){
       <td style="font-size:12px;">${rd?fmtDate(rd.toISOString().split('T')[0]):'—'}</td>
       <td>${statusBadge}</td>
       <td style="white-space:nowrap;">
-        <button class="btn btn-secondary btn-sm" onclick="openEditModal('${o.id}')"><i class="fas fa-edit"></i></button>
-        <button class="btn btn-danger btn-sm" onclick="deleteOfficer('${o.id}','${escH(o.name||'')}')"><i class="fas fa-trash"></i></button>
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openEditModal('${o.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteOfficer('${o.id}','${escH(o.name||'')}')"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
   };
@@ -1759,7 +1768,7 @@ function openMergeOfficers(){
   panel.innerHTML = `
     <div style="font-weight:700;color:#86198f;font-size:13px;margin-bottom:8px;"><i class="fas fa-code-branch"></i> Merge Officers (duplicate across cadres)</div>
     <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
-      Use this when the same officer exists as two records — usually because they were already promoted but have no PEN No., so the old seniority-list record in their PREVIOUS (lower) cadre never got linked to their real record in their CURRENT (higher) cadre. Pick both records below; the lower-cadre one will be hidden from all lists going forward, but never deleted — you can undo this anytime from that officer's Edit screen.
+      Use this when the same officer exists as two records — usually because they were already promoted but have no PEN No., so the old seniority-list record in their PREVIOUS (lower) cadre never got linked to their real record in their CURRENT (higher) cadre. Pick both records below — either from the dropdown, or by clicking "Pick" then clicking the right row in the officer table below. The lower-cadre record will be hidden from all lists going forward, but never deleted — you can undo this anytime from that officer's Edit screen.
     </p>
     <div class="form-grid">
       <div class="form-group">
@@ -1768,7 +1777,11 @@ function openMergeOfficers(){
       </div>
       <div class="form-group">
         <label>Stale Officer Record *</label>
-        <select id="mergeLowerOfficer"><option value="">— Select Cadre First —</option></select>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="mergeLowerOfficer" style="flex:1;" onchange="onMergeDropdownPick('lower')"><option value="">— Select Cadre First —</option></select>
+          <button type="button" class="btn btn-secondary btn-sm" id="pickLowerBtn" onclick="startMergePick('lower')" title="Click a row in the table below instead"><i class="fas fa-hand-pointer"></i> Pick</button>
+        </div>
+        <div id="mergeLowerPicked" style="font-size:11.5px;color:#86198f;margin-top:4px;"></div>
       </div>
       <div class="form-group">
         <label>Higher Cadre (where they actually are now) *</label>
@@ -1776,18 +1789,91 @@ function openMergeOfficers(){
       </div>
       <div class="form-group">
         <label>Real / Current Officer Record *</label>
-        <select id="mergeHigherOfficer"><option value="">— Select Cadre First —</option></select>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="mergeHigherOfficer" style="flex:1;" onchange="onMergeDropdownPick('higher')"><option value="">— Select Cadre First —</option></select>
+          <button type="button" class="btn btn-secondary btn-sm" id="pickHigherBtn" onclick="startMergePick('higher')" title="Click a row in the table below instead"><i class="fas fa-hand-pointer"></i> Pick</button>
+        </div>
+        <div id="mergeHigherPicked" style="font-size:11.5px;color:#86198f;margin-top:4px;"></div>
       </div>
     </div>
+    <div id="mergePickHint" style="display:none;margin-top:8px;padding:8px 12px;background:#fdf4ff;border:1px solid #f0abfc;border-radius:6px;font-size:12px;color:#86198f;font-weight:600;"></div>
     <div class="btn-row" style="margin-top:10px;">
       <button class="btn btn-primary btn-sm" onclick="confirmMergeOfficers()"><i class="fas fa-link"></i> Merge</button>
       <button class="btn btn-secondary btn-sm" onclick="showCurrentlyMerged()"><i class="fas fa-list"></i> View Currently Merged</button>
-      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('mergeOfficersPanel').style.display='none'">Close</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeMergeOfficers()">Close</button>
     </div>
     <div id="mergedListResults" style="margin-top:10px;"></div>
     <div class="msg" id="mergeMsg"></div>
   `;
   panel.style.display='block';
+  _mergePickMode = null;
+}
+
+function closeMergeOfficers(){
+  document.getElementById('mergeOfficersPanel').style.display='none';
+  _mergePickMode = null;
+  updateMergePickHint();
+  loadOfficersTable(); // re-render to drop the "click to pick" affordance from rows
+}
+
+// Lets the admin pick an officer for the merge tool by clicking directly in
+// the officer table below, instead of hunting through a dropdown — especially
+// useful when names are common or the right cadre's officer list is long.
+// _mergePickMode is 'lower', 'higher', or null (not currently picking).
+// (declared near the top of the script, alongside _officers/_cadres)
+
+function startMergePick(slot){
+  _mergePickMode = slot;
+  updateMergePickHint();
+  loadOfficersTable(); // re-render so rows show the "click to pick" affordance
+}
+
+function updateMergePickHint(){
+  const hint = document.getElementById('mergePickHint');
+  if(!hint) return;
+  if(_mergePickMode){
+    hint.style.display='block';
+    hint.innerHTML = `<i class="fas fa-mouse-pointer"></i> Click any row in the officer table below to set it as the ${_mergePickMode==='lower'?'<strong>stale (lower cadre)</strong>':'<strong>real / current (higher cadre)</strong>'} record. <button class="btn btn-secondary btn-sm" style="margin-left:8px;" onclick="cancelMergePick()">Cancel</button>`;
+  } else {
+    hint.style.display='none';
+  }
+}
+
+function cancelMergePick(){
+  _mergePickMode = null;
+  updateMergePickHint();
+  loadOfficersTable();
+}
+
+// Called when a row is clicked while a merge pick is active (see renderRow).
+function pickOfficerForMerge(officerId){
+  if(!_mergePickMode) return;
+  const o = _officers.find(x=>x.id===officerId);
+  if(!o) return;
+  if(_mergePickMode==='lower'){
+    document.getElementById('mergeLowerCadre').value = o.cadre;
+    loadMergeLowerOfficers();
+    document.getElementById('mergeLowerOfficer').value = o.id;
+    document.getElementById('mergeLowerPicked').textContent = `Picked: ${o.name||'(unnamed)'} — Seniority No. ${o.seniority_no||o.sl_no||'—'}`;
+  } else {
+    document.getElementById('mergeHigherCadre').value = o.cadre;
+    loadMergeHigherOfficers();
+    document.getElementById('mergeHigherOfficer').value = o.id;
+    document.getElementById('mergeHigherPicked').textContent = `Picked: ${o.name||'(unnamed)'} — Seniority No. ${o.seniority_no||o.sl_no||'—'}`;
+  }
+  _mergePickMode = null;
+  updateMergePickHint();
+  loadOfficersTable();
+}
+
+// Keeps the "Picked: ..." confirmation text in sync if the admin instead
+// changes a dropdown manually after already picking via the table once.
+function onMergeDropdownPick(slot){
+  const sel = document.getElementById(slot==='lower'?'mergeLowerOfficer':'mergeHigherOfficer');
+  const noteEl = document.getElementById(slot==='lower'?'mergeLowerPicked':'mergeHigherPicked');
+  if(!sel.value){ noteEl.textContent=''; return; }
+  const o = _officers.find(x=>x.id===sel.value);
+  noteEl.textContent = o ? `Picked: ${o.name||'(unnamed)'} — Seniority No. ${o.seniority_no||o.sl_no||'—'}` : '';
 }
 
 function showCurrentlyMerged(){
@@ -1850,8 +1936,8 @@ async function confirmMergeOfficers(){
     });
     showMsg('mergeMsg','✓ Merged.','ok');
     toast(`Merged ${lowerO?.name||'officer'} into ${higherO?.name||'their current record'}.`);
-    document.getElementById('mergeOfficersPanel').style.display='none';
     await loadOfficers();
+    closeMergeOfficers();
   } catch(e){
     console.error('[confirmMergeOfficers] FAILED:', e);
     showMsg('mergeMsg','Error: '+escH(e.message),'err');
