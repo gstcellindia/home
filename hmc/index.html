@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0042)file:///C:/Users/MYPC/Downloads/hmc_2.html -->
+<!-- saved from url=(0042)file:///C:/Users/MYPC/Downloads/hmc_3.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -793,7 +793,7 @@
       <a href="https://api.whatsapp.com/send?text=Check%20out%20GSTCell:%20https://www.gstcell.com" target="_blank" class="hmc-footer-social wa"><i class="fab fa-whatsapp"></i></a>
       <a href="https://www.facebook.com/sharer.php?u=https://www.gstcell.com" target="_blank" class="hmc-footer-social fb"><i class="fab fa-facebook-f"></i></a>
       <a href="https://twitter.com/intent/tweet?url=https://www.gstcell.com" target="_blank" class="hmc-footer-social tw"><i class="fab fa-twitter"></i></a>
-      <a href="file:///C:/Users/MYPC/Downloads/hmc_2.html#" class="hmc-footer-social sh" onclick="hmcShare();return false;"><i class="fas fa-share-alt"></i></a>
+      <a href="file:///C:/Users/MYPC/Downloads/hmc_3.html#" class="hmc-footer-social sh" onclick="hmcShare();return false;"><i class="fas fa-share-alt"></i></a>
     </div>
   </div>
 </footer>
@@ -1003,7 +1003,16 @@ async function loadUserProfile(uid) {
 function showMainApp() {
   document.getElementById('loginPage').classList.add('hidden');
   document.getElementById('secondaryPage').classList.remove('hidden');
-  const p = currentUserProfile || {};
+  let p = currentUserProfile || {};
+  // Self-heal old buggy profiles where phone was accidentally saved as the email address
+  if (p.phone && p.email && p.phone.trim().toLowerCase() === p.email.trim().toLowerCase()) {
+    p = { ...p, phone: '' };
+    currentUserProfile = p;
+    try {
+      const { doc, setDoc } = window._fsHelpers;
+      setDoc(doc(window._db, 'hmc_users', currentUser.uid), { phone: '' }, { merge: true });
+    } catch(e) { /* non-fatal — corrected in-memory for this session regardless */ }
+  }
   document.getElementById('colC').value = p.name        || '';
   document.getElementById('colD').value = p.designation || '';
   document.getElementById('colE').value = p.office      || '';
