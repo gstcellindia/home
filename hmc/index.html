@@ -440,6 +440,13 @@
       .table-controls { flex-direction: column; align-items: stretch; width: 100%; margin-left: 0; }
       .horizontal-info-bar { flex-direction: column; align-items: flex-start; width: 96%; margin-left: 2%; }
       .add-record-bar { width: 96%; margin: 8px 2% 0 2%; }
+      #topBar {
+        position: static !important;
+        width: 96%; margin: 8px 2% 10px 2%;
+        justify-content: space-between; gap: 8px;
+      }
+      #colEStatus { font-size: 10pt; padding: 4px 9px; }
+      .lang-toggle-wrap { font-size: 0.74rem; padding: 3px 9px; }
     }
   </style>
 </head>
@@ -512,7 +519,7 @@
 <!-- ════════════════════ MAIN APP ════════════════════ -->
 <div id="secondaryPage" class="hidden">
 
-  <div style="position:fixed;top:10px;right:15px;z-index:99999;display:flex;align-items:center;gap:10px;">
+  <div id="topBar" style="position:fixed;top:10px;right:15px;z-index:99999;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:94vw;">
     <!-- Language Toggle -->
     <div class="lang-toggle-wrap" title="Switch dropdown language">
       <span class="lang-label-en" id="langLabelEn" style="font-weight:700;">EN</span>
@@ -522,18 +529,19 @@
       </label>
       <span class="lang-label-ml" id="langLabelMl">മല</span>
     </div>
+    <!-- Active status indicator -->
+    <div id="colEStatus" style="display:flex;align-items:center;gap:8px;padding:5px 12px;font-size:12pt;background:#1a6fc4;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+      <span id="colELed" style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#aaa;box-shadow:0 0 4px #aaa;flex-shrink:0;"></span>
+      <span id="colEText" style="color:white;font-weight:bold;"></span>
+    </div>
     <button onclick="confirmLogout()" class="logout">⏻</button>
   </div>
 
-  <div class="titles"><h2>Personal Details</h2></div>
+  <div class="titles"><h2>Office Details</h2></div>
 
   <div id="tileData" class="tile">
     <input type="text" readonly id="colC" placeholder="Name of Office">
     <input type="text" readonly id="colD" placeholder="Designation of Head of Office">
-    <div id="colEStatus" style="display:flex;align-items:center;gap:8px;padding:5px;font-size:12pt;">
-      <span id="colELed" style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#aaa;box-shadow:0 0 4px #aaa;flex-shrink:0;"></span>
-      <span id="colEText" style="color:white;font-weight:bold;"></span>
-    </div>
     <input type="text" readonly id="colG" placeholder="Phone">
     <input type="text" readonly id="colH" placeholder="e-mail">
     <input type="text" readonly id="colF" placeholder="PEN" style="display:none;">
@@ -1608,6 +1616,15 @@ function dbToggleEntryAccordion(header) {
   arrow.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
 }
 
+function dbOpenEntryAccordion() {
+  const body  = document.getElementById('dbEntryAccordionBody');
+  const arrow = document.getElementById('dbEntryArrow');
+  if (body && !body.classList.contains('open')) {
+    body.classList.add('open');
+    if (arrow) arrow.style.transform = 'rotate(180deg)';
+  }
+}
+
 // ── Language Toggle ──
 let dbCurrentLang = 'en'; // 'en' or 'ml'
 
@@ -1858,12 +1875,57 @@ async function dbLoadPreviewTable() {
       document.getElementById('dbObCash').value=b.obCash||'';
       document.getElementById('dbObBank').value=b.obBank||'';
       document.getElementById('dbBalanceSaveBtn').textContent='Update';
-    } else { document.getElementById('dbBalanceSaveBtn').textContent='Add'; }
+    } else {
+      document.getElementById('dbBalanceSaveBtn').textContent='Add';
+      // No opening balance saved yet for this year — default it to the previous
+      // year's closing balance (still editable; only saved when Add/Update is clicked).
+      await dbPrefillOpeningBalanceFromPrevYear(year);
+    }
     dbFilteredPreviewRows=dbAllPreviewRows.slice();
     dbApplySearch();
     dbUpdateClosingBalance();
   } catch(e){ dbShowMsg('Error loading: '+e.message,'error'); }
   finally   { dbHideOverlay(); }
+}
+
+// Compute the previous FY key from a "YYYY-YY" string, e.g. "2025-26" -> "2024-25"
+function dbPrevYearKey(year) {
+  const m = String(year||'').match(/^(\d{4})-(\d{2})$/);
+  if (!m) return null;
+  const sy = parseInt(m[1], 10) - 1;
+  const ey = (sy + 1) % 100;
+  return `${sy}-${String(ey).padStart(2,'0')}`;
+}
+
+// Pull the previous year's entries/balances and use the computed closing balance
+// as the default opening balance for the newly-selected year.
+async function dbPrefillOpeningBalanceFromPrevYear(year) {
+  const prevYear = dbPrevYearKey(year);
+  if (!prevYear) { document.getElementById('dbObCash').value=''; document.getElementById('dbObBank').value=''; return; }
+  try {
+    const { collection, getDocs, query, orderBy, doc, getDoc } = window._fsHelpers;
+    const prevBalSnap = await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${prevYear}/meta/balances`));
+    const prevEntriesSnap = await getDocs(query(collection(window._db, `hmc_daybook/${currentUser.uid}/years/${prevYear}/entries`), orderBy('date','asc')));
+    if (!prevBalSnap.exists() && prevEntriesSnap.empty) {
+      // Nothing recorded for the previous year — leave blank for manual entry
+      document.getElementById('dbObCash').value='';
+      document.getElementById('dbObBank').value='';
+      return;
+    }
+    const pb = prevBalSnap.exists() ? prevBalSnap.data() : { obCash:0, obBank:0 };
+    let runCash = pb.obCash || 0, runBank = pb.obBank || 0;
+    prevEntriesSnap.forEach(d=>{
+      const r = d.data();
+      runCash += (r.op||0) + (r.lab||0) + (r.otherCash||0) - (r.bank||0);
+      runBank += (r.income||0) - (r.exp||0) + (r.bank||0);
+    });
+    document.getElementById('dbObCash').value = runCash.toFixed(2);
+    document.getElementById('dbObBank').value = runBank.toFixed(2);
+  } catch(e) {
+    // If anything goes wrong, just leave the fields blank for manual entry
+    document.getElementById('dbObCash').value='';
+    document.getElementById('dbObBank').value='';
+  }
 }
 
 // ── Balances ──
@@ -2643,6 +2705,7 @@ function dbHandleExcelUpload(event){
       if(rows.length<2){customAlert('No data rows found.');return;}
       const dataRows=rows.slice(1).filter(r=>r.some(c=>String(c).trim()!==''));
       if(!dataRows.length){customAlert('No data found.');return;}
+      dbOpenEntryAccordion();
       dbBuildFormRows(Math.max(dataRows.length,10));
       const formRows=document.getElementById('dbFormRows').querySelectorAll('tr');
       const validOH=new Set(dbOtherHeadEn.map(v=>v.toLowerCase()));
