@@ -142,7 +142,7 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
   <div class="sidebar-footer">
     <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
     <a href="seniority.html" style="margin-top:6px;"><i class="fas fa-eye"></i> View Public Page</a>
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-mergeclickpick</div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);">Build: 2026-06-19-batchsuffix</div>
   </div>
 </nav>
 
@@ -206,7 +206,14 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
           </div>
           <div class="form-group">
             <label>Batch No. *</label>
-            <input type="number" id="fSlNo" placeholder="e.g. 1" min="1">
+            <div style="display:flex;gap:6px;">
+              <input type="number" id="fSlNo" placeholder="e.g. 5" min="1" style="flex:1;">
+              <select id="fSlNoSuffix" title="Optional sub-letter for when several officers share this Batch No., e.g. 5(A), 5(B)" style="width:70px;">
+                <option value="">—</option>
+                <option value="A">(A)</option><option value="B">(B)</option><option value="C">(C)</option>
+                <option value="D">(D)</option><option value="E">(E)</option><option value="F">(F)</option><option value="G">(G)</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label>Name *</label>
@@ -404,10 +411,10 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
       <div class="card-body">
         <div class="csv-info">
           <strong>CSV columns:</strong>
-          <code>sl_no</code> (Batch No. — rank WITHIN this list/batch only, not overall seniority), <code>name</code>, <code>pen_no</code>, <code>order_no</code>, <code>feeder_category</code>,
+          <code>sl_no</code> (Batch No. — rank WITHIN this list/batch only, not overall seniority), <code>sl_no_suffix</code> (optional single letter A–G, for when several officers share one Batch No., e.g. 5(A), 5(B) — leave blank for a normal entry), <code>name</code>, <code>pen_no</code>, <code>order_no</code>, <code>feeder_category</code>,
           <code>dob</code> (YYYY-MM-DD), <code>retirement_age</code> (56 or 60), <code>status</code> (leave blank for Auto, or use <code>expired</code> / <code>relieved</code>)<br>
           Status is normally calculated automatically from DOB and retirement age (Active / Retiring Soon / Retired). Only set this column to <code>expired</code> or <code>relieved</code> when that override applies.<br>
-          <strong>Note:</strong> if a cadre has more than one list/batch, the overall <strong>Seniority No.</strong> shown in the officers table is calculated automatically — by chronological batch order, then by Batch No. within each batch — you don't set it directly.<br>
+          <strong>Note:</strong> if a cadre has more than one list/batch, the overall <strong>Seniority No.</strong> shown in the officers table is calculated automatically — by chronological batch order, then by Batch No. (and sub-letter, if any) within each batch — you don't set it directly.<br>
           Download the template → fill in officer details in Excel/Sheets → save as CSV → upload below.
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -560,7 +567,16 @@ tbody td{padding:8px 12px;font-size:13px;vertical-align:middle;}
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label>Batch No.</label><input type="number" id="mSlNo"></div>
+        <div class="form-group"><label>Batch No.</label>
+          <div style="display:flex;gap:6px;">
+            <input type="number" id="mSlNo" style="flex:1;">
+            <select id="mSlNoSuffix" title="Optional sub-letter, e.g. 5(A), 5(B)" style="width:70px;">
+              <option value="">—</option>
+              <option value="A">(A)</option><option value="B">(B)</option><option value="C">(C)</option>
+              <option value="D">(D)</option><option value="E">(E)</option><option value="F">(F)</option><option value="G">(G)</option>
+            </select>
+          </div>
+        </div>
         <div class="form-group"><label>List / Batch</label><input type="text" id="mListLabel" placeholder="e.g. 2009 Batch"></div>
         <div class="form-group"><label>Name *</label><input type="text" id="mName"></div>
         <div class="form-group"><label>PEN No.</label><input type="text" id="mPenNo"></div>
@@ -702,6 +718,28 @@ function extractYear(label){
   const m = String(label||'').match(/\d{4}/);
   return m ? parseInt(m[0]) : null;
 }
+// Compares two officers by Batch No., with an optional alphabetic sub-letter
+// (sl_no_suffix: 'A','B','C'…) for cases where several officers share the same
+// base Batch No. and need to be distinguished and ordered among themselves —
+// e.g. Batch No. 5 with two sub-entries displays as 5, 5(A), 5(B), then
+// continues to 6, 7… A plain entry (no suffix) always sorts BEFORE any
+// lettered entry sharing the same base number; among lettered entries, A
+// before B before C, alphabetically.
+function compareBatchNo(a,b){
+  const diff = (a.sl_no||0)-(b.sl_no||0);
+  if(diff!==0) return diff;
+  const as = (a.sl_no_suffix||'').toUpperCase();
+  const bs = (b.sl_no_suffix||'').toUpperCase();
+  if(as===bs) return 0;
+  if(!as) return -1; // no suffix sorts before any lettered entry
+  if(!bs) return 1;
+  return as<bs ? -1 : 1;
+}
+// Formats a Batch No. for display, e.g. 5 -> "5", with suffix "A" -> "5(A)".
+function formatBatchNo(o){
+  if(!o.sl_no) return '';
+  return o.sl_no_suffix ? `${o.sl_no}(${o.sl_no_suffix.toUpperCase()})` : `${o.sl_no}`;
+}
 // Computes the effective display status for an officer.
 // Manual overrides (expired/relieved) always win. An invalid/missing DOB is
 // surfaced as its own status rather than silently defaulting to Active.
@@ -776,7 +814,7 @@ function confirmLogout(){
     const got = rd ? `${rd.getFullYear()}-${String(rd.getMonth()+1).padStart(2,'0')}-${String(rd.getDate()).padStart(2,'0')}` : null;
     if(got!==expectedISO){ allOk=false; console.error('[seniority-admin self-test] retDate FAILED for', dob, age, '-> got', got, 'expected', expectedISO); }
   });
-  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-mergeclickpick — date validator + KSR retirement rule OK.');
+  if(allOk) console.log('[seniority-admin self-test] Build 2026-06-19-batchsuffix — date validator + KSR retirement rule OK.');
 })();
 
 document.addEventListener('adminReady', async () => {
@@ -877,10 +915,10 @@ function assignSeniorityNumbers(){
       // later promotion places them lower. This matches how seniority actually
       // works: someone promoted in later joins below everyone already serving,
       // and among those promoted in, the earlier promotion outranks the later one.
-      const original = g.officers.filter(o=>!o.promotion_date).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      const original = g.officers.filter(o=>!o.promotion_date).sort(compareBatchNo);
       const promotedIn = g.officers.filter(o=>o.promotion_date).sort((a,b)=>{
         const ad = new Date(a.promotion_date), bd = new Date(b.promotion_date);
-        if(isNaN(ad)||isNaN(bd)) return (a.sl_no||0)-(b.sl_no||0); // malformed date — fall back rather than corrupt the order
+        if(isNaN(ad)||isNaN(bd)) return compareBatchNo(a,b); // malformed date — fall back rather than corrupt the order
         return ad-bd;
       });
       g.officers = [...original, ...promotedIn];
@@ -911,7 +949,7 @@ function downloadTableCSVFromCsvPage(){
     toast('No officers to download — the list is empty. Check for a load error above the Officer Entry table.');
     return;
   }
-  const headers     = ['seniority_no','sl_no','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
+  const headers     = ['seniority_no','sl_no','sl_no_suffix','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
   const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   triggerDownload(csv,`seniority_${cadreFilter||'all'}_${new Date().toISOString().split('T')[0]}.csv`);
@@ -958,9 +996,9 @@ function populateInsertRef(cadreId){
   refSel.style.display = (pos==='before'||pos==='after') ? 'inline-block' : 'none';
   const listSel  = document.getElementById('fListLabel').value;
   const listLabel= listSel==='__new__' ? '' : listSel;
-  const officers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+  const officers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort(compareBatchNo);
   refSel.innerHTML = '<option value="">— Select Reference Officer —</option>'+
-    officers.map(o=>`<option value="${o.id}">${o.sl_no}. ${escH(o.name)}</option>`).join('');
+    officers.map(o=>`<option value="${o.id}">${formatBatchNo(o)}. ${escH(o.name)}</option>`).join('');
 }
 
 document.getElementById('fInsertPos').addEventListener('change',function(){
@@ -973,6 +1011,7 @@ async function saveOfficer(){
   const name     = document.getElementById('fName').value.trim();
   const penNo    = document.getElementById('fPenNo').value.trim();
   const slNo     = parseInt(document.getElementById('fSlNo').value)||0;
+  const slNoSuffix = document.getElementById('fSlNoSuffix').value;
   const orderNo  = document.getElementById('fOrderNo').value.trim();
   const feeder   = document.getElementById('fFeeder').value.trim();
   const dob      = document.getElementById('fDob').value;
@@ -1001,7 +1040,7 @@ async function saveOfficer(){
     // cadre legitimately reuse the same Sl. No. range, so a renumber in one list
     // must never shift Sl. No. values belonging to a different list.
     let finalSlNo = slNo;
-    const listOfficers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    const listOfficers = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'')===listLabel).sort(compareBatchNo);
     if(insertPos==='start'||insertPos==='before'||insertPos==='after'){
       let insertAt = 1;
       if(insertPos==='start') insertAt=1;
@@ -1028,7 +1067,7 @@ async function saveOfficer(){
     const listOrder = listLabel in existingLabels ? existingLabels[listLabel] : (Math.max(-1,...Object.values(existingLabels))+1);
 
     await addDoc(collection(window._db,'seniority_officers'),{
-      cadre:cadreId, sl_no:finalSlNo, list_label:listLabel, list_order:listOrder,
+      cadre:cadreId, sl_no:finalSlNo, sl_no_suffix:slNoSuffix, list_label:listLabel, list_order:listOrder,
       name, pen_no:penNo, order_no:orderNo,
       feeder_category:feeder, dob, retirement_age:retAge, status,
       qualified_for_promotion:qualified,
@@ -1043,6 +1082,7 @@ async function saveOfficer(){
 
 function clearForm(){
   ['fCadre','fSlNo','fName','fPenNo','fOrderNo','fFeeder','fDob','fEditId','fListLabelNew'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  document.getElementById('fSlNoSuffix').value='';
   document.getElementById('fRetAge').value='60';
   document.getElementById('fStatus').value='';
   document.getElementById('fQualified').value='yes';
@@ -1085,7 +1125,7 @@ function renderOfficersTable(officers){
     const pickRowClass = _mergePickMode ? ' class="merge-pick-row"' : '';
     return `<tr${pickRowClass}${pickAttr}>
       <td class="td-sl" style="font-weight:700;">${o.seniority_no||''}</td>
-      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-sl">${formatBatchNo(o)}</td>
       <td class="td-name">${escH(o.name||'')}</td>
       <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
       <td style="font-size:12px;">${escH(cadre?.short||o.cadre||'')}</td>
@@ -1175,7 +1215,7 @@ function findDuplicatePens(){
     g.forEach((o,oi)=>{
       html += `<label style="display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;cursor:pointer;">
         <input type="radio" name="dupeKeep-${gi}" value="${o.id}" ${oi===0?'checked':''}>
-        <span>Sl. ${o.sl_no||'—'} — ${escH(o.name||'')} — Order No. ${escH(o.order_no||'—')} — DOB ${escH(o.dob||'—')}</span>
+        <span>Sl. ${formatBatchNo(o)||'—'} — ${escH(o.name||'')} — Order No. ${escH(o.order_no||'—')} — DOB ${escH(o.dob||'—')}</span>
       </label>`;
     });
     html += `</div>`;
@@ -1283,7 +1323,7 @@ function previewBulkDeleteByOrder(){
   if(!cadreId||!orderNo){ results.innerHTML=''; return; }
 
   const matches = _officers.filter(o=>o.cadre===cadreId && (o.order_no||'').trim()===orderNo)
-                            .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+                            .sort(compareBatchNo);
   if(!matches.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No matching officers.</div>'; return; }
 
   let html = `<div style="font-size:12px;font-weight:700;color:var(--navy2);padding:6px 0;display:flex;justify-content:space-between;align-items:center;">
@@ -1300,7 +1340,7 @@ function previewBulkDeleteByOrder(){
   matches.forEach(o=>{
     html += `<tr>
       <td><input type="checkbox" class="bdo-check" data-id="${o.id}" checked></td>
-      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-sl">${formatBatchNo(o)}</td>
       <td class="td-name">${escH(o.name||'')}</td>
       <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
       <td style="font-size:12px;">${escH(o.dob||'')}</td>
@@ -1400,7 +1440,7 @@ function previewBulkDeleteByLabel(){
   if(!cadreId||!label){ results.innerHTML=''; return; }
 
   const matches = _officers.filter(o=>o.cadre===cadreId && (o.list_label||'(no label)')===label)
-                            .sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+                            .sort(compareBatchNo);
   if(!matches.length){ results.innerHTML = '<div style="color:var(--muted);font-size:12px;">No matching officers.</div>'; return; }
 
   let html = `<div style="font-size:12px;font-weight:700;color:var(--navy2);padding:6px 0;display:flex;justify-content:space-between;align-items:center;">
@@ -1417,7 +1457,7 @@ function previewBulkDeleteByLabel(){
   matches.forEach(o=>{
     html += `<tr>
       <td><input type="checkbox" class="bdl-check" data-id="${o.id}" checked></td>
-      <td class="td-sl">${o.sl_no||''}</td>
+      <td class="td-sl">${formatBatchNo(o)}</td>
       <td class="td-name">${escH(o.name||'')}</td>
       <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
       <td style="font-size:12px;">${escH(o.dob||'')}</td>
@@ -1972,6 +2012,7 @@ function openEditModal(id){
   const o = _officers.find(x=>x.id===id); if(!o)return;
   document.getElementById('mEditId').value  = id;
   document.getElementById('mSlNo').value    = o.sl_no||'';
+  document.getElementById('mSlNoSuffix').value = o.sl_no_suffix||'';
   document.getElementById('mListLabel').value = o.list_label||'';
   document.getElementById('mName').value    = o.name||'';
   document.getElementById('mPenNo').value   = o.pen_no||'';
@@ -2038,6 +2079,7 @@ async function saveEditModal(){
   try{
     await updateDoc(doc(window._db,'seniority_officers',id),{
       sl_no:parseInt(document.getElementById('mSlNo').value)||0,
+      sl_no_suffix:document.getElementById('mSlNoSuffix').value,
       list_label:listLabel, list_order:listOrder,
       name, pen_no:document.getElementById('mPenNo').value.trim(),
       order_no:document.getElementById('mOrderNo').value.trim(),
@@ -2268,7 +2310,7 @@ function loadPromotionCandidates(){
     return `<tr${alreadyRetiredToday?' style="background:#fffbeb;"':''}>
     <td><input type="checkbox" class="promo-check" data-id="${o.id}"></td>
     <td class="td-sl" style="font-weight:700;">${o.seniority_no||''}</td>
-    <td class="td-sl">${o.sl_no||''}</td>
+    <td class="td-sl">${formatBatchNo(o)}</td>
     <td class="td-name">${escH(o.name||'')}${alreadyRetiredToday?' <span style="font-size:11px;color:#b45309;font-weight:600;">(since retired — eligible as on the entered date)</span>':''}${vacancyNote}</td>
     <td style="font-size:12px;">${escH(o.pen_no||'')}</td>
     <td style="font-size:12px;">${escH(o.order_no||'')}</td>
@@ -2331,14 +2373,15 @@ async function submitPromotions(){
 
 // ── CSV ──
 function downloadTemplate(){
-  const csv = 'sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status\n';
+  const csv = 'sl_no,sl_no_suffix,name,pen_no,order_no,feeder_category,dob,retirement_age,status\n';
   triggerDownload(csv,'seniority_template.csv');
 }
 function downloadFilledTemplate(){
-  const csv = `sl_no,name,pen_no,order_no,feeder_category,dob,retirement_age,status
-1,Sample Officer A,100123,GO(P) 12/2020/Taxes,Deputy Commissioner,1970-05-15,60,
-2,Sample Officer B,100456,GO(P) 34/2021/Taxes,Deputy Commissioner,1968-11-22,60,
-3,Sample Officer C,100789,GO(P) 56/2019/Taxes,Deputy Commissioner,1966-03-08,56,relieved
+  const csv = `sl_no,sl_no_suffix,name,pen_no,order_no,feeder_category,dob,retirement_age,status
+1,,Sample Officer A,100123,GO(P) 12/2020/Taxes,Deputy Commissioner,1970-05-15,60,
+5,A,Sample Officer B (5A),100456,GO(P) 34/2021/Taxes,Deputy Commissioner,1968-11-22,60,
+5,B,Sample Officer C (5B),100789,GO(P) 56/2019/Taxes,Deputy Commissioner,1966-03-08,56,relieved
+6,,Sample Officer D,100999,GO(P) 70/2022/Taxes,Deputy Commissioner,1972-09-09,60,
 `;
   triggerDownload(csv,'seniority_sample.csv');
 }
@@ -2411,6 +2454,7 @@ function previewCSV(text){
     const get = (field)=>{ const ix=idx(field); return ix>=0 ? (cols[ix]||'').trim() : ''; };
 
     const sl_no          = get('sl_no');
+    const sl_no_suffix   = get('sl_no_suffix').toUpperCase();
     const name           = get('name');
     const pen_no         = get('pen_no');
     const order_no       = get('order_no');
@@ -2424,8 +2468,9 @@ function previewCSV(text){
     if(!name) err+='Missing name. ';
     if(dob && !isValidISODate(dob)) err+='DOB must be YYYY-MM-DD. ';
     if(retirement_age!=='56' && retirement_age!=='60') err+='Ret. Age must be 56 or 60. ';
+    if(sl_no_suffix && !/^[A-G]$/.test(sl_no_suffix)) err+='sl_no_suffix must be a single letter A–G. ';
 
-    rowsRaw.push({ sl_no:parseInt(sl_no)||0, name, pen_no, order_no, feeder_category, dob, retirement_age, status, _err:err });
+    rowsRaw.push({ sl_no:parseInt(sl_no)||0, sl_no_suffix, name, pen_no, order_no, feeder_category, dob, retirement_age, status, _err:err });
   }
 
   // Duplicate PEN No. checks, scoped to the selected cadre:
@@ -2449,7 +2494,7 @@ function previewCSV(text){
   let html = '';
   _csvRows.forEach(r=>{
     html += `<tr>
-      <td class="td-sl">${escH(r.sl_no||'')}</td>
+      <td class="td-sl">${escH(formatBatchNo(r))}</td>
       <td class="td-name">${escH(r.name)}</td>
       <td style="font-size:12px;">${escH(r.pen_no)}</td>
       <td style="font-size:12px;">${escH(r.order_no)}</td>
@@ -2513,7 +2558,7 @@ async function uploadCSV(){
       console.log('[uploadCSV] delete complete.');
     }
 
-    const existing = insertPos==='replace' ? [] : sameList.sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+    const existing = insertPos==='replace' ? [] : sameList.sort(compareBatchNo);
     let startSl = (insertPos==='start'||insertPos==='replace') ? 1 : (existing[existing.length-1]?.sl_no||0)+1;
     if(insertPos==='start' && existing.length){
       console.log('[uploadCSV] shifting', existing.length, 'existing officer(s) in this list to make room at the start…');
@@ -2552,7 +2597,7 @@ async function uploadCSV(){
         const sl = r.sl_no || startSl+i+j;
         const ref = doc(collection(window._db,'seniority_officers'));
         batch.set(ref,{
-          cadre:cadreId, sl_no:sl, list_label:listLabel, list_order:listOrder,
+          cadre:cadreId, sl_no:sl, sl_no_suffix:r.sl_no_suffix||'', list_label:listLabel, list_order:listOrder,
           name:r.name, pen_no:r.pen_no, order_no:r.order_no,
           feeder_category:r.feeder_category,
           dob:r.dob, retirement_age:r.retirement_age,
@@ -2583,7 +2628,7 @@ function downloadTableCSV(){
     toast('No officers to download — the list is empty. Check for a load error above the table.');
     return;
   }
-  const headers     = ['seniority_no','sl_no','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
+  const headers     = ['seniority_no','sl_no','sl_no_suffix','name','pen_no','cadre','order_no','feeder_category','dob','retirement_age','status'];
   const rows        = [headers,...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv         = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   triggerDownload(csv,`seniority_${cadreFilter||'all'}_${new Date().toISOString().split('T')[0]}.csv`);
