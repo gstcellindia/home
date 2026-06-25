@@ -367,6 +367,28 @@ function extractYear(label){
   const m = String(label||'').match(/\d{4}/);
   return m ? parseInt(m[0]) : null;
 }
+// Compares two officers by Batch No., with an optional alphabetic sub-letter
+// (sl_no_suffix: 'A','B','C'…) for cases where several officers share the same
+// base Batch No. and need to be distinguished and ordered among themselves —
+// e.g. Batch No. 5 with two sub-entries displays as 5, 5(A), 5(B), then
+// continues to 6, 7… A plain entry (no suffix) always sorts BEFORE any
+// lettered entry sharing the same base number; among lettered entries, A
+// before B before C, alphabetically.
+function compareBatchNo(a,b){
+  const diff = (a.sl_no||0)-(b.sl_no||0);
+  if(diff!==0) return diff;
+  const as = (a.sl_no_suffix||'').toUpperCase();
+  const bs = (b.sl_no_suffix||'').toUpperCase();
+  if(as===bs) return 0;
+  if(!as) return -1;
+  if(!bs) return 1;
+  return as<bs ? -1 : 1;
+}
+// Formats a Batch No. for display, e.g. 5 -> "5", with suffix "A" -> "5(A)".
+function formatBatchNo(o){
+  if(!o.sl_no) return '';
+  return o.sl_no_suffix ? `${o.sl_no}(${o.sl_no_suffix.toUpperCase()})` : `${o.sl_no}`;
+}
 // True if this officer record has been manually merged into another (higher
 // cadre) record by the admin. A merged record is kept in Firestore exactly
 // as-is, but is excluded from the seniority list, seniority numbering, and
@@ -427,10 +449,10 @@ function assignSeniorityNumbers(){
       // block, ordered chronologically among themselves by promotion_date —
       // an earlier promotion places that officer higher within this block, a
       // later promotion places them lower.
-      const original = g.officers.filter(o=>!o.promotion_date).sort((a,b)=>(a.sl_no||0)-(b.sl_no||0));
+      const original = g.officers.filter(o=>!o.promotion_date).sort(compareBatchNo);
       const promotedIn = g.officers.filter(o=>o.promotion_date).sort((a,b)=>{
         const ad = new Date(a.promotion_date), bd = new Date(b.promotion_date);
-        if(isNaN(ad)||isNaN(bd)) return (a.sl_no||0)-(b.sl_no||0);
+        if(isNaN(ad)||isNaN(bd)) return compareBatchNo(a,b);
         return ad-bd;
       });
       g.officers = [...original, ...promotedIn];
@@ -595,7 +617,7 @@ function renderTable(cadre, officers){
       const rdStr = rd ? `<span class="ret-date${isSoon?' soon':''}">${fmtDate(rd.toISOString().split('T')[0])}${o.retirement_age==56?' (56)':o.retirement_age==60?' (60)':''}</span>` : '—';
       rowsHtml += `<tr class="${rowClass}">
         <td class="sl" style="font-weight:700;">${o.seniority_no||''}</td>
-        ${showBatchNo ? `<td class="sl">${o.sl_no||''}</td>` : ''}
+        ${showBatchNo ? `<td class="sl">${formatBatchNo(o)}</td>` : ''}
         <td class="name">${escH(o.name||'')}</td>
         <td>${escH(o.pen_no||'')}</td>
         <td>${escH(o.order_no||'')}</td>
@@ -836,7 +858,7 @@ function downloadCSV(){
     return;
   }
   const cadre    = _cadres.find(c=>c.id===_activeCadre);
-  const headers  = ['seniority_no','list_label','sl_no','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
+  const headers  = ['seniority_no','list_label','sl_no','sl_no_suffix','name','pen_no','order_no','feeder_category','dob','retirement_age','status'];
   const rows     = [headers, ...officers.map(o=>headers.map(h=>o[h]||''))];
   const csv      = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a        = document.createElement('a');
