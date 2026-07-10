@@ -719,9 +719,19 @@
 
     <div id="dbIncomeBudgetModal" class="db-modal">
       <div class="db-modal-box" style="width:min(760px,96vw);max-height:90vh;overflow-y:auto;">
-        <h3 style="font-size:1rem;font-weight:600;margin-bottom:6px;color:#1a56db;">📊 Configure Income Heads for Budget</h3>
-        <p style="font-size:0.8rem;color:#6b7280;margin-bottom:14px;">For each income head choose how it should be treated in the budget. <b>Changeable</b> heads absorb the increase/decrease needed to make the total Income Budget equal the total Expenditure Budget. <b>Unchanged</b> heads keep their actual value. <b>Removed</b> heads are excluded from the budget entirely. You may also type a specific target value for any head — the shortfall/surplus will then be made up by the remaining changeable heads.</p>
-        <div id="dbIncomeBudgetRows" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:6px;color:#1a56db;">📊 Configure Heads for Budget</h3>
+        <div style="display:flex;gap:8px;margin-bottom:12px;border-bottom:1.5px solid #e5e7eb;">
+          <button type="button" id="dbBTab-income" onclick="dbSwitchBudgetTab('income')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.85rem;font-weight:600;color:#1a56db;border-bottom:2.5px solid #1a56db;">📈 Income Heads</button>
+          <button type="button" id="dbBTab-expenditure" onclick="dbSwitchBudgetTab('expenditure')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.85rem;font-weight:600;color:#6b7280;border-bottom:2.5px solid transparent;">📉 Expenditure Heads</button>
+        </div>
+        <div id="dbBPane-income">
+          <p style="font-size:0.8rem;color:#6b7280;margin-bottom:14px;">For each income head choose how it should be treated in the budget. <b>Changeable</b> heads absorb the increase/decrease needed to make the total Income Budget equal the total Expenditure Budget. <b>Unchanged</b> heads keep their actual value. <b>Removed</b> heads are excluded from the budget entirely. You may also type a specific target value for any head — the shortfall/surplus will then be made up by the remaining changeable heads.</p>
+          <div id="dbIncomeBudgetRows" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        </div>
+        <div id="dbBPane-expenditure" style="display:none;">
+          <p style="font-size:0.8rem;color:#6b7280;margin-bottom:14px;">For each expenditure head choose how it should be treated in the budget. <b>Changeable</b> heads absorb the increase/decrease needed to reach the overall expenditure budget target (actual +5%). <b>Unchanged</b> heads keep their actual value. <b>Removed</b> heads are excluded from the budget entirely. You may also type a specific target value for any head — the shortfall/surplus will then be made up by the remaining changeable heads.</p>
+          <div id="dbExpBudgetRows" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        </div>
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
           <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseIncomeBudgetConfig()">Cancel</button>
           <button class="btn-add-record" onclick="dbConfirmIncomeBudgetConfig()">Generate Report ▶</button>
@@ -2473,8 +2483,28 @@ function dbGetPeriodOpeningBalance(range){
   return {cash:runCash, bank:runBank};
 }
 
-// ── Income Budget Configuration (Changeable / Unchanged / Removed) ──
-let dbBudgetCtx=null; // holds {range, rows, incKeys, incG, expG, tInc, tExp}
+// ── Income & Expenditure Budget Configuration (Changeable / Unchanged / Removed) ──
+let dbBudgetCtx=null; // holds {range, rows, incKeys, incG, expKeys, expG, tInc, tExp}
+
+function dbSwitchBudgetTab(tab){
+  const isInc=tab==='income';
+  document.getElementById('dbBPane-income').style.display=isInc?'block':'none';
+  document.getElementById('dbBPane-expenditure').style.display=isInc?'none':'block';
+  const tI=document.getElementById('dbBTab-income'), tE=document.getElementById('dbBTab-expenditure');
+  tI.style.color=isInc?'#1a56db':'#6b7280'; tI.style.borderBottom=isInc?'2.5px solid #1a56db':'2.5px solid transparent';
+  tE.style.color=isInc?'#6b7280':'#1a56db'; tE.style.borderBottom=isInc?'2.5px solid transparent':'2.5px solid #1a56db';
+}
+
+function _dbBudgetRowHtml(prefix, k, actual){
+  return `
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;">
+      <div style="flex:1 1 180px;min-width:150px;font-size:0.85rem;font-weight:600;color:#1a3a6b;">${dbEscHtml(k)}<div style="font-weight:400;color:#6b7280;font-size:0.75rem;">Actual: ₹${dbFmt(actual)}</div></div>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="change" checked style="width:16px;height:16px;accent-color:#1a56db;"> Changeable</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="unchanged" style="width:16px;height:16px;accent-color:#1a56db;"> Unchanged</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="remove" style="width:16px;height:16px;accent-color:#1a56db;"> Removed</label>
+      <input type="number" step="0.01" id="${prefix}_val" placeholder="Specific value (optional)" style="flex:1 1 160px;min-width:150px;padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;font-size:0.8rem;">
+    </div>`;
+}
 
 function dbOpenIncomeBudgetConfig(){
   const range=dbGetPeriodRange(); if(!range)return;
@@ -2497,21 +2527,18 @@ function dbOpenIncomeBudgetConfig(){
   if(sLAB){incG['LAB Collections']=(incG['LAB Collections']||0)+sLAB;tInc+=sLAB;}
   if(sOC){incG['Other Cash']=(incG['Other Cash']||0)+sOC;tInc+=sOC;}
 
-  const incKeys=Object.keys(incG);
+  const incKeys=Object.keys(incG), expKeys=Object.keys(expG);
   if(!incKeys.length){ customAlert('No income records found for the selected period.'); return; }
+  if(!expKeys.length){ customAlert('No expenditure records found for the selected period.'); return; }
 
-  dbBudgetCtx={range,rows,incKeys,incG,expG,tInc,tExp};
+  dbBudgetCtx={range,rows,incKeys,incG,expKeys,expG,tInc,tExp};
 
-  const rowsHtml=incKeys.map((k,i)=>`
-    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;">
-      <div style="flex:1 1 180px;min-width:150px;font-size:0.85rem;font-weight:600;color:#1a3a6b;">${dbEscHtml(k)}<div style="font-weight:400;color:#6b7280;font-size:0.75rem;">Actual: ₹${dbFmt(incG[k])}</div></div>
-      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="ibMode_${i}" value="change" checked style="width:16px;height:16px;accent-color:#1a56db;"> Changeable</label>
-      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="ibMode_${i}" value="unchanged" style="width:16px;height:16px;accent-color:#1a56db;"> Unchanged</label>
-      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="ibMode_${i}" value="remove" style="width:16px;height:16px;accent-color:#1a56db;"> Removed</label>
-      <input type="number" step="0.01" id="ibVal_${i}" placeholder="Specific value (optional)" style="flex:1 1 160px;min-width:150px;padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;font-size:0.8rem;">
-    </div>`).join('');
-  document.getElementById('dbIncomeBudgetRows').innerHTML=rowsHtml;
+  document.getElementById('dbIncomeBudgetRows').innerHTML=
+    incKeys.map((k,i)=>_dbBudgetRowHtml('ibMode_'+i, k, incG[k])).join('');
+  document.getElementById('dbExpBudgetRows').innerHTML=
+    expKeys.map((k,i)=>_dbBudgetRowHtml('ebMode_'+i, k, expG[k])).join('');
 
+  dbSwitchBudgetTab('income');
   dbCloseReportModal();
   document.getElementById('dbIncomeBudgetModal').style.display='flex';
 }
@@ -2520,20 +2547,17 @@ function dbCloseIncomeBudgetConfig(){
   document.getElementById('dbIncomeBudgetModal').style.display='none';
 }
 
-function dbConfirmIncomeBudgetConfig(){
-  if(!dbBudgetCtx) return;
-  const {range,incKeys,incG,expG,tInc,tExp}=dbBudgetCtx;
-
-  const cfg=incKeys.map((k,i)=>{
-    const modeEl=document.querySelector(`input[name="ibMode_${i}"]:checked`);
+// Reads the radio + specific-value config for a set of heads and computes
+// budgeted amounts against a given target total, distributing the
+// increase/decrease across "changeable" heads that have no specific value.
+function _dbComputeBudget(keys, group, prefix, target){
+  const cfg=keys.map((k,i)=>{
+    const modeEl=document.querySelector(`input[name="${prefix}_${i}"]:checked`);
     const mode=modeEl?modeEl.value:'change';
-    const valEl=document.getElementById(`ibVal_${i}`);
+    const valEl=document.getElementById(`${prefix}_${i}_val`);
     const specific=(valEl && valEl.value!=='' && !isNaN(parseFloat(valEl.value)))?parseFloat(valEl.value):null;
-    return {head:k, actual:incG[k]||0, mode, specific};
+    return {head:k, actual:group[k]||0, mode, specific};
   });
-
-  const bExpT=tExp*1.05; // Expenditure budget total (unchanged logic, +5%)
-  const target=bExpT;    // Income budget total must equal expenditure budget total
 
   const included=cfg.filter(c=>c.mode!=='remove');
   let fixedSum=0;
@@ -2544,12 +2568,11 @@ function dbConfirmIncomeBudgetConfig(){
     else { flexible.push(c); } // changeable, no specific value -> absorbs the balance
   });
 
-  let remaining=target-fixedSum;
+  const remaining=target-fixedSum;
   const flexActualSum=flexible.reduce((s,c)=>s+c.actual,0);
   let factor=1;
   if(flexible.length){
-    if(flexActualSum>0){ factor=remaining/flexActualSum; }
-    else { factor=null; } // will split evenly below
+    factor = flexActualSum>0 ? remaining/flexActualSum : null;
   }
 
   const result=included.map(c=>{
@@ -2557,48 +2580,66 @@ function dbConfirmIncomeBudgetConfig(){
     if(c.specific!==null) budget=c.specific;
     else if(c.mode==='unchanged') budget=c.actual;
     else { // changeable
-      if(factor!==null) budget=c.actual*factor;
-      else budget=flexible.length? remaining/flexible.length : 0;
+      budget = factor!==null ? c.actual*factor : (flexible.length? remaining/flexible.length : 0);
     }
     return {head:c.head, actual:c.actual, budget};
   });
 
-  const tIncActual=result.reduce((s,r)=>s+r.actual,0);
-  const tIncBudget=result.reduce((s,r)=>s+r.budget,0);
-  const mismatch=Math.abs(tIncBudget-target)>0.5;
+  const tActual=result.reduce((s,r)=>s+r.actual,0);
+  const tBudget=result.reduce((s,r)=>s+r.budget,0);
+  const mismatch=Math.abs(tBudget-target)>0.5;
+  return {result, tActual, tBudget, mismatch};
+}
 
-  dbRenderBudgetReport(range, result, expG, tExp, bExpT, tIncActual, tIncBudget, mismatch);
+function dbConfirmIncomeBudgetConfig(){
+  if(!dbBudgetCtx) return;
+  const {range,incKeys,incG,expKeys,expG,tExp}=dbBudgetCtx;
+
+  // Step 1: Expenditure heads — target is the overall +5% growth on actual expenditure.
+  const expTarget=tExp*1.05;
+  const expCalc=_dbComputeBudget(expKeys, expG, 'ebMode', expTarget);
+
+  // Step 2: Income heads — target is whatever the expenditure budget actually
+  // came out to, so the two totals always match by construction.
+  const incCalc=_dbComputeBudget(incKeys, incG, 'ibMode', expCalc.tBudget);
+
+  dbRenderBudgetReport(range, incCalc, expCalc);
   dbCloseIncomeBudgetConfig();
 }
 
-function dbRenderBudgetReport(range, incResult, expG, tExp, bExpT, tIncActual, tIncBudget, mismatch){
+function dbRenderBudgetReport(range, incCalc, expCalc){
   const w=window.open('','_blank','width=1100,height=800');
   if(!w){customAlert('Popup blocked. Please allow popups.');return;}
   const orgName=currentUserProfile?.name||'HMC';
   const period=range.label;
   const td=(content,style='')=>`<td style="border:1px solid #c8d3f0;padding:4px 7px;${style}">${content}</td>`;
-  const th=(content,style='')=>`<th style="background:#1a56db;color:white;padding:6px 8px;border:1px solid #4a7cc0;${style}">${content}</th>`;
   const thL=(content,style='')=>`<th style="background:#e8f0fe;color:#1a3a6b;padding:6px 8px;border:1px solid #c8d3f0;font-weight:600;${style}">${content}</th>`;
 
-  const expKeys=Object.keys(expG);
-  const maxLen=Math.max(incResult.length,expKeys.length);
+  const {result:incResult, tActual:tIncActual, tBudget:tIncBudget, mismatch:incMismatch}=incCalc;
+  const {result:expResult, tActual:tExpActual, tBudget:tExpBudget, mismatch:expMismatch}=expCalc;
+
+  const maxLen=Math.max(incResult.length,expResult.length);
   const incFactorPct=tIncActual>0?((tIncBudget/tIncActual-1)*100).toFixed(2):'0.00';
+  const expFactorPct=tExpActual>0?((tExpBudget/tExpActual-1)*100).toFixed(2):'0.00';
 
   let body=`<table style="width:100%;border-collapse:collapse;font-size:11px;">
     <thead><tr>
       <th colspan="3" style="background:#1a56db;color:white;padding:6px;border:1px solid #4a7cc0;text-align:center;">Income (${incFactorPct>=0?'+':''}${incFactorPct}%)</th>
-      <th colspan="3" style="background:#1a56db;color:white;padding:6px;border:1px solid #4a7cc0;text-align:center;">Expenditure (+5%)</th>
+      <th colspan="3" style="background:#1a56db;color:white;padding:6px;border:1px solid #4a7cc0;text-align:center;">Expenditure (${expFactorPct>=0?'+':''}${expFactorPct}%)</th>
     </tr>
     <tr style="background:#e8f0fe;">${thL('Head')}${thL('Actual','text-align:right')}${thL('Budget','text-align:right;color:#065f46')}${thL('Head')}${thL('Actual','text-align:right')}${thL('Budget','text-align:right;color:#1e3a8a')}</tr>
     </thead><tbody>`;
   for(let i=0;i<maxLen;i++){
-    const ir=incResult[i],ek=expKeys[i]||'',ea=ek?expG[ek]:null;
-    body+=`<tr>${td(ir?dbEscHtml(ir.head):'')}${td(ir?'₹'+dbFmt(ir.actual):'','text-align:right')}${td(ir?'₹'+dbFmt(ir.budget):'','text-align:right;background:#f0fdf4')}${td(dbEscHtml(ek))}${td(ea!==null?'₹'+dbFmt(ea):'','text-align:right')}${td(ea!==null?'₹'+dbFmt(ea*1.05):'','text-align:right;background:#eff6ff')}</tr>`;
+    const ir=incResult[i],er=expResult[i];
+    body+=`<tr>${td(ir?dbEscHtml(ir.head):'')}${td(ir?'₹'+dbFmt(ir.actual):'','text-align:right')}${td(ir?'₹'+dbFmt(ir.budget):'','text-align:right;background:#f0fdf4')}${td(er?dbEscHtml(er.head):'')}${td(er?'₹'+dbFmt(er.actual):'','text-align:right')}${td(er?'₹'+dbFmt(er.budget):'','text-align:right;background:#eff6ff')}</tr>`;
   }
-  body+=`<tr style="background:#e8f0fe;font-weight:700;">${td('Total','font-weight:700')}${td('₹'+dbFmt(tIncActual),'text-align:right;font-weight:700')}${td('₹'+dbFmt(tIncBudget),'text-align:right;font-weight:700')}${td('Total','font-weight:700')}${td('₹'+dbFmt(tExp),'text-align:right;font-weight:700')}${td('₹'+dbFmt(bExpT),'text-align:right;font-weight:700')}</tr>`;
+  body+=`<tr style="background:#e8f0fe;font-weight:700;">${td('Total','font-weight:700')}${td('₹'+dbFmt(tIncActual),'text-align:right;font-weight:700')}${td('₹'+dbFmt(tIncBudget),'text-align:right;font-weight:700')}${td('Total','font-weight:700')}${td('₹'+dbFmt(tExpActual),'text-align:right;font-weight:700')}${td('₹'+dbFmt(tExpBudget),'text-align:right;font-weight:700')}</tr>`;
   body+='</tbody></table>';
-  if(mismatch){
-    body+=`<p style="color:#b91c1c;font-size:11px;margin-top:8px;">⚠ Note: Income Budget total (₹${dbFmt(tIncBudget)}) does not exactly equal Expenditure Budget total (₹${dbFmt(bExpT)}) because there were no changeable income heads left to absorb the full adjustment. Consider marking at least one head as Changeable without a specific value.</p>`;
+  if(expMismatch){
+    body+=`<p style="color:#b91c1c;font-size:11px;margin-top:8px;">⚠ Note: Expenditure Budget total (₹${dbFmt(tExpBudget)}) does not exactly equal the intended target (actual +5%) because there were no changeable expenditure heads left to absorb the full adjustment.</p>`;
+  }
+  if(incMismatch){
+    body+=`<p style="color:#b91c1c;font-size:11px;margin-top:4px;">⚠ Note: Income Budget total (₹${dbFmt(tIncBudget)}) does not exactly equal the Expenditure Budget total (₹${dbFmt(tExpBudget)}) because there were no changeable income heads left to absorb the full adjustment. Consider marking at least one head as Changeable without a specific value.</p>`;
   }
 
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Budget Statement</title>
@@ -2622,6 +2663,7 @@ function dbRenderBudgetReport(range, incResult, expG, tExp, bExpT, tIncActual, t
   </body></html>`);
   w.document.close();
 }
+
 
 function dbGenerateReport(type){
   const range=dbGetPeriodRange(); if(!range)return;
