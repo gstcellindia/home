@@ -2441,6 +2441,26 @@ function dbGetRowsForPeriod(range){
   });
 }
 
+// Compute the TRUE opening balance for the selected report period.
+// The dbObCash/dbObBank fields only hold the fiscal year's starting balance.
+// For any period that doesn't start at the beginning of the year (a quarter,
+// or a custom "split by date" range), we must carry forward every transaction
+// dated before the period's start so the report opens with the correct
+// carried-forward balance instead of the raw fiscal-year opening balance.
+function dbGetPeriodOpeningBalance(range){
+  const obC=parseFloat(document.getElementById('dbObCash').value)||0;
+  const obB=parseFloat(document.getElementById('dbObBank').value)||0;
+  let runCash=obC, runBank=obB;
+  dbAllPreviewRows.forEach(r=>{
+    const d=(r.date||'').trim();
+    if(d && range.from && d<range.from){
+      runCash += (r.op||0)+(r.lab||0)+(r.otherCash||0)-(r.bank||0);
+      runBank += (r.income||0)-(r.exp||0)+(r.bank||0);
+    }
+  });
+  return {cash:runCash, bank:runBank};
+}
+
 function dbGenerateReport(type){
   const range=dbGetPeriodRange(); if(!range)return;
   const rows=dbGetRowsForPeriod(range);
@@ -2474,8 +2494,7 @@ function dbGenerateReport(type){
     // Group rows by date
     const byDate={};
     rows.forEach(r=>{ const d=r.date||''; if(!d)return; if(!byDate[d])byDate[d]=[]; byDate[d].push(r); });
-    const obC=parseFloat(document.getElementById('dbObCash').value)||0;
-    const obB=parseFloat(document.getElementById('dbObBank').value)||0;
+    const {cash:obC, bank:obB} = dbGetPeriodOpeningBalance(range);
     let runCash=obC, runBank=obB;
     const dates=Object.keys(byDate).sort();
 
@@ -2560,8 +2579,7 @@ function dbGenerateReport(type){
 
   // ── FORUM (Receipts & Payments) — headwise split ──
   } else if(type==='forum'){
-    const obC=parseFloat(document.getElementById('dbObCash').value)||0;
-    const obB=parseFloat(document.getElementById('dbObBank').value)||0;
+    const {cash:obC, bank:obB} = dbGetPeriodOpeningBalance(range);
     // Aggregate by head
     const cashHeads={OP:0,LAB:0}, bankInc={}, bankExp={};
     let tBD=0;
@@ -2747,6 +2765,7 @@ function dbGenerateReport(type){
   <p class="period">Period: ${dbEscHtml(period)}</p>
   <div class="no-print" style="margin:10px 0;">
     <button onclick="window.print()" style="padding:6px 16px;border:none;border-radius:6px;background:#1a56db;color:white;cursor:pointer;font-size:12px;font-weight:600;">🖨️ Print</button>
+    <button onclick="if(window.opener&&!window.opener.closed&&window.opener.dbOpenReportModal){window.opener.dbOpenReportModal();window.opener.focus();} window.close();" style="padding:6px 16px;border:none;border-radius:6px;background:#6b7280;color:white;cursor:pointer;font-size:12px;font-weight:600;margin-left:8px;">✖ Close</button>
   </div>
   ${body}
   </body></html>`);
