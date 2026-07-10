@@ -729,7 +729,7 @@
           <div id="dbIncomeBudgetRows" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
         </div>
         <div id="dbBPane-expenditure" style="display:none;">
-          <p style="font-size:0.8rem;color:#6b7280;margin-bottom:14px;">For each expenditure head choose how it should be treated in the budget. <b>Changeable</b> heads absorb the increase/decrease needed to reach the overall expenditure budget target (actual +5%). <b>Unchanged</b> heads keep their actual value. <b>Removed</b> heads are excluded from the budget entirely. You may also type a specific target value for any head — the shortfall/surplus will then be made up by the remaining changeable heads.</p>
+          <p style="font-size:0.8rem;color:#6b7280;margin-bottom:14px;">For each expenditure head choose how it should be treated in the budget. <b>Changeable</b> heads are individually increased by 5% over their actual amount. <b>Unchanged</b> heads keep their actual value (no 5% increase). <b>Removed</b> heads are excluded from the budget entirely. You may also type a specific target value for any head, which will be used as-is instead of the actual/5%-increase rule. The Expenditure Budget total is simply the sum of all included heads after applying these rules.</p>
           <div id="dbExpBudgetRows" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
@@ -2506,10 +2506,21 @@ function _dbBudgetRowHtml(prefix, k, actual){
     </div>`;
 }
 
+// Given a fiscal-year string like "2025-26" or "2025-2026", returns the
+// following fiscal year in the same "YYYY-YY" style, e.g. "2026-27".
+function dbNextFYLabel(yearStr){
+  let startYear=new Date().getFullYear(),endYear=startYear+1;
+  const m=(yearStr||'').match(/^(\d{4})-(\d{2,4})$/);
+  if(m){startYear=parseInt(m[1]);endYear=m[2].length===2?parseInt(m[1].substring(0,2)+m[2]):parseInt(m[2]);}
+  const nStart=startYear+1, nEnd=endYear+1;
+  return `${nStart}-${String(nEnd).slice(-2)}`;
+}
+
 function dbOpenIncomeBudgetConfig(){
   const range=dbGetPeriodRange(); if(!range)return;
   const rows=dbGetRowsForPeriod(range);
   if(!rows.length){ customAlert('No records found for the selected period.'); return; }
+  const selectedYear=document.getElementById('dbTargetSheet').value;
 
   const isMlReport=(dbCurrentLang==='ml');
   const _headMap={};
@@ -2531,7 +2542,7 @@ function dbOpenIncomeBudgetConfig(){
   if(!incKeys.length){ customAlert('No income records found for the selected period.'); return; }
   if(!expKeys.length){ customAlert('No expenditure records found for the selected period.'); return; }
 
-  dbBudgetCtx={range,rows,incKeys,incG,expKeys,expG,tInc,tExp};
+  dbBudgetCtx={range,rows,incKeys,incG,expKeys,expG,tInc,tExp,selectedYear};
 
   document.getElementById('dbIncomeBudgetRows').innerHTML=
     incKeys.map((k,i)=>_dbBudgetRowHtml('ibMode_'+i, k, incG[k])).join('');
@@ -2550,6 +2561,7 @@ function dbCloseIncomeBudgetConfig(){
 // Reads the radio + specific-value config for a set of heads and computes
 // budgeted amounts against a given target total, distributing the
 // increase/decrease across "changeable" heads that have no specific value.
+// (Used for Income — behaviour unchanged from before.)
 function _dbComputeBudget(keys, group, prefix, target){
   const cfg=keys.map((k,i)=>{
     const modeEl=document.querySelector(`input[name="${prefix}_${i}"]:checked`);
@@ -2591,32 +2603,61 @@ function _dbComputeBudget(keys, group, prefix, target){
   return {result, tActual, tBudget, mismatch};
 }
 
+// Reads the radio + specific-value config for the expenditure heads and
+// computes each head's budget independently — NOT against an overall target.
+// Removed heads are excluded. Unchanged heads keep their actual value.
+// Specific-value heads use the typed value. Every other (Changeable) head
+// simply gets its own actual amount increased by 5%. The expenditure budget
+// total is just the sum of these individually-computed figures.
+function _dbComputeExpenditureBudget(keys, group, prefix){
+  const cfg=keys.map((k,i)=>{
+    const modeEl=document.querySelector(`input[name="${prefix}_${i}"]:checked`);
+    const mode=modeEl?modeEl.value:'change';
+    const valEl=document.getElementById(`${prefix}_${i}_val`);
+    const specific=(valEl && valEl.value!=='' && !isNaN(parseFloat(valEl.value)))?parseFloat(valEl.value):null;
+    return {head:k, actual:group[k]||0, mode, specific};
+  });
+
+  const result=cfg.filter(c=>c.mode!=='remove').map(c=>{
+    let budget;
+    if(c.specific!==null) budget=c.specific;
+    else if(c.mode==='unchanged') budget=c.actual;
+    else budget=c.actual*1.05; // changeable: this head individually increased by 5%
+    return {head:c.head, actual:c.actual, budget};
+  });
+
+  const tActual=result.reduce((s,r)=>s+r.actual,0);
+  const tBudget=result.reduce((s,r)=>s+r.budget,0);
+  return {result, tActual, tBudget};
+}
+
 function dbConfirmIncomeBudgetConfig(){
   if(!dbBudgetCtx) return;
-  const {range,incKeys,incG,expKeys,expG,tExp}=dbBudgetCtx;
+  const {range,incKeys,incG,expKeys,expG,selectedYear}=dbBudgetCtx;
 
-  // Step 1: Expenditure heads — target is the overall +5% growth on actual expenditure.
-  const expTarget=tExp*1.05;
-  const expCalc=_dbComputeBudget(expKeys, expG, 'ebMode', expTarget);
+  // Step 1: Expenditure heads — each Changeable head is individually raised
+  // by 5% over its own actual (no aggregate 5%-of-total calculation).
+  const expCalc=_dbComputeExpenditureBudget(expKeys, expG, 'ebMode');
 
-  // Step 2: Income heads — target is whatever the expenditure budget actually
-  // came out to, so the two totals always match by construction.
+  // Step 2: Income heads — unchanged behaviour: target is whatever the
+  // expenditure budget actually came out to, so the two totals match.
   const incCalc=_dbComputeBudget(incKeys, incG, 'ibMode', expCalc.tBudget);
 
-  dbRenderBudgetReport(range, incCalc, expCalc);
+  dbRenderBudgetReport(range, incCalc, expCalc, selectedYear);
   dbCloseIncomeBudgetConfig();
 }
 
-function dbRenderBudgetReport(range, incCalc, expCalc){
+function dbRenderBudgetReport(range, incCalc, expCalc, selectedYear){
   const w=window.open('','_blank','width=1100,height=800');
   if(!w){customAlert('Popup blocked. Please allow popups.');return;}
   const orgName=currentUserProfile?.name||'HMC';
   const period=range.label;
+  const nextYearLabel=dbNextFYLabel(selectedYear);
   const td=(content,style='')=>`<td style="border:1px solid #c8d3f0;padding:4px 7px;${style}">${content}</td>`;
   const thL=(content,style='')=>`<th style="background:#e8f0fe;color:#1a3a6b;padding:6px 8px;border:1px solid #c8d3f0;font-weight:600;${style}">${content}</th>`;
 
   const {result:incResult, tActual:tIncActual, tBudget:tIncBudget, mismatch:incMismatch}=incCalc;
-  const {result:expResult, tActual:tExpActual, tBudget:tExpBudget, mismatch:expMismatch}=expCalc;
+  const {result:expResult, tActual:tExpActual, tBudget:tExpBudget}=expCalc;
 
   const maxLen=Math.max(incResult.length,expResult.length);
   const incFactorPct=tIncActual>0?((tIncBudget/tIncActual-1)*100).toFixed(2):'0.00';
@@ -2635,11 +2676,8 @@ function dbRenderBudgetReport(range, incCalc, expCalc){
   }
   body+=`<tr style="background:#e8f0fe;font-weight:700;">${td('Total','font-weight:700')}${td('₹'+dbFmt(tIncActual),'text-align:right;font-weight:700')}${td('₹'+dbFmt(tIncBudget),'text-align:right;font-weight:700')}${td('Total','font-weight:700')}${td('₹'+dbFmt(tExpActual),'text-align:right;font-weight:700')}${td('₹'+dbFmt(tExpBudget),'text-align:right;font-weight:700')}</tr>`;
   body+='</tbody></table>';
-  if(expMismatch){
-    body+=`<p style="color:#b91c1c;font-size:11px;margin-top:8px;">⚠ Note: Expenditure Budget total (₹${dbFmt(tExpBudget)}) does not exactly equal the intended target (actual +5%) because there were no changeable expenditure heads left to absorb the full adjustment.</p>`;
-  }
   if(incMismatch){
-    body+=`<p style="color:#b91c1c;font-size:11px;margin-top:4px;">⚠ Note: Income Budget total (₹${dbFmt(tIncBudget)}) does not exactly equal the Expenditure Budget total (₹${dbFmt(tExpBudget)}) because there were no changeable income heads left to absorb the full adjustment. Consider marking at least one head as Changeable without a specific value.</p>`;
+    body+=`<p style="color:#b91c1c;font-size:11px;margin-top:8px;">⚠ Note: Income Budget total (₹${dbFmt(tIncBudget)}) does not exactly equal the Expenditure Budget total (₹${dbFmt(tExpBudget)}) because there were no changeable income heads left to absorb the full adjustment. Consider marking at least one head as Changeable without a specific value.</p>`;
   }
 
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Budget Statement</title>
@@ -2653,8 +2691,8 @@ function dbRenderBudgetReport(range, incCalc, expCalc){
     @media print{.no-print{display:none}body{margin:8px;}}
   </style></head><body>
   <h1>${dbEscHtml(orgName)}</h1>
-  <h2>Budget Statement</h2>
-  <p class="period">Period: ${dbEscHtml(period)}</p>
+  <h2>Budget for the Year ${dbEscHtml(nextYearLabel)}</h2>
+  <p class="period">(on the basis of the Year ${dbEscHtml(selectedYear)} — Period: ${dbEscHtml(period)})</p>
   <div class="no-print" style="margin:10px 0;">
     <button onclick="window.print()" style="padding:6px 16px;border:none;border-radius:6px;background:#1a56db;color:white;cursor:pointer;font-size:12px;font-weight:600;">🖨️ Print</button>
     <button onclick="if(window.opener&&!window.opener.closed&&window.opener.dbOpenReportModal){window.opener.dbOpenReportModal();window.opener.focus();} window.close();" style="padding:6px 16px;border:none;border-radius:6px;background:#6b7280;color:white;cursor:pointer;font-size:12px;font-weight:600;margin-left:8px;">✖ Close</button>
@@ -2663,6 +2701,7 @@ function dbRenderBudgetReport(range, incCalc, expCalc){
   </body></html>`);
   w.document.close();
 }
+
 
 
 function dbGenerateReport(type){
