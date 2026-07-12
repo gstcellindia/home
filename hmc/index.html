@@ -720,6 +720,7 @@
     <div id="dbIncomeBudgetModal" class="db-modal">
       <div class="db-modal-box" style="width:min(760px,96vw);max-height:90vh;overflow-y:auto;">
         <h3 style="font-size:1rem;font-weight:600;margin-bottom:6px;color:#1a56db;">📊 Configure Heads for Budget</h3>
+        <div id="dbBudgetSavedNote" style="display:none;font-size:0.78rem;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:6px;padding:6px 10px;margin-bottom:10px;"></div>
         <div style="display:flex;gap:8px;margin-bottom:12px;border-bottom:1.5px solid #e5e7eb;">
           <button type="button" id="dbBTab-income" onclick="dbSwitchBudgetTab('income')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.85rem;font-weight:600;color:#1a56db;border-bottom:2.5px solid #1a56db;">📈 Income Heads</button>
           <button type="button" id="dbBTab-expenditure" onclick="dbSwitchBudgetTab('expenditure')" style="padding:8px 16px;border:none;background:none;cursor:pointer;font-size:0.85rem;font-weight:600;color:#6b7280;border-bottom:2.5px solid transparent;">📉 Expenditure Heads</button>
@@ -2495,14 +2496,17 @@ function dbSwitchBudgetTab(tab){
   tE.style.color=isInc?'#6b7280':'#1a56db'; tE.style.borderBottom=isInc?'2.5px solid transparent':'2.5px solid #1a56db';
 }
 
-function _dbBudgetRowHtml(prefix, k, actual){
+function _dbBudgetRowHtml(prefix, k, actual, saved){
+  const sMode=(saved && saved.mode) ? saved.mode : 'change';
+  const sVal=(saved && saved.specific!==null && saved.specific!==undefined) ? saved.specific : '';
+  const chk=(v)=> sMode===v ? 'checked' : '';
   return `
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;">
       <div style="flex:1 1 180px;min-width:150px;font-size:0.85rem;font-weight:600;color:#1a3a6b;">${dbEscHtml(k)}<div style="font-weight:400;color:#6b7280;font-size:0.75rem;">Actual: ₹${dbFmt(actual)}</div></div>
-      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="change" checked style="width:16px;height:16px;accent-color:#1a56db;"> Changeable</label>
-      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="unchanged" style="width:16px;height:16px;accent-color:#1a56db;"> Unchanged</label>
-      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="remove" style="width:16px;height:16px;accent-color:#1a56db;"> Removed</label>
-      <input type="number" step="0.01" id="${prefix}_val" placeholder="Specific value (optional)" style="flex:1 1 160px;min-width:150px;padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;font-size:0.8rem;">
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="change" ${chk('change')} style="width:16px;height:16px;accent-color:#1a56db;"> Changeable</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="unchanged" ${chk('unchanged')} style="width:16px;height:16px;accent-color:#1a56db;"> Unchanged</label>
+      <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:#374151;cursor:pointer;"><input type="radio" name="${prefix}" value="remove" ${chk('remove')} style="width:16px;height:16px;accent-color:#1a56db;"> Removed</label>
+      <input type="number" step="0.01" id="${prefix}_val" value="${sVal}" placeholder="Specific value (optional)" style="flex:1 1 160px;min-width:150px;padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;font-size:0.8rem;">
     </div>`;
 }
 
@@ -2516,11 +2520,55 @@ function dbNextFYLabel(yearStr){
   return `${nStart}-${String(nEnd).slice(-2)}`;
 }
 
-function dbOpenIncomeBudgetConfig(){
+// ── Persisted Budget-Heads Configuration (per Year + Period) ──
+// Stored at hmc_daybook/{uid}/years/{year}/meta/budgetConfig as a map keyed
+// by period id ('year','q1','q2','q3','q4', or 'custom_<from>_<to>'), each
+// holding { income:{head:{mode,specific}}, expenditure:{head:{mode,specific}} }.
+function dbBudgetPeriodKey(range){
+  if(dbCurrentPeriod==='custom') return `custom_${range.from}_${range.to}`;
+  return dbCurrentPeriod;
+}
+
+async function dbLoadBudgetConfig(year, periodKey){
+  if(!currentUser) return null;
+  try{
+    const snap=await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${year}/meta/budgetConfig`));
+    if(snap.exists()){
+      const data=snap.data();
+      return data[periodKey]||null;
+    }
+  }catch(e){ console.error('Failed to load saved budget heads configuration', e); }
+  return null;
+}
+
+async function dbSaveBudgetConfig(year, periodKey, incCfg, expCfg){
+  if(!currentUser) return;
+  try{
+    await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${year}/meta/budgetConfig`),
+      { [periodKey]: { income:incCfg, expenditure:expCfg, savedAt: Date.now() } }, { merge:true });
+  }catch(e){ console.error('Failed to save budget heads configuration', e); }
+}
+
+// Reads the current radio + specific-value selection for a set of heads,
+// returning a plain {head:{mode,specific}} map suitable for saving.
+function _dbReadBudgetConfig(keys, prefix){
+  const cfg={};
+  keys.forEach((k,i)=>{
+    const modeEl=document.querySelector(`input[name="${prefix}_${i}"]:checked`);
+    const mode=modeEl?modeEl.value:'change';
+    const valEl=document.getElementById(`${prefix}_${i}_val`);
+    const specific=(valEl && valEl.value!=='' && !isNaN(parseFloat(valEl.value)))?parseFloat(valEl.value):null;
+    cfg[k]={mode,specific};
+  });
+  return cfg;
+}
+
+async function dbOpenIncomeBudgetConfig(){
   const range=dbGetPeriodRange(); if(!range)return;
   const rows=dbGetRowsForPeriod(range);
   if(!rows.length){ customAlert('No records found for the selected period.'); return; }
   const selectedYear=document.getElementById('dbTargetSheet').value;
+  const periodKey=dbBudgetPeriodKey(range);
 
   const isMlReport=(dbCurrentLang==='ml');
   const _headMap={};
@@ -2542,12 +2590,26 @@ function dbOpenIncomeBudgetConfig(){
   if(!incKeys.length){ customAlert('No income records found for the selected period.'); return; }
   if(!expKeys.length){ customAlert('No expenditure records found for the selected period.'); return; }
 
-  dbBudgetCtx={range,rows,incKeys,incG,expKeys,expG,tInc,tExp,selectedYear};
+  dbBudgetCtx={range,rows,incKeys,incG,expKeys,expG,tInc,tExp,selectedYear,periodKey};
+
+  // Look up any previously-saved head configuration for this Year + Period
+  // (e.g. Q2 of 2025-26) so the user doesn't have to re-classify heads
+  // every time they generate the same budget again.
+  const savedCfg=await dbLoadBudgetConfig(selectedYear, periodKey);
+  dbBudgetCtx.savedCfg=savedCfg;
 
   document.getElementById('dbIncomeBudgetRows').innerHTML=
-    incKeys.map((k,i)=>_dbBudgetRowHtml('ibMode_'+i, k, incG[k])).join('');
+    incKeys.map((k,i)=>_dbBudgetRowHtml('ibMode_'+i, k, incG[k], savedCfg?.income?.[k])).join('');
   document.getElementById('dbExpBudgetRows').innerHTML=
-    expKeys.map((k,i)=>_dbBudgetRowHtml('ebMode_'+i, k, expG[k])).join('');
+    expKeys.map((k,i)=>_dbBudgetRowHtml('ebMode_'+i, k, expG[k], savedCfg?.expenditure?.[k])).join('');
+
+  const noteEl=document.getElementById('dbBudgetSavedNote');
+  if(noteEl){
+    noteEl.textContent = savedCfg
+      ? `\u2713 Loaded your saved head configuration for ${selectedYear} \u2014 ${range.label}. Adjust and click Generate to update it.`
+      : '';
+    noteEl.style.display = savedCfg ? 'block' : 'none';
+  }
 
   dbSwitchBudgetTab('income');
   dbCloseReportModal();
@@ -2633,7 +2695,7 @@ function _dbComputeExpenditureBudget(keys, group, prefix){
 
 function dbConfirmIncomeBudgetConfig(){
   if(!dbBudgetCtx) return;
-  const {range,incKeys,incG,expKeys,expG,selectedYear}=dbBudgetCtx;
+  const {range,incKeys,incG,expKeys,expG,selectedYear,periodKey}=dbBudgetCtx;
 
   // Step 1: Expenditure heads — each Changeable head is individually raised
   // by 5% over its own actual (no aggregate 5%-of-total calculation).
@@ -2642,6 +2704,13 @@ function dbConfirmIncomeBudgetConfig(){
   // Step 2: Income heads — unchanged behaviour: target is whatever the
   // expenditure budget actually came out to, so the two totals match.
   const incCalc=_dbComputeBudget(incKeys, incG, 'ibMode', expCalc.tBudget);
+
+  // Persist the chosen Changeable/Unchanged/Removed + specific-value
+  // configuration for this Year + Period so it's remembered next time
+  // this same budget (e.g. Q2 of 2025-26) is generated.
+  const incCfgToSave=_dbReadBudgetConfig(incKeys, 'ibMode');
+  const expCfgToSave=_dbReadBudgetConfig(expKeys, 'ebMode');
+  dbSaveBudgetConfig(selectedYear, periodKey, incCfgToSave, expCfgToSave);
 
   dbRenderBudgetReport(range, incCalc, expCalc, selectedYear);
   dbCloseIncomeBudgetConfig();
