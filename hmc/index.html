@@ -2531,6 +2531,7 @@ function dbBudgetPeriodKey(range){
 
 async function dbLoadBudgetConfig(year, periodKey){
   if(!currentUser) return null;
+  const { doc, getDoc } = window._fsHelpers;
   try{
     const snap=await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${year}/meta/budgetConfig`));
     if(snap.exists()){
@@ -2543,10 +2544,11 @@ async function dbLoadBudgetConfig(year, periodKey){
 
 async function dbSaveBudgetConfig(year, periodKey, incCfg, expCfg){
   if(!currentUser) return;
+  const { doc, setDoc } = window._fsHelpers;
   try{
     await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${year}/meta/budgetConfig`),
       { [periodKey]: { income:incCfg, expenditure:expCfg, savedAt: Date.now() } }, { merge:true });
-  }catch(e){ console.error('Failed to save budget heads configuration', e); }
+  }catch(e){ console.error('Failed to save budget heads configuration', e); customAlert('Could not save your head configuration (it will still generate the report).','','error'); }
 }
 
 // Reads the current radio + specific-value selection for a set of heads,
