@@ -9,6 +9,12 @@
   <title>IT - GST Cell</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+  </script>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <link href="https://gistcdn.githack.com/binutaxes/1a7108160ddb9145c56800983f53f8fb/raw/5f03027765e3b1f6c9d5f1b79d169e8cc8d17bd8/Chat2.css" rel="stylesheet" />
@@ -459,24 +465,24 @@ margin: 15px 0px 15px -0px;
   --active-row:    #d4ddf5;
 }
 .it-hidden { display: none !important; }
-#itSelectsRow {
+#itSelectsRow, #itSelectsRow2 {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 20px;
   margin-bottom: 8px;
   align-items: flex-end;
 }
-#itSelectsRow .it-select-group {
+#itSelectsRow .it-select-group, #itSelectsRow2 .it-select-group {
   flex: 1 1 200px;
   min-width: 180px;
   max-width: 280px;
 }
 @media (max-width: 600px) {
-  #itSelectsRow {
+  #itSelectsRow, #itSelectsRow2 {
     flex-direction: column;
     gap: 8px;
   }
-  #itSelectsRow .it-select-group {
+  #itSelectsRow .it-select-group, #itSelectsRow2 .it-select-group {
     flex: none;
     min-width: 0;
     max-width: 100%;
@@ -487,7 +493,7 @@ margin: 15px 0px 15px -0px;
     box-sizing: border-box;
   }
 }
-#itSelectsRow .it-select-group.it-hidden {
+#itSelectsRow .it-select-group.it-hidden, #itSelectsRow2 .it-select-group.it-hidden {
   display: none !important;
   min-width: 0 !important;
   flex: 0 !important;
@@ -510,6 +516,34 @@ margin: 15px 0px 15px -0px;
 .month-col { text-align: left !important; font-weight: 600; }
 .total-row td { background: #e4eaf8 !important; font-weight: 700; }
 #salaryTableWrap h3 { margin: 0 0 10px 0; color: var(--primary-dark); font-weight: 700; border-bottom: 1px solid var(--periwinkle); padding-bottom: 5px; font-size: 13pt; }
+/* Kerala State Employee: Upload / Manual Entry tabs */
+#keralaTabsWrap { width: 100%; flex: 1 1 100%; margin-top: 4px; }
+.it-tabbtns { display: flex; gap: 6px; border-bottom: 2px solid var(--table-border); margin-bottom: 14px; }
+.it-tabbtn {
+  border: none; background: transparent; cursor: pointer;
+  padding: 9px 18px; font-size: 10.5pt; font-weight: 600;
+  color: var(--primary-light); border-radius: 8px 8px 0 0;
+  position: relative; top: 2px;
+}
+.it-tabbtn:hover { background: #eef2fb; }
+.it-tabbtn.it-tabbtn-active {
+  color: var(--primary-dark); background: var(--table-head-bg);
+  border: 2px solid var(--table-border); border-bottom: 2px solid var(--table-head-bg);
+}
+.it-tabpanel.it-hidden { display: none !important; }
+#keralaUploadPanel {
+  background: var(--table-bg); border: 1px dashed var(--periwinkle);
+  border-radius: 10px; padding: 18px; text-align: center;
+}
+#keralaUploadPanel p { margin: 0 0 12px 0; color: var(--primary-dark); font-size: 10.5pt; }
+#salaryPdfInput { font-size: 10.5pt; }
+#salaryPdfStatus { margin-top: 10px; font-size: 10pt; font-weight: 600; min-height: 14px; }
+.pdf-upload-btn {
+  display: inline-block; margin-top: 6px; padding: 9px 20px;
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  font-size: 10.5pt; font-weight: 600; cursor: pointer;
+}
+.pdf-upload-btn:hover { background: var(--primary-dark); }
  
  
  
@@ -810,11 +844,11 @@ margin: 15px 0px 15px -0px;
   }
 
   /* IT selects row */
-  #itSelectsRow {
+  #itSelectsRow, #itSelectsRow2 {
     flex-direction: column !important;
   }
 
-  #itSelectsRow .it-select-group {
+  #itSelectsRow .it-select-group, #itSelectsRow2 .it-select-group {
     min-width: 0 !important;
     max-width: 100% !important;
     width: 100% !important;
@@ -1007,41 +1041,59 @@ margin: 15px 0px 15px -0px;
         <option value="pensioner_others">Pensioners / Others</option>
       </select>
     </div>
-    <div id="lbl_data8" class="it-select-group it-hidden">
-      <label for="it_bp"><span id="basicPayLabel">Basic Pay</span></label>
-      <select id="it_bp" onchange="buildSalaryTable()">
-        <option value="">-- Select Basic Pay --</option>
-        <option value="23000">23,000</option><option value="23700">23,700</option><option value="24400">24,400</option><option value="25100">25,100</option><option value="25800">25,800</option><option value="26500">26,500</option><option value="27200">27,200</option><option value="27900">27,900</option><option value="28700">28,700</option><option value="29500">29,500</option>
-        <option value="30300">30,300</option><option value="31100">31,100</option><option value="32000">32,000</option><option value="32900">32,900</option><option value="33800">33,800</option><option value="34700">34,700</option><option value="35600">35,600</option><option value="36500">36,500</option><option value="37400">37,400</option><option value="38300">38,300</option>
-        <option value="39300">39,300</option><option value="40300">40,300</option><option value="41300">41,300</option><option value="42300">42,300</option><option value="43400">43,400</option><option value="44500">44,500</option><option value="45600">45,600</option><option value="46700">46,700</option><option value="47800">47,800</option><option value="49000">49,000</option>
-        <option value="50200">50,200</option><option value="51400">51,400</option><option value="52600">52,600</option><option value="53900">53,900</option><option value="55200">55,200</option><option value="56500">56,500</option><option value="57900">57,900</option><option value="59300">59,300</option><option value="60700">60,700</option><option value="62200">62,200</option>
-        <option value="63700">63,700</option><option value="65200">65,200</option><option value="66800">66,800</option><option value="68400">68,400</option><option value="70000">70,000</option><option value="71800">71,800</option><option value="73600">73,600</option><option value="75400">75,400</option><option value="77200">77,200</option><option value="79000">79,000</option>
-        <option value="81000">81,000</option><option value="83000">83,000</option><option value="85000">85,000</option><option value="87000">87,000</option><option value="89000">89,000</option><option value="91200">91,200</option><option value="93400">93,400</option><option value="95600">95,600</option><option value="97800">97,800</option><option value="100300">1,00,300</option>
-        <option value="102800">1,02,800</option><option value="105300">1,05,300</option><option value="107800">1,07,800</option><option value="110300">1,10,300</option><option value="112800">1,12,800</option><option value="115300">1,15,300</option><option value="118100">1,18,100</option><option value="120900">1,20,900</option><option value="123700">1,23,700</option><option value="126500">1,26,500</option>
-        <option value="129300">1,29,300</option><option value="132100">1,32,100</option><option value="134900">1,34,900</option><option value="137700">1,37,700</option><option value="140500">1,40,500</option><option value="143600">1,43,600</option><option value="146700">1,46,700</option><option value="149800">1,49,800</option><option value="153200">1,53,200</option><option value="156600">1,56,600</option>
-        <option value="160000">1,60,000</option><option value="163400">1,63,400</option><option value="166800">1,66,800</option>
-      </select>
-    </div>
-    <div id="lbl_data9" class="it-select-group it-hidden">
-      <label for="it_inc">Increment Month</label>
-      <select id="it_inc" onchange="buildSalaryTable()">
-        <option value="">-- Select Month --</option>
-        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-      </select>
-    </div>
-    <div id="lbl_data10" class="it-select-group it-hidden">
-      <label for="it_hra_class">HRA Classification</label>
-      <select id="it_hra_class" onchange="buildSalaryTable()">
-        <option value="">-- Select HRA Class --</option>
-        <option value="10">Class A — 10% of Basic Pay</option>
-        <option value="8">Class B — 8% of Basic Pay</option>
-        <option value="6">Class C — 6% of Basic Pay</option>
-        <option value="4">Class D — 4% of Basic Pay</option>
-        <option value="0">Govt. Quarters — 0% (No HRA)</option>
-      </select>
+    <!-- Kerala State Employee: Upload Salary Statement / Manual Entry tabs -->
+    <div id="keralaTabsWrap" class="it-hidden">
+      <div class="it-tabbtns">
+        <button type="button" id="tabBtnUpload" class="it-tabbtn it-tabbtn-active" onclick="switchKeralaTab('upload')">Upload Salary Drawn Statement</button>
+        <button type="button" id="tabBtnManual" class="it-tabbtn" onclick="switchKeralaTab('manual')">Manual Entry</button>
+      </div>
+
+      <div id="keralaUploadPanel" class="it-tabpanel">
+        <p>Upload the Treasury / Spark <strong>Salary Drawn Statement (PDF)</strong> for the financial year. Monthly figures, Leave Surrender, Pay Revision and Arrear amounts will be read automatically.</p>
+        <input type="file" id="salaryPdfInput" accept="application/pdf" onchange="handleSalaryPdfUpload(event)">
+        <div id="salaryPdfStatus"></div>
+      </div>
+
+      <div id="keralaManualPanel" class="it-tabpanel it-hidden">
+        <div id="itSelectsRow2">
+          <div id="lbl_data8" class="it-select-group">
+            <label for="it_bp"><span id="basicPayLabel">Basic Pay</span></label>
+            <select id="it_bp" onchange="buildSalaryTable()">
+              <option value="">-- Select Basic Pay --</option>
+              <option value="23000">23,000</option><option value="23700">23,700</option><option value="24400">24,400</option><option value="25100">25,100</option><option value="25800">25,800</option><option value="26500">26,500</option><option value="27200">27,200</option><option value="27900">27,900</option><option value="28700">28,700</option><option value="29500">29,500</option>
+              <option value="30300">30,300</option><option value="31100">31,100</option><option value="32000">32,000</option><option value="32900">32,900</option><option value="33800">33,800</option><option value="34700">34,700</option><option value="35600">35,600</option><option value="36500">36,500</option><option value="37400">37,400</option><option value="38300">38,300</option>
+              <option value="39300">39,300</option><option value="40300">40,300</option><option value="41300">41,300</option><option value="42300">42,300</option><option value="43400">43,400</option><option value="44500">44,500</option><option value="45600">45,600</option><option value="46700">46,700</option><option value="47800">47,800</option><option value="49000">49,000</option>
+              <option value="50200">50,200</option><option value="51400">51,400</option><option value="52600">52,600</option><option value="53900">53,900</option><option value="55200">55,200</option><option value="56500">56,500</option><option value="57900">57,900</option><option value="59300">59,300</option><option value="60700">60,700</option><option value="62200">62,200</option>
+              <option value="63700">63,700</option><option value="65200">65,200</option><option value="66800">66,800</option><option value="68400">68,400</option><option value="70000">70,000</option><option value="71800">71,800</option><option value="73600">73,600</option><option value="75400">75,400</option><option value="77200">77,200</option><option value="79000">79,000</option>
+              <option value="81000">81,000</option><option value="83000">83,000</option><option value="85000">85,000</option><option value="87000">87,000</option><option value="89000">89,000</option><option value="91200">91,200</option><option value="93400">93,400</option><option value="95600">95,600</option><option value="97800">97,800</option><option value="100300">1,00,300</option>
+              <option value="102800">1,02,800</option><option value="105300">1,05,300</option><option value="107800">1,07,800</option><option value="110300">1,10,300</option><option value="112800">1,12,800</option><option value="115300">1,15,300</option><option value="118100">1,18,100</option><option value="120900">1,20,900</option><option value="123700">1,23,700</option><option value="126500">1,26,500</option>
+              <option value="129300">1,29,300</option><option value="132100">1,32,100</option><option value="134900">1,34,900</option><option value="137700">1,37,700</option><option value="140500">1,40,500</option><option value="143600">1,43,600</option><option value="146700">1,46,700</option><option value="149800">1,49,800</option><option value="153200">1,53,200</option><option value="156600">1,56,600</option>
+              <option value="160000">1,60,000</option><option value="163400">1,63,400</option><option value="166800">1,66,800</option>
+            </select>
+          </div>
+          <div id="lbl_data9" class="it-select-group">
+            <label for="it_inc">Increment Month</label>
+            <select id="it_inc" onchange="buildSalaryTable()">
+              <option value="">-- Select Month --</option>
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+              <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+              <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+          <div id="lbl_data10" class="it-select-group">
+            <label for="it_hra_class">HRA Classification</label>
+            <select id="it_hra_class" onchange="buildSalaryTable()">
+              <option value="">-- Select HRA Class --</option>
+              <option value="10">Class A — 10% of Basic Pay</option>
+              <option value="8">Class B — 8% of Basic Pay</option>
+              <option value="6">Class C — 6% of Basic Pay</option>
+              <option value="4">Class D — 4% of Basic Pay</option>
+              <option value="0">Govt. Quarters — 0% (No HRA)</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- Pensioner pension input row (shown only for Pensioner category) -->
     <div id="lbl_pension_input" class="it-select-group it-hidden" style="flex:2 1 300px; max-width:420px;">
@@ -1059,7 +1111,7 @@ margin: 15px 0px 15px -0px;
   <div style="background:#faf8f4; border:1px solid #e0daf0; border-radius:10px; padding:14px; box-shadow:0 4px 18px rgba(61,82,160,0.10);">
     <h4 style="margin:0 0 10px 0; color:var(--primary-dark); font-weight:700; border-bottom:1px solid var(--periwinkle); padding-bottom:5px;">Monthly Salary Statement</h4>
     <table id="salaryTable" style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:11pt;">
-      <colgroup>
+      <colgroup id="salaryTableColgroup">
         <col style="width:12%"><col style="width:16%"><col style="width:16%">
         <col style="width:14%"><col style="width:21%"><col style="width:21%">
       </colgroup>
@@ -2449,18 +2501,19 @@ document.getElementById("searchBtn").addEventListener("click", () => {
 
       // Show select-row labels that may have been hidden
       const lbl7  = document.getElementById("lbl_data7");
-      const lbl8  = document.getElementById("lbl_data8");
-      const lbl9  = document.getElementById("lbl_data9");
-      const lbl10 = document.getElementById("lbl_data10");
+      const keralaTabsWrapRestore = document.getElementById("keralaTabsWrap");
       if (lbl7)  lbl7.classList.remove("it-hidden");
       if (res["it_cat"] === "kerala_state") {
-        if (lbl8)  lbl8.classList.remove("it-hidden");
-        if (lbl9)  lbl9.classList.remove("it-hidden");
-        if (lbl10) lbl10.classList.remove("it-hidden");
-      } else {
-        if (lbl8)  lbl8.classList.add("it-hidden");
-        if (lbl9)  lbl9.classList.add("it-hidden");
-        if (lbl10) lbl10.classList.add("it-hidden");
+        if (keralaTabsWrapRestore) keralaTabsWrapRestore.classList.remove("it-hidden");
+        // A record with saved manual-entry selects restores into the Manual Entry tab;
+        // otherwise (e.g. a PDF-based record) default to the Upload tab.
+        if (res["it_bp"] && res["it_inc"] && res["it_hra_class"] !== undefined && res["it_hra_class"] !== "") {
+          switchKeralaTab("manual");
+        } else {
+          switchKeralaTab("upload");
+        }
+      } else if (keralaTabsWrapRestore) {
+        keralaTabsWrapRestore.classList.add("it-hidden");
       }
 
       // Rebuild salary table from restored selects
@@ -2879,14 +2932,19 @@ function _applyCategoryChange(cat) {
   if (tbody) tbody.innerHTML = "";
   if (tfoot) tfoot.innerHTML = "";
 
-  // Kerala dropdowns: show only for Kerala
-  ["lbl_data8","lbl_data9","lbl_data10"].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      if (isKerala) el.classList.remove("it-hidden");
-      else          el.classList.add("it-hidden");
-    }
-  });
+  // Kerala Upload/Manual tabs: show only for Kerala
+  var keralaTabsWrap = document.getElementById("keralaTabsWrap");
+  if (keralaTabsWrap) {
+    if (isKerala) keralaTabsWrap.classList.remove("it-hidden");
+    else          keralaTabsWrap.classList.add("it-hidden");
+  }
+  if (isKerala) switchKeralaTab("upload");
+
+  // Reset any previously uploaded salary statement PDF
+  var pdfInputEl = document.getElementById("salaryPdfInput");
+  if (pdfInputEl) pdfInputEl.value = "";
+  var pdfStatusEl = document.getElementById("salaryPdfStatus");
+  if (pdfStatusEl) { pdfStatusEl.textContent = ""; pdfStatusEl.style.color = ""; }
 
   // Pension input row: show only for Pensioner
   var pensionRow = document.getElementById("lbl_pension_input");
@@ -2903,10 +2961,8 @@ function onCategoryChange() {
   var cat = document.getElementById("it_cat").value;
   if (!cat) {
     // Just hide everything, no confirmation needed
-    ["lbl_data8","lbl_data9","lbl_data10"].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.add("it-hidden");
-    });
+    var keralaTabsWrapC = document.getElementById("keralaTabsWrap");
+    if (keralaTabsWrapC) keralaTabsWrapC.classList.add("it-hidden");
     var pensionRow = document.getElementById("lbl_pension_input");
     if (pensionRow) pensionRow.classList.add("it-hidden");
     document.getElementById("salaryTableInner").style.display = "none";
@@ -3032,6 +3088,15 @@ function buildITTable(bp, nextBP, incMonth, hraPct, isPensioner) {
   wrap.dataset.bp        = bp;
   wrap.dataset.nextBP    = nextBP;
   wrap.dataset.incMonth  = incMonth;
+  wrap.dataset.source    = "formula";
+
+  // Restore the fixed 6-column layout (PDF-upload mode may have changed it)
+  const colgroupReset = document.getElementById("salaryTableColgroup");
+  if (colgroupReset) {
+    colgroupReset.innerHTML =
+      '<col style="width:12%"><col style="width:16%"><col style="width:16%">' +
+      '<col style="width:14%"><col style="width:21%"><col style="width:21%">';
+  }
 
   // Pensioners: April→March order; Kerala: March→February order
   const MONTHS_PENSIONER      = ["April","May","June","July","August","September","October","November","December","January","February","March"];
@@ -3356,6 +3421,318 @@ function syncLegacyFields() {
   setSum("sumCol4", totOth);
   setSum("sumCol5", totTot);
   for (let c = 6; c <= 12; c++) setSum("sumCol" + c, 0);
+}
+
+// =============================================
+//  Kerala State Employee: Upload / Manual Entry tabs
+// =============================================
+function switchKeralaTab(tab) {
+  var uploadPanel = document.getElementById("keralaUploadPanel");
+  var manualPanel = document.getElementById("keralaManualPanel");
+  var btnUpload   = document.getElementById("tabBtnUpload");
+  var btnManual   = document.getElementById("tabBtnManual");
+  if (!uploadPanel || !manualPanel) return;
+  if (tab === "manual") {
+    manualPanel.classList.remove("it-hidden");
+    uploadPanel.classList.add("it-hidden");
+    if (btnManual) btnManual.classList.add("it-tabbtn-active");
+    if (btnUpload) btnUpload.classList.remove("it-tabbtn-active");
+  } else {
+    uploadPanel.classList.remove("it-hidden");
+    manualPanel.classList.add("it-hidden");
+    if (btnUpload) btnUpload.classList.add("it-tabbtn-active");
+    if (btnManual) btnManual.classList.remove("it-tabbtn-active");
+  }
+}
+
+// =============================================
+//  Salary Drawn Statement (PDF) upload & parsing
+//  Reads the Treasury/Spark "Salary Drawn Statement"
+//  PDF using pdf.js text positions (column-aware),
+//  builds the monthly table, and feeds the legacy
+//  field7–field150 / sumCol1–5 structure plus the
+//  Arrears received and other Income fields.
+// =============================================
+
+async function handleSalaryPdfUpload(evt) {
+  var file = evt && evt.target && evt.target.files && evt.target.files[0];
+  var statusEl = document.getElementById("salaryPdfStatus");
+  if (!file) return;
+  if (!window.pdfjsLib) {
+    if (statusEl) { statusEl.style.color = "#b00020"; statusEl.textContent = "PDF reader failed to load. Please check your internet connection and try again."; }
+    return;
+  }
+  if (statusEl) { statusEl.style.color = "var(--primary-dark)"; statusEl.textContent = "Reading PDF…"; }
+
+  try {
+    var items = await extractPdfTextItems(file);
+    var parsed = parseSalaryStatementPDF(items);
+    if (!parsed || !parsed.rows || !parsed.rows.length) {
+      if (statusEl) { statusEl.style.color = "#b00020"; statusEl.textContent = "Could not read a monthly salary table from this PDF. Please check the file, or use Manual Entry instead."; }
+      return;
+    }
+    applyParsedSalaryStatement(parsed);
+    if (statusEl) {
+      statusEl.style.color = "green";
+      statusEl.textContent = "Salary statement loaded — " + parsed.rows.length + " month(s) read successfully.";
+    }
+  } catch (err) {
+    console.error(err);
+    if (statusEl) { statusEl.style.color = "#b00020"; statusEl.textContent = "Error reading PDF: " + (err && err.message ? err.message : err); }
+  }
+}
+
+async function extractPdfTextItems(file) {
+  var buf = await file.arrayBuffer();
+  var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  var items = [];
+  for (var p = 1; p <= pdf.numPages; p++) {
+    var page = await pdf.getPage(p);
+    var viewport = page.getViewport({ scale: 1 });
+    var content = await page.getTextContent();
+    content.items.forEach(function(it) {
+      var str = (it.str || "").trim();
+      if (!str) return;
+      items.push({
+        page: p,
+        text: str,
+        x: it.transform[4],
+        y: viewport.height - it.transform[5],
+        width: it.width || (str.length * 5)
+      });
+    });
+  }
+  return items;
+}
+
+function _pdfGroupLines(items) {
+  var sorted = items.slice().sort(function(a, b) { return a.page - b.page || a.y - b.y || a.x - b.x; });
+  var lines = [];
+  sorted.forEach(function(it) {
+    var line = null;
+    for (var i = lines.length - 1; i >= 0; i--) {
+      if (lines[i].page === it.page && Math.abs(lines[i].y - it.y) < 3) { line = lines[i]; break; }
+      if (it.page - lines[i].page > 0 || it.y - lines[i].y > 6) break;
+    }
+    if (!line) { line = { page: it.page, y: it.y, items: [] }; lines.push(line); }
+    line.items.push(it);
+  });
+  lines.forEach(function(l) { l.items.sort(function(a, b) { return a.x - b.x; }); });
+  return lines;
+}
+
+function _pdfLineText(line) { return line.items.map(function(i) { return i.text; }).join(" "); }
+
+function _pdfHeaderAnchors(line, labels) {
+  var anchors = {};
+  labels.forEach(function(lbl) {
+    var found = line.items.find(function(i) { return i.text.toLowerCase() === lbl.toLowerCase(); });
+    if (found) anchors[lbl] = found.x + (found.width || 0);
+  });
+  return anchors;
+}
+
+function _pdfNearestNumeric(line, anchorX, excludeMonth, maxDist) {
+  if (anchorX == null) return 0;
+  var best = 0, bestDist = Infinity;
+  line.items.forEach(function(it) {
+    if (excludeMonth && /^\d{1,2}\/\d{4}$/.test(it.text)) return;
+    var clean = it.text.replace(/,/g, "");
+    if (!/^-?\d+(\.\d+)?$/.test(clean)) return;
+    var x1 = it.x + (it.width || 0);
+    var dist = Math.abs(x1 - anchorX);
+    if (dist < bestDist) { bestDist = dist; best = parseFloat(clean) || 0; }
+  });
+  if (maxDist && bestDist > maxDist) return 0;
+  return best;
+}
+
+function _pdfFindSectionGross(lines, keywords) {
+  var upperKw = keywords.map(function(k) { return k.toUpperCase(); });
+  var headingIdx = lines.findIndex(function(l) {
+    var txt = _pdfLineText(l).toUpperCase();
+    return upperKw.every(function(k) { return txt.indexOf(k) !== -1; });
+  });
+  if (headingIdx === -1) return 0;
+
+  var hdrIdx = -1;
+  for (var j = headingIdx + 1; j < lines.length && j < headingIdx + 6; j++) {
+    if (lines[j].items.some(function(it) { return it.text.toLowerCase() === "gross"; })) { hdrIdx = j; break; }
+  }
+  if (hdrIdx === -1) return 0;
+  var grossAnchor = _pdfHeaderAnchors(lines[hdrIdx], ["Gross"])["Gross"];
+  if (grossAnchor == null) return 0;
+
+  for (var k = hdrIdx + 1; k < lines.length && k < hdrIdx + 5; k++) {
+    var hasNumeric = lines[k].items.some(function(it) {
+      return /^-?[\d,]+(\.\d+)?$/.test(it.text.replace(/,/g, ""));
+    });
+    if (hasNumeric) return _pdfNearestNumeric(lines[k], grossAnchor, true, 60);
+  }
+  return 0;
+}
+
+function parseSalaryStatementPDF(items) {
+  var lines = _pdfGroupLines(items);
+  var mainLabels = ["Basic", "D.A.", "D.Pay", "Allowance", "H.R.A.", "C.C.A.", "Gross"];
+
+  var mainHeaderIdx = lines.findIndex(function(l) {
+    var texts = l.items.map(function(i) { return i.text.toLowerCase(); });
+    return texts.indexOf("mnth/yr") !== -1 && texts.indexOf("gross") !== -1;
+  });
+  if (mainHeaderIdx === -1) return null;
+
+  var anchors = _pdfHeaderAnchors(lines[mainHeaderIdx], mainLabels);
+  if (anchors["Basic"] == null || anchors["Gross"] == null) return null;
+
+  var rows = [];
+  var i = mainHeaderIdx + 1;
+  while (i < lines.length) {
+    var first = lines[i].items[0];
+    if (first && /^\d{1,2}\/\d{4}$/.test(first.text)) {
+      var monthStr = first.text;
+      var monthNum = parseInt(monthStr.split("/")[0], 10);
+      rows.push({
+        month: monthStr,
+        monthNum: monthNum,
+        basic:     _pdfNearestNumeric(lines[i], anchors["Basic"], true, 40),
+        da:        _pdfNearestNumeric(lines[i], anchors["D.A."], true, 40),
+        dpay:      _pdfNearestNumeric(lines[i], anchors["D.Pay"], true, 40),
+        allowance: _pdfNearestNumeric(lines[i], anchors["Allowance"], true, 40),
+        hra:       _pdfNearestNumeric(lines[i], anchors["H.R.A."], true, 40),
+        cca:       _pdfNearestNumeric(lines[i], anchors["C.C.A."], true, 40),
+        gross:     _pdfNearestNumeric(lines[i], anchors["Gross"], true, 40)
+      });
+      i++;
+    } else if (rows.length === 0) {
+      i++;
+      if (i - mainHeaderIdx > 6) break; // safety: don't skip forever
+    } else {
+      break; // first non-month line after data rows ends the main table
+    }
+  }
+  if (!rows.length) return null;
+
+  return {
+    rows: rows,
+    leaveSurrenderGross: _pdfFindSectionGross(lines, ["LEAVE", "SURRENDER", "DRAWN"]),
+    arrearSummaryGross:  _pdfFindSectionGross(lines, ["SUMMARY", "ARREAR", "DRAWN"]),
+    payRevisionGross:    _pdfFindSectionGross(lines, ["PAYREVISION", "DRAWN"])
+  };
+}
+
+// Push parsed PDF data into the legacy field structure, arrears fields,
+// and render the monthly table (Month/Yr … Gross, blank columns dropped).
+function applyParsedSalaryStatement(parsed) {
+  var wrap = document.getElementById("salaryTableWrap");
+  if (wrap) { wrap.dataset.pensioner = "0"; wrap.dataset.source = "pdf"; wrap.dataset.monthOrder = "kerala"; }
+
+  // Reset all 12 months of legacy fields first
+  IT_ROW_STARTS.forEach(function(start) {
+    for (var off = 0; off < 5; off++) {
+      var el = document.getElementById("field" + (start + off));
+      if (el) el.value = 0;
+    }
+  });
+
+  var totBasic = 0, totDA = 0, totHRA = 0, totOth = 0, totTot = 0;
+  parsed.rows.forEach(function(r) {
+    var idx = IT_MONTH_NUMS.indexOf(r.monthNum);
+    if (idx === -1) return;
+    var start = IT_ROW_STARTS[idx];
+    var da  = (r.da || 0) + (r.dpay || 0);
+    var oth = (r.allowance || 0) + (r.cca || 0);
+    var setF = function(offset, val) {
+      var el = document.getElementById("field" + (start + offset));
+      if (el) el.value = val || 0;
+    };
+    setF(0, r.basic);
+    setF(1, da);
+    setF(2, r.hra);
+    setF(3, oth);
+    setF(4, r.gross);
+    totBasic += r.basic || 0; totDA += da; totHRA += r.hra || 0; totOth += oth; totTot += r.gross || 0;
+  });
+
+  var setSum = function(id, val) { var el = document.getElementById(id); if (el) el.value = val; };
+  setSum("sumCol1", totBasic);
+  setSum("sumCol2", totDA);
+  setSum("sumCol3", totHRA);
+  setSum("sumCol4", totOth);
+  setSum("sumCol5", totTot);
+  for (var c = 6; c <= 12; c++) setSum("sumCol" + c, 0);
+
+  // Arrears received and other Income section
+  var f152 = document.getElementById("field152");
+  if (f152) f152.value = parsed.leaveSurrenderGross > 0 ? parsed.leaveSurrenderGross : 0;
+  var f153 = document.getElementById("field153");
+  if (f153) f153.value = parsed.payRevisionGross > 0 ? parsed.payRevisionGross : 0;
+  var f155 = document.getElementById("field155");
+  if (f155) f155.value = parsed.arrearSummaryGross > 0 ? parsed.arrearSummaryGross : 0;
+
+  renderPdfSalaryTable(parsed.rows);
+  document.getElementById("salaryTableInner").style.display = "block";
+  updateColumnSums();
+}
+
+// Render the monthly table exactly as read from the PDF: Month/Yr … Gross,
+// with any all-zero column dropped, and a Total row at the bottom.
+function renderPdfSalaryTable(rows) {
+  var thead = document.getElementById("salaryTableHead");
+  var tbody = document.getElementById("salaryTableBody");
+  var tfoot = document.getElementById("salaryTableFoot");
+  var colgroup = document.getElementById("salaryTableColgroup");
+  if (!thead || !tbody || !tfoot) return;
+
+  var cols = [
+    { key: "basic",     label: "Basic Pay" },
+    { key: "da",        label: "D.A." },
+    { key: "dpay",      label: "D.Pay" },
+    { key: "allowance", label: "Allowance" },
+    { key: "hra",       label: "H.R.A." },
+    { key: "cca",       label: "C.C.A." },
+    { key: "gross",     label: "Gross" }
+  ];
+
+  // Drop columns that are blank (zero) across every row — keep Gross always.
+  var activeCols = cols.filter(function(c) {
+    if (c.key === "gross") return true;
+    return rows.some(function(r) { return (r[c.key] || 0) !== 0; });
+  });
+
+  var totalCount = 1 + activeCols.length;
+  if (colgroup) {
+    var monthPct = 16;
+    var restPct = Math.floor((100 - monthPct) / activeCols.length);
+    var html = '<col style="width:' + monthPct + '%">';
+    for (var g = 0; g < activeCols.length; g++) html += '<col style="width:' + restPct + '%">';
+    colgroup.innerHTML = html;
+  }
+
+  var headHtml = "<tr><th>Month/Yr</th>";
+  activeCols.forEach(function(c) { headHtml += "<th>" + c.label + " (₹)</th>"; });
+  headHtml += "</tr>";
+  thead.innerHTML = headHtml;
+
+  var totals = {};
+  activeCols.forEach(function(c) { totals[c.key] = 0; });
+
+  var bodyHtml = "";
+  rows.forEach(function(r) {
+    bodyHtml += "<tr><td class='month-col'>" + r.month + "</td>";
+    activeCols.forEach(function(c) {
+      var val = r[c.key] || 0;
+      totals[c.key] += val;
+      bodyHtml += "<td>" + fmtIT(val) + "</td>";
+    });
+    bodyHtml += "</tr>";
+  });
+  tbody.innerHTML = bodyHtml;
+
+  var footHtml = "<tr class='total-row'><td class='month-col'>Total</td>";
+  activeCols.forEach(function(c) { footHtml += "<td>" + fmtIT(totals[c.key]) + "</td>"; });
+  footHtml += "</tr>";
+  tfoot.innerHTML = footHtml;
 }
 
 // Toggle Old Regime tiles visibility
