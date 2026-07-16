@@ -3547,29 +3547,64 @@ function _pdfNearestNumeric(line, anchorX, excludeMonth, maxDist) {
   return best;
 }
 
-function _pdfFindSectionGross(lines, keywords) {
+// Generic sub-section reader: locates a heading (matched by keywords), the
+// mini column-header line below it (identified by the "Gross" label), and
+// returns the column anchors plus every consecutive numeric data row that
+// follows (some sections, e.g. Excess Pay Drawn, may print more than one row).
+function _pdfFindSectionRows(lines, keywords, labels) {
   var upperKw = keywords.map(function(k) { return k.toUpperCase(); });
   var headingIdx = lines.findIndex(function(l) {
     var txt = _pdfLineText(l).toUpperCase();
     return upperKw.every(function(k) { return txt.indexOf(k) !== -1; });
   });
-  if (headingIdx === -1) return 0;
+  if (headingIdx === -1) return null;
 
   var hdrIdx = -1;
   for (var j = headingIdx + 1; j < lines.length && j < headingIdx + 6; j++) {
     if (lines[j].items.some(function(it) { return it.text.toLowerCase() === "gross"; })) { hdrIdx = j; break; }
   }
-  if (hdrIdx === -1) return 0;
-  var grossAnchor = _pdfHeaderAnchors(lines[hdrIdx], ["Gross"])["Gross"];
-  if (grossAnchor == null) return 0;
+  if (hdrIdx === -1) return null;
+  var anchors = _pdfHeaderAnchors(lines[hdrIdx], labels);
+  if (anchors["Gross"] == null) return null;
 
-  for (var k = hdrIdx + 1; k < lines.length && k < hdrIdx + 5; k++) {
+  var dataRows = [];
+  for (var k = hdrIdx + 1; k < lines.length && k < hdrIdx + 8; k++) {
     var hasNumeric = lines[k].items.some(function(it) {
       return /^-?[\d,]+(\.\d+)?$/.test(it.text.replace(/,/g, ""));
     });
-    if (hasNumeric) return _pdfNearestNumeric(lines[k], grossAnchor, true, 60);
+    if (hasNumeric) { dataRows.push(lines[k]); }
+    else if (dataRows.length) { break; }
   }
-  return 0;
+  if (!dataRows.length) return null;
+  return { anchors: anchors, rows: dataRows };
+}
+
+// Employee code / Name / Designation from the line just below the title,
+// e.g. "[429361] RAJAN K V        Office Attendant Gr I"
+function _pdfExtractHeaderInfo(lines) {
+  var line = lines.find(function(l) {
+    return l.items[0] && /^\[\d+\]$/.test(l.items[0].text);
+  });
+  if (!line) return null;
+  var penMatch = line.items[0].text.match(/^\[(\d+)\]$/);
+  var pen = penMatch ? penMatch[1] : "";
+  var rest = line.items.slice(1);
+  if (!rest.length) return { pen: pen, name: "", designation: "" };
+
+  // Split the rest of the line at its widest horizontal gap: name comes
+  // first (left-aligned), designation is printed further right.
+  var maxGap = -1, splitIdx = rest.length;
+  for (var i = 0; i < rest.length - 1; i++) {
+    var gap = rest[i + 1].x - (rest[i].x + (rest[i].width || 0));
+    if (gap > maxGap) { maxGap = gap; splitIdx = i + 1; }
+  }
+  var nameTokens = rest.slice(0, splitIdx);
+  var desigTokens = rest.slice(splitIdx);
+  return {
+    pen: pen,
+    name: nameTokens.map(function(t) { return t.text; }).join(" "),
+    designation: desigTokens.map(function(t) { return t.text; }).join(" ")
+  };
 }
 
 function parseSalaryStatementPDF(items) {
@@ -3613,11 +3648,47 @@ function parseSalaryStatementPDF(items) {
   }
   if (!rows.length) return null;
 
+  // Leave Surrender Drawn — Gross of the (single) data row
+  var leaveSec = _pdfFindSectionRows(lines, ["LEAVE", "SURRENDER", "DRAWN"], ["Gross"]);
+  var leaveSurrenderGross = 0;
+  if (leaveSec && leaveSec.rows.length) {
+    leaveSurrenderGross = _pdfNearestNumeric(leaveSec.rows[0], leaveSec.anchors["Gross"], true, 60);
+  }
+
+  // Summary of Arrear Drawn (not merged with salary) — D.A. goes to DA Arrear,
+  // (Gross - D.A.) goes to Any Other Arrears
+  var arrearSec = _pdfFindSectionRows(lines, ["SUMMARY", "ARREAR", "DRAWN"], ["D.A.", "Gross"]);
+  var daArrear = 0, otherArrear = 0;
+  if (arrearSec && arrearSec.rows.length) {
+    var arrRow = arrearSec.rows[0];
+    var arrDA    = _pdfNearestNumeric(arrRow, arrearSec.anchors["D.A."], true, 60);
+    var arrGross = _pdfNearestNumeric(arrRow, arrearSec.anchors["Gross"], true, 60);
+    daArrear = arrDA;
+    otherArrear = arrGross - arrDA;
+  }
+
+  // Pay Revision Drawn — Gross of the (single) data row
+  var payRevSec = _pdfFindSectionRows(lines, ["PAYREVISION", "DRAWN"], ["Gross"]);
+  var payRevisionGross = 0;
+  if (payRevSec && payRevSec.rows.length) {
+    payRevisionGross = _pdfNearestNumeric(payRevSec.rows[0], payRevSec.anchors["Gross"], true, 60);
+  }
+
+  // Excess Pay Drawn (not merged with salary) — Gross of the 2nd row, if present
+  var excessSec = _pdfFindSectionRows(lines, ["EXCESS", "PAY", "DRAWN"], ["Gross"]);
+  var excessPayGross = 0;
+  if (excessSec && excessSec.rows.length >= 2) {
+    excessPayGross = _pdfNearestNumeric(excessSec.rows[1], excessSec.anchors["Gross"], true, 60);
+  }
+
   return {
     rows: rows,
-    leaveSurrenderGross: _pdfFindSectionGross(lines, ["LEAVE", "SURRENDER", "DRAWN"]),
-    arrearSummaryGross:  _pdfFindSectionGross(lines, ["SUMMARY", "ARREAR", "DRAWN"]),
-    payRevisionGross:    _pdfFindSectionGross(lines, ["PAYREVISION", "DRAWN"])
+    headerInfo: _pdfExtractHeaderInfo(lines),
+    leaveSurrenderGross: leaveSurrenderGross,
+    daArrear: daArrear,
+    otherArrear: otherArrear,
+    payRevisionGross: payRevisionGross,
+    excessPayGross: excessPayGross
   };
 }
 
@@ -3663,12 +3734,26 @@ function applyParsedSalaryStatement(parsed) {
   for (var c = 6; c <= 12; c++) setSum("sumCol" + c, 0);
 
   // Arrears received and other Income section
-  var f152 = document.getElementById("field152");
+  var f151 = document.getElementById("field151"); // DA Arrear
+  if (f151) f151.value = parsed.daArrear > 0 ? parsed.daArrear : 0;
+  var f152 = document.getElementById("field152"); // Surrender of Earned Leave
   if (f152) f152.value = parsed.leaveSurrenderGross > 0 ? parsed.leaveSurrenderGross : 0;
-  var f153 = document.getElementById("field153");
+  var f153 = document.getElementById("field153"); // Pay revision arrear
   if (f153) f153.value = parsed.payRevisionGross > 0 ? parsed.payRevisionGross : 0;
-  var f155 = document.getElementById("field155");
-  if (f155) f155.value = parsed.arrearSummaryGross > 0 ? parsed.arrearSummaryGross : 0;
+  var f155 = document.getElementById("field155"); // Any Other Arrears (Gross - D.A. of the arrear summary section)
+  if (f155) f155.value = parsed.otherArrear > 0 ? parsed.otherArrear : 0;
+  var f156 = document.getElementById("field156"); // Less: Excess Pay drawn, Dies non, etc.
+  if (f156) f156.value = parsed.excessPayGross > 0 ? parsed.excessPayGross : 0;
+
+  // Employee identification: PEN No. / Name / Designation
+  if (parsed.headerInfo) {
+    var f1 = document.getElementById("field1");
+    if (f1 && parsed.headerInfo.pen) f1.value = parsed.headerInfo.pen;
+    var f211 = document.getElementById("field211");
+    if (f211 && parsed.headerInfo.name) f211.value = parsed.headerInfo.name;
+    var f5 = document.getElementById("field5");
+    if (f5 && parsed.headerInfo.designation) f5.value = parsed.headerInfo.designation;
+  }
 
   renderPdfSalaryTable(parsed.rows);
   document.getElementById("salaryTableInner").style.display = "block";
