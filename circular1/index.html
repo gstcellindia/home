@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GSTCell – Circulars issued by Kerala SGST Dept., C.B.I.C., and Instructions for Kerala tax professionals.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1VsL2VwLkoM_htKcGmVoOOmoWM_SzBXqH">
+<title>📋 Circulars - GST Cell</title>
+
+<!-- ██████████████████████  FIREBASE SDK  ██████████████████████ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, setDoc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
+    signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCpKgeXBwfvPDZUqbl0ro2xYTIIOYs40QI",
+    authDomain:        "gstcell-afe30.firebaseapp.com",
+    projectId:         "gstcell-afe30",
+    storageBucket:     "gstcell-afe30.firebasestorage.app",
+    messagingSenderId: "977774861669",
+    appId:             "1:977774861669:web:249661743136343e4a158c"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  window._db = db;
+  window._auth = auth;
+  window._googleProvider = googleProvider;
+  window._fsHelpers = { collection, getDocs, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, setDoc, getDoc };
+  window._authFn = { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
+    signInWithPopup, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider };
+  window._firebaseReady = true;
+  document.dispatchEvent(new Event("firebaseReady"));
+
+  onAuthStateChanged(auth, user => {
+    window._currentUser = user;
+    updateAuthUI(user);
+  });
+</script>
+
+<style>
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════ */
+:root {
+  --nav-bg:        #1c1f26;
+  --nav-accent:    #e03535;
+  --nav-text:      #e8e8ea;
+  --nav-green:     #5fd67a;
+  --body-bg:       #f8f6f2;
+  --card-bg:       #ffffff;
+  --card-border:   #ebe8e2;
+  --section-head:  #1a3a6b;
+  --link-color:    #1a5cc8;
+  --font-heading:  'Times New Roman', Times, serif;
+  --font-main:     'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:     'DM Mono', monospace;
+  --font-nav:      'Times New Roman', Times, serif;
+  --nav-height:    48px;
+}
+html { font-size: 10px; background: var(--body-bg); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-main); font-size: 1.45rem; line-height: 1.65; color: #22222e; letter-spacing: 0.01em; margin: 0; padding: 0; }
+
+/* ═══ HEAD IMAGE ═══ */
+.headimage {
+  background-image: url('https://lh3.googleusercontent.com/d/1sitChJR4HMammhoEKMSRATww76l0RR3-');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 28rem;
+  position: relative;
+}
+.headimage::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, rgba(10,18,40,.52) 0%, transparent 70%);
+}
+.sitename {
+  position: relative; z-index: 1;
+  font-size: clamp(4rem, 7vw, 9rem);
+  margin-left: 8%;
+  font-family: var(--font-heading);
+  font-style: italic; font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0,0,0,.4);
+  padding-top: 5rem;
+  letter-spacing: -0.02em;
+}
+.sitename span { color: var(--nav-green); font-style: italic; font-weight: 400; }
+
+/* ═══ NAV BAR ═══ */
+nav {
+  position: relative; width: 100%;
+  background: var(--nav-bg);
+  margin-bottom: 2.4rem;
+  z-index: 300;
+}
+nav .wrapper {
+  max-width: 1400px; padding: 0 28px;
+  height: var(--nav-height);
+  margin: auto; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.wrapper .logo a {
+  color: var(--nav-green); font-size: 16px; font-weight: 700;
+  text-decoration: none; letter-spacing: 0.06em;
+  font-family: var(--font-heading); font-style: italic;
+  white-space: nowrap; flex-shrink: 0;
+}
+.wrapper .nav-links {
+  display: flex; list-style: none;
+  gap: 0; align-items: stretch;
+  flex: 1; justify-content: flex-end;
+}
+.nav-links > li {
+  position: relative;
+  display: flex; align-items: center;
+}
+.nav-links > li > a,
+.nav-links > li > .desktop-item {
+  color: var(--nav-text); text-decoration: none;
+  font-size: 16px; font-weight: 400; letter-spacing: 0.09em;
+  font-family: var(--font-nav);
+  text-transform: uppercase; padding: 0 11px;
+  display: flex; align-items: center; height: var(--nav-height);
+  white-space: nowrap; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .25s, border-color .25s;
+}
+.nav-links > li > a:hover,
+.nav-links > li > .desktop-item:hover { color: #fff; border-bottom-color: var(--nav-accent); }
+
+.nav-taxrate-btn {
+  background: var(--nav-accent) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 0 14px !important;
+  height: 32px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.07em !important;
+  border-bottom: none !important;
+  margin: 0 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px;
+  cursor: pointer;
+  transition: opacity .2s !important;
+}
+.nav-taxrate-btn:hover { opacity: .85 !important; }
+
+.nav-btn {
+  background: var(--nav-accent);
+  color: #fff !important; border-radius: 4px;
+  padding: 0 14px !important; height: 30px !important;
+  font-size: 11px !important; font-weight: 700 !important;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: background .25s, opacity .25s;
+  display: inline-flex !important; align-items: center !important;
+  border-bottom: none !important; margin-left: 6px;
+}
+.nav-btn:hover { opacity: .85; }
+
+/* Drop-down */
+.drop-menu {
+  position: absolute; top: var(--nav-height); left: 0;
+  background: var(--nav-bg);
+  min-width: 180px; opacity: 0; visibility: hidden;
+  border-top: 2px solid var(--nav-accent);
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  z-index: 400; list-style: none;
+  transition: opacity .22s ease .05s, transform .22s ease .05s, visibility 0s ease .27s;
+  transform: translateY(-4px);
+}
+.nav-links > li:hover .drop-menu {
+  opacity:1; visibility:visible; transform: translateY(0);
+  transition: opacity .22s ease .28s, transform .22s ease .28s, visibility 0s ease .28s;
+}
+.drop-menu li a {
+  display: block; padding: 7px 16px;
+  font-size: 14.67px; font-weight: 400; letter-spacing: 0.02em;
+  font-family: var(--font-nav);
+  color: #ccc; white-space: nowrap;
+}
+.drop-menu li a:hover { color: #fff; background: rgba(255,255,255,.05); }
+
+/* Mega-menu */
+.mega-box {
+  position: absolute; left: 0; right: auto; transform: translateY(-4px);
+  top: var(--nav-height);
+  opacity: 0; visibility: hidden;
+  z-index: 400;
+  transition: opacity .22s ease .05s, transform .22s ease .05s, visibility 0s ease .27s;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+}
+.nav-links > li:hover .mega-box {
+  opacity:1; visibility:visible; transform: translateY(0);
+  transition: opacity .22s ease .28s, transform .22s ease .28s, visibility 0s ease .28s;
+}
+.mega-content {
+  background: var(--nav-bg);
+  border-top: 2px solid var(--nav-accent);
+  display: flex; flex-direction: column; gap: 0;
+  padding: 14px 18px 16px;
+  box-shadow: 0 10px 32px rgba(0,0,0,.3);
+}
+.mega-row { display: flex; flex-direction: row; gap: 0; }
+.mega-row + .mega-row {
+  border-top: 1px solid rgba(255,255,255,.07);
+  margin-top: 10px; padding-top: 4px;
+}
+.mega-col {
+  flex: 0 0 auto; min-width: 130px;
+  padding: 0 16px;
+  border-right: 1px solid rgba(255,255,255,.07);
+}
+.mega-col:last-child { border-right: none; }
+.mega-col h4 {
+  color: var(--nav-accent); font-size: 13.33px; margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: .12em; font-weight: 700;
+  border-bottom: 1px solid rgba(224,53,53,.3); padding-bottom: 6px;
+  font-family: var(--font-nav); white-space: nowrap; cursor: pointer;
+}
+.mega-col h4:hover { color: #ff6b6b; }
+.mega-col ul { list-style: none; }
+.mega-col ul li a {
+  color: #b8bccf; font-size: 14.67px; font-weight: 400;
+  font-family: var(--font-nav);
+  display: block; padding: 4px 0;
+  line-height: 1.55; letter-spacing: 0.01em;
+  white-space: nowrap; text-decoration: none;
+  transition: color .15s, padding-left .15s;
+}
+.mega-col ul li a:hover { color: #fff; padding-left: 4px; }
+.mega-col ul li a::before { content: '›'; margin-right: 5px; color: var(--nav-accent); font-size: 13px; }
+.mega-see-more { display: inline-block; margin-top: 6px; color: #f0a500; font-size: 11px; font-style: italic; cursor: pointer; text-decoration: none; transition: color .15s; }
+.mega-see-more:hover { color: #ffd060; text-decoration: underline; }
+.nav-loading { color: #888; font-size: 11px; font-style: italic; padding: 4px 16px; }
+
+/* Mobile */
+.menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; line-height: 1; flex-shrink: 0; }
+.mob-expand-btn { display: none; }
+.mega-col-toggle { display: none; }
+
+@media (max-width: 860px) {
+  .menu-toggle { display: block; }
+  .wrapper .nav-links {
+    display: none; position: absolute; top: var(--nav-height); left: 0; right: 0;
+    background: #13161d; flex-direction: column; align-items: stretch;
+    justify-content: flex-start; gap: 0;
+    max-height: calc(100vh - var(--nav-height)); overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35); z-index: 500;
+  }
+  .wrapper .nav-links.mobile-open { display: flex; }
+  .nav-links > li > a, .nav-links > li > .desktop-item { height: auto; padding: 13px 20px; font-size: 13.33px; font-family: var(--font-nav); border-bottom: 1px solid rgba(255,255,255,.07); border-left: none; }
+  .nav-links > li { position: relative; flex-direction: row; flex-wrap: wrap; align-items: stretch; }
+  .nav-links > li > a, .nav-links > li > .desktop-item { flex: 1 1 0; min-width: 0; padding-right: 20px; }
+  .nav-links > li > .mega-box, .nav-links > li > .drop-menu { flex: 0 0 100%; width: 100%; }
+  .mob-expand-btn { display: flex; align-items: center; justify-content: center; flex: 0 0 48px; width: 48px; background: none; border: none; border-left: 1px solid rgba(255,255,255,.10); border-bottom: 1px solid rgba(255,255,255,.07); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; transition: background .15s, color .15s; }
+  .mob-expand-btn:hover { background: rgba(255,255,255,.08); }
+  .nav-links > li.mob-open .mob-expand-btn { color: var(--nav-accent); }
+  .mega-box { position: static; transform: none !important; opacity: 1 !important; visibility: visible !important; display: none; min-width: unset; width: 100%; }
+  .nav-links > li.mob-open .mega-box { display: block; }
+  .mega-content { display: block; gap: 0; padding: 8px 12px; box-shadow: none; border-top: none; background: #0f1218; }
+  .mega-row { display: block; border-top: none; margin-top: 0; padding-top: 0; }
+  .mega-col { min-width: unset; max-width: unset; padding: 10px 8px; border-right: none; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mega-col-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(224,53,53,.3); padding-bottom: 6px; margin-bottom: 8px; }
+  .mega-col h4 { border-bottom: none !important; padding-bottom: 0 !important; margin-bottom: 0 !important; font-size: 13.33px; font-family: var(--font-nav); }
+  .mega-col-toggle { background: none; border: 1px solid rgba(224,53,53,.5); color: var(--nav-accent); border-radius: 50%; width: 22px; height: 22px; font-size: 16px; line-height: 1; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background .15s, color .15s; }
+  .mega-col-toggle:hover { background: var(--nav-accent); color: #fff; }
+  .mega-col.col-open .mega-col-toggle { background: var(--nav-accent); color: #fff; }
+  .mega-col ul { display: none; }
+  .mega-col.col-open ul { display: block; }
+  .mega-col ul li a { font-size: 14.67px; font-family: var(--font-nav); padding: 5px 0; white-space: normal; }
+  .drop-menu { position: static; transform: none !important; opacity: 1 !important; visibility: visible !important; display: none; box-shadow: none; border-top: none; background: #0f1218; min-width: unset; width: 100%; }
+  .nav-links > li.mob-open .drop-menu { display: block; }
+  .drop-menu li a { padding: 8px 20px; font-size: 18px; font-family: var(--font-nav); white-space: normal; }
+  .nav-btn { margin: 12px 16px !important; height: 36px !important; width: calc(100% - 32px) !important; justify-content: center; }
+}
+
+/* ═══ THREE COLUMN MAIN LAYOUT ═══ */
+.page-body { width: 100%; margin: 0; padding: 0 5px; box-sizing: border-box; }
+.three-col { display: flex; gap: 8px; margin-bottom: 24px; align-items: flex-start; }
+.col-quicklinks { width: 160px; flex-shrink: 0; }
+.col-main { flex: 1; min-width: 0; }
+.col-right { width: 300px; flex-shrink: 0; }
+
+/* Quick Links desktop */
+.col-quicklinks .ql-group { margin-bottom: 10px; }
+.col-quicklinks .ql-group-title { font-size: 12px; font-weight: 700; font-family: 'Times New Roman', Times, serif; color: var(--nav-accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+.col-quicklinks ul { list-style: none; padding: 0; margin: 0; }
+.col-quicklinks ul li a { display: block; font-size: 13px; color: #2d2d3e; font-family: 'Times New Roman', Times, serif; text-decoration: none; padding: 2px 0 2px 7px; border-left: 2px solid transparent; transition: color .15s, border-color .15s; line-height: 1.4; }
+.col-quicklinks ul li a:hover { color: var(--nav-accent); border-left-color: var(--nav-accent); }
+
+@media(max-width:900px){
+  .three-col { flex-wrap: wrap; }
+  .col-quicklinks { width: 100%; order: 2; flex: none; overflow-x: hidden; }
+  .col-main { width: 100%; order: 1; flex: none; }
+  .col-right { width: 100%; order: 3; }
+  .col-quicklinks .section-card { padding: 14px 12px; box-sizing: border-box; overflow-x: hidden; }
+  .col-quicklinks .ql-group { border: 2px solid #2ecc40; border-radius: 10px; padding: 10px 12px 12px; margin-bottom: 12px; background: #fff; }
+  .col-quicklinks .ql-group-title { font-size: 15px; font-weight: 700; font-family: 'Times New Roman', Times, serif; color: #1a1a1a; text-transform: none; letter-spacing: 0; margin-bottom: 8px; }
+  .col-quicklinks ul { display: flex; flex-wrap: wrap; gap: 7px; }
+  .col-quicklinks ul li { flex: none; width: 100%; }
+  .col-quicklinks ul li a { display: block; width: 100%; text-align: center; padding: 6px 14px; background: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%); color: #fff !important; border-radius: 30px; font-size: 13px; font-family: 'Times New Roman', Times, serif; font-weight: 700; border-left: none; white-space: normal; word-break: break-word; overflow-wrap: break-word; box-shadow: 0 2px 6px rgba(2,119,189,.3); transition: opacity .2s, transform .15s; box-sizing: border-box; }
+  .col-quicklinks ul li a:hover { opacity: .88; transform: translateY(-1px); }
+  .ql-groups-wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; box-sizing: border-box; }
+  .col-quicklinks .ql-group { min-width: 0; overflow: hidden; }
+}
+@media(min-width:601px) and (max-width:900px){
+  .ql-groups-wrap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* ═══ SECTION CARDS ═══ */
+.section-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 14px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.section-card h2 { color: var(--section-head); font-size: 16px; font-family: var(--font-heading); font-weight: 700; letter-spacing: 0.01em; border-bottom: 2px solid #1a5cc8; padding-bottom: 9px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+/* ═══ RECENT UPDATES ═══ */
+.recent-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px dotted #e8e4dc; font-size: 1.35rem; line-height: 1.5; }
+.recent-item:last-child { border-bottom: none; }
+.recent-item .new-badge { background: var(--nav-accent); color: #fff; font-size: .8rem; padding: 2px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 3px; font-weight: 700; letter-spacing: 0.06em; font-family: var(--font-main); }
+.recent-item a { color: var(--link-color); text-decoration: none; font-weight: 500; font-family: 'Times New Roman', Times, serif; }
+.recent-item a:hover { text-decoration: underline; }
+.see-more-btn { background: none; border: none; color: var(--nav-accent); font-size: 1.2rem; cursor: pointer; text-decoration: underline; margin-top: 8px; }
+
+/* ═══ ARTICLES ═══ */
+.article-category { margin-bottom: 22px; }
+.article-category h2 { color: var(--section-head); font-size: 16px; font-family: var(--font-heading); font-weight: 700; margin-bottom: 10px; border-bottom: 2px solid #1a5cc8; padding-bottom: 8px; }
+article { border: 1px solid #ece9e3; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; background: #fdfcfa; }
+article h3 { font-size: 1.55rem; color: #1a1a2e; margin-bottom: 7px; font-family: var(--font-heading); font-weight: 600; line-height: 1.35; }
+article p { font-size: 1.35rem; color: #3d3d4e; line-height: 1.75; margin-bottom: 8px; }
+.toggle-btn, .cat-toggle-btn { background: var(--section-head); color: #fff; border: none; border-radius: 5px; padding: 5px 14px; font-size: 1.15rem; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background .2s; }
+.toggle-btn:hover, .cat-toggle-btn:hover { background: var(--nav-accent); }
+.social-share { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.share-btn { width: 34px; height: 34px; border-radius: 50%; background: #1a5cc8; color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 15px; transition: transform .2s, background .2s; }
+.share-btn:hover { transform: scale(1.12); background: #0f3d8a; }
+.ref-links { margin-top: 8px; font-size: 1.2rem; font-weight: 500; }
+.ref-links a { color: var(--link-color); margin-right: 8px; }
+
+/* ═══════════════════════════════════
+   CIRCULARS TABLE SECTION
+═══════════════════════════════════ */
+.circ-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.circ-controls label {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--section-head);
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+.circ-type-select {
+  border: 2px solid #1a5cc8;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 1.35rem;
+  font-family: var(--font-heading);
+  color: var(--section-head);
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  font-weight: 600;
+  transition: border-color .2s, box-shadow .2s;
+  flex: 1;
+  min-width: 220px;
+}
+.circ-type-select:focus { border-color: var(--nav-accent); box-shadow: 0 0 0 3px rgba(224,53,53,.15); }
+
+.circ-search-input {
+  border: 1px solid #d0cdc8;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 1.3rem;
+  font-family: var(--font-main);
+  outline: none;
+  width: 220px;
+  transition: border-color .2s;
+}
+.circ-search-input:focus { border-color: #1a5cc8; }
+
+/* The table */
+.circ-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #dde4ef;
+}
+.circ-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.28rem;
+  table-layout: fixed;
+}
+/* Column width ratios: ~1 : ~1.2 : ~6 : ~1.5 */
+.circ-table colgroup col:nth-child(1) { width: 11%; }
+.circ-table colgroup col:nth-child(2) { width: 10%; }
+.circ-table colgroup col:nth-child(3) { width: 65%; }
+.circ-table colgroup col:nth-child(4) { width: 14%; }
+
+.circ-table thead tr {
+  background: var(--nav-bg);
+  color: #fff;
+}
+.circ-table thead th {
+  padding: 10px 12px;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: left;
+  border-bottom: 3px solid var(--nav-accent);
+  white-space: nowrap;
+}
+.circ-table tbody tr {
+  background: #fff;
+  transition: background .15s;
+}
+.circ-table tbody tr:nth-child(even) { background: #e8f4fb; }
+.circ-table tbody tr:hover { background: #d6eaf8; }
+.circ-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #dde8f4;
+  vertical-align: top;
+  line-height: 1.55;
+}
+/* State Circular No. column */
+.circ-table td.col-no {
+  font-family: var(--font-mono);
+  font-size: 1.22rem;
+  color: #c00;
+  font-weight: 600;
+  text-align: center;
+}
+.circ-table td.col-no.trade { color: var(--nav-accent); font-style: italic; }
+/* Date column */
+.circ-table td.col-date {
+  font-size: 1.18rem;
+  color: #444;
+  white-space: nowrap;
+  text-align: center;
+}
+/* Description column */
+.circ-table td.col-desc {
+  color: #1a2a3a;
+}
+.circ-table td.col-desc .dept-label {
+  font-weight: 700;
+  color: var(--section-head);
+  font-family: var(--font-heading);
+}
+.circ-table td.col-desc .desc-text {
+  color: #2a5080;
+}
+.circ-table td.col-desc .updated-note {
+  display: block;
+  margin-top: 4px;
+  font-style: italic;
+  color: var(--nav-accent);
+  font-size: 1.1rem;
+}
+.circ-table td.col-desc a {
+  color: var(--section-head);
+  text-decoration: none;
+}
+.circ-table td.col-desc a:hover { text-decoration: underline; color: var(--nav-accent); }
+/* PDF icon link */
+.circ-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.15rem;
+  color: #e03535;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity .2s;
+}
+.circ-pdf-link:hover { opacity: .78; }
+/* Remarks column */
+.circ-table td.col-remarks {
+  font-size: 1.18rem;
+  color: #555;
+}
+
+/* Empty / loading state */
+.circ-empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 28px 0;
+  font-size: 1.3rem;
+}
+
+/* ═══ CHAT WIDGET ═══ */
+.chat-widget { border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.chat-header { background: var(--nav-bg); color: #fff; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+.chat-header h3 { font-size: 1.45rem; font-family: var(--font-heading); font-weight: 600; }
+.chat-header .status-dot { width:8px; height:8px; background: var(--nav-green); border-radius:50%; animation:pulse 2s infinite; }
+.chat-messages { height: 240px; overflow-y: auto; padding: 12px 14px; background: #faf9f6; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 75%; }
+.msg.incoming { align-self: flex-start; }
+.msg.outgoing { align-self: flex-end; }
+.msg .bubble { padding: 8px 13px; border-radius: 14px; font-size: 1.28rem; line-height: 1.6; }
+.msg.incoming .bubble { background: #fff; border: 1px solid #e4e0d8; border-radius: 0 14px 14px 14px; }
+.msg.outgoing .bubble { background: #1a5cc8; color: #fff; border-radius: 14px 0 14px 14px; }
+.msg .meta { font-size: 1rem; color: #aaa; margin-top: 3px; font-style: italic; }
+.msg.outgoing .meta { text-align: right; }
+.chat-input-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #ede9e2; background: #fff; }
+.chat-input-row input { flex:1; border: 1px solid #ddd; border-radius: 20px; padding: 7px 14px; font-size: 1.3rem; outline: none; font-family: var(--font-main); }
+.chat-input-row input:focus { border-color: #1a5cc8; }
+.chat-input-row button { background: var(--nav-accent); color: #fff; border:none; border-radius: 20px; padding: 7px 18px; font-size: 1.25rem; font-weight: 600; cursor:pointer; }
+
+/* ═══ LOADING SPINNER ═══ */
+.loading-spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #eee; border-top-color: var(--nav-accent); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.loading-text { color: #999; font-size: 1.2rem; padding: 8px; font-style: italic; }
+
+/* ═══ FOOTER ═══ */
+footer { background: #0f1628; color: #94a3b8; font-size: 1.2rem; margin-top: 32px; }
+.footer-main { max-width: 1300px; margin: 0 auto; padding: 40px 28px 32px; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; }
+.footer-brand .footer-logo { font-family: var(--font-heading); font-size: 2.4rem; font-weight: 700; font-style: italic; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.footer-brand .footer-logo img { width: 32px; height: 32px; object-fit: contain; }
+.footer-brand p { font-size: 1.25rem; line-height: 1.65; color: #94a3b8; max-width: 300px; }
+.footer-col h4 { color: #e2b84a; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 9px; }
+.footer-col ul li a { color: #94a3b8; text-decoration: none; font-size: 1.25rem; transition: color .2s; display: flex; align-items: center; gap: 8px; }
+.footer-col ul li a:hover { color: #e2b84a; }
+.footer-col ul li a i { font-size: 1.1rem; width: 16px; color: #e2b84a; }
+.footer-share-btn { display: inline-flex; align-items: center; gap: 7px; background: #e2b84a; color: #0f1628; border: none; border-radius: 20px; padding: 7px 18px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-top: 10px; transition: opacity .2s; font-family: var(--font-main); }
+.footer-share-btn:hover { opacity: .88; }
+.footer-divider { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 0; }
+.footer-bottom { max-width: 1300px; margin: 0 auto; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.footer-bottom p { font-size: 1.15rem; line-height: 1.6; }
+.footer-bottom p strong { color: #e8e8ea; }
+.footer-socials { display: flex; gap: 10px; }
+.footer-social-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; text-decoration: none; transition: transform .2s, opacity .2s; color: #fff; }
+.footer-social-btn:hover { transform: scale(1.12); opacity: .85; }
+.footer-social-btn.wa { background: #25d366; }
+.footer-social-btn.fb { background: #1877f2; }
+.footer-social-btn.tw { background: #1da1f2; }
+.footer-social-btn.sh { background: #e2b84a; color: #0f1628; }
+@media(max-width:780px){
+  .footer-main { grid-template-columns: 1fr; gap: 28px; padding: 28px 16px 20px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; padding: 14px 16px; }
+}
+
+/* ═══ BANNER / AUTH ═══ */
+.admin-banner-link { display: none; background: rgba(224,53,53,.9); color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: 700; padding: 5px 14px; border-radius: 4px; letter-spacing: 0.05em; transition: background .2s; white-space: nowrap; }
+.admin-banner-link:hover { background: #c0392b; }
+.banner-top-right { position: absolute; z-index: 5; top: 12px; right: 16px; display: flex; align-items: center; gap: 10px; }
+.banner-auth-zone { display: flex; align-items: center; }
+.banner-login-btn { background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.45); border-radius: 20px; padding: 7px 18px; font-size: 1.25rem; font-weight: 700; cursor: pointer; backdrop-filter: blur(6px); font-family: var(--font-main); display: flex; align-items: center; gap: 7px; transition: background .2s, border-color .2s; }
+.banner-login-btn:hover { background: rgba(255,255,255,.28); border-color: #fff; }
+.banner-user-chip { background: rgba(10,18,40,.7); color: #fff; border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: 7px 18px; font-size: 1.25rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 8px; transition: background .2s; }
+.banner-user-chip:hover { background: rgba(10,18,40,.9); }
+.user-panel-dropdown { display: none; position: absolute; z-index: 100; top: 52px; right: 16px; background: #fff; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.22); min-width: 240px; padding: 12px 0; animation: dropIn .18s ease; }
+@keyframes dropIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+.user-panel-dropdown .ud-email { padding: 8px 18px 10px; font-size: 1.2rem; color: #666; border-bottom: 1px solid #eee; word-break: break-all; }
+.user-panel-dropdown .ud-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; font-size: 1.3rem; color: #333; cursor: pointer; transition: background .15s; }
+.user-panel-dropdown .ud-item:hover { background: #f7f4ef; }
+.user-panel-dropdown .ud-item i { color: #1a5cc8; width: 16px; }
+.user-panel-dropdown .ud-item.logout { color: #e03535; }
+.user-panel-dropdown .ud-item.logout i { color: #e03535; }
+
+/* Auth Modal */
+.auth-overlay { position: fixed; inset: 0; background: rgba(5,10,25,.72); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+.auth-overlay.open { display: flex; }
+.auth-box { background: #fff; border-radius: 16px; max-width: 440px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,.35); animation: dcPopIn .22s ease; }
+@keyframes dcPopIn { from{transform:scale(.94);opacity:0} to{transform:scale(1);opacity:1} }
+.auth-header { background: var(--nav-bg); color: #fff; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; border-radius: 16px 16px 0 0; }
+.auth-header h2 { font-size: 1.7rem; font-family: var(--font-heading); font-weight: 700; }
+.auth-close { background: none; border: none; color: #aaa; font-size: 2.2rem; cursor: pointer; line-height: 1; transition: color .15s; }
+.auth-close:hover { color: var(--nav-accent); }
+.auth-tabs { display: flex; border-bottom: 2px solid #eee; }
+.auth-tab { flex: 1; padding: 11px 0; font-size: 1.28rem; font-weight: 600; cursor: pointer; background: none; border: none; color: #777; font-family: var(--font-heading); transition: color .2s; }
+.auth-tab.active { color: var(--section-head); border-bottom: 3px solid var(--nav-accent); margin-bottom: -2px; }
+.auth-body { padding: 20px 22px 24px; }
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+.auth-field { margin-bottom: 14px; }
+.auth-field label { display: block; font-size: 1.2rem; font-weight: 600; color: #444; margin-bottom: 5px; }
+.auth-field input { width: 100%; border: 1.5px solid #ddd; border-radius: 8px; padding: 9px 13px; font-size: 1.3rem; outline: none; font-family: var(--font-main); transition: border-color .2s; }
+.auth-field input:focus { border-color: #1a5cc8; }
+.auth-btn { width: 100%; background: var(--nav-accent); color: #fff; border: none; border-radius: 10px; padding: 12px 0; font-size: 1.4rem; font-weight: 700; cursor: pointer; font-family: var(--font-main); transition: opacity .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.auth-btn:hover { opacity: .88; }
+.auth-divider { text-align: center; color: #aaa; margin: 14px 0 10px; font-size: 1.15rem; }
+.auth-google-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; border: 1.5px solid #ddd; border-radius: 10px; padding: 11px 0; font-size: 1.35rem; font-weight: 600; cursor: pointer; font-family: var(--font-main); transition: background .2s, border-color .2s; }
+.auth-google-btn:hover { background: #f8f8f8; border-color: #bbb; }
+.auth-google-btn img { width: 20px; height: 20px; }
+.auth-error { margin-top: 10px; color: var(--nav-accent); font-size: 1.2rem; min-height: 20px; }
+.auth-success { margin-top: 10px; color: #22a454; font-size: 1.2rem; min-height: 20px; }
+
+/* PDF Preview */
+.pdf-preview-overlay { position: fixed; inset: 0; background: rgba(5,10,25,.82); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 4000; padding: 16px; }
+.pdf-preview-overlay.open { display: flex; }
+.pdf-preview-box { background: #fff; border-radius: 14px; width: 100%; max-width: 860px; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 24px 64px rgba(0,0,0,.4); animation: dcPopIn .22s ease; overflow: hidden; }
+.pdf-preview-header { background: var(--nav-bg); color: #fff; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--nav-accent); flex-shrink: 0; }
+.pdf-preview-header h3 { font-size: 1.4rem; font-weight: 700; }
+.pdf-preview-header-btns { display: flex; align-items: center; gap: 10px; }
+.pdf-download-btn { background: var(--nav-green); color: #0f1628; border: none; border-radius: 6px; padding: 6px 16px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: opacity .2s; font-family: var(--font-main); }
+.pdf-download-btn:hover { opacity: .85; }
+.pdf-close-btn { background: none; border: none; color: #aaa; font-size: 2rem; cursor: pointer; line-height: 1; padding: 0 4px; }
+.pdf-close-btn:hover { color: var(--nav-accent); }
+.pdf-preview-frame { flex: 1; min-height: 0; border: none; width: 100%; }
+
+/* Edit/change password modals */
+.changepwd-overlay { position: fixed; inset: 0; background: rgba(5,10,25,.72); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+.changepwd-overlay.open { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- ████  HEAD IMAGE  ████ -->
+<div class="headimage" style="position:relative">
+  <div class="banner-top-right">
+    <a href="https://www.gstcell.com/admin" class="admin-banner-link" id="adminBannerLink" target="_blank">⚙️ Admin Panel</a>
+    <div class="banner-auth-zone" id="bannerAuthZone">
+      <button class="banner-login-btn" id="bannerLoginBtn" onclick="openAuthModal()">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+    </div>
+  </div>
+  <div class="user-panel-dropdown" id="userPanelDropdown">
+    <div class="ud-email" id="udEmail"></div>
+    <div class="ud-item" onclick="openEditProfile()"><i class="fas fa-user-edit"></i> Edit Profile</div>
+    <div class="ud-item" onclick="openChangePassword()"><i class="fas fa-key"></i> Change Password</div>
+    <div class="ud-item logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+  </div>
+  <div class="sitename">GST<span>Cell</span></div>
+</div>
+
+<!-- ████  NAV BAR  ████ -->
+<nav>
+  <div class="wrapper">
+    <div class="logo"><a href="https://www.gstcell.com">GSTCell</a></div>
+    <ul class="nav-links" id="mainNav">
+      <li id="nav-item-ACT_RULE">
+        <a class="desktop-item">ACT &amp; RULE ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand">+</button>
+        <div class="mega-box"><div class="mega-content"><span class="nav-loading">Loading…</span></div></div>
+      </li>
+      <li id="nav-item-NOTIFICATION">
+        <a class="desktop-item">NOTIFICATION ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand">+</button>
+        <div class="mega-box"><div class="mega-content"><span class="nav-loading">Loading…</span></div></div>
+      </li>
+      <li id="nav-item-CIRCULAR">
+        <a class="desktop-item" style="border-bottom-color:var(--nav-accent);color:#fff">CIRCULAR ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand">+</button>
+        <div class="mega-box"><div class="mega-content"><span class="nav-loading">Loading…</span></div></div>
+      </li>
+      <li id="nav-item-GST">
+        <a class="desktop-item">GST ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand">+</button>
+        <div class="mega-box"><div class="mega-content"><span class="nav-loading">Loading…</span></div></div>
+      </li>
+      <li id="nav-item-FINANCE_BILL_ACT">
+        <a class="desktop-item">FINANCE BILL &amp; ACT ▾</a>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand">+</button>
+        <div class="mega-box"><div class="mega-content"><span class="nav-loading">Loading…</span></div></div>
+      </li>
+      <li id="nav-item-TAX_RATE">
+        <span class="desktop-item nav-taxrate-btn">🧮 TAX RATE ▾</span>
+        <button class="mob-expand-btn" onclick="toggleMobileItem(this)" aria-label="Expand">+</button>
+        <div class="mega-box"><div class="mega-content"><span class="nav-loading">Loading…</span></div></div>
+      </li>
+      <li id="nav-dynamic-placeholder" style="display:none"></li>
+    </ul>
+    <span class="menu-toggle" onclick="toggleMobileMenu()">☰</span>
+  </div>
+</nav>
+
+<!-- ████  MAIN BODY  ████ -->
+<div class="page-body">
+  <div class="three-col">
+
+    <!-- COL 1: Quick Links -->
+    <div class="col-quicklinks">
+      <div class="section-card">
+        <h2>🔗 Quick Links</h2>
+        <div class="ql-groups-wrap">
+          <div class="ql-group">
+            <div class="ql-group-title">Kerala Taxes</div>
+            <ul>
+              <li><a href="https://www.keralataxes.gov.in" target="_blank">Home</a></li>
+              <li><a href="https://kitis.keralataxes.gov.in/" target="_blank">KITIS (Return Filing)</a></li>
+              <li><a href="https://www.facebook.com/keralastategst/" target="_blank">Facebook Page</a></li>
+              <li><a href="https://www.gstcell.com/sgst-directory" target="_blank">Directory</a></li>
+            </ul>
+          </div>
+          <div class="ql-group">
+            <div class="ql-group-title">CBIC</div>
+            <ul>
+              <li><a href="https://www.cbic.gov.in" target="_blank">Home</a></li>
+              <li><a href="https://taxinformation.cbic.gov.in/" target="_blank">Notification</a></li>
+              <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/circularcgst" target="_blank">Circular</a></li>
+              <li><a href="https://www.cbic.gov.in/htdocs-cbec/gst/gstInstructions" target="_blank">Instructions</a></li>
+            </ul>
+          </div>
+          <div class="ql-group">
+            <div class="ql-group-title">GST Portal</div>
+            <ul>
+              <li><a href="https://services.gst.gov.in/services/login" target="_blank">Return Filing</a></li>
+              <li><a href="http://gstcouncil.gov.in/" target="_blank">GST Council</a></li>
+              <li><a href="http://www.gstcouncil.gov.in/authority-for-advance-rulings" target="_blank">Advance Ruling</a></li>
+              <li><a href="https://www.naa.gov.in/news.php?page=1&cat=2&pagesize=10" target="_blank">National AAR</a></li>
+            </ul>
+          </div>
+          <div class="ql-group">
+            <div class="ql-group-title">eGazette</div>
+            <ul>
+              <li><a href="http://www.egazette.kerala.gov.in/archives.php?id=6" target="_blank">Ordinary Gazette</a></li>
+              <li><a href="https://compose.kerala.gov.in/egazettelink1" target="_blank">Extra Ordinary</a></li>
+              <li><a href="https://egazette.gov.in/" target="_blank">eGazette India</a></li>
+            </ul>
+          </div>
+          <div class="ql-group">
+            <div class="ql-group-title">E-Office</div>
+            <ul>
+              <li><a href="https://eoffice.kerala.gov.in/EofficePortal/letterSearchRedirect" target="_blank">Citizen Portal</a></li>
+              <li><a href="http://www.ctax.kerala.gov.in" target="_blank">GST Employee Login</a></li>
+              <li><a href="https://www.gstcell.com/my-office" target="_blank">My Office</a></li>
+            </ul>
+          </div>
+          <div class="ql-group">
+            <div class="ql-group-title">Kerala PSC</div>
+            <ul>
+              <li><a href="https://psc.kerala.gov.in/kpsc/" target="_blank">Dept. Test Login</a></li>
+              <li><a href="https://thulasi.psc.kerala.gov.in/thulasi/" target="_blank">One Time Regn.</a></li>
+              <li><a href="https://keralapsc.gov.in/rankedlist" target="_blank">Rank List</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div><!-- /col-quicklinks -->
+
+    <!-- COL 2: Circulars Table -->
+    <div class="col-main">
+      <div class="section-card">
+        <h2>📋 Circulars</h2>
+
+        <!-- Controls row -->
+        <div class="circ-controls">
+          <label for="circTypeSelect">Show:</label>
+          <select id="circTypeSelect" class="circ-type-select" onchange="loadCirculars()">
+            <option value="kerala">Circular issued by Kerala</option>
+            <option value="cbic">C.B.I.C. Circular</option>
+            <option value="instructions">Instructions</option>
+          </select>
+          <input type="text" id="circSearch" class="circ-search-input" placeholder="🔍 Search circular…" oninput="filterTable()">
+        </div>
+
+        <!-- Table -->
+        <div class="circ-table-wrap">
+          <table class="circ-table" id="circTable">
+            <colgroup>
+              <col><col><col><col>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>State Circular No.</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="circTableBody">
+              <tr><td colspan="4" class="circ-empty"><span class="loading-spinner"></span> Loading circulars…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /col-main -->
+
+    <!-- COL 3: Recent updates + News + Suggestion Box -->
+    <div class="col-right">
+
+      <!-- RECENT UPDATES -->
+      <div class="section-card">
+        <h2>🆕 Recent Updates</h2>
+        <div id="recent-container">
+          <div class="loading-text"><span class="loading-spinner"></span> Loading…</div>
+        </div>
+      </div>
+
+      <!-- ARTICLES / NEWS -->
+      <div class="section-card" style="background: #fffdf0; border-color: #f5e9b0;">
+        <h2>📰 News &amp; Updates</h2>
+        <div id="articles-container">
+          <div class="loading-text"><span class="loading-spinner"></span> Loading articles…</div>
+        </div>
+      </div>
+
+      <!-- CIRCULAR SUGGESTION / FEEDBACK BOX -->
+      <div class="chat-widget" id="chatWidget" style="display:none">
+        <div class="chat-header">
+          <span class="status-dot"></span>
+          <h3>💬 Circular Feedback</h3>
+        </div>
+        <div class="chat-user-bar" id="chatUserBar" style="padding:6px 14px 0;background:#fff;font-size:1.2rem;color:#555;display:none">
+          <i class="fas fa-user-circle" style="color:#1a5cc8"></i>
+          <span id="chatDisplayName" style="margin-left:5px;font-weight:600"></span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg incoming">
+            <div class="bubble">Have a suggestion or found a missing/incorrect circular? Let us know here!</div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Type your circular feedback…" maxlength="500"
+                 onkeydown="if(event.key==='Enter') sendChat()">
+          <button onclick="sendChat()">Send</button>
+        </div>
+      </div>
+
+      <!-- Chat login prompt -->
+      <div class="section-card" id="chatLoginPrompt" style="display:none;text-align:center;padding:20px">
+        <p style="color:#666;font-size:1.3rem;margin-bottom:12px">
+          <i class="fas fa-lock" style="color:#1a5cc8;margin-right:6px"></i>
+          Please <strong>login</strong> to send circular feedback.
+        </p>
+        <button onclick="openAuthModal()" style="background:#1a5cc8;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:1.3rem;font-weight:700;cursor:pointer">
+          <i class="fas fa-sign-in-alt"></i> Login / Register
+        </button>
+      </div>
+
+    </div><!-- /col-right -->
+  </div><!-- /three-col -->
+</div><!-- /page-body -->
+
+<!-- ████  FOOTER  ████ -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="https://lh3.googleusercontent.com/d/1VsL2VwLkoM_htKcGmVoOOmoWM_SzBXqH" alt="GSTCell">
+        GSTCell
+      </div>
+      <p>A trusted platform for GST professionals. Access Acts, Rules, Notifications, Circulars, Advance Rulings and AI-powered GST assistance.</p>
+      <button class="footer-share-btn" onclick="shareThisSite()">
+        <i class="fas fa-share-alt"></i> Share this site
+      </button>
+    </div>
+    <div class="footer-col">
+      <h4>Owner / Contact</h4>
+      <ul>
+        <li style="color:#ccc;font-size:1.25rem;line-height:1.6"><i class="fas fa-user" style="margin-right:6px"></i> Ashwin M Das</li>
+        <li style="color:#ccc;font-size:1.25rem;line-height:1.6"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i> Kachani, Karakulam P O, Thiruvananthapuram</li>
+        <li><a href="tel:9400096941"><i class="fas fa-phone"></i> 9400096941</a></li>
+        <li><a href="mailto:gstcell.com@gmail.com"><i class="fas fa-envelope"></i> gstcell.com@gmail.com</a></li>
+        <li><a href="https://www.gstcell.com" target="_blank"><i class="fas fa-globe"></i> www.gstcell.com</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#" onclick="document.getElementById('tcOverlay').style.display='flex';return false;"><i class="fas fa-file-alt"></i> Terms &amp; Conditions</a></li>
+        <li><a href="https://www.gstcell.com" target="_blank"><i class="fas fa-external-link-alt"></i> Visit Website</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <p>© 2026 GSTCell. All rights reserved. &nbsp;|&nbsp;
+       <a href="https://www.gstcell.com" target="_blank" style="color:var(--nav-green)">www.gstcell.com</a>
+    </p>
+    <div class="footer-socials">
+      <a href="https://api.whatsapp.com/send?text=Check out GSTCell - Kerala GST Resource: https://www.gstcell.com" target="_blank" class="footer-social-btn wa"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.facebook.com/sharer.php?u=https://www.gstcell.com" target="_blank" class="footer-social-btn fb"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://twitter.com/intent/tweet?url=https://www.gstcell.com&text=Kerala GST Resource - GSTCell" target="_blank" class="footer-social-btn tw"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="footer-social-btn sh" onclick="shareThisSite();return false;"><i class="fas fa-share-alt"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- ████  TERMS & CONDITIONS MODAL  ████ -->
+<div id="tcOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:14px;max-width:680px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.35);overflow:hidden">
+    <div style="background:#1c1f26;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <h2 style="color:#fff;font-size:1.6rem;font-family:'Times New Roman',serif;margin:0">📋 Terms &amp; Conditions / Disclaimer</h2>
+      <button onclick="document.getElementById('tcOverlay').style.display='none'" style="background:none;border:none;color:#aaa;font-size:2rem;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div style="padding:24px 28px;overflow-y:auto;font-family:'Times New Roman',serif;font-size:14px;line-height:1.8;color:#333">
+      <p><strong>GSTCell</strong> is not a Government website. All information is for general reference only. Verify with official government websites before relying on any content.</p>
+    </div>
+    <div style="padding:14px 28px;border-top:1px solid #eee;flex-shrink:0;text-align:right">
+      <button onclick="document.getElementById('tcOverlay').style.display='none'" style="background:#1a3a6b;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ████  AUTH MODAL  ████ -->
+<div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuthModal()">
+  <div class="auth-box">
+    <div class="auth-header">
+      <h2>🔐 GSTCell Account</h2>
+      <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+      <button class="auth-tab" onclick="switchAuthTab('forgot')">Forgot Password</button>
+    </div>
+    <div class="auth-body">
+      <div class="auth-panel active" id="authPanel-login">
+        <div class="auth-field"><label>Email Address</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+        <div class="auth-field"><label>Password</label><input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="auth-btn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        <div class="auth-divider">or</div>
+        <button class="auth-google-btn" onclick="doGoogleLogin()">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Continue with Google
+        </button>
+        <div class="auth-error" id="loginError"></div>
+      </div>
+      <div class="auth-panel" id="authPanel-register">
+        <div class="auth-field"><label>Full Name</label><input type="text" id="regName" placeholder="Your full name"></div>
+        <div class="auth-field"><label>Phone Number</label><input type="tel" id="regPhone" placeholder="9xxxxxxxxx"></div>
+        <div class="auth-field"><label>Email Address</label><input type="email" id="regEmail" placeholder="you@example.com"></div>
+        <div class="auth-field"><label>Password</label><input type="password" id="regPwd" placeholder="Min 6 characters"></div>
+        <button class="auth-btn" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create Account</button>
+        <div class="auth-divider">or</div>
+        <button class="auth-google-btn" onclick="doGoogleLogin()">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Continue with Google
+        </button>
+        <div class="auth-error" id="registerError"></div>
+      </div>
+      <div class="auth-panel" id="authPanel-forgot">
+        <p style="color:#666;font-size:1.25rem;margin-bottom:14px;line-height:1.6">Enter your email and we'll send a password reset link.</p>
+        <div class="auth-field"><label>Email Address</label><input type="email" id="forgotEmail" placeholder="you@example.com"></div>
+        <button class="auth-btn" onclick="doForgotPassword()"><i class="fas fa-paper-plane"></i> Send Reset Link</button>
+        <div class="auth-error" id="forgotError"></div>
+        <div class="auth-success" id="forgotSuccess"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PDF PREVIEW MODAL -->
+<div class="pdf-preview-overlay" id="pdfPreviewOverlay" onclick="if(event.target===this)closePdfPreview()">
+  <div class="pdf-preview-box">
+    <div class="pdf-preview-header">
+      <h3 id="pdfPreviewTitle">Document</h3>
+      <div class="pdf-preview-header-btns">
+        <a id="pdfDownloadBtn" href="#" class="pdf-download-btn" target="_blank"><i class="fas fa-download"></i> Download</a>
+        <button class="pdf-close-btn" onclick="closePdfPreview()">✕</button>
+      </div>
+    </div>
+    <iframe id="pdfPreviewFrame" class="pdf-preview-frame" src="" style="height:75vh"></iframe>
+  </div>
+</div>
+
+<!-- COLLECT PROFILE MODAL -->
+<div class="auth-overlay" id="collectProfileOverlay">
+  <div class="auth-box">
+    <div class="auth-header"><h2>👤 Complete Your Profile</h2></div>
+    <div class="auth-body">
+      <p style="color:#666;font-size:1.25rem;margin-bottom:14px">Please provide your name and phone number to continue.</p>
+      <div class="auth-field"><label>Full Name *</label><input type="text" id="cprofName" placeholder="Your full name"></div>
+      <div class="auth-field"><label>Phone Number *</label><input type="tel" id="cprofPhone" placeholder="9xxxxxxxxx"></div>
+      <button class="auth-btn" onclick="saveCollectedProfile()"><i class="fas fa-save"></i> Save &amp; Continue</button>
+      <div class="auth-error" id="cprofError"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="auth-overlay" id="editProfileOverlay" onclick="if(event.target===this)closeEditProfile()">
+  <div class="auth-box">
+    <div class="auth-header"><h2>✏️ Edit Profile</h2><button class="auth-close" onclick="closeEditProfile()">✕</button></div>
+    <div class="auth-body">
+      <div class="auth-field"><label>Full Name</label><input type="text" id="epName" placeholder="Your full name"></div>
+      <div class="auth-field"><label>Phone Number</label><input type="tel" id="epPhone" placeholder="9xxxxxxxxx"></div>
+      <button class="auth-btn" onclick="saveEditProfile()"><i class="fas fa-save"></i> Save Changes</button>
+      <div class="auth-error" id="epError"></div>
+      <div class="auth-success" id="epSuccess"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="auth-overlay" id="changePwdOverlay" onclick="if(event.target===this)closeChangePwd()">
+  <div class="auth-box">
+    <div class="auth-header"><h2>🔑 Change Password</h2><button class="auth-close" onclick="closeChangePwd()">✕</button></div>
+    <div class="auth-body">
+      <div class="auth-field"><label>Current Password</label><input type="password" id="cpCurrent" placeholder="Current password"></div>
+      <div class="auth-field"><label>New Password</label><input type="password" id="cpNew" placeholder="New password (min 6 chars)"></div>
+      <div class="auth-field"><label>Confirm New Password</label><input type="password" id="cpConfirm" placeholder="Re-enter new password"></div>
+      <button class="auth-btn" onclick="doChangePassword()"><i class="fas fa-save"></i> Update Password</button>
+      <div class="auth-error" id="cpError"></div>
+      <div class="auth-success" id="cpSuccess"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ████  SCRIPTS  ████ -->
+<script>
+/* ══════════════════════════════════════════════
+   FIREBASE WAIT
+══════════════════════════════════════════════ */
+function waitForFirebase(cb) {
+  if (window._firebaseReady) cb();
+  else document.addEventListener("firebaseReady", cb, { once: true });
+}
+
+waitForFirebase(() => {
+  loadRecentUpdates();
+  loadArticles();
+  loadNavLinks();
+  loadCirculars();
+  startChatListener();
+});
+
+/* ══════════════════════════════════════════════
+   CIRCULARS TABLE
+   Firestore collection: "circulars"
+   Fields per doc:
+     tableType:   "kerala" | "cbic" | "instructions"
+     circularNo:  string   (e.g. "18/2025")
+     isTrade:     boolean  (optional, makes no. italic red)
+     date:        string   (e.g. "05/10/2025")
+     deptLabel:   string   (bold label, e.g. "Kerala SGST Dept.")
+     description: string   (description text after dash)
+     updatedNote: string   (optional, e.g. "Updated Circular No. 5/2023")
+     pdfUrl:      string   (optional, Google Drive or direct URL)
+     remarks:     string   (optional)
+     order:       number   (for sorting)
+══════════════════════════════════════════════ */
+
+let _allCirculars = [];
+
+async function loadCirculars() {
+  const tbody = document.getElementById("circTableBody");
+  tbody.innerHTML = `<tr><td colspan="4" class="circ-empty"><span class="loading-spinner"></span> Loading…</td></tr>`;
+
+  const { collection, getDocs, query, orderBy } = window._fsHelpers;
+  const db = window._db;
+  const tableType = document.getElementById("circTypeSelect").value;
+
+  try {
+    const q = query(collection(db, "circulars"), orderBy("order", "asc"));
+    const snap = await getDocs(q);
+    _allCirculars = [];
+    snap.forEach(d => _allCirculars.push({ id: d.id, ...d.data() }));
+
+    // filter to current tab
+    renderCircularRows(_allCirculars.filter(r => r.tableType === tableType));
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="4" class="circ-empty" style="color:red">Error: ${e.message}</td></tr>`;
+  }
+}
+
+function renderCircularRows(rows) {
+  const tbody = document.getElementById("circTableBody");
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="circ-empty">No records found.</td></tr>`;
+    return;
+  }
+  let html = "";
+  rows.forEach(r => {
+    const noClass = r.isTrade ? "col-no trade" : "col-no";
+    const descHtml = buildDescHtml(r);
+    const remarksHtml = escH(r.remarks || "");
+    const pdfHtml = r.pdfUrl
+      ? `<a class="circ-pdf-link" href="${escH(r.pdfUrl)}" target="_blank" onclick="openPdfPreview('${escH(r.circularNo||r.deptLabel||'')}','${escH(r.pdfUrl)}');return false;"><i class="fa fa-file-pdf-o"></i> PDF</a>`
+      : "";
+    html += `<tr>
+      <td class="${noClass}">${escH(r.circularNo || "")}</td>
+      <td class="col-date">${escH(r.date || "")}</td>
+      <td class="col-desc">${descHtml}${pdfHtml ? '<div style="margin-top:4px">'+pdfHtml+'</div>' : ''}</td>
+      <td class="col-remarks">${remarksHtml}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+function buildDescHtml(r) {
+  let html = "";
+  if (r.deptLabel) {
+    html += `<span class="dept-label">${escH(r.deptLabel)}</span>`;
+    if (r.description) html += ` <span class="desc-text">- ${escH(r.description)}</span>`;
+  } else if (r.description) {
+    html += `<span class="desc-text">${escH(r.description)}</span>`;
+  }
+  if (r.updatedNote) {
+    html += `<span class="updated-note"><em>${escH(r.updatedNote)}</em></span>`;
+  }
+  return html;
+}
+
+function filterTable() {
+  const q = document.getElementById("circSearch").value.trim().toLowerCase();
+  const tableType = document.getElementById("circTypeSelect").value;
+  let rows = _allCirculars.filter(r => r.tableType === tableType);
+  if (q) {
+    rows = rows.filter(r =>
+      (r.circularNo||"").toLowerCase().includes(q) ||
+      (r.date||"").toLowerCase().includes(q) ||
+      (r.deptLabel||"").toLowerCase().includes(q) ||
+      (r.description||"").toLowerCase().includes(q) ||
+      (r.remarks||"").toLowerCase().includes(q)
+    );
+  }
+  renderCircularRows(rows);
+}
+
+function escH(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ══════════════════════════════════════════════
+   RECENT UPDATES
+══════════════════════════════════════════════ */
+async function loadRecentUpdates() {
+  const { collection, getDocs, query, orderBy, limit } = window._fsHelpers;
+  const db = window._db;
+  const container = document.getElementById("recent-container");
+  try {
+    const q = query(collection(db, "recent_updates"), orderBy("order", "asc"), limit(20));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = '<p class="loading-text">No updates yet.</p>'; return; }
+    let items = [];
+    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+    const defaultMax = 7;
+    let expanded = false;
+    function render() {
+      container.innerHTML = "";
+      items.forEach((item, i) => {
+        const el = document.createElement("div");
+        el.className = "recent-item";
+        el.style.display = (i < defaultMax || expanded) ? "flex" : "none";
+        el.innerHTML = `<span class="new-badge">NEW</span><a href="${item.link || '#'}" target="_blank">${item.title || '(Untitled)'}</a>`;
+        container.appendChild(el);
+      });
+      if (items.length > defaultMax) {
+        const btn = document.createElement("button");
+        btn.className = "see-more-btn";
+        btn.textContent = expanded ? "See Less" : "See More";
+        btn.onclick = () => { expanded = !expanded; render(); };
+        container.appendChild(btn);
+      }
+    }
+    render();
+  } catch(e) {
+    container.innerHTML = `<p class="loading-text" style="color:red">Error: ${e.message}</p>`;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   ARTICLES
+══════════════════════════════════════════════ */
+async function loadArticles() {
+  const { collection, getDocs, query, orderBy } = window._fsHelpers;
+  const db = window._db;
+  const container = document.getElementById("articles-container");
+  try {
+    const q = query(collection(db, "articles"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = '<p class="loading-text">No articles yet.</p>'; return; }
+    const cats = {};
+    snap.forEach(d => {
+      const a = { id: d.id, ...d.data() };
+      if (!cats[a.category]) cats[a.category] = [];
+      cats[a.category].push(a);
+    });
+    container.innerHTML = "";
+    Object.keys(cats).forEach(cat => {
+      const catDiv = document.createElement("div");
+      catDiv.className = "article-category";
+      catDiv.innerHTML = `<h2>${cat}</h2>`;
+      const articles = cats[cat];
+      const maxVisible = 2;
+      articles.slice(0, maxVisible).forEach(a => catDiv.appendChild(buildArticleEl(a)));
+      const hidden = articles.slice(maxVisible);
+      const hiddenWrap = document.createElement("div");
+      hiddenWrap.style.display = "none";
+      hidden.forEach(a => hiddenWrap.appendChild(buildArticleEl(a)));
+      catDiv.appendChild(hiddenWrap);
+      if (hidden.length > 0) {
+        const btn = document.createElement("button");
+        btn.className = "cat-toggle-btn";
+        btn.textContent = "See More";
+        btn.onclick = () => { const open = hiddenWrap.style.display !== "none"; hiddenWrap.style.display = open ? "none" : "block"; btn.textContent = open ? "See More" : "See Less"; };
+        catDiv.appendChild(btn);
+      }
+      container.appendChild(catDiv);
+    });
+  } catch(e) {
+    container.innerHTML = `<p class="loading-text" style="color:red">Error: ${e.message}</p>`;
+  }
+}
+
+function buildArticleEl(a) {
+  const el = document.createElement("article");
+  el.innerHTML = `<h3>${a.title || ''}</h3>`;
+  if (a.imageUrl) { const img = document.createElement("img"); img.src = a.imageUrl; img.style.maxWidth = "100%"; el.appendChild(img); }
+  const paras = Array.isArray(a.paragraphs) ? a.paragraphs : [];
+  if (paras.length > 0) {
+    const p = document.createElement("p");
+    p.textContent = typeof paras[0] === "string" ? paras[0] : (paras[0].text || "");
+    el.appendChild(p);
+  }
+  const refs = document.createElement("div"); refs.className = "ref-links";
+  if (a.refText1 && a.refLink1) refs.innerHTML += `<i class="fa fa-file-pdf-o" style="color:red"></i> <a href="${a.refLink1}" target="_blank">${a.refText1}</a>`;
+  el.appendChild(refs);
+  return el;
+}
+
+/* ══════════════════════════════════════════════
+   NAV LINKS (populate nav bar menus)
+══════════════════════════════════════════════ */
+async function loadNavLinks() {
+  const { collection, getDocs, query, orderBy } = window._fsHelpers;
+  const db = window._db;
+  try {
+    const q = query(collection(db, "nav_links"), orderBy("order", "asc"));
+    const snap = await getDocs(q);
+    if (snap.empty) return;
+    const groups = {}; const menuOrder = [];
+    snap.forEach(d => {
+      const item = { id: d.id, ...d.data() };
+      if (!groups[item.menu]) { groups[item.menu] = {}; menuOrder.push(item.menu); }
+      if (!groups[item.menu][item.subMenu]) groups[item.menu][item.subMenu] = [];
+      groups[item.menu][item.subMenu].push(item);
+    });
+    const MENU_ID_MAP = {
+      "ACT & RULE":"nav-item-ACT_RULE","NOTIFICATION":"nav-item-NOTIFICATION",
+      "CIRCULAR":"nav-item-CIRCULAR","GST":"nav-item-GST",
+      "FINANCE BILL & ACT":"nav-item-FINANCE_BILL_ACT","TAX RATE":"nav-item-TAX_RATE",
+    };
+    const placeholder = document.getElementById("nav-dynamic-placeholder");
+    if (placeholder) placeholder.remove();
+    menuOrder.forEach(menu => {
+      const subMenus = Object.keys(groups[menu]);
+      const COLS_PER_ROW = 5; const SHOW_MAX = 10;
+      function buildCol(sub) {
+        const allItems = groups[menu][sub];
+        const col = document.createElement("div"); col.className = "mega-col";
+        const header = document.createElement("div"); header.className = "mega-col-header";
+        const h4 = document.createElement("h4"); h4.textContent = sub;
+        const toggleBtn = document.createElement("button"); toggleBtn.className = "mega-col-toggle"; toggleBtn.textContent = "+";
+        toggleBtn.addEventListener("click", function(){ toggleMegaCol(this); });
+        header.appendChild(h4); header.appendChild(toggleBtn); col.appendChild(header);
+        const ul = document.createElement("ul");
+        allItems.slice(0, SHOW_MAX).forEach(item => {
+          const li = document.createElement("li");
+          const a = document.createElement("a"); a.href = item.url; a.target = "_blank"; a.textContent = item.name;
+          li.appendChild(a); ul.appendChild(li);
+        });
+        col.appendChild(ul);
+        return col;
+      }
+      function buildMegaContent() {
+        const content = document.createElement("div"); content.className = "mega-content";
+        for (let i = 0; i < subMenus.length; i += COLS_PER_ROW) {
+          const row = document.createElement("div"); row.className = "mega-row";
+          subMenus.slice(i, i + COLS_PER_ROW).forEach(sub => row.appendChild(buildCol(sub)));
+          content.appendChild(row);
+        }
+        return content;
+      }
+      const menuKey = menu.trim().replace(/\s+/g," ").toUpperCase();
+      const matchedKey = Object.keys(MENU_ID_MAP).find(k => k.toUpperCase() === menuKey);
+      const existingLi = matchedKey ? document.getElementById(MENU_ID_MAP[matchedKey]) : null;
+      if (existingLi) {
+        const mc = existingLi.querySelector(".mega-content");
+        if (mc) mc.replaceWith(buildMegaContent());
+      }
+    });
+  } catch(e) { console.error("Nav links error:", e); }
+}
+
+/* ══════════════════════════════════════════════
+   CHAT (Circular Feedback — collection: circular_feedback)
+══════════════════════════════════════════════ */
+async function fetchUserProfile(user) {
+  try {
+    const { doc, getDoc } = window._fsHelpers;
+    const snap = await getDoc(doc(window._db, "users", user.uid));
+    return snap.exists() ? snap.data() : null;
+  } catch(e) { return null; }
+}
+
+async function startChatListener() {
+  const user = window._currentUser;
+  const { collection, onSnapshot, query, orderBy, limit } = window._fsHelpers;
+  const db = window._db;
+  const chatWidget = document.getElementById("chatWidget");
+  const chatLoginPrompt = document.getElementById("chatLoginPrompt");
+  const chatUserBar = document.getElementById("chatUserBar");
+
+  if (user) {
+    chatWidget.style.display = "block";
+    chatLoginPrompt.style.display = "none";
+    const profile = await fetchUserProfile(user);
+    const name = profile?.name || user.displayName || user.email?.split("@")[0] || "User";
+    window._chatUserName = name;
+    document.getElementById("chatDisplayName").textContent = name;
+    chatUserBar.style.display = "block";
+  } else {
+    chatWidget.style.display = "none";
+    chatLoginPrompt.style.display = "block";
+    return;
+  }
+
+  const q = query(collection(db, "circular_feedback"), orderBy("createdAt", "asc"), limit(50));
+  onSnapshot(q, snap => {
+    const container = document.getElementById("chatMessages");
+    container.innerHTML = "";
+    // Welcome message
+    const welcome = document.createElement("div"); welcome.className = "msg incoming";
+    welcome.innerHTML = `<div class="bubble">Have a suggestion or found a missing/incorrect circular? Let us know here!</div>`;
+    container.appendChild(welcome);
+    snap.forEach(d => {
+      const msg = d.data();
+      const isMe = msg.uid === window._currentUser?.uid;
+      const el = document.createElement("div");
+      el.className = `msg ${isMe ? "outgoing" : "incoming"}`;
+      el.innerHTML = `<div class="bubble">${escHtml(msg.text || "")}</div>
+        <div class="meta">${msg.name || "User"} · ${msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ""}</div>`;
+      container.appendChild(el);
+    });
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+function escHtml(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+async function sendChat() {
+  const user = window._currentUser;
+  if (!user) { openAuthModal(); return; }
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const { collection, addDoc, serverTimestamp } = window._fsHelpers;
+  try {
+    await addDoc(collection(window._db, "circular_feedback"), {
+      text, name: window._chatUserName || "User",
+      uid: user.uid, email: user.email || "",
+      createdAt: serverTimestamp()
+    });
+    input.value = "";
+  } catch(e) { alert("Error sending: " + e.message); }
+}
+
+/* ══════════════════════════════════════════════
+   AUTH UI
+══════════════════════════════════════════════ */
+function updateAuthUI(user) {
+  const loginBtn = document.getElementById("bannerLoginBtn");
+  const authZone = document.getElementById("bannerAuthZone");
+  const adminLink = document.getElementById("adminBannerLink");
+  const udEmail = document.getElementById("udEmail");
+  const ADMIN_EMAILS = ["gstcell.com@gmail.com"];
+
+  if (user) {
+    if (adminLink && ADMIN_EMAILS.includes(user.email)) adminLink.style.display = "block";
+    if (udEmail) udEmail.textContent = user.email;
+    const chip = document.createElement("button");
+    chip.className = "banner-user-chip";
+    chip.onclick = toggleUserPanel;
+    chip.innerHTML = `<i class="fas fa-user-circle"></i> <span>${user.displayName || user.email?.split("@")[0] || "User"}</span>`;
+    authZone.innerHTML = "";
+    authZone.appendChild(chip);
+    startChatListener();
+  } else {
+    if (adminLink) adminLink.style.display = "none";
+    authZone.innerHTML = "";
+    const btn = document.createElement("button");
+    btn.className = "banner-login-btn"; btn.onclick = openAuthModal;
+    btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Login`;
+    authZone.appendChild(btn);
+    const chatWidget = document.getElementById("chatWidget");
+    const chatLoginPrompt = document.getElementById("chatLoginPrompt");
+    if (chatWidget) chatWidget.style.display = "none";
+    if (chatLoginPrompt) chatLoginPrompt.style.display = "block";
+  }
+}
+
+function openAuthModal() { document.getElementById("authOverlay").classList.add("open"); }
+function closeAuthModal() { document.getElementById("authOverlay").classList.remove("open"); }
+function switchAuthTab(tab) {
+  document.querySelectorAll(".auth-tab").forEach((t, i) => t.classList.toggle("active", ["login","register","forgot"][i]===tab));
+  document.querySelectorAll(".auth-panel").forEach(p => p.classList.remove("active"));
+  document.getElementById("authPanel-"+tab).classList.add("active");
+}
+async function doLogin() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const pwd = document.getElementById("loginPwd").value;
+  const errEl = document.getElementById("loginError");
+  errEl.textContent = "";
+  try { await window._authFn.signInWithEmailAndPassword(window._auth, email, pwd); closeAuthModal(); }
+  catch(e) { errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim(); }
+}
+async function doRegister() {
+  const name = document.getElementById("regName").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const pwd = document.getElementById("regPwd").value;
+  const errEl = document.getElementById("registerError");
+  errEl.textContent = "";
+  if (!name||!phone||!email||!pwd) { errEl.textContent = "All fields are required."; return; }
+  try {
+    const cred = await window._authFn.createUserWithEmailAndPassword(window._auth, email, pwd);
+    const { doc, setDoc, serverTimestamp } = window._fsHelpers;
+    await setDoc(doc(window._db, "users", cred.user.uid), { name, phone, email, provider:"email", createdAt: serverTimestamp() });
+    closeAuthModal();
+  } catch(e) { errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim(); }
+}
+async function doGoogleLogin() {
+  try {
+    const result = await window._authFn.signInWithPopup(window._auth, window._googleProvider);
+    const user = result.user;
+    if (window._db && user) {
+      const { doc, getDoc, setDoc, serverTimestamp } = window._fsHelpers;
+      const ref = doc(window._db, "users", user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) await setDoc(ref, { name: user.displayName||"", email: user.email||"", phone:"", provider:"google", createdAt: serverTimestamp() });
+    }
+    closeAuthModal();
+  } catch(e) { document.getElementById("loginError").textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim(); }
+}
+async function doForgotPassword() {
+  const email = document.getElementById("forgotEmail").value.trim();
+  const errEl = document.getElementById("forgotError");
+  const okEl = document.getElementById("forgotSuccess");
+  errEl.textContent = ""; okEl.textContent = "";
+  try { await window._authFn.sendPasswordResetEmail(window._auth, email); okEl.textContent = "✓ Reset link sent! Check your inbox."; }
+  catch(e) { errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim(); }
+}
+async function doLogout() { closeUserPanel(); await window._authFn.signOut(window._auth); }
+function toggleUserPanel() { const p = document.getElementById("userPanelDropdown"); p.style.display = p.style.display==="block"?"none":"block"; }
+function closeUserPanel() { const p = document.getElementById("userPanelDropdown"); if(p) p.style.display="none"; }
+document.addEventListener("click", e => { if (!e.target.closest("#bannerAuthZone") && !e.target.closest("#userPanelDropdown") && !e.target.closest(".banner-top-right")) closeUserPanel(); });
+
+async function saveCollectedProfile() {
+  const user = window._currentUser; if (!user) return;
+  const name = document.getElementById("cprofName").value.trim();
+  const phone = document.getElementById("cprofPhone").value.trim();
+  const errEl = document.getElementById("cprofError"); errEl.textContent = "";
+  if (!name) { errEl.textContent = "Please enter your name."; return; }
+  if (!phone) { errEl.textContent = "Please enter your phone number."; return; }
+  try {
+    const { doc, setDoc, serverTimestamp } = window._fsHelpers;
+    await setDoc(doc(window._db, "users", user.uid), { name, phone, email: user.email, updatedAt: serverTimestamp() }, { merge: true });
+    window._chatUserName = name;
+    document.getElementById("chatDisplayName").textContent = name;
+    document.getElementById("collectProfileOverlay").classList.remove("open");
+  } catch(e) { errEl.textContent = e.message; }
+}
+async function openEditProfile() {
+  closeUserPanel();
+  const user = window._currentUser; if (!user) return;
+  const { doc, getDoc } = window._fsHelpers;
+  const snap = await getDoc(doc(window._db, "users", user.uid));
+  const profile = snap.exists() ? snap.data() : {};
+  document.getElementById("epName").value = profile.name || user.displayName || "";
+  document.getElementById("epPhone").value = profile.phone || "";
+  document.getElementById("epError").textContent = ""; document.getElementById("epSuccess").textContent = "";
+  document.getElementById("editProfileOverlay").classList.add("open");
+}
+function closeEditProfile() { document.getElementById("editProfileOverlay").classList.remove("open"); }
+async function saveEditProfile() {
+  const user = window._currentUser; if (!user) return;
+  const name = document.getElementById("epName").value.trim();
+  const phone = document.getElementById("epPhone").value.trim();
+  const errEl = document.getElementById("epError"); const okEl = document.getElementById("epSuccess");
+  errEl.textContent = ""; okEl.textContent = "";
+  if (!name) { errEl.textContent = "Name cannot be empty."; return; }
+  try {
+    const { doc, setDoc, serverTimestamp } = window._fsHelpers;
+    await setDoc(doc(window._db, "users", user.uid), { name, phone, email: user.email, updatedAt: serverTimestamp() }, { merge: true });
+    window._chatUserName = name;
+    document.getElementById("chatDisplayName").textContent = name;
+    okEl.textContent = "✓ Profile updated!";
+    setTimeout(() => closeEditProfile(), 1500);
+  } catch(e) { errEl.textContent = e.message; }
+}
+function openChangePassword() { closeUserPanel(); document.getElementById("changePwdOverlay").classList.add("open"); ["cpCurrent","cpNew","cpConfirm"].forEach(id=>document.getElementById(id).value=""); ["cpError","cpSuccess"].forEach(id=>document.getElementById(id).textContent=""); }
+function closeChangePwd() { document.getElementById("changePwdOverlay").classList.remove("open"); }
+async function doChangePassword() {
+  const user = window._currentUser; if (!user) return;
+  const current = document.getElementById("cpCurrent").value;
+  const newPwd = document.getElementById("cpNew").value;
+  const confirm = document.getElementById("cpConfirm").value;
+  const errEl = document.getElementById("cpError"); const okEl = document.getElementById("cpSuccess");
+  errEl.textContent = ""; okEl.textContent = "";
+  if (newPwd !== confirm) { errEl.textContent = "Passwords do not match."; return; }
+  if (newPwd.length < 6) { errEl.textContent = "Password must be at least 6 characters."; return; }
+  try {
+    const { reauthenticateWithCredential, EmailAuthProvider, updatePassword } = window._authFn;
+    const cred = EmailAuthProvider.credential(user.email, current);
+    await reauthenticateWithCredential(user, cred);
+    await updatePassword(user, newPwd);
+    okEl.textContent = "✓ Password updated successfully!";
+    setTimeout(() => closeChangePwd(), 2000);
+  } catch(e) { errEl.textContent = e.message.replace("Firebase: ","").replace(/\(.*\)/,"").trim(); }
+}
+
+/* ══════════════════════════════════════════════
+   PDF PREVIEW
+══════════════════════════════════════════════ */
+function openPdfPreview(title, pdfUrl) {
+  document.getElementById("pdfPreviewTitle").textContent = title || "Document";
+  let embedUrl = pdfUrl; let downloadUrl = pdfUrl;
+  const driveMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch) {
+    const fileId = driveMatch[1];
+    embedUrl = "https://drive.google.com/file/d/" + fileId + "/preview";
+    downloadUrl = "https://drive.google.com/uc?export=download&id=" + fileId;
+  }
+  document.getElementById("pdfPreviewFrame").src = embedUrl;
+  document.getElementById("pdfDownloadBtn").href = downloadUrl;
+  document.getElementById("pdfPreviewOverlay").classList.add("open");
+}
+function closePdfPreview() {
+  document.getElementById("pdfPreviewOverlay").classList.remove("open");
+  document.getElementById("pdfPreviewFrame").src = "";
+}
+
+/* ══════════════════════════════════════════════
+   NAV HELPERS
+══════════════════════════════════════════════ */
+function toggleMobileMenu() {
+  document.getElementById("mainNav").classList.toggle("mobile-open");
+}
+function toggleMobileItem(btn) {
+  const li = btn.closest("li");
+  li.classList.toggle("mob-open");
+  btn.textContent = li.classList.contains("mob-open") ? "−" : "+";
+}
+function toggleMegaCol(btn) {
+  const col = btn.closest(".mega-col");
+  col.classList.toggle("col-open");
+  btn.textContent = col.classList.contains("col-open") ? "−" : "+";
+}
+
+function shareThisSite() {
+  if (navigator.share) { navigator.share({ title: "GSTCell", text: "Kerala's GST Resource Platform", url: "https://www.gstcell.com" }); }
+  else { navigator.clipboard.writeText("https://www.gstcell.com").then(()=>alert("Link copied!")).catch(()=>window.open("https://api.whatsapp.com/send?text=Check out GSTCell: https://www.gstcell.com","_blank")); }
+}
+</script>
+</body>
+</html>
