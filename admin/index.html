@@ -777,7 +777,10 @@ tbody td .cell-sub  { color:var(--text-muted); font-size:1.15rem; margin-top:3px
     <div class="page" id="page-navlinks">
       <div class="page-header">
         <h1>🗂️ Nav <span>Links</span></h1>
-        <span class="badge">nav_links</span>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="badge">nav_links</span>
+          <button class="btn btn-secondary" onclick="downloadNavLinksCSV()"><i class="fas fa-download"></i> Download CSV</button>
+        </div>
       </div>
 
       <div class="form-card">
@@ -858,7 +861,10 @@ tbody td .cell-sub  { color:var(--text-muted); font-size:1.15rem; margin-top:3px
     <div class="page" id="page-doccards">
       <div class="page-header">
         <h1>🃏 Doc <span>Cards</span></h1>
-        <span class="badge">doc_cards</span>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="badge">doc_cards</span>
+          <button class="btn btn-secondary" onclick="downloadDocCardsCSV()"><i class="fas fa-download"></i> Download CSV</button>
+        </div>
       </div>
 
       <div class="form-card">
@@ -1038,7 +1044,10 @@ tbody td .cell-sub  { color:var(--text-muted); font-size:1.15rem; margin-top:3px
     <div class="page" id="page-quicklinks">
       <div class="page-header">
         <h1>🔗 Quick <span>Links</span></h1>
-        <span class="badge">quick_links</span>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="badge">quick_links</span>
+          <button class="btn btn-secondary" onclick="downloadQuickLinksCSV()"><i class="fas fa-download"></i> Download CSV</button>
+        </div>
       </div>
 
       <div class="form-card">
@@ -1204,6 +1213,63 @@ function escH(s) {
   return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 function truncate(s,n=60) { return s && s.length>n ? s.slice(0,n)+"…" : (s||""); }
+
+/* ══ GENERIC CSV EXPORT ══ */
+function csvCell(v) {
+  if (v === null || v === undefined) return "";
+  if (typeof v === "object") v = JSON.stringify(v);
+  return `"${String(v).replace(/"/g,'""')}"`;
+}
+function downloadCSVRows(headers, rows, filenamePrefix) {
+  const csv = [headers.map(csvCell).join(","), ...rows.map(r => headers.map(h => csvCell(r[h])).join(","))].join("\r\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url;
+  a.download = `${filenamePrefix}_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function downloadNavLinksCSV() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  try {
+    const snap = await getDocs(query(collection(window._db, "nav_links"), orderBy("order","asc")));
+    if (snap.empty) { toast("No nav links to download.", "info"); return; }
+    const rows = [];
+    snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+    downloadCSVRows(["id","menu","subMenu","name","url","order"], rows, "nav_links");
+    toast(`Downloaded ${rows.length} nav links.`);
+  } catch(e) { toast("Error: " + e.message, "error"); }
+}
+
+async function downloadDocCardsCSV() {
+  const { collection, getDocs, query, orderBy } = window._fs;
+  try {
+    const snap = await getDocs(query(collection(window._db, "doc_cards"), orderBy("order","asc")));
+    if (snap.empty) { toast("No doc cards to download.", "info"); return; }
+    const rows = [];
+    snap.forEach(d => {
+      const c = d.data();
+      rows.push({ id: d.id, cardName: c.cardName||"", menu: c.menu||"", imageUrl: c.imageUrl||"", order: c.order||"", buttons: c.buttons||[] });
+    });
+    downloadCSVRows(["id","cardName","menu","imageUrl","order","buttons"], rows, "doc_cards");
+    toast(`Downloaded ${rows.length} doc cards.`);
+  } catch(e) { toast("Error: " + e.message, "error"); }
+}
+
+async function downloadQuickLinksCSV() {
+  const { collection, getDocs } = window._fs;
+  try {
+    const snap = await getDocs(collection(window._db, "quick_links"));
+    if (snap.empty) { toast("No quick links to download.", "info"); return; }
+    const rows = [];
+    snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+    rows.sort((a,b) => (a.groupOrder||0)-(b.groupOrder||0) || (a.order||0)-(b.order||0));
+    downloadCSVRows(["id","group","label","url","order","groupOrder"], rows, "quick_links");
+    toast(`Downloaded ${rows.length} quick links.`);
+  } catch(e) { toast("Error: " + e.message, "error"); }
+}
 
 let _confirmCallback = null;
 function confirm2(msg, cb) {
