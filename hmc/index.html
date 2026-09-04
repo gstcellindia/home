@@ -557,6 +557,7 @@
           ⬆ Upload Excel
           <input type="file" id="dbExcelUpload" accept=".xlsx,.xls" style="display:none" onchange="dbHandleExcelUpload(event)">
         </label>
+        <button class="btn-add-record" onclick="dbOpenLoanModal()" style="background:#7c3aed;">🏦 Loan</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <label for="dbTargetSheet" style="font-size:0.9rem;">Year:</label>
@@ -681,6 +682,65 @@
           <div style="display:flex;gap:8px;justify-content:flex-end;">
             <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseHeadModal()">Close</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Register -->
+    <div id="dbLoanModal" class="db-modal">
+      <div class="db-modal-box" style="width:min(900px,96vw);max-height:92vh;overflow-y:auto;">
+
+        <!-- Step 1: choose expenditure heads -->
+        <div id="dbLoanHeadsView">
+          <h3 style="font-size:1rem;font-weight:600;margin-bottom:6px;color:#1a56db;">🏦 Loan Register — Select Expenditure Heads</h3>
+          <p style="font-size:0.8rem;color:#6b7280;margin-bottom:12px;">Choose the Expenditure Head(s) that represent loans given (e.g. "Loan Disbursed", "Advance"). Every entry recorded under these heads, across all years, will be pulled into the Loan Register — where you can then link each one to its repayment recorded under "Income Head (Bank)".</p>
+          <div id="dbLoanHeadsList" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:8px;padding:10px;margin-bottom:14px;"></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseLoanModal()">Cancel</button>
+            <button class="btn-add-record" style="background:#7c3aed;" onclick="dbLoanSaveHeadsAndGenerate()">💾 Save &amp; Generate ▶</button>
+          </div>
+        </div>
+
+        <!-- Step 2: register + linking -->
+        <div id="dbLoanRegisterView" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+            <h3 style="font-size:1rem;font-weight:600;margin:0;color:#1a56db;">🏦 Loan Register</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;padding:5px 10px;font-size:0.8rem;" onclick="dbLoanBackToHeads()">⚙ Edit Heads</button>
+              <button class="btn-add-record" style="background:#16a34a;padding:5px 10px;font-size:0.8rem;" onclick="dbLoanPrint()">🖨️ Print</button>
+              <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;padding:5px 10px;font-size:0.8rem;" onclick="dbCloseLoanModal()">✕ Close</button>
+            </div>
+          </div>
+          <div id="dbLoanSummary" style="font-size:0.82rem;color:#374151;margin-bottom:10px;"></div>
+          <div style="overflow-x:auto;border:1px solid #e5e7eb;border-radius:8px;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+              <thead>
+                <tr style="background:#e8f0fe;color:#1a3a6b;">
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;">Year</th>
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;">Date</th>
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;">Expenditure Head</th>
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;">Description</th>
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;text-align:right;">Loan Amount</th>
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;">Linked Income (Bank)</th>
+                  <th style="padding:6px 8px;border:1px solid #d1d5db;"></th>
+                </tr>
+              </thead>
+              <tbody id="dbLoanTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Search & Select popup for linking an Income (Bank) entry to a Loan Register row -->
+    <div id="dbLoanLinkModal" class="db-modal" style="z-index:10500;">
+      <div class="db-modal-box" style="width:min(520px,94vw);max-height:80vh;display:flex;flex-direction:column;">
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:10px;color:#1a56db;">🔗 Link Income (Bank) Entry</h3>
+        <input type="text" id="dbLoanLinkSearch" placeholder="🔍 Search by head, description, amount or date…" oninput="dbLoanRenderLinkList()" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;margin-bottom:10px;outline:none;box-sizing:border-box;">
+        <div id="dbLoanLinkList" style="overflow-y:auto;flex:1;border:1px solid #e5e7eb;border-radius:8px;"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+          <button class="btn-add-record" style="background:white;color:#1a56db;border:1.5px solid #1a56db;" onclick="dbCloseLoanLinkModal()">Close</button>
         </div>
       </div>
     </div>
@@ -2787,6 +2847,240 @@ function dbRenderBudgetReport(range, incCalc, expCalc, selectedYear, incFlat){
 }
 
 
+
+// ══════════════════════════════════════════════════════════════════
+//  LOAN REGISTER
+//  Config: hmc_daybook/{uid}  field "loanHeads" (array of Expenditure Head names)
+//  Links:  hmc_daybook/{uid}/meta/loanLinks  { "<year>_<entryId>": {incYear,incId,incDate,incHead,incDesc,incAmount} }
+// ══════════════════════════════════════════════════════════════════
+let dbLoanHeads = [];          // Expenditure Heads chosen to represent loans
+let dbLoanRows = [];           // [{key,year,id,date,head,desc,amount}]
+let dbLoanIncomePool = [];     // [{key,year,id,date,head,desc,amount}] — all "Income Head (Bank)" entries
+let dbLoanLinks = {};          // {rowKey: {incYear,incId,incDate,incHead,incDesc,incAmount}}
+let dbLoanActiveRowKey = null;
+
+async function dbOpenLoanModal() {
+  dbShowOverlay('Loading loan configuration…');
+  try {
+    const { doc, getDoc } = window._fsHelpers;
+    const snap = await getDoc(doc(window._db, 'hmc_daybook', currentUser.uid));
+    dbLoanHeads = (snap.exists() && Array.isArray(snap.data().loanHeads)) ? snap.data().loanHeads : [];
+  } catch(e) { dbLoanHeads = []; }
+  finally { dbHideOverlay(); }
+  dbLoanRenderHeadsList();
+  document.getElementById('dbLoanHeadsView').style.display = 'block';
+  document.getElementById('dbLoanRegisterView').style.display = 'none';
+  document.getElementById('dbLoanModal').style.display = 'flex';
+}
+function dbCloseLoanModal() { document.getElementById('dbLoanModal').style.display = 'none'; }
+
+function dbLoanRenderHeadsList() {
+  const box = document.getElementById('dbLoanHeadsList');
+  if (!dbSelect2En.length) {
+    box.innerHTML = '<p style="color:#9ca3af;font-size:0.8rem;margin:0;">No Expenditure Heads found. Add some from the Expenditure Head list first.</p>';
+    return;
+  }
+  box.innerHTML = dbSelect2En.map(h => `
+    <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#374151;cursor:pointer;padding:4px 2px;">
+      <input type="checkbox" class="dbLoanHeadChk" value="${dbEscHtml(h)}" ${dbLoanHeads.includes(h)?'checked':''} style="width:16px;height:16px;accent-color:#7c3aed;">
+      ${dbEscHtml(h)}
+    </label>`).join('');
+}
+
+async function dbLoanSaveHeadsAndGenerate() {
+  const checked = Array.from(document.querySelectorAll('.dbLoanHeadChk:checked')).map(c => c.value);
+  if (!checked.length) { customAlert('Please select at least one Expenditure Head for the Loan Register.'); return; }
+  dbLoanHeads = checked;
+  dbShowOverlay('Saving heads…');
+  try {
+    const { doc, setDoc } = window._fsHelpers;
+    await setDoc(doc(window._db, 'hmc_daybook', currentUser.uid), { loanHeads: dbLoanHeads }, { merge: true });
+  } catch(e) { /* still proceed to generate even if saving the config failed */ }
+  finally { dbHideOverlay(); }
+  await dbGenerateLoanRegister();
+}
+
+function dbLoanBackToHeads() {
+  dbLoanRenderHeadsList();
+  document.getElementById('dbLoanHeadsView').style.display = 'block';
+  document.getElementById('dbLoanRegisterView').style.display = 'none';
+}
+
+async function dbGenerateLoanRegister() {
+  dbShowOverlay('Fetching loan entries…');
+  try {
+    const { collection, getDocs, query, orderBy, doc, getDoc } = window._fsHelpers;
+    const years = dbGenerateYears(2019);
+    const headSet = new Set(dbLoanHeads);
+    dbLoanRows = [];
+    dbLoanIncomePool = [];
+    for (const y of years) {
+      let snap;
+      try {
+        snap = await getDocs(query(collection(window._db, `hmc_daybook/${currentUser.uid}/years/${y}/entries`), orderBy('date','asc')));
+      } catch(e) { continue; }
+      snap.forEach(d => {
+        const r = d.data();
+        const key = `${y}_${d.id}`;
+        if (r.select2 && headSet.has(r.select2) && (r.exp||0) > 0) {
+          dbLoanRows.push({ key, year:y, id:d.id, date:r.date||'', head:r.select2, desc:r.desc2||'', amount:r.exp||0 });
+        }
+        if (r.select1 && (r.income||0) > 0) {
+          dbLoanIncomePool.push({ key, year:y, id:d.id, date:r.date||'', head:r.select1, desc:r.desc1||'', amount:r.income||0 });
+        }
+      });
+    }
+
+    let linksSnap = null;
+    try { linksSnap = await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/meta/loanLinks`)); }
+    catch(e) { /* no links saved yet */ }
+    dbLoanLinks = (linksSnap && linksSnap.exists()) ? (linksSnap.data() || {}) : {};
+
+    if (!dbLoanRows.length) {
+      dbHideOverlay();
+      customAlert('No expenditure entries found under the selected Loan Head(s), in any year.');
+      return;
+    }
+  } catch(e) {
+    dbHideOverlay();
+    customAlert('Error fetching loan entries: '+e.message);
+    return;
+  }
+  dbHideOverlay();
+  dbLoanRenderRegisterTable();
+  document.getElementById('dbLoanHeadsView').style.display = 'none';
+  document.getElementById('dbLoanRegisterView').style.display = 'block';
+}
+
+function dbLoanRenderRegisterTable() {
+  const tbody = document.getElementById('dbLoanTableBody');
+  let totalLoan = 0, totalLinked = 0;
+  tbody.innerHTML = dbLoanRows.map(r => {
+    totalLoan += r.amount;
+    const link = dbLoanLinks[r.key];
+    let linkedCell;
+    if (link) {
+      totalLinked += (link.incAmount||0);
+      linkedCell = `<div style="font-size:0.78rem;line-height:1.4;">
+        <div><b>${dbEscHtml(link.incHead||'')}</b> — ₹${dbFmt(link.incAmount)}</div>
+        <div style="color:#6b7280;">${dbEscHtml(dbFmtDate(link.incDate))}${link.incDesc?' · '+dbEscHtml(link.incDesc):''}</div>
+      </div>`;
+    } else {
+      linkedCell = `<span style="color:#9ca3af;font-size:0.78rem;">Not linked</span>`;
+    }
+    return `<tr>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;">${dbEscHtml(r.year)}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;">${dbEscHtml(dbFmtDate(r.date))}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;">${dbEscHtml(r.head)}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;">${dbEscHtml(r.desc)}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:right;">₹${dbFmt(r.amount)}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;">${linkedCell}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;white-space:nowrap;text-align:center;">
+        <button class="btn-add-record" style="padding:3px 8px;font-size:0.74rem;background:#7c3aed;" onclick="dbLoanOpenLinkPicker('${r.key}')">${link?'🔁 Change':'🔗 Link'}</button>
+        ${link?`<button class="btn-add-record" style="padding:3px 8px;font-size:0.74rem;background:white;color:#a73d3d;border:1.5px solid #a73d3d;margin-top:3px;" onclick="dbLoanUnlink('${r.key}')">✕ Unlink</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+  const linkedCount = dbLoanRows.filter(r => dbLoanLinks[r.key]).length;
+  document.getElementById('dbLoanSummary').innerHTML =
+    `${dbLoanRows.length} loan entr${dbLoanRows.length===1?'y':'ies'} · Total Loaned: <b>₹${dbFmt(totalLoan)}</b> &nbsp;|&nbsp; ${linkedCount} linked (₹${dbFmt(totalLinked)} repaid) · ${dbLoanRows.length-linkedCount} pending`;
+}
+
+function dbLoanOpenLinkPicker(rowKey) {
+  dbLoanActiveRowKey = rowKey;
+  document.getElementById('dbLoanLinkSearch').value = '';
+  dbLoanRenderLinkList();
+  document.getElementById('dbLoanLinkModal').style.display = 'flex';
+}
+function dbCloseLoanLinkModal() {
+  document.getElementById('dbLoanLinkModal').style.display = 'none';
+  dbLoanActiveRowKey = null;
+}
+
+function dbLoanRenderLinkList() {
+  const term = (document.getElementById('dbLoanLinkSearch').value||'').trim().toLowerCase();
+  const list = document.getElementById('dbLoanLinkList');
+  const usedKeys = new Set(Object.values(dbLoanLinks).filter(Boolean).map(l => `${l.incYear}_${l.incId}`));
+  const items = dbLoanIncomePool.filter(inc => {
+    if (!term) return true;
+    return `${inc.head} ${inc.desc} ${inc.amount} ${inc.date}`.toLowerCase().includes(term);
+  });
+  if (!items.length) {
+    list.innerHTML = '<p style="padding:14px;color:#9ca3af;font-size:0.82rem;text-align:center;margin:0;">No matching "Income Head (Bank)" entries found.</p>';
+    return;
+  }
+  list.innerHTML = items.map(inc => {
+    const already = usedKeys.has(`${inc.year}_${inc.id}`);
+    return `<div style="padding:8px 10px;border-bottom:1px solid #f0f0f0;cursor:${already?'default':'pointer'};${already?'opacity:0.45;':''}" ${already?'':`onclick="dbLoanLinkTo('${inc.year}','${inc.id}')" onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background=''"`}>
+      <div style="font-weight:600;color:#1a3a6b;font-size:0.85rem;">${dbEscHtml(inc.head)} — ₹${dbFmt(inc.amount)}</div>
+      <div style="font-size:0.76rem;color:#6b7280;">${dbEscHtml(inc.year)} · ${dbEscHtml(dbFmtDate(inc.date))}${inc.desc?' · '+dbEscHtml(inc.desc):''}${already?' · already linked':''}</div>
+    </div>`;
+  }).join('');
+}
+
+async function dbLoanLinkTo(incYear, incId) {
+  if (!dbLoanActiveRowKey) return;
+  const inc = dbLoanIncomePool.find(x => x.year===incYear && x.id===incId);
+  if (!inc) return;
+  const linkData = { incYear: inc.year, incId: inc.id, incDate: inc.date, incHead: inc.head, incDesc: inc.desc, incAmount: inc.amount };
+  dbShowOverlay('Linking…');
+  try {
+    const { doc, setDoc } = window._fsHelpers;
+    await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/meta/loanLinks`), { [dbLoanActiveRowKey]: linkData }, { merge: true });
+    dbLoanLinks[dbLoanActiveRowKey] = linkData;
+    dbLoanRenderRegisterTable();
+    dbCloseLoanLinkModal();
+  } catch(e) { customAlert('Error linking: '+e.message); }
+  finally { dbHideOverlay(); }
+}
+
+async function dbLoanUnlink(rowKey) {
+  dbShowOverlay('Unlinking…');
+  try {
+    const { doc, setDoc } = window._fsHelpers;
+    await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/meta/loanLinks`), { [rowKey]: null }, { merge: true });
+    delete dbLoanLinks[rowKey];
+    dbLoanRenderRegisterTable();
+  } catch(e) { customAlert('Error unlinking: '+e.message); }
+  finally { dbHideOverlay(); }
+}
+
+function dbLoanPrint() {
+  const w = window.open('', '_blank', 'width=1000,height=750');
+  if (!w) { customAlert('Popup blocked. Please allow popups.'); return; }
+  const orgName = currentUserProfile?.name || 'HMC';
+  const td = (c,s='') => `<td style="border:1px solid #c8d3f0;padding:4px 7px;${s}">${c}</td>`;
+  const th = (c,s='') => `<th style="background:#e8f0fe;color:#1a3a6b;padding:6px 8px;border:1px solid #c8d3f0;font-weight:600;${s}">${c}</th>`;
+  let totalLoan = 0, totalLinked = 0;
+  const rowsHtml = dbLoanRows.map(r => {
+    totalLoan += r.amount;
+    const link = dbLoanLinks[r.key];
+    if (link) totalLinked += (link.incAmount||0);
+    const linkedTxt = link ? `${dbEscHtml(link.incHead)} — ₹${dbFmt(link.incAmount)} (${dbEscHtml(dbFmtDate(link.incDate))})` : '—';
+    return `<tr>${td(dbEscHtml(r.year))}${td(dbEscHtml(dbFmtDate(r.date)))}${td(dbEscHtml(r.head))}${td(dbEscHtml(r.desc))}${td('₹'+dbFmt(r.amount),'text-align:right')}${td(linkedTxt)}</tr>`;
+  }).join('');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Loan Register</title>
+  <style>
+    body{font-family:Arial,sans-serif;font-size:11px;margin:16px;color:#1a1a2e;}
+    h1{text-align:center;font-size:15px;margin-bottom:4px;}
+    h2{text-align:center;font-size:13px;color:#1a3a6b;margin-bottom:12px;}
+    table{border-collapse:collapse;width:100%;}
+    td,th{font-size:10.5px;}
+    @media print{.no-print{display:none}body{margin:8px;}}
+  </style></head><body>
+  <h1>${dbEscHtml(orgName)}</h1>
+  <h2>Loan Register</h2>
+  <div class="no-print" style="margin:10px 0;">
+    <button onclick="window.print()" style="padding:6px 16px;border:none;border-radius:6px;background:#1a56db;color:white;cursor:pointer;font-size:12px;font-weight:600;">🖨️ Print</button>
+    <button onclick="window.close()" style="padding:6px 16px;border:none;border-radius:6px;background:#6b7280;color:white;cursor:pointer;font-size:12px;font-weight:600;margin-left:8px;">✖ Close</button>
+  </div>
+  <table><thead><tr>${th('Year')}${th('Date')}${th('Expenditure Head')}${th('Description')}${th('Loan Amount','text-align:right')}${th('Linked Income (Bank)')}</tr></thead>
+  <tbody>${rowsHtml}
+  <tr style="background:#e8f0fe;font-weight:700;">${td('Total','font-weight:700')}${td('')}${td('')}${td('')}${td('₹'+dbFmt(totalLoan),'text-align:right;font-weight:700')}${td('Repaid: ₹'+dbFmt(totalLinked))}</tr>
+  </tbody></table>
+  </body></html>`);
+  w.document.close();
+}
 
 function dbGenerateReport(type){
   const range=dbGetPeriodRange(); if(!range)return;
