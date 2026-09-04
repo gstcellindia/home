@@ -2851,13 +2851,18 @@ function dbRenderBudgetReport(range, incCalc, expCalc, selectedYear, incFlat){
 // ══════════════════════════════════════════════════════════════════
 //  LOAN REGISTER
 //  Config: hmc_daybook/{uid}  field "loanHeads" (array of Expenditure Head names)
-//  Links:  hmc_daybook/{uid}/meta/loanLinks  { "<year>_<entryId>": {incYear,incId,incDate,incHead,incDesc,incAmount} }
+//  Links / exclusions are stored as fields on the hmc_daybook/{uid} root doc
+//  itself (loanLinks.<key>, loanExcluded.<key>) — that doc is the only path
+//  outside years/{year}/* that the Firestore rules allow the owner to write.
 // ══════════════════════════════════════════════════════════════════
 let dbLoanHeads = [];          // Expenditure Heads chosen to represent loans
-let dbLoanRows = [];           // [{key,year,id,date,head,desc,amount}]
+let dbLoanAllRows = [];        // [{key,year,id,date,head,desc,amount}] — every fetched entry, before exclusions
+let dbLoanRows = [];           // dbLoanAllRows minus anything marked "Not a Loan"
 let dbLoanIncomePool = [];     // [{key,year,id,date,head,desc,amount}] — all "Income Head (Bank)" entries
 let dbLoanLinks = {};          // {rowKey: {incYear,incId,incDate,incHead,incDesc,incAmount}}
+let dbLoanExcluded = {};       // {rowKey: true} — entries manually marked as "Not a Loan"
 let dbLoanActiveRowKey = null;
+let dbLoanShowExcluded = false;
 
 async function dbOpenLoanModal() {
   dbShowOverlay('Loading loan configuration…');
@@ -2912,7 +2917,7 @@ async function dbGenerateLoanRegister() {
     const { collection, getDocs, query, orderBy, doc, getDoc } = window._fsHelpers;
     const years = dbGenerateYears(2019);
     const headSet = new Set(dbLoanHeads);
-    dbLoanRows = [];
+    dbLoanAllRows = [];
     dbLoanIncomePool = [];
     for (const y of years) {
       let snap;
@@ -2923,7 +2928,7 @@ async function dbGenerateLoanRegister() {
         const r = d.data();
         const key = `${y}_${d.id}`;
         if (r.select2 && headSet.has(r.select2) && (r.exp||0) > 0) {
-          dbLoanRows.push({ key, year:y, id:d.id, date:r.date||'', head:r.select2, desc:r.desc2||'', amount:r.exp||0 });
+          dbLoanAllRows.push({ key, year:y, id:d.id, date:r.date||'', head:r.select2, desc:r.desc2||'', amount:r.exp||0 });
         }
         if (r.select1 && (r.income||0) > 0) {
           dbLoanIncomePool.push({ key, year:y, id:d.id, date:r.date||'', head:r.select1, desc:r.desc1||'', amount:r.income||0 });
@@ -2931,12 +2936,16 @@ async function dbGenerateLoanRegister() {
       });
     }
 
-    let linksSnap = null;
-    try { linksSnap = await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/meta/loanLinks`)); }
-    catch(e) { /* no links saved yet */ }
-    dbLoanLinks = (linksSnap && linksSnap.exists()) ? (linksSnap.data() || {}) : {};
+    let rootSnap = null;
+    try { rootSnap = await getDoc(doc(window._db, 'hmc_daybook', currentUser.uid)); }
+    catch(e) { /* none saved yet */ }
+    const rootData = (rootSnap && rootSnap.exists()) ? (rootSnap.data() || {}) : {};
+    dbLoanLinks = rootData.loanLinks || {};
+    dbLoanExcluded = rootData.loanExcluded || {};
 
-    if (!dbLoanRows.length) {
+    dbLoanRows = dbLoanAllRows.filter(r => !dbLoanExcluded[r.key]);
+
+    if (!dbLoanAllRows.length) {
       dbHideOverlay();
       customAlert('No expenditure entries found under the selected Loan Head(s), in any year.');
       return;
@@ -2947,6 +2956,7 @@ async function dbGenerateLoanRegister() {
     return;
   }
   dbHideOverlay();
+  dbLoanShowExcluded = false;
   dbLoanRenderRegisterTable();
   document.getElementById('dbLoanHeadsView').style.display = 'none';
   document.getElementById('dbLoanRegisterView').style.display = 'block';
@@ -2978,12 +2988,75 @@ function dbLoanRenderRegisterTable() {
       <td style="padding:5px 8px;border:1px solid #e5e7eb;white-space:nowrap;text-align:center;">
         <button class="btn-add-record" style="padding:3px 8px;font-size:0.74rem;background:#7c3aed;" onclick="dbLoanOpenLinkPicker('${r.key}')">${link?'🔁 Change':'🔗 Link'}</button>
         ${link?`<button class="btn-add-record" style="padding:3px 8px;font-size:0.74rem;background:white;color:#a73d3d;border:1.5px solid #a73d3d;margin-top:3px;" onclick="dbLoanUnlink('${r.key}')">✕ Unlink</button>`:''}
+        <button class="btn-add-record" style="padding:3px 8px;font-size:0.74rem;background:white;color:#dd6b20;border:1.5px solid #dd6b20;margin-top:3px;" onclick="dbLoanMarkNotLoan('${r.key}')">🚫 Not a Loan</button>
       </td>
     </tr>`;
   }).join('');
   const linkedCount = dbLoanRows.filter(r => dbLoanLinks[r.key]).length;
+  const excludedRows = dbLoanAllRows.filter(r => dbLoanExcluded[r.key]);
+  const excludedNote = excludedRows.length
+    ? ` &nbsp;|&nbsp; <a href="#" onclick="dbLoanToggleExcludedPanel();return false;" style="color:#dd6b20;text-decoration:underline;">${excludedRows.length} marked "Not a Loan" — ${dbLoanShowExcluded?'hide':'show'}</a>`
+    : '';
   document.getElementById('dbLoanSummary').innerHTML =
-    `${dbLoanRows.length} loan entr${dbLoanRows.length===1?'y':'ies'} · Total Loaned: <b>₹${dbFmt(totalLoan)}</b> &nbsp;|&nbsp; ${linkedCount} linked (₹${dbFmt(totalLinked)} repaid) · ${dbLoanRows.length-linkedCount} pending`;
+    `${dbLoanRows.length} loan entr${dbLoanRows.length===1?'y':'ies'} · Total Loaned: <b>₹${dbFmt(totalLoan)}</b> &nbsp;|&nbsp; ${linkedCount} linked (₹${dbFmt(totalLinked)} repaid) · ${dbLoanRows.length-linkedCount} pending${excludedNote}`;
+
+  let excludedBox = document.getElementById('dbLoanExcludedBox');
+  if (!excludedBox) {
+    excludedBox = document.createElement('div');
+    excludedBox.id = 'dbLoanExcludedBox';
+    excludedBox.style.cssText = 'margin-bottom:10px;';
+    document.getElementById('dbLoanSummary').insertAdjacentElement('afterend', excludedBox);
+  }
+  if (dbLoanShowExcluded && excludedRows.length) {
+    excludedBox.innerHTML = `<div style="border:1px solid #fde3c1;background:#fffaf0;border-radius:8px;padding:8px 10px;">
+      <div style="font-size:0.78rem;font-weight:600;color:#9a5b12;margin-bottom:6px;">Entries excluded from the Loan Register:</div>
+      ${excludedRows.map(r => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 2px;font-size:0.78rem;border-top:1px dashed #fde3c1;">
+          <span>${dbEscHtml(r.year)} · ${dbEscHtml(dbFmtDate(r.date))} · ${dbEscHtml(r.head)} · ${dbEscHtml(r.desc)} · ₹${dbFmt(r.amount)}</span>
+          <button class="btn-add-record" style="padding:2px 8px;font-size:0.72rem;background:#16a34a;flex-shrink:0;" onclick="dbLoanRestore('${r.key}')">↩ Restore</button>
+        </div>`).join('')}
+    </div>`;
+  } else {
+    excludedBox.innerHTML = '';
+  }
+}
+
+function dbLoanToggleExcludedPanel() {
+  dbLoanShowExcluded = !dbLoanShowExcluded;
+  dbLoanRenderRegisterTable();
+}
+
+async function dbLoanMarkNotLoan(rowKey) {
+  customConfirm('Mark this entry as "Not a Loan"? It will be removed from the Loan Register (you can restore it later).', async confirmed => {
+    if (!confirmed) return;
+    dbShowOverlay('Updating…');
+    try {
+      const { doc, setDoc } = window._fsHelpers;
+      const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+      const updates = { [`loanExcluded.${rowKey}`]: true };
+      // If this entry had a linked income repayment, drop the link too — it's no longer a loan.
+      if (dbLoanLinks[rowKey]) { updates[`loanLinks.${rowKey}`] = null; }
+      await setDoc(userRef, updates, { merge: true });
+      dbLoanExcluded[rowKey] = true;
+      if (dbLoanLinks[rowKey]) { delete dbLoanLinks[rowKey]; }
+      dbLoanRows = dbLoanAllRows.filter(r => !dbLoanExcluded[r.key]);
+      dbLoanRenderRegisterTable();
+    } catch(e) { customAlert('Error updating: '+e.message); }
+    finally { dbHideOverlay(); }
+  });
+}
+
+async function dbLoanRestore(rowKey) {
+  dbShowOverlay('Restoring…');
+  try {
+    const { doc, setDoc } = window._fsHelpers;
+    const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+    await setDoc(userRef, { [`loanExcluded.${rowKey}`]: null }, { merge: true });
+    delete dbLoanExcluded[rowKey];
+    dbLoanRows = dbLoanAllRows.filter(r => !dbLoanExcluded[r.key]);
+    dbLoanRenderRegisterTable();
+  } catch(e) { customAlert('Error restoring: '+e.message); }
+  finally { dbHideOverlay(); }
 }
 
 function dbLoanOpenLinkPicker(rowKey) {
@@ -3026,7 +3099,8 @@ async function dbLoanLinkTo(incYear, incId) {
   dbShowOverlay('Linking…');
   try {
     const { doc, setDoc } = window._fsHelpers;
-    await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/meta/loanLinks`), { [dbLoanActiveRowKey]: linkData }, { merge: true });
+    const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+    await setDoc(userRef, { [`loanLinks.${dbLoanActiveRowKey}`]: linkData }, { merge: true });
     dbLoanLinks[dbLoanActiveRowKey] = linkData;
     dbLoanRenderRegisterTable();
     dbCloseLoanLinkModal();
@@ -3038,7 +3112,8 @@ async function dbLoanUnlink(rowKey) {
   dbShowOverlay('Unlinking…');
   try {
     const { doc, setDoc } = window._fsHelpers;
-    await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/meta/loanLinks`), { [rowKey]: null }, { merge: true });
+    const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+    await setDoc(userRef, { [`loanLinks.${rowKey}`]: null }, { merge: true });
     delete dbLoanLinks[rowKey];
     dbLoanRenderRegisterTable();
   } catch(e) { customAlert('Error unlinking: '+e.message); }
