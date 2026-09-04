@@ -3033,9 +3033,9 @@ async function dbLoanMarkNotLoan(rowKey) {
     try {
       const { doc, setDoc } = window._fsHelpers;
       const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
-      const updates = { [`loanExcluded.${rowKey}`]: true };
+      const updates = { loanExcluded: { [rowKey]: true } };
       // If this entry had a linked income repayment, drop the link too — it's no longer a loan.
-      if (dbLoanLinks[rowKey]) { updates[`loanLinks.${rowKey}`] = null; }
+      if (dbLoanLinks[rowKey]) { updates.loanLinks = { [rowKey]: null }; }
       await setDoc(userRef, updates, { merge: true });
       dbLoanExcluded[rowKey] = true;
       if (dbLoanLinks[rowKey]) { delete dbLoanLinks[rowKey]; }
@@ -3051,7 +3051,7 @@ async function dbLoanRestore(rowKey) {
   try {
     const { doc, setDoc } = window._fsHelpers;
     const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
-    await setDoc(userRef, { [`loanExcluded.${rowKey}`]: null }, { merge: true });
+    await setDoc(userRef, { loanExcluded: { [rowKey]: null } }, { merge: true });
     delete dbLoanExcluded[rowKey];
     dbLoanRows = dbLoanAllRows.filter(r => !dbLoanExcluded[r.key]);
     dbLoanRenderRegisterTable();
@@ -3100,7 +3100,7 @@ async function dbLoanLinkTo(incYear, incId) {
   try {
     const { doc, setDoc } = window._fsHelpers;
     const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
-    await setDoc(userRef, { [`loanLinks.${dbLoanActiveRowKey}`]: linkData }, { merge: true });
+    await setDoc(userRef, { loanLinks: { [dbLoanActiveRowKey]: linkData } }, { merge: true });
     dbLoanLinks[dbLoanActiveRowKey] = linkData;
     dbLoanRenderRegisterTable();
     dbCloseLoanLinkModal();
@@ -3113,7 +3113,7 @@ async function dbLoanUnlink(rowKey) {
   try {
     const { doc, setDoc } = window._fsHelpers;
     const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
-    await setDoc(userRef, { [`loanLinks.${rowKey}`]: null }, { merge: true });
+    await setDoc(userRef, { loanLinks: { [rowKey]: null } }, { merge: true });
     delete dbLoanLinks[rowKey];
     dbLoanRenderRegisterTable();
   } catch(e) { customAlert('Error unlinking: '+e.message); }
