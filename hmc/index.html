@@ -6,8 +6,7 @@
   <link rel="icon" type="image/png" href="./hmc_files/Untitled (8).png">
   <title>Hmc</title>
   <link rel="stylesheet" href="./hmc_files/all.min.css">
-  <script src="./hmc_files/xlsx.full.min.js.download"></script>
-  <script src="./hmc_files/jszip.min.js.download"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
   <!-- Firebase SDK -->
   <script type="module">
@@ -2686,6 +2685,16 @@ function dbGetPeriodOpeningBalance(range){
   const obC=parseFloat(document.getElementById('dbObCash').value)||0;
   const obB=parseFloat(document.getElementById('dbObBank').value)||0;
   let runCash=obC, runBank=obB;
+  // For the full-year period, dbGetRowsForPeriod() returns every row in the
+  // sheet UNFILTERED (see below) — so the saved fiscal-year opening balance
+  // already IS the period's opening balance. Skip the carry-forward fold in
+  // that case; otherwise any entry whose date happens to fall outside the
+  // FY's calendar bounds (e.g. mis-typed as 31 March instead of 1 April, or
+  // any other stray date before the FY start) gets counted twice — once
+  // folded into "Opening Balance" here, and again as its own receipt/payment
+  // line, which is what inflated Opening Balance (Bank) up to the closing
+  // balance for one office's "Forum" report.
+  if(dbCurrentPeriod==='year') return {cash:runCash, bank:runBank};
   dbAllPreviewRows.forEach(r=>{
     const d=(r.date||'').trim();
     if(d && range.from && d<range.from){
