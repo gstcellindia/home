@@ -516,6 +516,13 @@
 <div id="secondaryPage" class="hidden">
 
   <div id="topBar" style="position:fixed;top:10px;right:15px;z-index:99999;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:94vw;">
+    <!-- Main Admin — pick a user to view/manage -->
+    <div id="adminUserPickerWrap" class="hidden" style="display:flex;align-items:center;gap:8px;background:#0d3b66;padding:5px 12px;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+      <span style="color:#ffd700;font-weight:700;font-size:0.85rem;white-space:nowrap;">👑 Admin — View User</span>
+      <select id="adminUserSelect" onchange="adminUserPicked(this.value)" style="padding:5px 10px;border-radius:8px;border:none;font-size:0.85rem;max-width:260px;outline:none;">
+        <option value="">— Select a user —</option>
+      </select>
+    </div>
     <!-- Language Toggle -->
     <div class="lang-toggle-wrap" title="Switch dropdown language">
       <span class="lang-label-en" id="langLabelEn" style="font-weight:700;">EN</span>
@@ -535,6 +542,13 @@
 
   <div class="titles"><h2>Office Details</h2></div>
 
+  <!-- Shown to the main admin until they pick a user from the dropdown above -->
+  <div id="adminNoSelection" class="hidden" style="max-width:520px;margin:60px auto 0;padding:24px 28px;background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.12);text-align:center;color:#374151;">
+    <div style="font-size:2.2rem;margin-bottom:8px;">👑</div>
+    <div style="font-weight:700;font-size:1.05rem;color:#145099;margin-bottom:6px;">Main Admin Mode</div>
+    <div style="font-size:0.9rem;">Select a user from the dropdown at the top of the page to view their office details and day book.</div>
+  </div>
+
   <div id="tileData" class="tile">
     <input type="text" readonly="" id="colC" placeholder="Name of Office">
     <input type="text" readonly="" id="colD" placeholder="Designation of Head of Office">
@@ -543,7 +557,7 @@
     <input type="text" readonly="" id="colF" placeholder="PEN" style="display:none;">
     <input type="text" readonly="" id="colE" placeholder="Office" style="display:none;">
   </div>
-  <div class="tile1">
+  <div class="tile1" id="tile1Wrap">
     <button style="width:2cm;" onclick="openTileEditor()">Edit</button>
   </div>
 
@@ -1019,6 +1033,19 @@ function waitForFirebase(cb){ if(window._firebaseReady) cb(); else document.addE
 let currentUser = null;
 let currentUserProfile = null;
 
+// The uid whose profile/day book is currently being displayed. For a normal
+// user this is always their own uid. For the main admin, it starts blank and
+// becomes whichever user they pick from the admin dropdown.
+let activeUid = null;
+
+// ══════════════════════════════════════════
+//  MAIN ADMIN MODE
+// ══════════════════════════════════════════
+const MAIN_ADMIN_EMAIL = 'gstcell.com@gmail.com';
+let isMainAdminMode = false;
+let adminSelectedUid = '';
+function isMainAdminUser() { return !!(currentUser && currentUser.email === MAIN_ADMIN_EMAIL); }
+
 // ══════════════════════════════════════════
 //  AUTH — LOGIN
 // ══════════════════════════════════════════
@@ -1032,6 +1059,7 @@ async function login() {
   try {
     const cred = await window._authFn.signInWithEmailAndPassword(window._auth, email, pwd);
     currentUser = cred.user;
+    activeUid = currentUser.uid;
     await loadUserProfile(currentUser.uid);
     hideStatus();
     showMainApp();
@@ -1057,6 +1085,7 @@ async function doGoogleLogin() {
   try {
     const result = await window._authFn.signInWithPopup(window._auth, window._googleProvider);
     currentUser = result.user;
+    activeUid = currentUser.uid;
     await loadUserProfile(currentUser.uid);
     hideStatus();
     showMainApp();
@@ -1074,6 +1103,10 @@ async function loadUserProfile(uid) {
   const snap = await getDoc(doc(window._db, 'hmc_users', uid));
   if (snap.exists()) {
     currentUserProfile = snap.data();
+  } else if (isMainAdminUser()) {
+    // Main admin doesn't get an hmc_users profile of their own — they pick a
+    // user to view instead (enterAdminMode), so skip auto-creating one.
+    currentUserProfile = null;
   } else {
     // Create blank profile with pending approval
     const { setDoc, serverTimestamp } = window._fsHelpers;
@@ -1086,6 +1119,12 @@ async function loadUserProfile(uid) {
 function showMainApp() {
   document.getElementById('loginPage').classList.add('hidden');
   document.getElementById('secondaryPage').classList.remove('hidden');
+
+  if (isMainAdminUser()) {
+    enterAdminMode();
+    return;
+  }
+
   let p = currentUserProfile || {};
   // Self-heal old buggy profiles where phone was accidentally saved as the email address
   if (p.phone && p.email && p.phone.trim().toLowerCase() === p.email.trim().toLowerCase()) {
@@ -1093,7 +1132,7 @@ function showMainApp() {
     currentUserProfile = p;
     try {
       const { doc, setDoc } = window._fsHelpers;
-      setDoc(doc(window._db, 'hmc_users', currentUser.uid), { phone: '' }, { merge: true });
+      setDoc(doc(window._db, 'hmc_users', activeUid), { phone: '' }, { merge: true });
     } catch(e) { /* non-fatal — corrected in-memory for this session regardless */ }
   }
   document.getElementById('colC').value = p.name        || '';
@@ -1147,6 +1186,109 @@ function applyApprovalStatus(status, rejectionMsg) {
     msg.textContent = 'Your registration is pending approval by the administrator. You will gain full access once approved.';
     if (led) { led.style.background='#f59e0b'; led.style.boxShadow='0 0 6px 2px #f59e0b'; }
     if (txt) txt.textContent = 'Pending Approval';
+  }
+}
+
+// ══════════════════════════════════════════
+//  MAIN ADMIN — pick any user to view/manage
+// ══════════════════════════════════════════
+async function enterAdminMode() {
+  isMainAdminMode = true;
+  adminSelectedUid = '';
+  activeUid = '';
+  currentUserProfile = null;
+
+  const pickerWrap = document.getElementById('adminUserPickerWrap');
+  if (pickerWrap) pickerWrap.classList.remove('hidden');
+  const statusPill = document.getElementById('colEStatus');
+  if (statusPill) statusPill.style.display = 'none';
+
+  document.getElementById('tileData').style.display = 'none';
+  const tile1Wrap = document.getElementById('tile1Wrap');
+  if (tile1Wrap) tile1Wrap.style.display = 'none';
+  document.getElementById('approvalStatus').style.display = 'none';
+  resetDayBookState();
+
+  const placeholder = document.getElementById('adminNoSelection');
+  if (placeholder) placeholder.classList.remove('hidden');
+
+  await adminLoadUserList();
+}
+
+async function adminLoadUserList() {
+  const sel = document.getElementById('adminUserSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select a user —</option>';
+  try {
+    const { collection, getDocs, query, where } = window._fsHelpers;
+    const snap = await getDocs(query(collection(window._db, 'hmc_users'), where('approvalStatus', '==', 'approved')));
+    const users = [];
+    snap.forEach(d => users.push({ uid: d.id, ...d.data() }));
+    users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    users.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.uid;
+      opt.textContent = (u.name || '(no name)') + (u.office ? ' — ' + u.office : '') + (u.email ? '  <' + u.email + '>' : '');
+      sel.appendChild(opt);
+    });
+    if (users.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'No approved users found';
+      sel.appendChild(opt);
+    }
+  } catch (e) {
+    customAlert('Failed to load user list: ' + e.message);
+  }
+}
+
+async function adminUserPicked(uid) {
+  const tile1Wrap = document.getElementById('tile1Wrap');
+  const placeholder = document.getElementById('adminNoSelection');
+
+  const statusPill = document.getElementById('colEStatus');
+
+  if (!uid) {
+    adminSelectedUid = '';
+    activeUid = '';
+    currentUserProfile = null;
+    document.getElementById('tileData').style.display = 'none';
+    if (tile1Wrap) tile1Wrap.style.display = 'none';
+    document.getElementById('approvalStatus').style.display = 'none';
+    if (statusPill) statusPill.style.display = 'none';
+    resetDayBookState();
+    if (placeholder) placeholder.classList.remove('hidden');
+    return;
+  }
+
+  showStatus('Loading user…');
+  try {
+    const { doc, getDoc } = window._fsHelpers;
+    const snap = await getDoc(doc(window._db, 'hmc_users', uid));
+    if (!snap.exists()) { hideStatus(); customAlert('User profile not found.'); return; }
+    const p = snap.data();
+    adminSelectedUid = uid;
+    activeUid = uid;
+    currentUserProfile = p;
+
+    document.getElementById('colC').value = p.name        || '';
+    document.getElementById('colD').value = p.designation || '';
+    document.getElementById('colE').value = p.office      || '';
+    document.getElementById('colF').value = p.pen         || '';
+    document.getElementById('colG').value = p.phone       || '';
+    document.getElementById('colH').value = p.email       || '';
+
+    if (placeholder) placeholder.classList.add('hidden');
+    document.getElementById('tileData').style.display = '';
+    if (tile1Wrap) tile1Wrap.style.display = '';
+    if (statusPill) statusPill.style.display = '';
+    resetDayBookState();
+    hideStatus();
+
+    applyApprovalStatus(p.approvalStatus || 'approved', p.rejectionMsg || '');
+  } catch (e) {
+    hideStatus();
+    customAlert('Failed to load user: ' + e.message);
   }
 }
 
@@ -1208,7 +1350,17 @@ function confirmLogout() {
   customConfirm('Are you sure you want to log out?', async confirmed => {
     if (!confirmed) return;
     await window._authFn.signOut(window._auth);
-    currentUser = null; currentUserProfile = null;
+    currentUser = null; currentUserProfile = null; activeUid = null;
+    isMainAdminMode = false; adminSelectedUid = '';
+    const pickerWrap = document.getElementById('adminUserPickerWrap');
+    if (pickerWrap) pickerWrap.classList.add('hidden');
+    const placeholder = document.getElementById('adminNoSelection');
+    if (placeholder) placeholder.classList.add('hidden');
+    document.getElementById('tileData').style.display = '';
+    const tile1Wrap = document.getElementById('tile1Wrap');
+    if (tile1Wrap) tile1Wrap.style.display = '';
+    const statusPill = document.getElementById('colEStatus');
+    if (statusPill) statusPill.style.display = '';
     document.getElementById('loginPage').classList.remove('hidden');
     document.getElementById('secondaryPage').classList.add('hidden');
     document.getElementById('userId').value = '';
@@ -1250,7 +1402,7 @@ async function submitTileEdit() {
   try {
     const { doc, setDoc, serverTimestamp } = window._fsHelpers;
     const updated = { name, designation, phone, email, pen, office, updatedAt: serverTimestamp() };
-    await setDoc(doc(window._db, 'hmc_users', currentUser.uid), updated, { merge: true });
+    await setDoc(doc(window._db, 'hmc_users', activeUid), updated, { merge: true });
     currentUserProfile = { ...currentUserProfile, ...updated };
     document.getElementById('colC').value = name;
     document.getElementById('colD').value = designation;
@@ -1289,7 +1441,7 @@ async function sendPhoneChangeRequest() {
   try {
     const { collection, addDoc, serverTimestamp } = window._fsHelpers;
     await addDoc(collection(window._db, 'hmc_phone_change_requests'), {
-      uid: currentUser.uid, name: currentUserProfile?.name || '', email: currentUser.email,
+      uid: activeUid, name: currentUserProfile?.name || '', email: currentUserProfile?.email || currentUser.email,
       currentPhone: document.getElementById('editColG').value.trim(),
       newPhone, status: 'pending', createdAt: serverTimestamp()
     });
@@ -1344,24 +1496,24 @@ function dbShowMsg(text,type) {
 // ── Year helpers ──
 function dbUserYearsRef() {
   const { doc } = window._fsHelpers;
-  return `hmc_daybook/${currentUser.uid}/meta`;
+  return `hmc_daybook/${activeUid}/meta`;
 }
 function dbEntriesRef(year) {
-  return `hmc_daybook/${currentUser.uid}/years/${year}/entries`;
+  return `hmc_daybook/${activeUid}/years/${year}/entries`;
 }
 function dbHeadsRef(type) {
-  return `hmc_daybook/${currentUser.uid}/heads`;
+  return `hmc_daybook/${activeUid}/heads`;
 }
 
 async function dbGetYears() {
   const { doc, getDoc } = window._fsHelpers;
-  const snap = await getDoc(doc(window._db, 'hmc_daybook', currentUser.uid));
+  const snap = await getDoc(doc(window._db, 'hmc_daybook', activeUid));
   return snap.exists() ? (snap.data().years || []) : [];
 }
 
 async function dbSaveYears(years) {
   const { doc, setDoc, serverTimestamp } = window._fsHelpers;
-  await setDoc(doc(window._db, 'hmc_daybook', currentUser.uid), { years }, { merge: true });
+  await setDoc(doc(window._db, 'hmc_daybook', activeUid), { years }, { merge: true });
 }
 
 // ── Init ──
@@ -1376,7 +1528,7 @@ async function dbLoadFormData() {
   try {
     const { doc, getDoc, setDoc, collection, getDocs } = window._fsHelpers;
     // Load heads
-    const headsSnap = await getDoc(doc(window._db, 'hmc_daybook', currentUser.uid));
+    const headsSnap = await getDoc(doc(window._db, 'hmc_daybook', activeUid));
     const headsData = headsSnap.exists() ? headsSnap.data() : {};
 
     // One-time migration: if a head-type's saved list still exactly matches the
@@ -1403,7 +1555,7 @@ async function dbLoadFormData() {
 
     if (otherMigrated || incomeMigrated || expMigrated) {
       try {
-        await setDoc(doc(window._db, 'hmc_daybook', currentUser.uid), {
+        await setDoc(doc(window._db, 'hmc_daybook', activeUid), {
           otherHeads: dbOtherHeadEn,  otherHeadsMl: dbOtherHeadMl,
           incomeHeads: dbSelect1En,   incomeHeadsMl: dbSelect1Ml,
           expHeads: dbSelect2En,      expHeadsMl: dbSelect2Ml
@@ -1818,7 +1970,7 @@ async function dbDeleteHeadByName(name, type) {
     dbShowOverlay('Deleting…');
     try {
       const { doc, setDoc } = window._fsHelpers;
-      await setDoc(doc(window._db, 'hmc_daybook', currentUser.uid), {
+      await setDoc(doc(window._db, 'hmc_daybook', activeUid), {
         otherHeads: dbOtherHeadEn, otherHeadsMl: dbOtherHeadMl,
         incomeHeads: dbSelect1En,  incomeHeadsMl: dbSelect1Ml,
         expHeads: dbSelect2En,     expHeadsMl: dbSelect2Ml
@@ -1954,7 +2106,7 @@ async function dbSubmitForm() {
   dbShowOverlay('Saving…');
   try {
     const { collection, addDoc, serverTimestamp } = window._fsHelpers;
-    const colRef=`hmc_daybook/${currentUser.uid}/years/${year}/entries`;
+    const colRef=`hmc_daybook/${activeUid}/years/${year}/entries`;
     for(const r of rows){
       await addDoc(collection(window._db, colRef), { ...r, createdAt: serverTimestamp() });
     }
@@ -1972,13 +2124,13 @@ async function dbLoadPreviewTable() {
   dbShowOverlay('Fetching data…');
   try {
     const { collection, getDocs, query, orderBy, doc, getDoc } = window._fsHelpers;
-    const colPath=`hmc_daybook/${currentUser.uid}/years/${year}/entries`;
+    const colPath=`hmc_daybook/${activeUid}/years/${year}/entries`;
     const q=query(collection(window._db,colPath),orderBy('date','asc'));
     const snap=await getDocs(q);
     dbAllPreviewRows=[];
     snap.forEach(d=>{ dbAllPreviewRows.push({ id:d.id, ...d.data() }); });
     // Load balances
-    const balSnap=await getDoc(doc(window._db,`hmc_daybook/${currentUser.uid}/years/${year}/meta/balances`));
+    const balSnap=await getDoc(doc(window._db,`hmc_daybook/${activeUid}/years/${year}/meta/balances`));
     if(balSnap.exists()){
       const b=balSnap.data();
       document.getElementById('dbObCash').value=b.obCash||'';
@@ -2030,13 +2182,13 @@ async function dbComputeClosingBalanceUpTo(uptoYear) {
   let runCash = 0, runBank = 0;
   for (const y of years) {
     try {
-      const balSnap = await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${y}/meta/balances`));
+      const balSnap = await getDoc(doc(window._db, `hmc_daybook/${activeUid}/years/${y}/meta/balances`));
       if (balSnap.exists()) {
         const b = balSnap.data();
         runCash = b.obCash || 0;
         runBank = b.obBank || 0;
       }
-      const entriesSnap = await getDocs(query(collection(window._db, `hmc_daybook/${currentUser.uid}/years/${y}/entries`), orderBy('date','asc')));
+      const entriesSnap = await getDocs(query(collection(window._db, `hmc_daybook/${activeUid}/years/${y}/entries`), orderBy('date','asc')));
       entriesSnap.forEach(d=>{
         const r = d.data();
         runCash += (r.op||0) + (r.lab||0) + (r.otherCash||0) - (r.bank||0);
@@ -2078,7 +2230,7 @@ async function dbPrefillOpeningBalanceFromPrevYear(year) {
 // ── Balances ──
 async function dbSaveBalancesCore(year, obCash, obBank) {
   const { doc, setDoc, serverTimestamp } = window._fsHelpers;
-  await setDoc(doc(window._db,`hmc_daybook/${currentUser.uid}/years/${year}/meta/balances`),
+  await setDoc(doc(window._db,`hmc_daybook/${activeUid}/years/${year}/meta/balances`),
     { obCash:+obCash||0, obBank:+obBank||0, updatedAt: serverTimestamp() });
 }
 
@@ -2310,7 +2462,7 @@ async function dbSaveInlineEdit(tr,docId,saveBtn){
   dbShowOverlay('Updating…');
   try {
     const { doc, updateDoc } = window._fsHelpers;
-    await updateDoc(doc(window._db,`hmc_daybook/${currentUser.uid}/years/${year}/entries/${docId}`),updated);
+    await updateDoc(doc(window._db,`hmc_daybook/${activeUid}/years/${year}/entries/${docId}`),updated);
     await dbLoadPreviewTable();
   } catch(e){ dbShowMsg('Error updating: '+e.message,'error'); dbHideOverlay(); }
 }
@@ -2329,7 +2481,7 @@ async function dbDoDelete(){
   dbShowOverlay('Deleting…');
   try {
     const { doc, deleteDoc } = window._fsHelpers;
-    await deleteDoc(doc(window._db,`hmc_daybook/${currentUser.uid}/years/${year}/entries/${dbPendingDeleteId}`));
+    await deleteDoc(doc(window._db,`hmc_daybook/${activeUid}/years/${year}/entries/${dbPendingDeleteId}`));
     await dbLoadPreviewTable();
   } catch(e){ dbShowMsg('Error deleting: '+e.message,'error'); }
   finally   { dbHideOverlay(); }
@@ -2420,7 +2572,7 @@ async function dbDeleteHead(idx) {
     dbShowOverlay('Deleting…');
     try {
       const { doc, setDoc } = window._fsHelpers;
-      await setDoc(doc(window._db, 'hmc_daybook', currentUser.uid), {
+      await setDoc(doc(window._db, 'hmc_daybook', activeUid), {
         otherHeads: dbOtherHeadEn, otherHeadsMl: dbOtherHeadMl,
         incomeHeads: dbSelect1En,  incomeHeadsMl: dbSelect1Ml,
         expHeads: dbSelect2En,     expHeadsMl: dbSelect2Ml
@@ -2445,7 +2597,7 @@ async function dbSaveNewHead(){
     if(dbCurrentAddType==='other')          { dbOtherHeadEn.push(en); dbOtherHeadMl.push(mlVal); }
     else if(dbCurrentAddType==='income')    { dbSelect1En.push(en);   dbSelect1Ml.push(mlVal); }
     else if(dbCurrentAddType==='expenditure'){ dbSelect2En.push(en);  dbSelect2Ml.push(mlVal); }
-    await setDoc(doc(window._db,'hmc_daybook',currentUser.uid),{
+    await setDoc(doc(window._db,'hmc_daybook',activeUid),{
       otherHeads:dbOtherHeadEn, otherHeadsMl:dbOtherHeadMl,
       incomeHeads:dbSelect1En,  incomeHeadsMl:dbSelect1Ml,
       expHeads:dbSelect2En,     expHeadsMl:dbSelect2Ml
@@ -2593,7 +2745,7 @@ async function dbLoadBudgetConfig(year, periodKey){
   if(!currentUser) return null;
   const { doc, getDoc } = window._fsHelpers;
   try{
-    const snap=await getDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${year}/meta/budgetConfig`));
+    const snap=await getDoc(doc(window._db, `hmc_daybook/${activeUid}/years/${year}/meta/budgetConfig`));
     if(snap.exists()){
       const data=snap.data();
       return data[periodKey]||null;
@@ -2606,7 +2758,7 @@ async function dbSaveBudgetConfig(year, periodKey, incCfg, expCfg){
   if(!currentUser) return;
   const { doc, setDoc } = window._fsHelpers;
   try{
-    await setDoc(doc(window._db, `hmc_daybook/${currentUser.uid}/years/${year}/meta/budgetConfig`),
+    await setDoc(doc(window._db, `hmc_daybook/${activeUid}/years/${year}/meta/budgetConfig`),
       { [periodKey]: { income:incCfg, expenditure:expCfg, savedAt: Date.now() } }, { merge:true });
   }catch(e){ console.error('Failed to save budget heads configuration', e); customAlert('Could not save your head configuration (it will still generate the report).','','error'); }
 }
@@ -2868,7 +3020,7 @@ async function dbOpenLoanModal() {
   dbShowOverlay('Loading loan configuration…');
   try {
     const { doc, getDoc } = window._fsHelpers;
-    const snap = await getDoc(doc(window._db, 'hmc_daybook', currentUser.uid));
+    const snap = await getDoc(doc(window._db, 'hmc_daybook', activeUid));
     dbLoanHeads = (snap.exists() && Array.isArray(snap.data().loanHeads)) ? snap.data().loanHeads : [];
   } catch(e) { dbLoanHeads = []; }
   finally { dbHideOverlay(); }
@@ -2899,7 +3051,7 @@ async function dbLoanSaveHeadsAndGenerate() {
   dbShowOverlay('Saving heads…');
   try {
     const { doc, setDoc } = window._fsHelpers;
-    await setDoc(doc(window._db, 'hmc_daybook', currentUser.uid), { loanHeads: dbLoanHeads }, { merge: true });
+    await setDoc(doc(window._db, 'hmc_daybook', activeUid), { loanHeads: dbLoanHeads }, { merge: true });
   } catch(e) { /* still proceed to generate even if saving the config failed */ }
   finally { dbHideOverlay(); }
   await dbGenerateLoanRegister();
@@ -2922,7 +3074,7 @@ async function dbGenerateLoanRegister() {
     for (const y of years) {
       let snap;
       try {
-        snap = await getDocs(query(collection(window._db, `hmc_daybook/${currentUser.uid}/years/${y}/entries`), orderBy('date','asc')));
+        snap = await getDocs(query(collection(window._db, `hmc_daybook/${activeUid}/years/${y}/entries`), orderBy('date','asc')));
       } catch(e) { continue; }
       snap.forEach(d => {
         const r = d.data();
@@ -2937,7 +3089,7 @@ async function dbGenerateLoanRegister() {
     }
 
     let rootSnap = null;
-    try { rootSnap = await getDoc(doc(window._db, 'hmc_daybook', currentUser.uid)); }
+    try { rootSnap = await getDoc(doc(window._db, 'hmc_daybook', activeUid)); }
     catch(e) { /* none saved yet */ }
     const rootData = (rootSnap && rootSnap.exists()) ? (rootSnap.data() || {}) : {};
     dbLoanLinks = rootData.loanLinks || {};
@@ -3032,7 +3184,7 @@ async function dbLoanMarkNotLoan(rowKey) {
     dbShowOverlay('Updating…');
     try {
       const { doc, setDoc } = window._fsHelpers;
-      const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+      const userRef = doc(window._db, 'hmc_daybook', activeUid);
       const updates = { loanExcluded: { [rowKey]: true } };
       // If this entry had a linked income repayment, drop the link too — it's no longer a loan.
       if (dbLoanLinks[rowKey]) { updates.loanLinks = { [rowKey]: null }; }
@@ -3050,7 +3202,7 @@ async function dbLoanRestore(rowKey) {
   dbShowOverlay('Restoring…');
   try {
     const { doc, setDoc } = window._fsHelpers;
-    const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+    const userRef = doc(window._db, 'hmc_daybook', activeUid);
     await setDoc(userRef, { loanExcluded: { [rowKey]: null } }, { merge: true });
     delete dbLoanExcluded[rowKey];
     dbLoanRows = dbLoanAllRows.filter(r => !dbLoanExcluded[r.key]);
@@ -3099,7 +3251,7 @@ async function dbLoanLinkTo(incYear, incId) {
   dbShowOverlay('Linking…');
   try {
     const { doc, setDoc } = window._fsHelpers;
-    const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+    const userRef = doc(window._db, 'hmc_daybook', activeUid);
     await setDoc(userRef, { loanLinks: { [dbLoanActiveRowKey]: linkData } }, { merge: true });
     dbLoanLinks[dbLoanActiveRowKey] = linkData;
     dbLoanRenderRegisterTable();
@@ -3112,7 +3264,7 @@ async function dbLoanUnlink(rowKey) {
   dbShowOverlay('Unlinking…');
   try {
     const { doc, setDoc } = window._fsHelpers;
-    const userRef = doc(window._db, 'hmc_daybook', currentUser.uid);
+    const userRef = doc(window._db, 'hmc_daybook', activeUid);
     await setDoc(userRef, { loanLinks: { [rowKey]: null } }, { merge: true });
     delete dbLoanLinks[rowKey];
     dbLoanRenderRegisterTable();
@@ -3672,6 +3824,7 @@ waitForFirebase(()=>{
   window._authFn.onAuthStateChanged(window._auth, async user=>{
     if(user){
       currentUser=user;
+      activeUid=user.uid;
       await loadUserProfile(user.uid);
       showMainApp();
     } else {
