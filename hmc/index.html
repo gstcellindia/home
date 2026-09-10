@@ -59,7 +59,15 @@
       --box-shadow: 0 8px 24px rgba(0,0,0,0.18);
       --border-radius: 12px; --input-radius: 8px;
     }
-    body { font-family: Arial, sans-serif; margin: 0; }
+    /* Global box-sizing reset — without this, any element declaring both a
+       percentage width AND padding (border-box was missing on several cards
+       in this page) renders wider than its declared width and silently
+       overflows the viewport on mobile. This is what was producing the
+       "extra margin on the right" — content overflowing past the right edge
+       creates scrollable dead space, it isn't an actual margin. */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; margin: 0; }
+    body { font-family: Arial, sans-serif; }
     .hidden { display: none !important; }
 
     /* ── LOGIN ── */
@@ -433,12 +441,10 @@
 
     @media (max-width: 768px) {
       #loginPage { width: 88%; margin: 20px auto; }
-      /* Office Details tile — was set to width:100% here while still
-         carrying its 5%-each-side margin (and 20px padding without
-         box-sizing), which pushed it wider than the screen. Use a tight,
-         fixed 5px side margin instead so it stays fully on-screen. */
-      .tile { width: calc(100% - 10px); margin: 10px 5px; }
-      .tile1 { width: calc(100% - 10px); margin: 0 5px; }
+      /* Office Details tile spans the full screen width on mobile, flush
+         to both edges — no left/right margin. */
+      .tile { width: 100%; margin: 10px 0; }
+      .tile1 { width: 100%; margin: 0; }
       /* Day Book tables keep their full, readable column widths on mobile —
          they scroll horizontally inside .db-table-scroll instead of being
          squeezed/shrunk to fit the screen. See .db-table-scroll below. */
@@ -447,26 +453,40 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
+    /* Day Book page-level sections — centered with side margins by default;
+       mobile media query below drops them to full width, no side margin. */
+    #dbHeaderRow { margin: 18px 5% 0 5%; width: 90%; box-sizing: border-box; }
+    #dbEntryFormCard { margin: 0 5%; width: 90%; box-sizing: border-box; }
+    #dbPreviewCard { margin: 0 5% 20px; width: 90%; box-sizing: border-box; }
     @media (max-width: 600px) {
       .table-controls { flex-direction: column; align-items: stretch; width: 100%; margin-left: 0; }
       .horizontal-info-bar { flex-direction: column; align-items: flex-start; width: 96%; margin-left: 2%; }
       .add-record-bar { width: 96%; margin: 8px 2% 0 2%; }
       #topBar {
         position: static !important;
-        width: 96%; margin: 8px 2% 10px 2%;
+        width: 100%; margin: 8px 0 10px 0;
         justify-content: space-between; gap: 8px;
       }
       #colEStatus { font-size: 10pt; padding: 4px 9px; }
       .lang-toggle-wrap { font-size: 0.74rem; padding: 3px 9px; }
 
+      /* Every page-level section spans the full screen width, flush to both
+         edges — no left/right margin or padding anywhere on mobile. */
+      #approvalStatus { width: 100%; margin: 20px 0; }
+      .db-accordion-header { width: 100%; margin: 14px 0; }
+      #dbHeaderRow { width: 100%; margin: 18px 0 0 0; }
+      #dbEntryFormCard { width: 100%; margin: 0; padding-left: 0; padding-right: 0; }
+      #dbPreviewCard { width: 100%; margin: 0 0 20px 0; padding-left: 0; padding-right: 0; }
+
       /* Day Book header — Excel Template / Upload Excel / Loan drop below the "Day Book" title */
       #dbHeaderLeft { flex-direction: column; align-items: flex-start; width: 100%; }
       #dbHeaderBtns { width: 100%; }
 
-      /* Balance bar — Opening Cash, Opening Bank and the Add/Update button each
-         get their own full-width row; Closing Cash & Closing Bank then share
-         one row underneath the button. */
-      #dbObCashWrap, #dbObBankWrap, #dbBalanceBtnWrap { width: 100%; }
+      /* Balance bar — Opening Cash & Opening Bank share one row, the
+         Add/Update button gets its own full-width row below them, and
+         Closing Cash & Closing Bank share a row below that. */
+      #dbObCashWrap, #dbObBankWrap { flex: 1 1 45%; min-width: 0 !important; }
+      #dbBalanceBtnWrap { width: 100%; }
       #dbBalanceDivider { display: none; }
       #dbCbCashWrap, #dbCbBankWrap { flex: 1 1 45%; min-width: 0 !important; }
     }
@@ -562,7 +582,7 @@
     <button onclick="confirmLogout()" class="logout">⏻</button>
   </div>
 
-  <div class="titles"><h2>Office Details</h2></div>
+  <div class="titles" id="officeDetailsTitle"><h2>Office Details</h2></div>
 
   <!-- Shown to the main admin until they pick a user from the dropdown above -->
   <div id="adminNoSelection" class="hidden" style="max-width:520px;margin:60px auto 0;padding:24px 28px;background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.12);text-align:center;color:#374151;">
@@ -585,7 +605,7 @@
 
   <!-- ════════ DAY BOOK SECTION ════════ -->
   <div id="dbSection">
-    <div style="margin:18px 5% 0 5%;width:90%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <div id="dbHeaderRow" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" id="dbHeaderLeft">
         <h3 style="color:#145099;margin:0;">📒 Day Book</h3>
         <div id="dbHeaderBtns" style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -609,7 +629,7 @@
       <span class="db-accordion-arrow" id="dbEntryArrow">▼</span>
     </div>
     <div class="db-accordion-body" id="dbEntryAccordionBody">
-    <div style="background:#fff;border-radius:0 0 8px 8px;box-shadow:0 4px 8px rgba(0,0,0,0.08);padding:18px;margin:0 5%;width:90%;box-sizing:border-box;">
+    <div id="dbEntryFormCard" style="background:#fff;border-radius:0 0 8px 8px;box-shadow:0 4px 8px rgba(0,0,0,0.08);padding:18px;">
       <div class="db-table-scroll" style="overflow-y:auto;max-height:420px;border:1px solid #e5e7eb;border-radius:6px;">
         <table style="width:100%;min-width:1000px;border-collapse:collapse;font-size:0.78rem;table-layout:fixed;word-break:break-word;" id="dbFormTable">
           <colgroup>
@@ -648,7 +668,7 @@
     </div>
 
     <!-- Preview -->
-    <div style="background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:18px;margin:0 5% 20px;width:90%;box-sizing:border-box;">
+    <div id="dbPreviewCard" style="background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:18px;">
       <!-- Balance bar -->
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:10px 0 8px;border-bottom:1px solid #d1d5db;margin-bottom:10px;" id="dbBalanceBar">
         <div style="display:flex;flex-direction:column;gap:3px;min-width:150px;" id="dbObCashWrap">
@@ -1232,6 +1252,8 @@ async function enterAdminMode() {
   document.getElementById('tileData').style.display = 'none';
   const tile1Wrap = document.getElementById('tile1Wrap');
   if (tile1Wrap) tile1Wrap.style.display = 'none';
+  const officeDetailsTitle = document.getElementById('officeDetailsTitle');
+  if (officeDetailsTitle) officeDetailsTitle.style.display = 'none';
   document.getElementById('approvalStatus').style.display = 'none';
   resetDayBookState();
 
@@ -1385,6 +1407,8 @@ function confirmLogout() {
     document.getElementById('tileData').style.display = '';
     const tile1Wrap = document.getElementById('tile1Wrap');
     if (tile1Wrap) tile1Wrap.style.display = '';
+    const officeDetailsTitle = document.getElementById('officeDetailsTitle');
+    if (officeDetailsTitle) officeDetailsTitle.style.display = '';
     const statusPill = document.getElementById('colEStatus');
     if (statusPill) statusPill.style.display = '';
     document.getElementById('loginPage').classList.remove('hidden');
