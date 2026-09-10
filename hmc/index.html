@@ -443,7 +443,7 @@
       #loginPage { width: 88%; margin: 20px auto; }
       /* Office Details tile spans the full screen width on mobile, flush
          to both edges — no left/right margin. */
-      .tile { width: 100%; margin: 10px 0; }
+      .tile { width: calc(100% - 6px); margin: 10px 3px; }
       .tile1 { width: 100%; margin: 0; }
       /* Day Book tables keep their full, readable column widths on mobile —
          they scroll horizontally inside .db-table-scroll instead of being
@@ -473,7 +473,7 @@
       /* Every page-level section spans the full screen width, flush to both
          edges — no left/right margin or padding anywhere on mobile. */
       #approvalStatus { width: 100%; margin: 20px 0; }
-      .db-accordion-header { width: 100%; margin: 14px 0; }
+      .db-accordion-header { width: calc(100% - 6px); margin: 14px 3px; }
       #dbHeaderRow { width: 100%; margin: 18px 0 0 0; }
       #dbEntryFormCard { width: 100%; margin: 0; padding-left: 0; padding-right: 0; }
       #dbPreviewCard { width: 100%; margin: 0 0 20px 0; padding-left: 0; padding-right: 0; }
@@ -482,11 +482,9 @@
       #dbHeaderLeft { flex-direction: column; align-items: flex-start; width: 100%; }
       #dbHeaderBtns { width: 100%; }
 
-      /* Balance bar — Opening Cash & Opening Bank share one row, the
-         Add/Update button gets its own full-width row below them, and
-         Closing Cash & Closing Bank share a row below that. */
-      #dbObCashWrap, #dbObBankWrap { flex: 1 1 45%; min-width: 0 !important; }
-      #dbBalanceBtnWrap { width: 100%; }
+      /* Balance bar — Opening Cash, Opening Bank & the Add/Update button all
+         share one row; Closing Cash & Closing Bank share a row below that. */
+      #dbObCashWrap, #dbObBankWrap, #dbBalanceBtnWrap { flex: 1 1 30%; min-width: 0 !important; }
       #dbBalanceDivider { display: none; }
       #dbCbCashWrap, #dbCbBankWrap { flex: 1 1 45%; min-width: 0 !important; }
     }
@@ -609,7 +607,7 @@
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" id="dbHeaderLeft">
         <h3 style="color:#145099;margin:0;">📒 Day Book</h3>
         <div id="dbHeaderBtns" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-add-record" onclick="dbDownloadTemplate()" style="background:#16a34a;">⬇ Excel Template</button>
+          <button class="btn-add-record" onclick="dbDownloadTemplate()" style="background:#16a34a;margin-left:3px;">⬇ Excel Template</button>
           <label class="btn-add-record" style="cursor:pointer;margin:0;">
             ⬆ Upload Excel
             <input type="file" id="dbExcelUpload" accept=".xlsx,.xls" style="display:none" onchange="dbHandleExcelUpload(event)">
@@ -670,7 +668,7 @@
     <!-- Preview -->
     <div id="dbPreviewCard" style="background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:18px;">
       <!-- Balance bar -->
-      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:10px 0 8px;border-bottom:1px solid #d1d5db;margin-bottom:10px;" id="dbBalanceBar">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:5px 0 4px;border-bottom:1px solid #d1d5db;margin-bottom:10px;" id="dbBalanceBar">
         <div style="display:flex;flex-direction:column;gap:3px;min-width:150px;" id="dbObCashWrap">
           <label style="font-size:0.75rem;font-weight:600;color:#6b7280;">Opening Balance Cash</label>
           <input type="number" id="dbObCash" min="0" placeholder="0" oninput="dbUpdateClosingBalance()" onblur="dbAutoSaveBalances()" style="padding:5px 9px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;width:140px;outline:none;">
