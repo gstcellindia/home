@@ -1787,16 +1787,18 @@ function dbMakeCombo(options, type, placeholderText) {
     });
     list.appendChild(addOpt);
 
-    // Auto-focus first real item if there's a filter term
-    if (f && filtered.length) {
-      focusIndex = 0;
-      updateFocus();
-    }
+    // With a filter typed, highlight the first match. With no filter (a
+    // fresh/empty cell), highlight "— Select —" instead (focusIndex -1) —
+    // nothing gets auto-selected just because the cell received focus.
+    focusIndex = (f && filtered.length) ? 0 : -1;
+    updateFocus();
   }
 
   function updateFocus() {
     const items = list.querySelectorAll('.db-combo-row');
     items.forEach((el, i) => el.classList.toggle('focused', i === focusIndex));
+    const clearItem = list.querySelector('.db-combo-clear');
+    if (clearItem) clearItem.classList.toggle('focused', focusIndex === -1);
     if (focusIndex >= 0 && items[focusIndex])
       items[focusIndex].scrollIntoView({ block: 'nearest' });
   }
@@ -1859,28 +1861,28 @@ function dbMakeCombo(options, type, placeholderText) {
 
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      focusIndex = Math.max(focusIndex - 1, 0);
+      if (!dd.classList.contains('open')) openDD();
+      // -1 = back to "— Select —"; stays there once reached.
+      focusIndex = Math.max(focusIndex - 1, -1);
       updateFocus();
 
     } else if (e.key === 'Tab') {
-      // Tab: select focused item, or top item if nothing focused
-      if (dd.classList.contains('open') && items.length) {
-        const pick = focusIndex >= 0 ? focusIndex : 0;
-        if (items[pick]) {
-          e.preventDefault();
-          const label = items[pick].querySelector('span');
-          selectOption(label ? label.textContent.trim() : items[pick].textContent.trim());
-        }
+      // Tab only selects the item currently highlighted by typing or arrow
+      // navigation. If nothing is highlighted ("— Select —" is active),
+      // Tab just moves on to the next cell without picking anything.
+      if (dd.classList.contains('open') && focusIndex >= 0 && items[focusIndex]) {
+        e.preventDefault();
+        const label = items[focusIndex].querySelector('span');
+        selectOption(label ? label.textContent.trim() : items[focusIndex].textContent.trim());
       }
 
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (dd.classList.contains('open') && items.length) {
-        const pick = focusIndex >= 0 ? focusIndex : 0;
-        if (items[pick]) {
-          const label = items[pick].querySelector('span');
-          selectOption(label ? label.textContent.trim() : items[pick].textContent.trim());
-        }
+      if (dd.classList.contains('open') && focusIndex >= 0 && items[focusIndex]) {
+        const label = items[focusIndex].querySelector('span');
+        selectOption(label ? label.textContent.trim() : items[focusIndex].textContent.trim());
+      } else {
+        closeDD();
       }
 
     } else if (e.key === 'Escape') {
