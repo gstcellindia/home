@@ -431,9 +431,14 @@
 
     @media (max-width: 768px) {
       #loginPage { width: 88%; margin: 20px auto; }
-      table, td, th { font-size: 10px; }
-      table { width: 96%; margin-left: 1%; }
       .tile { width: 100%; }
+      /* Day Book tables keep their full, readable column widths on mobile —
+         they scroll horizontally inside .db-table-scroll instead of being
+         squeezed/shrunk to fit the screen. See .db-table-scroll below. */
+    }
+    .db-table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     @media (max-width: 600px) {
       .table-controls { flex-direction: column; align-items: stretch; width: 100%; margin-left: 0; }
@@ -585,8 +590,8 @@
     </div>
     <div class="db-accordion-body" id="dbEntryAccordionBody">
     <div style="background:#fff;border-radius:0 0 8px 8px;box-shadow:0 4px 8px rgba(0,0,0,0.08);padding:18px;margin:0 5%;width:90%;box-sizing:border-box;">
-      <div style="overflow-x:auto;overflow-y:auto;max-height:420px;border:1px solid #e5e7eb;border-radius:6px;">
-        <table style="width:100%;border-collapse:collapse;font-size:0.78rem;table-layout:fixed;word-break:break-word;" id="dbFormTable">
+      <div class="db-table-scroll" style="overflow-y:auto;max-height:420px;border:1px solid #e5e7eb;border-radius:6px;">
+        <table style="width:100%;min-width:1000px;border-collapse:collapse;font-size:0.78rem;table-layout:fixed;word-break:break-word;" id="dbFormTable">
           <colgroup>
             <col style="width:9%"><col style="width:5%"><col style="width:5%">
             <col style="width:9%"><col style="width:6%"><col style="width:9%"><col style="width:9%">
@@ -662,7 +667,9 @@
         </div>
         <div id="dbPaginationControls" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
       </div>
-      <table id="dbPreviewTable" style="width:100%;border-collapse:collapse;font-size:0.82rem;table-layout:fixed;word-break:break-word;"></table>
+      <div class="db-table-scroll">
+        <table id="dbPreviewTable" style="width:100%;min-width:1150px;border-collapse:collapse;font-size:0.82rem;table-layout:fixed;word-break:break-word;"></table>
+      </div>
     </div>
 
     <!-- DB Modals -->
@@ -725,8 +732,8 @@
             </div>
           </div>
           <div id="dbLoanSummary" style="font-size:0.82rem;color:#374151;margin-bottom:10px;"></div>
-          <div style="overflow-x:auto;border:1px solid #e5e7eb;border-radius:8px;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+          <div class="db-table-scroll" style="border:1px solid #e5e7eb;border-radius:8px;">
+            <table style="width:100%;min-width:640px;border-collapse:collapse;font-size:0.8rem;">
               <thead>
                 <tr style="background:#e8f0fe;color:#1a3a6b;">
                   <th style="padding:6px 8px;border:1px solid #d1d5db;">Year</th>
