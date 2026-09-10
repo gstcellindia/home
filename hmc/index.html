@@ -1803,17 +1803,23 @@ function dbMakeCombo(options, type, placeholderText) {
       items[focusIndex].scrollIntoView({ block: 'nearest' });
   }
 
-  function selectOption(val) {
-    hidden.value = val;
-    txt.value = val;
-    hidden.dispatchEvent(new Event('change', { bubbles: true }));
-    closeDD();
-    // Move focus to next input in tab order
+  // Move focus to the next input in tab order within the New Entry table
+  // (no-op for combos elsewhere, e.g. inline row editing, which aren't in
+  // #dbFormRows — those just fall through to nothing, unchanged).
+  function focusNextField() {
     const inputs = Array.from(document.querySelectorAll(
       '#dbFormRows input:not([type=hidden]), #dbFormRows .db-combo-input'
     ));
     const idx = inputs.indexOf(txt);
     if (idx >= 0 && inputs[idx + 1]) inputs[idx + 1].focus();
+  }
+
+  function selectOption(val) {
+    hidden.value = val;
+    txt.value = val;
+    hidden.dispatchEvent(new Event('change', { bubbles: true }));
+    closeDD();
+    focusNextField();
   }
 
   function openDD() {
@@ -1839,6 +1845,14 @@ function dbMakeCombo(options, type, placeholderText) {
 
   // Filter as user types
   txt.addEventListener('input', () => {
+    // If the cell was backspaced/cleared back to empty, also clear the
+    // committed value — otherwise closeDD()'s "restore last confirmed
+    // value" on blur would silently put the old (mistaken) selection right
+    // back into the cell even though it now looks empty.
+    if (txt.value.trim() === '' && hidden.value !== '') {
+      hidden.value = '';
+      hidden.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     openDD();
     renderList(txt.value);
   });
@@ -1868,12 +1882,21 @@ function dbMakeCombo(options, type, placeholderText) {
 
     } else if (e.key === 'Tab') {
       // Tab only selects the item currently highlighted by typing or arrow
-      // navigation. If nothing is highlighted ("— Select —" is active),
-      // Tab just moves on to the next cell without picking anything.
-      if (dd.classList.contains('open') && focusIndex >= 0 && items[focusIndex]) {
+      // navigation. If nothing is highlighted ("— Select —" is active), Tab
+      // just moves on to the next cell without picking anything. Either way
+      // we take over Tab ourselves (one press, one move) — left to the
+      // browser's default handling, Tab would land inside the open
+      // dropdown's own 🗑/＋ buttons first, needing a second press to
+      // actually reach the next cell.
+      if (dd.classList.contains('open')) {
         e.preventDefault();
-        const label = items[focusIndex].querySelector('span');
-        selectOption(label ? label.textContent.trim() : items[focusIndex].textContent.trim());
+        if (focusIndex >= 0 && items[focusIndex]) {
+          const label = items[focusIndex].querySelector('span');
+          selectOption(label ? label.textContent.trim() : items[focusIndex].textContent.trim());
+        } else {
+          closeDD();
+          focusNextField();
+        }
       }
 
     } else if (e.key === 'Enter') {
