@@ -296,6 +296,15 @@ select option { background:var(--surface2); }
 .btn-edit:hover { background:rgba(68,138,255,.22); }
 .btn-del { background:rgba(255,23,68,.1); border:1px solid rgba(255,23,68,.25); color:var(--red); padding:6px 14px; font-size:1.2rem; }
 .btn-del:hover { background:rgba(255,23,68,.22); }
+.btn-addrow { background:rgba(0,168,84,.1); border:1px solid rgba(0,168,84,.3); color:var(--green); padding:6px 14px; font-size:1.2rem; }
+.btn-addrow:hover { background:rgba(0,168,84,.22); }
+.inline-edit-input {
+  width:100%; background:var(--surface); border:1px solid var(--border);
+  color:var(--text); border-radius:6px; padding:7px 9px;
+  font-size:1.2rem; font-family:var(--font); outline:none; margin-bottom:4px;
+}
+.inline-edit-input:focus { border-color:var(--accent); }
+tr.nav-edit-row td { vertical-align:top; padding-top:10px; padding-bottom:10px; }
 
 /* ══ SUB ADMIN PERMISSIONS ══ */
 .sa-perm-item {
@@ -1569,8 +1578,9 @@ async function loadNavLinks() {
             <div class="cell-sub"><a href="https://www.gstcell.com/admin/${escH(n.url||'#')}" target="_blank" style="color:var(--blue)">${escH(truncate(n.url,50))}</a></div></td>
         <td>${n.order||"—"}</td>
         <td><div class="actions">
-          <button class="btn btn-edit" onclick="editNavLink('${d.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-edit" onclick="editNavLinkInline(this,'${d.id}')"><i class="fas fa-edit"></i> Edit</button>
           <button class="btn btn-del"  onclick="deleteItem('nav_links','${d.id}',loadNavLinks)"><i class="fas fa-trash"></i></button>
+          <button class="btn btn-addrow" onclick="addBlankNavRow(this)" title="Insert new record row"><i class="fas fa-plus"></i></button>
         </div></td>
       </tr>`;
     });
@@ -1621,6 +1631,74 @@ function cancelNavEdit() {
   ["navEditId","navMenu","navSubMenu","navName","navUrl","navOrder"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("navFormTitle").textContent = "Add New Document Link";
   document.getElementById("navBtnTxt").textContent    = "Save Link";
+}
+
+/* ---- Inline row add / edit for Nav Links table ---- */
+function navRowInputsHtml(n = {}) {
+  return `
+    <td><input type="text" class="inline-edit-input nav-inline-menu" placeholder="Menu *" value="${escH(n.menu||'')}"></td>
+    <td><input type="text" class="inline-edit-input nav-inline-submenu" placeholder="Sub-Menu *" value="${escH(n.subMenu||'')}"></td>
+    <td>
+      <input type="text" class="inline-edit-input nav-inline-name" placeholder="Document Name *" value="${escH(n.name||'')}">
+      <input type="url" class="inline-edit-input nav-inline-url" placeholder="Document URL *" value="${escH(n.url||'')}">
+    </td>
+    <td><input type="number" class="inline-edit-input nav-inline-order" placeholder="Order" min="1" value="${escH(n.order||'')}"></td>
+    <td><div class="actions">
+      <button class="btn btn-edit" onclick="saveInlineNavRow(this,'${n.__id||''}')"><i class="fas fa-save"></i> Save</button>
+      <button class="btn btn-secondary" onclick="cancelInlineNavRow(this,'${n.__id||''}')"><i class="fas fa-times"></i> Cancel</button>
+    </div></td>
+  `;
+}
+
+function addBlankNavRow(btn) {
+  const tr = btn.closest("tr");
+  const newTr = document.createElement("tr");
+  newTr.className = "nav-edit-row";
+  newTr.innerHTML = navRowInputsHtml({});
+  tr.after(newTr);
+  newTr.querySelector(".nav-inline-menu")?.focus();
+}
+
+async function editNavLinkInline(btn, id) {
+  const { doc, getDoc } = window._fs;
+  const d = await getDoc(doc(window._db,"nav_links",id));
+  if (!d.exists()) return;
+  const n = d.data();
+  const tr = btn.closest("tr");
+  tr.className = "nav-edit-row";
+  tr.innerHTML = navRowInputsHtml({ ...n, __id: id });
+}
+
+function cancelInlineNavRow(btn, id) {
+  if (id) {
+    loadNavLinks();
+  } else {
+    btn.closest("tr").remove();
+  }
+}
+
+async function saveInlineNavRow(btn, id) {
+  const { collection, addDoc, updateDoc, doc, serverTimestamp } = window._fs;
+  const db = window._db;
+  const tr = btn.closest("tr");
+  const menu    = tr.querySelector(".nav-inline-menu").value.trim();
+  const subMenu = tr.querySelector(".nav-inline-submenu").value.trim();
+  const name    = tr.querySelector(".nav-inline-name").value.trim();
+  const url     = tr.querySelector(".nav-inline-url").value.trim();
+  const order   = parseInt(tr.querySelector(".nav-inline-order").value)||99;
+  if (!menu||!subMenu||!name||!url) { toast("All fields except Order are required!","error"); return; }
+  const data = { menu, subMenu, name, url, order, updatedAt: serverTimestamp() };
+  try {
+    if (id) {
+      await updateDoc(doc(db,"nav_links",id), data);
+      toast("Link updated!");
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,"nav_links"), data);
+      toast("Link saved!");
+    }
+    loadNavLinks(); loadDashboardCounts();
+  } catch(e) { toast("Error: "+e.message,"error"); }
 }
 
 /* ══════════════════════════════════════════
