@@ -1719,11 +1719,12 @@ function addDcButton(btn = {}) {
           <input type="file" accept=".csv" onchange="dcImportCSV(this,'paired','${rowId}')" style="font-size:1.1rem;color:var(--text-muted)">
           <span style="font-size:1.1rem;color:var(--text-muted);font-style:italic">(columns: leftName, leftUrl, rightName, rightUrl)</span>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 32px;gap:6px;margin-bottom:6px;padding:0 2px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 32px 32px;gap:6px;margin-bottom:6px;padding:0 2px">
           <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Left Name</span>
           <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Left URL</span>
           <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Right Name</span>
           <span style="font-size:1.1rem;color:var(--text-muted);font-weight:600">Right URL</span>
+          <span></span>
           <span></span>
         </div>
         <div class="dc-paired-rows" id="dcpaired_${rowId}"></div>
@@ -1783,16 +1784,29 @@ function addDcPopupItem(rowId, item = {}) {
   container.appendChild(row);
 }
 
-function addDcPairedRow(rowId, r = {}) {
+function addDcPairedRow(rowId, r = {}, insertBeforeEl = null) {
   const container = document.getElementById("dcpaired_" + rowId);
   if (!container) return;
   const inp = (cls,ph,val) => `<input type="text" class="${cls}" placeholder="${ph}" value="${escH(val||'')}" style="background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 9px;font-size:1.25rem;font-family:var(--font);outline:none;width:100%">`;
   const row = document.createElement("div");
   row.className = "dc-paired-item-row";
-  row.style.cssText = "display:grid;grid-template-columns:2fr 2fr 2fr 2fr auto;gap:6px;margin-bottom:6px;align-items:center";
+  row.style.cssText = "display:grid;grid-template-columns:2fr 2fr 2fr 2fr auto auto;gap:6px;margin-bottom:6px;align-items:center";
   row.innerHTML = `${inp("dcp-lname","Left Name",r.leftName)}${inp("dcp-lurl","Left URL",r.leftLink)}${inp("dcp-rname","Right Name",r.rightName)}${inp("dcp-rurl","Right URL",r.rightLink)}
+    <button type="button" class="btn-add-para" onclick="insertDcPairedRowAbove(this)" title="Insert row above" style="padding:6px 9px"><i class="fas fa-plus"></i></button>
     <button class="btn-rm-para" onclick="this.closest('.dc-paired-item-row').remove()" title="Remove"><i class="fas fa-times"></i></button>`;
-  container.appendChild(row);
+  if (insertBeforeEl && insertBeforeEl.parentElement === container) {
+    container.insertBefore(row, insertBeforeEl);
+  } else {
+    container.appendChild(row);
+  }
+}
+
+function insertDcPairedRowAbove(btn) {
+  const row = btn.closest(".dc-paired-item-row");
+  const container = row?.parentElement;
+  if (!container) return;
+  const rowId = container.id.replace("dcpaired_", "");
+  addDcPairedRow(rowId, {}, row);
 }
 
 function dcImportCSV(input, mode, rowId) {
