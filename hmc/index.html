@@ -1902,9 +1902,13 @@ function dbMakeCombo(options, type, placeholderText) {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (dd.classList.contains('open') && focusIndex >= 0 && items[focusIndex]) {
+        // Enter picks the highlighted item — don't also jump to the next row.
+        e.stopPropagation();
         const label = items[focusIndex].querySelector('span');
         selectOption(label ? label.textContent.trim() : items[focusIndex].textContent.trim());
       } else {
+        // Nothing highlighted: close and let Enter bubble up to the New Entry
+        // table's handler, which moves to the next row's date.
         closeDD();
       }
 
@@ -2076,7 +2080,17 @@ function dbCreateRow() {
     return combo;
   };
 
-  mkInput('date',   'db-date');
+  const dateInp = mkInput('date', 'db-date');
+  // Tab from the date cell goes straight to OP in the same row (instead of
+  // stepping through the month/year segments of the date). Use ← / → arrow
+  // keys inside the date cell to reach month/year when they need changing.
+  dateInp.addEventListener('keydown', e => {
+    if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault();
+      const op = row.querySelector('.db-op');
+      if (op) op.focus();
+    }
+  });
   mkInput('number', 'db-op',        0);
   mkInput('number', 'db-lab',       0);
   mkCombo(dbOtherHeadOptions, 'otherHead');
@@ -2128,6 +2142,26 @@ function dbBuildFormRows(count) {
   for(let i=0;i<count;i++) c.appendChild(dbCreateRow());
   const dates=c.querySelectorAll('.db-date');
   if(dates[0]) dates[0].addEventListener('change',()=>{ const v=dates[0].value; dates.forEach((d,i)=>{ if(i>0&&!d.value)d.value=v; }); });
+  // Attach the Enter-key navigation once (the <tbody> itself is never replaced).
+  if(!c.dataset.enterNav){ c.dataset.enterNav='1'; c.addEventListener('keydown', dbFormEnterNav); }
+}
+
+// Enter in any cell from OP to Cash to Bank → jump to the Date cell of the
+// next row (creating a row if this is the last one). If that row has no date
+// yet, it inherits this row's date, so only the day needs typing.
+function dbFormEnterNav(e){
+  if(e.key!=='Enter') return;
+  const t=e.target;
+  if(!t || t.tagName!=='INPUT' || t.classList.contains('db-date')) return;
+  const tr=t.closest('tr'); if(!tr) return;
+  e.preventDefault();
+  let next=tr.nextElementSibling;
+  if(!next){ next=dbCreateRow(); tr.parentNode.appendChild(next); }
+  const curDate=tr.querySelector('.db-date')?.value || '';
+  const nd=next.querySelector('.db-date');
+  if(!nd) return;
+  if(!nd.value && curDate) nd.value=curDate;
+  nd.focus();
 }
 function dbAddRow()   { document.getElementById('dbFormRows').appendChild(dbCreateRow()); }
 function dbResetForm(){
