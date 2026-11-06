@@ -703,6 +703,13 @@
           <button class="btn-add-record" style="padding:4px 10px;font-size:0.82rem;background:#16a34a;" onclick="dbDownloadCashbookExcel()">⬇ Excel</button>
           <span id="dbSearchResultInfo" style="font-size:0.79rem;color:#6b7280;"></span>
         </div>
+        <div class="lang-toggle-wrap" title="Show pages in reverse order (latest page first)" style="margin-left:auto;">
+          <span style="color:#1a56db;font-weight:600;">Reverse pages</span>
+          <label class="lang-switch">
+            <input type="checkbox" id="dbReverseToggle" onchange="dbSetReverseOrder(this.checked)">
+            <span class="lang-slider"></span>
+          </label>
+        </div>
       </div>
       <div class="db-table-scroll">
         <table id="dbPreviewTable" style="width:100%;min-width:1150px;border-collapse:collapse;font-size:0.82rem;table-layout:fixed;word-break:break-word;"></table>
@@ -2148,6 +2155,7 @@ function dbBuildFormRows(count) {
     c.addEventListener('keydown', dbFormEnterNav);
     c.addEventListener('keydown', dbFormCtrlENav);
     c.addEventListener('keydown', dbFormCtrlQNav);
+    c.addEventListener('keydown', dbFormCtrlSSave);
   }
 }
 
@@ -2195,6 +2203,28 @@ function dbFormCtrlENav(e){
   const nHead=headInput(next);
   if(nHead) nHead.focus();
 }
+
+// Ctrl+S (anywhere in the New Entry table) → same as clicking "Save Record".
+function dbFormCtrlSSave(e){
+  if(!(e.ctrlKey||e.metaKey) || e.altKey || e.shiftKey || (e.key||'').toLowerCase()!=='s') return;
+  e.preventDefault();   // stop the browser's "Save page as…" dialog
+  // Close any open head dropdown so a half-typed search doesn't linger.
+  document.querySelectorAll('.db-combo-dropdown.open').forEach(d=>d.classList.remove('open'));
+  dbSubmitForm();
+}
+
+// ── Reverse page order toggle (remembered in this browser across refresh/close) ──
+let dbReverseOrder=false;
+try{ dbReverseOrder = localStorage.getItem('hmc_db_reverse_pages')==='1'; }catch(e){ dbReverseOrder=false; }
+function dbSetReverseOrder(on){
+  dbReverseOrder=!!on;
+  try{ localStorage.setItem('hmc_db_reverse_pages', dbReverseOrder?'1':'0'); }catch(e){}
+  dbCurrentPage=1;
+  dbRenderPreviewTable(dbCurrentPage);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const t=document.getElementById('dbReverseToggle'); if(t) t.checked=dbReverseOrder;
+});
 
 // Ctrl+Q → jump to the Cash to Bank cell of the SAME row, from any cell in that row.
 function dbFormCtrlQNav(e){
@@ -2507,7 +2537,10 @@ function dbRenderPreviewTable(page) {
   const actTh=document.createElement('th'); actTh.textContent='Act.'; actTh.style.cssText=thS; hRow.appendChild(actTh);
   thead.appendChild(hRow); table.appendChild(thead);
   const tbody=document.createElement('tbody');
-  const start=(page-1)*DB_ROWS_PER_PAGE;
+  // In reverse mode, displayed page 1 = the last actual page, page 2 = the one before, etc.
+  const totalPages=Math.max(1,Math.ceil(dbFilteredPreviewRows.length/DB_ROWS_PER_PAGE));
+  const actualPage=dbReverseOrder ? (totalPages-page+1) : page;
+  const start=(actualPage-1)*DB_ROWS_PER_PAGE;
   const term=(document.getElementById('dbSearchText').value||'').trim();
   dbFilteredPreviewRows.slice(start,start+DB_ROWS_PER_PAGE).forEach((row,idx)=>{
     const tr=document.createElement('tr'); tr.style.background=idx%2===1?'#f9fafb':'';
