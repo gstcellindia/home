@@ -4,7 +4,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="./hmc_files/Untitled (8).png">
-  <title>HMC</title>
+  <title>Hmc</title>
   <link rel="stylesheet" href="./hmc_files/all.min.css">
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
@@ -2143,7 +2143,11 @@ function dbBuildFormRows(count) {
   const dates=c.querySelectorAll('.db-date');
   if(dates[0]) dates[0].addEventListener('change',()=>{ const v=dates[0].value; dates.forEach((d,i)=>{ if(i>0&&!d.value)d.value=v; }); });
   // Attach the Enter-key navigation once (the <tbody> itself is never replaced).
-  if(!c.dataset.enterNav){ c.dataset.enterNav='1'; c.addEventListener('keydown', dbFormEnterNav); }
+  if(!c.dataset.enterNav){
+    c.dataset.enterNav='1';
+    c.addEventListener('keydown', dbFormEnterNav);
+    c.addEventListener('keydown', dbFormCtrlENav);
+  }
 }
 
 // Enter in any cell from OP to Cash to Bank → jump to the Date cell of the
@@ -2162,6 +2166,31 @@ function dbFormEnterNav(e){
   if(!nd) return;
   if(!nd.value && curDate) nd.value=curDate;
   nd.focus();
+}
+
+// Ctrl+E → jump to the Expenditure cell.
+//  • From any cell before Expenditure (Date … Desc. Cheque/Name) → Expenditure of the SAME row.
+//  • From Expenditure itself or any cell after it (Cash to Bank) → Expenditure of the NEXT row
+//    (a row is added if this is the last one; an empty date there inherits this row's date).
+function dbFormCtrlENav(e){
+  if(!(e.ctrlKey||e.metaKey) || e.altKey || e.shiftKey || (e.key||'').toLowerCase()!=='e') return;
+  const t=e.target;
+  if(!t || t.tagName!=='INPUT') return;
+  const tr=t.closest('tr'); const td=t.closest('td');
+  if(!tr || !td) return;
+  const expInp=tr.querySelector('.db-exp'); if(!expInp) return;
+  e.preventDefault();   // stop the browser's own Ctrl+E (address-bar search)
+  const cells=Array.from(tr.cells);
+  const curIdx=cells.indexOf(td);
+  const expIdx=cells.indexOf(expInp.closest('td'));
+  if(curIdx < expIdx){ expInp.focus(); expInp.select?.(); return; }
+  let next=tr.nextElementSibling;
+  if(!next){ next=dbCreateRow(); tr.parentNode.appendChild(next); }
+  const curDate=tr.querySelector('.db-date')?.value || '';
+  const nd=next.querySelector('.db-date');
+  if(nd && !nd.value && curDate) nd.value=curDate;
+  const nExp=next.querySelector('.db-exp');
+  if(nExp){ nExp.focus(); nExp.select?.(); }
 }
 function dbAddRow()   { document.getElementById('dbFormRows').appendChild(dbCreateRow()); }
 function dbResetForm(){
