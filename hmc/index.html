@@ -287,6 +287,9 @@
       border: none; outline: none; background: transparent;
       font-size: 0.78rem; font-family: inherit; box-sizing: border-box;
     }
+    /* New Entry table cell shading (headings unchanged) */
+    #dbFormRows td.db-cell-amt  { background-color: #ffffff; }
+    #dbFormRows td.db-cell-desc { background-color: #f8fbff; }
     .total-row td { font-weight: bold; background: #e8f0fe !important; border-top: 2px solid #c8d3f0; }
 
     /* ── PHONE CHANGE POPUP ── */
@@ -2072,6 +2075,9 @@ function dbCreateRow() {
   // Helper to make a plain input cell
   const mkInput = (type, cls, min) => {
     const td = document.createElement('td'); td.style.cssText = dbCellStyle;
+    // Amount columns → white cells; description columns → lighter tint.
+    if (['db-op','db-lab','db-otherCash','db-income','db-exp','db-bank'].includes(cls)) td.classList.add('db-cell-amt');
+    else if (cls === 'db-desc1' || cls === 'db-desc2') td.classList.add('db-cell-desc');
     const inp = document.createElement('input');
     inp.type = type; inp.className = cls; inp.style.cssText = dbInputStyle;
     if (min !== undefined) inp.min = min;
